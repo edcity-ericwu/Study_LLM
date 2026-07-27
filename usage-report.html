@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity 使用報告 — 故事 4：資訊科技統籌（示意）</title>
+<style>
+  :root{
+    --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
+    --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f5f8fa;font-size:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
+  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
+  .sidebar .logo-sub{font-size:.68rem;color:var(--ink-3);margin-top:8px;letter-spacing:.04em;}
+  .nav{padding:14px 10px;flex:1;}
+  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;padding:0 10px 8px;text-transform:uppercase;}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  .nav a:hover{background:#f2f6f9;}
+  .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
+  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
+  .sidebar .user .meta b{font-size:.8rem;display:block;}
+  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+
+  .main{flex:1;min-width:0;padding:26px 34px 80px;}
+  .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:10px;}
+  h1{font-size:1.5rem;font-weight:800;}
+  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 20px;max-width:52em;line-height:1.6;}
+  h2{font-size:1rem;font-weight:700;margin:26px 0 12px;}
+
+  /* Fabricated-data disclosure — separate from the "提案中" ribbon above,
+   * because it's a different kind of caveat: 訂閱管理 is a real proposed
+   * screen with real data-model backing; this page's ribbon ALSO needs to
+   * say the underlying usage numbers themselves are illustrative, since
+   * nothing in vendor-data.js tracks actual logins/sessions today. */
+  .data-note{font-size:.74rem;color:var(--ink-3);background:#f7f9fb;border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin-bottom:22px;line-height:1.7;max-width:52em;}
+
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:8px;}
+  .sum-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;}
+  .sum-card .sc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .sum-card b{font-size:.94rem;}
+  .sum-card .sc-vend{font-size:.68rem;color:var(--ink-3);display:block;margin-top:2px;}
+  .trend-badge{font-size:.64rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap;}
+  .trend-badge.up{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
+  .trend-badge.down{color:var(--ec-red);background:#fdecec;border:1px solid #f3c6c9;}
+  .sparkline-row{display:flex;align-items:center;gap:14px;margin:14px 0 10px;}
+  .sparkline-row svg{flex-shrink:0;}
+  .sc-stat{font-size:.72rem;color:var(--ink-2);line-height:1.7;}
+  .sc-stat b{font-size:.9rem;}
+  .cap-bar{height:7px;border-radius:99px;background:#eef2f5;overflow:hidden;}
+  .cap-fill{height:100%;border-radius:99px;}
+  .cap-fill.ok{background:var(--ec-green);}
+  .cap-fill.warn{background:var(--ec-amber);}
+  .cap-fill.danger{background:var(--ec-red);}
+  .sc-row{margin-top:10px;}
+  .sc-row .lbl{font-size:.7rem;color:var(--ink-2);display:flex;justify-content:space-between;margin-bottom:5px;}
+  .sc-teacher-flag{font-size:.7rem;font-weight:700;border-radius:99px;padding:3px 10px;display:inline-block;margin-top:12px;}
+  .sc-teacher-flag.ok{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
+  .sc-teacher-flag.warn{color:var(--ec-red);background:#fdecec;border:1px solid #f3c6c9;}
+
+  .cmp-zone{background:#f7f9fb;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:22px 0;}
+  .cmp-zone h2{margin-top:0;}
+  .cmp-row{display:grid;grid-template-columns:160px 1fr 60px;align-items:center;gap:14px;margin-bottom:14px;}
+  .cmp-row:last-child{margin-bottom:0;}
+  .cmp-label{font-size:.82rem;font-weight:700;}
+  .cmp-label small{display:block;font-size:.66rem;color:var(--ink-3);font-weight:400;margin-top:1px;}
+  .cmp-value{font-size:.82rem;font-weight:700;text-align:right;}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  th,td{text-align:left;padding:12px 16px;font-size:.8rem;border-bottom:1px solid var(--line);vertical-align:middle;}
+  th{font-size:.68rem;letter-spacing:.08em;color:var(--ink-3);font-weight:600;background:#fafcfd;}
+  tr:last-child td{border-bottom:none;}
+  td .tool{font-weight:700;}
+  td .vend{font-size:.68rem;color:var(--ink-3);display:block;margin-top:2px;}
+  .chip{font-size:.64rem;font-weight:700;border-radius:99px;padding:3px 9px;display:inline-block;}
+  .chip.ok{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
+  .chip.warn{color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
+  .chip.danger{color:var(--ec-red);background:#fdecec;border:1px solid #f3c6c9;}
+  .note-row{font-size:.72rem;color:var(--ink-3);margin-top:14px;line-height:1.6;max-width:52em;}
+
+  footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
+  @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
+
+  .role-banner{background:#f1edfb;border-bottom:1px solid #ddd3f5;color:var(--ec-purple);
+    font-size:.7rem;font-weight:700;letter-spacing:.18em;padding:9px 34px;position:sticky;top:0;z-index:50;}
+  .nav-group h6{color:var(--ec-purple) !important;}
+  .nav a.active{background:#f1edfb !important;color:var(--ec-purple) !important;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+    <div class="logo-sub">AI 教學工具平台 · 原型 v0.1</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <h6>學校管理</h6>
+      <a href="subscriptions.html">🗂 訂閱管理</a>
+      <a href="usage-report.html" class="active">📊 使用報告</a>
+    </div>
+    <div class="nav-group" style="margin-top:18px;">
+      <h6>其他系統（同一人，不同帳戶）</h6>
+      <a href="eddata-console.html">🔐 供應商資料存取審批 →</a>
+    </div>
+    <div class="nav-group" style="margin-top:18px;">
+      <h6>教師視圖</h6>
+      <a href="index.html">← 返回教師介面</a>
+    </div>
+  </nav>
+  <div class="user">
+    <div class="avatar">馮</div>
+    <div class="meta"><b>馮 Sir</b><span>資訊科技統籌</span></div>
+  </div>
+</aside>
+
+<main class="main" style="padding-top:0;">
+<div class="role-banner">學 校 行 政 層 級 — 資 訊 科 技 統 籌 視 圖</div>
+<div style="padding:26px 0 0;">
+  <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
+
+  <h1>使用報告</h1>
+  <div class="sub">訂閱管理只回答「有沒有批出授權」；這一頁回答下一個問題——<b>批出之後，這件工具有沒有人在用</b>。續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
+
+  <div class="data-note">
+    📊 本頁的活躍人數、趨勢與最後使用日期為<b>示範數據</b>，用來示意「使用報告」畫面建成後的樣貌——目前 vendor-data.js 並無任何登入或互動紀錄可供讀取，這是尚待建置的資料來源，非真實使用紀錄。<br>
+    只列出<b>已有核准存取</b>的工具（智寫科技、點讀教育）；仍在待審或未核准的工具（如字詞通 AI）沒有使用可言，本頁不會顯示。訂閱管理「現有訂閱」分頁中另外幾項工具（AI 中文作文批改、普通話朗讀評測、古典詩詞互動課件）目前也沒有對應的使用數據模型，暫不納入本頁。
+  </div>
+
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div class="cmp-zone">
+    <h2>跨供應商比較 · 本週學生活躍率</h2>
+    <div class="sub" style="margin:0 0 4px;">活躍率 = 本週實際使用人數 ÷ 已核准人數。用來快速判斷「批出的名額，有多少真的在用」。</div>
+    <div id="cmpRows" style="margin-top:14px;"></div>
+  </div>
+
+  <h2>各組別明細</h2>
+  <table>
+    <thead><tr><th>工具</th><th>組別</th><th>負責老師</th><th>已核准人數</th><th>本週活躍人數</th><th>最後使用日期</th></tr></thead>
+    <tbody id="detailTbody"></tbody>
+  </table>
+  <div class="note-row">🔐 本頁只看「有沒有人用」；名額是否快滿、要不要再加人，記錄在 <a href="subscriptions.html" style="color:var(--ec-blue-dark);font-weight:700;">訂閱管理 · 供應商方案名額</a>。</div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="feature-flags.js"></script>
+<script src="vendor-data.js"></script>
+<script>
+/* Illustrative-only adoption data. vendor-data.js has no session/login model
+ * (vendorUsage() only sums GRANTED headcount, i.e. seats consumed against a
+ * contract — it says nothing about whether anyone actually opened the tool).
+ * These numbers are fabricated to show what an adoption dashboard would look
+ * like once real telemetry exists, grounded against real granted headcounts
+ * (vendorUsage()) so no group ever shows more "active" users than were ever
+ * actually granted access.
+ *
+ * The two vendors deliberately tell different stories: 智寫科技 trending up
+ * (a renewal-worthy tool) and 點讀教育 trending sharply down with the
+ * teacher herself going quiet this last week (exactly the kind of signal
+ * that should surface before a renewal decision, not after). */
+const USAGE_WEEKS = ['06-29 那週','07-06 那週','07-13 那週','07-20 那週'];
+const USAGE_DATA = {
+  zhixie: {
+    weeklyActiveStudents: [5, 6, 7, 8],
+    weeklyActiveTeachers: [1, 1, 1, 1],
+    lastActive: '2026-07-26',
+    groups: [
+      {label:'增潤組（9 人）· 中二乙班', teacherId:'T1001', lastActive:'2026-07-26', activeThisWeek:8},
+    ],
+  },
+  diandu: {
+    weeklyActiveStudents: [30, 24, 18, 12],
+    weeklyActiveTeachers: [1, 1, 1, 0],
+    lastActive: '2026-07-19',
+    groups: [
+      {label:'全班 · 中一甲班', teacherId:'T1002', lastActive:'2026-07-19', activeThisWeek:12},
+    ],
+  },
+};
+
+function severityClass(pct){ return pct>=70 ? 'ok' : (pct>=40 ? 'warn' : 'danger'); }
+
+function sparklineSVG(values, max, color){
+  const w=150, h=42, pad=5;
+  const stepX = (w-2*pad)/(values.length-1);
+  const y = v => h-pad - (v/max)*(h-2*pad);
+  const pts = values.map((v,i)=>`${pad+i*stepX},${y(v)}`).join(' ');
+  const dots = values.map((v,i)=>`<circle cx="${pad+i*stepX}" cy="${y(v)}" r="2.8" fill="${color}"/>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.2"/>
+    ${dots}
+  </svg>`;
+}
+
+function renderSummaryCards(){
+  const grid = document.getElementById('summaryGrid');
+  grid.innerHTML = VENDORS.filter(v=>USAGE_DATA[v.id]).map(v=>{
+    const u = USAGE_DATA[v.id];
+    const usage = vendorUsage(v.id);
+    const lastWeekActive = u.weeklyActiveStudents[u.weeklyActiveStudents.length-1];
+    const pct = usage.students ? Math.round((lastWeekActive/usage.students)*100) : 0;
+    const trendUp = lastWeekActive >= u.weeklyActiveStudents[0];
+    const color = trendUp ? '#00AC6C' : '#ED1A2E';
+    const teacherActiveLastWeek = u.weeklyActiveTeachers[u.weeklyActiveTeachers.length-1];
+    const teacherFlag = teacherActiveLastWeek < usage.teachers
+      ? `<span class="sc-teacher-flag warn">⚠ 負責老師本週未登入使用</span>`
+      : `<span class="sc-teacher-flag ok">✓ 負責老師本週仍在使用</span>`;
+    return `
+    <div class="sum-card">
+      <div class="sc-head">
+        <div><b>${v.name}</b><span class="sc-vend">${v.product}</span></div>
+        <span class="trend-badge ${trendUp?'up':'down'}">${trendUp?'↑ 使用上升':'↓ 使用下滑'}</span>
+      </div>
+      <div class="sparkline-row">
+        ${sparklineSVG(u.weeklyActiveStudents, usage.students, color)}
+        <div class="sc-stat">近 4 週活躍學生人數<br><b>${lastWeekActive}</b> / ${usage.students} 人（已核准）</div>
+      </div>
+      <div class="sc-row">
+        <div class="lbl"><span>本週學生活躍率</span><span>${pct}%</span></div>
+        <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${pct}%;"></div></div>
+      </div>
+      ${teacherFlag}
+    </div>`;
+  }).join('');
+}
+
+function renderComparisonRows(){
+  const wrap = document.getElementById('cmpRows');
+  wrap.innerHTML = VENDORS.filter(v=>USAGE_DATA[v.id]).map(v=>{
+    const u = USAGE_DATA[v.id];
+    const usage = vendorUsage(v.id);
+    const lastWeekActive = u.weeklyActiveStudents[u.weeklyActiveStudents.length-1];
+    const pct = usage.students ? Math.round((lastWeekActive/usage.students)*100) : 0;
+    return `
+    <div class="cmp-row">
+      <div class="cmp-label">${v.name}<small>${v.product}</small></div>
+      <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${pct}%;"></div></div>
+      <div class="cmp-value">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDetailTable(){
+  const rows = [];
+  VENDORS.filter(v=>USAGE_DATA[v.id]).forEach(v=>{
+    const u = USAGE_DATA[v.id];
+    u.groups.forEach(g=>{
+      const grant = v.grants.find(x=>x.teacherId===g.teacherId && x.group===g.label);
+      const granted = grant ? grant.headcount : g.activeThisWeek;
+      const pct = granted ? Math.round((g.activeThisWeek/granted)*100) : 0;
+      rows.push(`
+      <tr>
+        <td><span class="tool">${v.name}</span><span class="vend">${v.product}</span></td>
+        <td>${g.label}</td>
+        <td>${teacherLabel(g.teacherId)}</td>
+        <td>${granted} 人</td>
+        <td>${g.activeThisWeek} 人 <span class="chip ${severityClass(pct)}" style="margin-left:6px;">${pct}%</span></td>
+        <td>${g.lastActive}</td>
+      </tr>`);
+    });
+  });
+  document.getElementById('detailTbody').innerHTML = rows.join('');
+}
+
+renderSummaryCards();
+renderComparisonRows();
+renderDetailTable();
+
+let tt;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
+</script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

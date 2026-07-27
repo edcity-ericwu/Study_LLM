@@ -189,11 +189,17 @@ const REQUESTABLE_VENDORS = ['zhixie','diandu','unknownvendor'];
 const MY_TEACHER_ID = 'T1001';
 let activeClassId = '2b';
 
+// Same fix as groups.html's class switcher and cross-class study-group
+// picker: this dropdown must only ever list classes MY_TEACHER_ID actually
+// teaches, not every class in the school (CLASS_LIST) — otherwise another
+// teacher's class (e.g. 黃穎詩's 1a) shows up as something 陳凱怡 could switch
+// her own request view into.
+function myClasses(){ return CLASS_LIST.filter(cl=>CLASSES[cl.id].teacherId===MY_TEACHER_ID); }
 function renderClassSwitcher(){
   const c = CLASSES[activeClassId];
   document.getElementById('classLabel').textContent = c.className;
   document.getElementById('classMeta').textContent = '· '+c.subjectLabel;
-  document.getElementById('classMenu').innerHTML = CLASS_LIST.map(cl=>
+  document.getElementById('classMenu').innerHTML = myClasses().map(cl=>
     `<div class="class-opt ${cl.id===activeClassId?'on':''}" data-c="${cl.id}" onclick="switchClass('${cl.id}')">${cl.className}<small>${cl.subjectLabel}</small></div>`
   ).join('');
 }

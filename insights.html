@@ -121,7 +121,7 @@
   </nav>
   <div class="user">
     <div class="avatar">陳</div>
-    <div class="meta"><b>陳老師</b><span>中文科</span></div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
   </div>
 </aside>
 
@@ -134,10 +134,10 @@
       <div class="sub">你批改時標記的技能標籤，經審核後在這裏匯總成<b>你自己班</b>的學習面貌——批改的每一分鐘，都變成看得見的教學依據。</div>
     </div>
     <div class="class-dd">
-      <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel">中二乙班</b><span id="classMeta">· 中文 · 32 人</span><span class="car">▾</span></button>
+      <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel">中二乙班</b><span id="classMeta">· 中文 · 35 人</span><span class="car">▾</span></button>
       <div class="class-menu" id="classMenu">
-        <div class="class-opt on" data-c="2b" onclick="switchClass('2b')">中二乙班<small>中文 · 32 人 · 任教中</small></div>
-        <div class="class-opt" data-c="1c" onclick="switchClass('1c')">中一丙班<small>中文 · 29 人 · 本學期剛接手</small></div>
+        <div class="class-opt on" data-c="2b" onclick="switchClass('2b')">中二乙班<small>中文 · 35 人 · 任教中</small></div>
+        <div class="class-opt" data-c="1c" onclick="switchClass('1c')">中一丙班<small>中文 · 35 人 · 本學期剛接手</small></div>
       </div>
     </div>
   </div>
@@ -177,7 +177,7 @@
 <script>
 const CLASS_DATA = {
   '2b':{
-    label:'中二乙班', meta:'· 中文 · 32 人',
+    label:'中二乙班', meta:'· 中文 · 35 人',
     stats:[
       {n:'96',l:'已批改樣本數（近六週）'},
       {n:'92%',l:'標籤已審核比率'},
@@ -186,7 +186,7 @@ const CLASS_DATA = {
     hasImpact:true,
     caution:'🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。文言字詞落後的五位同學，需要的是不同的路徑，不是同一條路走快些。',
     groups:{
-      all:{title:'技能面貌 · 全班（32 人）', rows:[
+      all:{title:'技能面貌 · 全班（35 人）', rows:[
         ['閱讀理解 · 推論','up','▲ 進步中','28 份樣本','新閱讀策略似乎見效——增潤組已可挑戰更深層提問'],
         ['閱讀理解 · 主旨','up','▲ 進步中','26 份樣本','—'],
         ['寫作 · 結構組織','flat','▶ 大致持平','19 份樣本','三個分組差異不大，可全班同步處理'],
@@ -210,7 +210,7 @@ const CLASS_DATA = {
     },
   },
   '1c':{
-    label:'中一丙班', meta:'· 中文 · 29 人',
+    label:'中一丙班', meta:'· 中文 · 35 人',
     stats:[
       {n:'6',l:'已批改樣本數（本學期）'},
       {n:'100%',l:'標籤已審核比率'},
@@ -219,7 +219,7 @@ const CLASS_DATA = {
     hasImpact:false,
     caution:'🌱 <b>剛接手這班：</b>面貌會隨你批改累積建立，不會用「未夠分」提早下判斷。',
     groups:{
-      all:{title:'技能面貌 · 全班（29 人）', rows:[]},
+      all:{title:'技能面貌 · 全班（35 人）', rows:[]},
       stretch:{title:'技能面貌 · 增潤組', rows:[]},
       core:{title:'技能面貌 · 核心組', rows:[]},
       support:{title:'技能面貌 · 支援組', rows:[]},

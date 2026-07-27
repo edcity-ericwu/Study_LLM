@@ -123,7 +123,7 @@
   </nav>
   <div class="user">
     <div class="avatar">陳</div>
-    <div class="meta"><b>陳老師</b><span>中文科</span></div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
   </div>
 </aside>
 
@@ -299,7 +299,7 @@ function submitTrialRequest(groupId){
   }
   const headcount = memberSnapshot.length;
   TRIALS.push({
-    id:'tt-'+Date.now(), vendor:v.name, vendorId:v.id, teacher:'陳老師', classId, groupId,
+    id:'tt-'+Date.now(), vendor:v.name, vendorId:v.id, teacherId:'T1001', classId, groupId,
     group, headcount,
     tool:v.product, status:'pending_it', expiresAt:'2026-08-05', origin:'teacher',
     declineReason:null, cooldownUntil:null, declinedBy:null,
@@ -335,7 +335,7 @@ function submitRequest(groupId){
   const headcount = memberSnapshot.length;
   const reqId = 'gr-'+Date.now();
   v.pending.push({
-    id:reqId, teacher:'陳老師', group:groupLbl, classId, groupId, memberSnapshot, headcount,
+    id:reqId, teacherId:'T1001', group:groupLbl, classId, groupId, memberSnapshot, headcount,
     src:'來自學生工具申請（group-access-requests.html）', status:'pending', _pickedTier:null,
     overlapNote: overlap,
   });
@@ -388,7 +388,7 @@ function renderGrantCard(v, entry, kind, driftCounter){
     : entry.status==='pending' ? `<span class="rchip pending">⏳ 待審批</span>`
     : entry.status==='approved' ? `<span class="rchip approved">✓ 已核准 · ${entry.tier}</span>`
     : `<span class="rchip denied">✕ 已拒絕</span>`;
-  const teacherLabel = entry.teacher ? entry.teacher+' · ' : '';
+  const entryTeacherLabel = entry.teacherId ? teacherName(entry.teacherId)+' · ' : '';
   let driftHtml = '';
   if(drift){
     const parts = [];
@@ -399,7 +399,7 @@ function renderGrantCard(v, entry, kind, driftCounter){
   const overlapHtml = entry.overlapNote ? `<div class="overlap-flag">⚠ ${entry.overlapNote}</div>` : '';
   return `<div class="req-card">
     <div class="rc-head">
-      <div><b>${teacherLabel}${entry.group}</b><small>${v.name} · ${v.product}</small></div>
+      <div><b>${entryTeacherLabel}${entry.group}</b><small>${v.name} · ${v.product}</small></div>
       <div class="rc-badges">${statusChip}</div>
     </div>
     ${driftHtml}${overlapHtml}

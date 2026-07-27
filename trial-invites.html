@@ -105,7 +105,7 @@
   </nav>
   <div class="user">
     <div class="avatar">陳</div>
-    <div class="meta"><b>陳老師</b><span>中文科</span></div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
   </div>
 </aside>
 
@@ -116,7 +116,7 @@
     <div>
       <h1>試用邀請</h1>
       <div class="sub">供應商如果已經和你接觸過，可以直接邀請你試用工具，不必先由你提出正式的資料存取申請。你確認後，邀請會交由資訊科技統籌核實時限與資料層級，才會正式開始。</div>
-      <div class="persona-note">此頁以<b>陳老師</b>（中文科其中一位老師）作示範，展示供應商發起的試用邀請如何出現在個別老師眼前；換成任何一位老師登入，看到的會是自己收到的邀請。同一位老師教多於一班時，邀請也按班別分開顯示。</div>
+      <div class="persona-note">此頁以<b>陳凱怡老師</b>（中文科其中一位老師）作示範，展示供應商發起的試用邀請如何出現在個別老師眼前；換成任何一位老師登入，看到的會是自己收到的邀請。同一位老師教多於一班時，邀請也按班別分開顯示。</div>
     </div>
     <div class="class-dd">
       <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel"></b><span id="classMeta"></span><span class="car">▾</span></button>
@@ -136,7 +136,7 @@
 <script src="vendor-data.js"></script>
 <script>
 guardWholePage('toolTrial', '.main');
-const MY_NAME = '陳老師';
+const MY_TEACHER_ID = 'T1001';
 let activeClassId = '2b';
 
 function renderClassSwitcher(){
@@ -158,7 +158,7 @@ function switchClass(classId){
 document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) document.getElementById('classMenu').classList.remove('show'); });
 
 function renderInvites(){
-  const mine = TRIALS.filter(t=>t.teacher===MY_NAME && t.classId===activeClassId);
+  const mine = TRIALS.filter(t=>t.teacherId===MY_TEACHER_ID && t.classId===activeClassId);
   const waiting = mine.filter(t=>t.status==='awaiting_teacher');
   const decided = mine.filter(t=>t.status!=='awaiting_teacher');
 

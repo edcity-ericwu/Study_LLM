@@ -36,7 +36,7 @@
  * making this change. */
 const CLASSES = {
   '2b': {
-    className:'中二乙班', subjectLabel:'中文 · 32 人 · 任教中', form:'S2', formLabel:'中二',
+    className:'中二乙班', subjectLabel:'中文 · 35 人 · 任教中', form:'S2', formLabel:'中二',
     groups:[
       {id:'stretch', name:'增潤組', color:'var(--ec-purple)', goal:'進度較快，適合延伸閱讀與較深的寫作任務'},
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
@@ -48,10 +48,7 @@ const CLASSES = {
      * given. Assigning every seed student an sid here makes that precedence
      * demonstrable, not just theoretical. */
     students:[
-      {n:'王思穎', sid:'S2001', g:'stretch'},{n:'林一心', sid:'S2002', g:'stretch'},{n:'徐朗', sid:'S2003', g:'stretch'},
-      {n:'陳嘉欣', sid:'S2004', g:'core'},{n:'何梓晴', sid:'S2005', g:'core'},{n:'黃俊傑', sid:'S2006', g:'core'},{n:'吳詠芝', sid:'S2007', g:'core'},{n:'周天恩', sid:'S2008', g:'core'},
-      {n:'李俊希', sid:'S2009', g:'support'},{n:'鄭家朗', sid:'S2010', g:'support'},
-      {n:'簡愛琳', sid:'S2011', g:'core', left:true},
+      {n:'王思穎', sid:'S2001', no:1, g:'stretch'},{n:'林一心', sid:'S2002', no:13, g:'stretch'},{n:'徐朗', sid:'S2003', no:23, g:'stretch'},{n:'陳嘉欣', sid:'S2004', no:30, g:'core'},{n:'何梓晴', sid:'S2005', no:4, g:'core'},{n:'黃俊傑', sid:'S2006', no:31, g:'core'},{n:'吳詠芝', sid:'S2007', no:7, g:'core'},{n:'周天恩', sid:'S2008', no:12, g:'core'},{n:'李俊希', sid:'S2009', no:8, g:'support'},{n:'鄭家朗', sid:'S2010', no:34, g:'support'},{n:'簡愛琳', sid:'S2011', no:35, g:'core', left:true},{n:'邵浩霖', sid:'S3001', no:15, g:'stretch'},{n:'梁俊熙', sid:'S3002', no:28, g:'stretch'},{n:'邵嘉俐', sid:'S3003', no:16, g:'stretch'},{n:'柯子傲', sid:'S3004', no:19, g:'stretch'},{n:'楊子誠', sid:'S3005', no:32, g:'stretch'},{n:'阮子健', sid:'S3006', no:11, g:'stretch'},{n:'徐浩霖', sid:'S3007', no:24, g:'core'},{n:'何浩然', sid:'S3008', no:3, g:'core'},{n:'施文昊', sid:'S3009', no:17, g:'core'},{n:'梅子頌', sid:'S3010', no:29, g:'core'},{n:'石詠芝', sid:'S3011', no:2, g:'core'},{n:'高梓晴', sid:'S3012', no:27, g:'core'},{n:'柯家朗', sid:'S3013', no:20, g:'core'},{n:'沈子悅', sid:'S3014', no:9, g:'core'},{n:'潘詩妍', sid:'S3015', no:33, g:'core'},{n:'馬雅雯', sid:'S3016', no:25, g:'core'},{n:'余俊賢', sid:'S3017', no:6, g:'core'},{n:'徐俊熙', sid:'S3018', no:22, g:'core'},{n:'馬愛琳', sid:'S3019', no:26, g:'core'},{n:'林子悅', sid:'S3020', no:14, g:'core'},{n:'何嘉睿', sid:'S3021', no:5, g:'support'},{n:'沈詩妍', sid:'S3022', no:10, g:'support'},{n:'施詠芝', sid:'S3023', no:18, g:'support'},{n:'范俊希', sid:'S3024', no:21, g:'support'},
     ],
   },
   /* Thin/sparse on purpose (per insights.html's existing "本學期剛接手" story) — only
@@ -59,14 +56,13 @@ const CLASSES = {
    * dataset, not a cosmetic label swap, so switching classes actually changes what
    * every 課堂管理 page shows. */
   '1c': {
-    className:'中一丙班', subjectLabel:'中文 · 29 人 · 本學期剛接手', form:'S1', formLabel:'中一',
+    className:'中一丙班', subjectLabel:'中文 · 35 人 · 本學期剛接手', form:'S1', formLabel:'中一',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
       {id:'support', name:'支援組', color:'var(--ec-green)', goal:'剛接手，仍在觀察哪些學生需要較多支援'},
     ],
     students:[
-      {n:'馬顯宗', sid:'S2012', g:'core'},{n:'蘇文樂', sid:'S2013', g:'core'},{n:'鄧凱兒', sid:'S2014', g:'core'},{n:'黎子軒', sid:'S2015', g:'core'},
-      {n:'方雅晴', sid:'S2016', g:'support'},{n:'温家豪', sid:'S2017', g:'support'},
+      {n:'馬顯宗', sid:'S2012', no:15, g:'core'},{n:'蘇文樂', sid:'S2013', no:35, g:'core'},{n:'鄧凱兒', sid:'S2014', no:30, g:'core'},{n:'黎子軒', sid:'S2015', no:33, g:'core'},{n:'方雅晴', sid:'S2016', no:2, g:'support'},{n:'温家豪', sid:'S2017', no:24, g:'support'},{n:'鄭雅涵', sid:'S3025', no:32, g:'core'},{n:'梅子軒', sid:'S3026', no:20, g:'core'},{n:'曾詩喬', sid:'S3027', no:23, g:'core'},{n:'區思穎', sid:'S3028', no:18, g:'core'},{n:'李家朗', sid:'S3029', no:5, g:'core'},{n:'柯一心', sid:'S3030', no:10, g:'core'},{n:'岑雅涵', sid:'S3031', no:4, g:'core'},{n:'高思穎', sid:'S3032', no:16, g:'core'},{n:'阮家豪', sid:'S3033', no:6, g:'core'},{n:'徐俊賢', sid:'S3034', no:13, g:'core'},{n:'龍雅晴', sid:'S3035', no:34, g:'core'},{n:'蔡浩恩', sid:'S3036', no:28, g:'core'},{n:'區愛琳', sid:'S3037', no:19, g:'core'},{n:'梅俊皓', sid:'S3038', no:21, g:'core'},{n:'楊嘉俐', sid:'S3039', no:27, g:'core'},{n:'馬子文', sid:'S3040', no:14, g:'core'},{n:'邱浩澤', sid:'S3041', no:8, g:'core'},{n:'范子悅', sid:'S3042', no:12, g:'core'},{n:'邱浩騫', sid:'S3043', no:9, g:'core'},{n:'尹俊皓', sid:'S3044', no:1, g:'core'},{n:'陳子澄', sid:'S3045', no:22, g:'core'},{n:'鄧浩霖', sid:'S3046', no:29, g:'core'},{n:'黃嘉諾', sid:'S3047', no:25, g:'support'},{n:'洪浩霖', sid:'S3048', no:11, g:'support'},{n:'高詩慈', sid:'S3049', no:17, g:'support'},{n:'何嘉泳', sid:'S3050', no:3, g:'support'},{n:'鄭俊希', sid:'S3051', no:31, g:'support'},{n:'楊詩珩', sid:'S3052', no:26, g:'support'},{n:'林俊傑', sid:'S3053', no:7, g:'support'},
     ],
   },
   /* Materializes 中一甲班/黃老師 — previously only referenced by name in a
@@ -74,20 +70,18 @@ const CLASSES = {
    * Giving Form 1 a second class is also what makes 批量編班's form-then-class
    * navigation demonstrate something real instead of a single-class no-op. */
   '1a': {
-    className:'中一甲班', subjectLabel:'中文 · 黃老師任教', form:'S1', formLabel:'中一',
+    className:'中一甲班', subjectLabel:'中文 · 35 人 · 黃穎詩老師任教', form:'S1', formLabel:'中一',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
-      {id:'support', name:'支援組', color:'var(--ec-green)', goal:'需要多些時間，由黃老師親自帶領'},
+      {id:'support', name:'支援組', color:'var(--ec-green)', goal:'需要多些時間，由黃穎詩老師親自帶領'},
     ],
+    /* Deliberate homonym with 2b's 陳嘉欣 — gives 批量編班's ambiguous-name
+     * resolution a genuine case to demonstrate against, instead of a contrived
+     * one: two real, differently-enrolled students sharing a name is exactly
+     * the scenario that makes name-only matching unsafe at bulk-import scale.
+     * Different sid (S2021 vs 2b's S2004) — same name, different student. */
     students:[
-      {n:'袁子軒', sid:'S2018', g:'core'},{n:'區凱琳', sid:'S2019', g:'core'},{n:'譚文昊', sid:'S2020', g:'core'},
-      /* Deliberate homonym with 2b's 陳嘉欣 — gives 批量編班's ambiguous-name
-       * resolution a genuine case to demonstrate against, instead of a contrived
-       * one: two real, differently-enrolled students sharing a name is exactly
-       * the scenario that makes name-only matching unsafe at bulk-import scale.
-       * Different sid (S2021 vs 2b's S2004) — same name, different student. */
-      {n:'陳嘉欣', sid:'S2021', g:'core'},{n:'柯天佑', sid:'S2022', g:'core'},
-      {n:'尹曉彤', sid:'S2023', g:'support'},{n:'費俊安', sid:'S2024', g:'support'},
+      {n:'袁子軒', sid:'S2018', no:15, g:'core'},{n:'區凱琳', sid:'S2019', no:18, g:'core'},{n:'譚文昊', sid:'S2020', no:34, g:'core'},{n:'陳嘉欣', sid:'S2021', no:23, g:'core'},{n:'柯天佑', sid:'S2022', no:11, g:'core'},{n:'尹曉彤', sid:'S2023', no:4, g:'support'},{n:'費俊安', sid:'S2024', no:24, g:'support'},{n:'梁子瑤', sid:'S3054', no:19, g:'core'},{n:'吳嘉樂', sid:'S3055', no:6, g:'core'},{n:'鄭嘉睿', sid:'S3056', no:32, g:'core'},{n:'袁子文', sid:'S3057', no:14, g:'core'},{n:'黃雅晴', sid:'S3058', no:25, g:'core'},{n:'潘雅雯', sid:'S3059', no:27, g:'core'},{n:'孔子傲', sid:'S3060', no:5, g:'core'},{n:'潘曉希', sid:'S3061', no:28, g:'core'},{n:'蔡天佑', sid:'S3062', no:29, g:'core'},{n:'沈子謙', sid:'S3063', no:7, g:'core'},{n:'袁嘉諾', sid:'S3064', no:17, g:'core'},{n:'許俊皓', sid:'S3065', no:22, g:'core'},{n:'鄭文昊', sid:'S3066', no:31, g:'core'},{n:'柯浩澤', sid:'S3067', no:12, g:'core'},{n:'譚詩慧', sid:'S3068', no:35, g:'core'},{n:'尹嘉諾', sid:'S3069', no:3, g:'core'},{n:'梁嘉怡', sid:'S3070', no:20, g:'core'},{n:'徐浩賢', sid:'S3071', no:13, g:'core'},{n:'董浩澤', sid:'S3072', no:26, g:'core'},{n:'譚子傲', sid:'S3073', no:33, g:'core'},{n:'周嘉朗', sid:'S3074', no:9, g:'core'},{n:'許天恩', sid:'S3075', no:21, g:'support'},{n:'邵詩珩', sid:'S3076', no:10, g:'support'},{n:'尹浩軒', sid:'S3077', no:2, g:'support'},{n:'阮俊賢', sid:'S3078', no:8, g:'support'},{n:'尹子謹', sid:'S3079', no:1, g:'support'},{n:'袁詠芝', sid:'S3080', no:16, g:'support'},{n:'蔡嘉怡', sid:'S3081', no:30, g:'support'},
     ],
   },
 };
@@ -130,7 +124,7 @@ const STUDENT_INTAKE_REQUESTS = [
   {id:'sir0', name:'黎曉盈', suggestedClassId:'1a', hkid:'4471', contact:'9821 3345', sen:'', requestedBy:'何主任', status:'pending'},
 ];
 const TEACHER_STATUS_REQUESTS = [
-  {id:'tsr0', teacherName:'李老師', newStatus:'departed', requestedBy:'何主任', status:'pending'},
+  {id:'tsr0', teacherId:'T1003', newStatus:'departed', requestedBy:'何主任', status:'pending'},
 ];
 
 /* Students whose identity 曾主任 has approved/created, but who have not yet
@@ -175,21 +169,40 @@ function subjectName(id){ const s = SUBJECTS.find(x=>x.id===id); return s ? s.na
  * record — a "role" is a property of an existing identity, not a separate
  * account type, so this doesn't reopen the identity/organization conflation
  * fixed earlier this session. */
+/* Full name + teacherId added 2026-07-27, per Eric: surname+title (陳老師/黃老師/
+ * 李老師/李主任/...) was being used as the de facto identity key everywhere
+ * (assignments, study groups, vendor grants/pending, trials) — and Chinese
+ * surnames collide easily (李老師 vs 李主任 are BOTH surname 李, distinguishable
+ * only by title, which breaks down the moment two people share both surname
+ * AND role). This is the same fix already applied to students (sid, added
+ * 2026-07-22) — `id` is the stable join key everywhere a teacher is
+ * referenced; `name` is now a real given name, not surname+title, so it reads
+ * unambiguously in prose without needing the id alongside it. teacherLabel()
+ * additionally appends the id for admin contexts (教師名冊, 任教編配) where a
+ * defendable identifier matters more than natural phrasing. */
 const TEACHERS = [
-  {name:'陳老師', subjectId:'chi', contact:'chan.teacher@school.edu.hk', status:'active', roles:['classroom_teacher']},
-  {name:'黃老師', subjectId:'chi', contact:'wong.teacher@school.edu.hk', status:'active', roles:['classroom_teacher']},
-  {name:'李老師', subjectId:'chi', contact:'li.teacher@school.edu.hk', status:'leave', roles:['classroom_teacher']},
-  {name:'馬老師', subjectId:'ls', contact:'ma.teacher@school.edu.hk', status:'departed', roles:['classroom_teacher']},
+  {id:'T1001', name:'陳凱怡', subjectId:'chi', contact:'chan.teacher@school.edu.hk', status:'active', roles:['classroom_teacher']},
+  {id:'T1002', name:'黃穎詩', subjectId:'chi', contact:'wong.teacher@school.edu.hk', status:'active', roles:['classroom_teacher']},
+  {id:'T1003', name:'李慧敏', subjectId:'chi', contact:'li.teacher@school.edu.hk', status:'leave', roles:['classroom_teacher']},
+  {id:'T1004', name:'馬啟賢', subjectId:'ls', contact:'ma.teacher@school.edu.hk', status:'departed', roles:['classroom_teacher']},
   /* 李主任 previously existed only as a static, unmanaged persona in dept.html's
    * topbar — never an actual roster entry, so there was nowhere to demonstrate
    * that his subject-wide visibility could be a scoped role rather than full
-   * admin. Added here so the fix has a real record to point at. */
-  {name:'李主任', subjectId:'chi', contact:'lee.panelhead@school.edu.hk', status:'active', roles:['classroom_teacher','subject_panel_head']},
+   * admin. Added here so the fix has a real record to point at. Deliberately
+   * shares a surname with T1003 (李慧敏) — this is the exact collision case
+   * the id/full-name fix above exists to resolve, not an oversight. */
+  {id:'T1005', name:'李天佑', subjectId:'chi', contact:'lee.panelhead@school.edu.hk', status:'active', roles:['classroom_teacher','subject_panel_head']},
   /* New example teacher so sen_coordinator has a concrete holder to demonstrate
    * against too, not just a role that exists in name only. */
-  {name:'梁老師', subjectId:'ls', contact:'leung.teacher@school.edu.hk', status:'active', roles:['classroom_teacher','sen_coordinator']},
+  {id:'T1006', name:'梁凱晴', subjectId:'ls', contact:'leung.teacher@school.edu.hk', status:'active', roles:['classroom_teacher','sen_coordinator']},
 ];
 function activeTeachers(){ return TEACHERS.filter(t=>t.status==='active'); }
+function teacherById(id){ return TEACHERS.find(t=>t.id===id); }
+function teacherName(id){ const t = teacherById(id); return t ? t.name : id; }
+/* Full name + id, e.g. "陳凱怡（T1001）" — use in admin/record contexts
+ * (教師名冊, 任教編配) where a defendable identifier matters; use teacherName()
+ * alone in ordinary prose/cards, where the given name is already unambiguous. */
+function teacherLabel(id){ const t = teacherById(id); return t ? t.name+'（'+t.id+'）' : id; }
 
 /* Role definitions — the near-term fix confirmed for Story 3: a FIXED set of
  * named roles, not open-ended custom roles (that's explicitly flagged as
@@ -271,7 +284,7 @@ function membershipDrift(entry){
  * open-ended. */
 const STUDY_GROUPS = [
   {id:'sg1', name:'跨班閱讀圈', goal:'從兩班中挑選閱讀能力相近的學生，六星期的共讀單元，不跟班別走。',
-   teacher:'陳老師', color:'var(--ec-teal)', expiresAt:'2026-09-05',
+   teacherId:'T1001', color:'var(--ec-teal)', expiresAt:'2026-09-05',
    memberRefs:[
      {classId:'2b', name:'王思穎'}, {classId:'2b', name:'林一心'}, {classId:'2b', name:'徐朗'},
      {classId:'1c', name:'馬顯宗'}, {classId:'1c', name:'蘇文樂'},
@@ -320,23 +333,23 @@ const VENDORS = [
     id:'zhixie', name:'智寫科技', product:'寫作回饋工具',
     vetting:{status:'certified', label:'✓ 已通過基準認證', note:'合規閘 5/5 通過（見供應商審核 vetting.html）'},
     grants:[
-      {group:'增潤組（3 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗'], headcount:3, teacher:'陳老師', tier:'Tier 1 · 基本資料', since:'2026-06-20'},
+      {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20'},
     ],
     pending:[
-      {id:'r1', teacher:'陳老師', group:'支援組（2 人）· 中二乙班', classId:'2b', groupId:'support', memberSnapshot:['李俊希','鄭家朗'], headcount:2, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
-      {id:'r2', teacher:'黃老師', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
+      {id:'r1', teacherId:'T1001', group:'支援組（6 人）· 中二乙班', classId:'2b', groupId:'support', memberSnapshot:['李俊希','鄭家朗','何嘉睿','沈詩妍','施詠芝','范俊希'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
+      {id:'r2', teacherId:'T1002', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
     ],
   },
   {
     id:'diandu', name:'點讀教育', product:'中文分級閱讀庫',
     vetting:{status:'certified', label:'✓ 已通過基準認證', note:'合規閘 5/5 通過'},
     grants:[
-      {group:'全班 · 中一甲班', classId:null, groupId:null, memberSnapshot:null, headcount:32, teacher:'黃老師', tier:'Tier 1 · 基本資料', since:'2026-07-15'},
+      {group:'全班 · 中一甲班', classId:null, groupId:null, memberSnapshot:null, headcount:35, teacherId:'T1002', tier:'Tier 1 · 基本資料', since:'2026-07-15'},
     ],
-    /* Second-class example: 陳老師 also teaches 中一丙班, and has a request pending
+    /* Second-class example: 陳凱怡老師 also teaches 中一丙班, and has a request pending
      * there — this is what makes multi-class support real rather than cosmetic. */
     pending:[
-      {id:'r4', teacher:'陳老師', group:'核心組（4 人）· 中一丙班', classId:'1c', groupId:'core', memberSnapshot:['馬顯宗','蘇文樂','鄧凱兒','黎子軒'], headcount:4, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
+      {id:'r4', teacherId:'T1001', group:'核心組（4 人）· 中一丙班', classId:'1c', groupId:'core', memberSnapshot:['馬顯宗','蘇文樂','鄧凱兒','黎子軒'], headcount:4, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
     ],
   },
   {
@@ -344,7 +357,7 @@ const VENDORS = [
     vetting:{status:'none', label:'⚠ 尚未提交供應商審核', note:'未見於供應商審核佇列（vetting.html），按管治規則，任何層級都不應在此核准，須先完成合規閘'},
     grants:[],
     pending:[
-      {id:'r3', teacher:'黃老師', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
+      {id:'r3', teacherId:'T1002', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
     ],
   },
 ];
@@ -373,18 +386,18 @@ const VENDORS = [
  * A decline at either stage sets declinedBy, a reason, and a cooldownUntil date;
  * during the cooldown the same vendor cannot re-pitch the same class+group. */
 const TRIALS = [
-  {id:'t1', vendor:'點讀教育', vendorId:'diandu', teacher:'陳老師', classId:'2b', groupId:'stretch', group:'增潤組（3 人）· 中二乙班', headcount:3,
+  {id:'t1', vendor:'點讀教育', vendorId:'diandu', teacherId:'T1001', classId:'2b', groupId:'stretch', group:'增潤組（3 人）· 中二乙班', headcount:3,
    tool:'中文分級閱讀庫 · 進階版試用', status:'pending_it', expiresAt:'2026-08-04', origin:'vendor',
    declineReason:null, cooldownUntil:null, declinedBy:null},
-  {id:'t2', vendor:'語音通 AI', vendorId:null, teacher:'黃老師', classId:'2b', groupId:'core', group:'核心組（5 人）· 中二乙班', headcount:5,
+  {id:'t2', vendor:'語音通 AI', vendorId:null, teacherId:'T1002', classId:'2b', groupId:'core', group:'核心組（5 人）· 中二乙班', headcount:5,
    tool:'AI 朗讀評測（試用版）', status:'declined', expiresAt:null, origin:'vendor',
    declineReason:'試用期內評語準確度不足，未能分辨聲調錯誤與地道口音差異。', cooldownUntil:'2026-11-05', declinedBy:'it'},
-  {id:'t3', vendor:'智寫科技', vendorId:'zhixie', teacher:'陳老師', classId:'2b', groupId:'support', group:'支援組（2 人）· 中二乙班', headcount:2,
+  {id:'t3', vendor:'智寫科技', vendorId:'zhixie', teacherId:'T1001', classId:'2b', groupId:'support', group:'支援組（2 人）· 中二乙班', headcount:2,
    tool:'AI 詞彙診斷追蹤（試用版）', status:'awaiting_teacher', expiresAt:null, origin:'vendor',
    declineReason:null, cooldownUntil:null, declinedBy:null},
   /* Second-class example, so trial-invites.html's class-switcher has something
    * real to show under 中一丙班 too. */
-  {id:'t4', vendor:'點讀教育', vendorId:'diandu', teacher:'陳老師', classId:'1c', groupId:'support', group:'支援組（2 人）· 中一丙班', headcount:2,
+  {id:'t4', vendor:'點讀教育', vendorId:'diandu', teacherId:'T1001', classId:'1c', groupId:'support', group:'支援組（2 人）· 中一丙班', headcount:2,
    tool:'中文分級閱讀庫 · 入門版試用', status:'awaiting_teacher', expiresAt:null, origin:'vendor',
    declineReason:null, cooldownUntil:null, declinedBy:null},
 ];
@@ -423,7 +436,7 @@ function scopeOverlapNote(vendorId, classId, groupId){
  * commercial contract with the school), not per-class, so usage sums grants
  * across ALL classes for that vendor — no classId parameter needed here. */
 const VENDOR_PLANS = {
-  zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:7,   renewal:'2026-09-30'},
+  zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  renewal:'2026-09-30'},
   diandu:  {plan:'Standard 方案', teacherCap:8, studentCap:40,  renewal:'2026-08-15'},
 };
 
@@ -431,7 +444,7 @@ const VENDOR_PLANS = {
 function vendorUsage(vendorId){
   const v = VENDORS.find(x=>x.id===vendorId);
   if(!v) return {teachers:0, students:0};
-  const teacherSet = new Set(v.grants.map(g=>g.teacher));
+  const teacherSet = new Set(v.grants.map(g=>g.teacherId));
   const students = v.grants.reduce((sum,g)=>sum+g.headcount, 0);
   return {teachers:teacherSet.size, students};
 }

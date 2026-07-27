@@ -286,8 +286,8 @@ function showTab(name){
 }
 
 const AUDIT = [
-  {ic:'✓', text:'馮 Sir 批准黃老師使用點讀教育（中一甲班全班），釋放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
-  {ic:'✓', text:'馮 Sir 批准陳老師使用智寫科技（增潤組），釋放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
+  {ic:'✓', text:'馮 Sir 批准黃穎詩老師使用點讀教育（中一甲班全班），釋放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
+  {ic:'✓', text:'馮 Sir 批准陳凱怡老師使用智寫科技（增潤組），釋放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
   {ic:'✕', text:'馮 Sir 拒絕釋放表現數據予校外研究機構（Tier 3 尚未開放）', time:'2026-06-02'},
 ];
 
@@ -341,7 +341,7 @@ function renderVendors(){
           return `<div class="req" id="req-${v.id}-${r.id}">
             <div class="r-head">
               <div class="req-context">
-                <span class="actor"><span class="ic">${r.teacher[0]}</span>${r.teacher}</span>
+                <span class="actor"><span class="ic">${teacherName(r.teacherId)[0]}</span>${teacherName(r.teacherId)}</span>
                 <span class="verb">申請使用 →</span>
                 <span class="tool-target">${v.name}</span>
                 <small>${r.src}</small>
@@ -400,14 +400,14 @@ function renderTrials(){
 
   document.getElementById('trialList').innerHTML = visible.map(t=>{
     let badges = t.origin==='teacher'
-      ? `<span class="tchip src">老師發起 · ${t.teacher}</span>`
-      : `<span class="tchip src">供應商發起 · ${t.teacher}已確認</span>`;
+      ? `<span class="tchip src">老師發起 · ${teacherName(t.teacherId)}</span>`
+      : `<span class="tchip src">供應商發起 · ${teacherName(t.teacherId)}已確認</span>`;
     if(t.status==='pending_it') badges += `<span class="tchip pending">⏳ 待你確認</span>`;
     if(t.status==='active') badges += `<span class="tchip active">✓ 試用中 · 至 ${t.expiresAt}</span>`;
     if(t.status==='declined') badges += `<span class="tchip declined">✕ 已拒絕${t.declinedBy==='teacher'?'（由老師拒絕）':''}</span>`;
     if(t.status==='graduated') badges += `<span class="tchip active">🎓 已轉為正式申請</span>`;
 
-    let body = `<div class="t-body"><b>${t.group}</b> 的學生資料，供 ${t.teacher} 試用 Tier 1 · 基本資料`;
+    let body = `<div class="t-body"><b>${t.group}</b> 的學生資料，供 ${teacherName(t.teacherId)} 試用 Tier 1 · 基本資料`;
     if(t.status==='active') body += `（進行中，至 ${t.expiresAt}）`;
     body += `。`;
     if(t.status==='declined'){
@@ -423,7 +423,7 @@ function renderTrials(){
       </div>`;
     } else if(t.status==='active'){
       foot = `<div class="t-foot">
-        <span class="cd-note">試用期滿後，如${t.teacher}認為值得繼續，可直接轉為正式申請，不必重新填寫。</span>
+        <span class="cd-note">試用期滿後，如${teacherName(t.teacherId)}認為值得繼續，可直接轉為正式申請，不必重新填寫。</span>
         <button class="act" onclick="graduateTrial('${t.id}')">🎓 轉為正式申請</button>
       </div>`;
     } else if(t.status==='declined'){
@@ -476,10 +476,10 @@ function graduateTrial(id){
   const t = TRIALS.find(x=>x.id===id);
   if(!t.vendorId){ toast('此供應商尚未建立正式關係，須先建立供應商檔案'); return; }
   const v = VENDORS.find(x=>x.id===t.vendorId);
-  v.pending.push({id:'g-'+t.id, teacher:t.teacher, group:t.group, headcount:t.headcount,
+  v.pending.push({id:'g-'+t.id, teacherId:t.teacherId, group:t.group, headcount:t.headcount,
     src:'由試用轉為正式申請', status:'pending', _pickedTier:null});
   t.status='graduated';
-  AUDIT.unshift({ic:'🎓', text:t.teacher+'的'+t.vendor+'試用轉為正式申請（'+t.group+'）', time:'2026-07-21'});
+  AUDIT.unshift({ic:'🎓', text:teacherName(t.teacherId)+'的'+t.vendor+'試用轉為正式申請（'+t.group+'）', time:'2026-07-21'});
   renderVendors(); renderTrials(); renderAudit();
   toast('已轉為正式申請，請到「供應商關係」分頁選定資料層級');
 }
@@ -510,15 +510,15 @@ function approve(vendorId, reqId){
   if(v.vetting.status!=='certified'){ toast('此供應商尚未通過供應商審核，不能核准'); return; }
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
   r.status='approved'; r.tier=r._pickedTier;
-  v.grants.push({group:r.group, headcount:r.headcount, teacher:r.teacher, tier:r.tier, since:'2026-07-21'});
-  AUDIT.unshift({ic:'✓', text:'馮 Sir 批准'+r.teacher+'使用'+v.name+'（'+r.group+'），釋放'+r.tier+'予'+v.name, time:'2026-07-21'});
+  v.grants.push({group:r.group, headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});
+  AUDIT.unshift({ic:'✓', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），釋放'+r.tier+'予'+v.name, time:'2026-07-21'});
   renderVendors(); renderAudit();
   toast('已核准：釋放'+r.tier+'予'+v.name);
 }
 function deny(vendorId, reqId){
   const {v, r} = findReq(vendorId, reqId);
   r.status='denied';
-  AUDIT.unshift({ic:'✕', text:'馮 Sir 拒絕「'+r.teacher+' · '+r.group+'」使用'+v.name+'的請求', time:'2026-07-21'});
+  AUDIT.unshift({ic:'✕', text:'馮 Sir 拒絕「'+teacherName(r.teacherId)+' · '+r.group+'」使用'+v.name+'的請求', time:'2026-07-21'});
   renderVendors(); renderAudit();
   toast('已拒絕：'+v.name);
 }

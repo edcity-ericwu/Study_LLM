@@ -66,6 +66,19 @@
   .req.capacity .ic{background:#fdf6ec;}
   .req.capacity .scope{color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
 
+  .req.done .ic{background:#e6f7ef;}
+  .req.reminded .ic{background:#f1edfb;}
+  .preview-mock{background:#f7f9fb;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;}
+  .preview-mock .pm-label{font-size:.68rem;color:var(--ink-3);display:block;margin-bottom:6px;}
+  .pm-tool{display:flex;align-items:center;gap:9px;font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px;}
+  .pm-tool b{font-size:.82rem;}
+  .pm-tool span{display:block;font-size:.66rem;color:var(--ink-3);font-weight:400;margin-top:1px;}
+  .detail-block{margin-top:10px;background:#f7f9fb;border-radius:10px;padding:10px 14px;width:100%;}
+  .detail-row{display:flex;gap:10px;font-size:.76rem;padding:5px 0;border-bottom:1px solid var(--line);}
+  .detail-row:last-child{border-bottom:none;}
+  .detail-row span:first-child{width:110px;flex-shrink:0;color:var(--ink-3);}
+  .detail-row span:last-child{color:var(--ink);}
+
   .plan-zone{background:#f7f9fb;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:28px;}
   .plan-zone h2{margin-top:0;}
   .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:14px;}
@@ -148,19 +161,27 @@
   </div>
 
   <section class="tab-pane active" data-pane="pending">
-    <div class="req direct">
+    <div class="req direct" id="directTrialCard">
       <div class="ic">🧑‍🏫</div>
       <div class="body">
         <b>兩位中文科教師申請試用「智寫」寫作回饋工具</b>
-        <p>陳老師、黃老師 · 個人試用性質，非科組承諾。按管治規則，小規模試用<b>可直接批出</b>，毋須科主任評估。</p>
+        <p>陳凱怡老師、黃穎詩老師 · 個人試用性質，非科組承諾。按管治規則，小規模試用<b>可直接批出</b>，毋須科主任評估。</p>
         <span class="scope">✓ 小規模試用 · 可直接批出</span>
+        <div class="detail-block" id="directTrialDetail" style="display:none;">
+          <div class="detail-row"><span>申請人</span><span>陳凱怡老師、黃穎詩老師（中文科）</span></div>
+          <div class="detail-row"><span>工具</span><span>智寫科技 · 寫作回饋工具</span></div>
+          <div class="detail-row"><span>申請性質</span><span>個別教師試用，非科組承諾</span></div>
+          <div class="detail-row"><span>擬批層級</span><span>Tier 1 · 基本資料（試用預設層級，不屬於資料存取審批的個別核准範圍）</span></div>
+          <div class="detail-row"><span>來源</span><span>教師於 AI 工具介面自行申請試用</span></div>
+          <div class="detail-row"><span>提交日期</span><span>2026-07-24</span></div>
+        </div>
       </div>
       <div class="btns">
         <button class="btn" id="grantBtn" onclick="grant(this)">批出（限 2 人）</button>
-        <button class="btn ghost" onclick="toast('原型示範：查看申請詳情')">詳情</button>
+        <button class="btn ghost" id="detailBtn" onclick="toggleDetail()">詳情</button>
       </div>
     </div>
-    <div class="req gated">
+    <div class="req gated" id="deptTrialCard">
       <div class="ic">🏫</div>
       <div class="body">
         <b>中文科申請全科採用「智寫」寫作回饋工具</b>
@@ -169,7 +190,7 @@
       </div>
       <div class="btns">
         <button class="btn" disabled>批出</button>
-        <button class="btn ghost" onclick="toast('原型示範：提醒科主任完成評估')">催辦</button>
+        <button class="btn ghost" onclick="remindPanelHead(this)">催辦</button>
       </div>
     </div>
     <div id="capacityAlerts"></div>
@@ -276,13 +297,13 @@ function renderCapacityAlerts(){
         alerts.push(`<div class="req capacity">
           <div class="ic">📊</div>
           <div class="body">
-            <b>${req.teacher}為${req.group}申請「${v.name}」${v.product}</b>
+            <b>${teacherName(req.teacherId)}為${req.group}申請「${v.name}」${v.product}</b>
             <p>「${v.name}」${check.plan.plan}的學生名額目前用去 ${check.usage.students} / ${check.plan.studentCap} 個，批出這個請求需要另加 ${req.headcount} 個，會超出上限 ${check.overBy} 個。這是<b>方案容量</b>的決定，不是資料存取層級的決定，所以在進入供應商資料存取審批前，先由此攔截。</p>
             <span class="scope">⚠ 超出方案名額 ${check.overBy} 個 · 需要方案決定</span>
           </div>
           <div class="btns">
             <button class="btn" onclick="toast('原型示範：升級「${v.name}」方案並批出請求')">升級方案並批出</button>
-            <button class="btn ghost" onclick="toast('原型示範：婉拒，並請${req.teacher}於 ${check.plan.renewal} 續期後重新申請')">婉拒</button>
+            <button class="btn ghost" onclick="toast('原型示範：婉拒，並請${teacherName(req.teacherId)}於 ${check.plan.renewal} 續期後重新申請')">婉拒</button>
           </div>
         </div>`);
       }
@@ -302,11 +323,56 @@ function showTab(name){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
 }
 
+/* "Next-step" screens added 2026-07-27, per Eric: every action on this page
+ * used to be a toast()-only stub — clicking 批出/催辦/詳情 had no real result
+ * to look at, so there was no way to see what actually happens next. These
+ * three replace/expand the card in place with the concrete outcome, instead
+ * of just acknowledging the click. Still illustrative (this prototype has no
+ * real backend), but the copy is honest about what's simulated vs. what a
+ * real system would do — e.g. 催辦 doesn't pretend to unlock 批出 on this
+ * page, since that state genuinely lives on dept-trial-evaluations.html and
+ * this page has no live link to it (same "each page is self-contained,
+ * cross-page continuity is a link/note, not fake synced state" convention
+ * already used between dept-trial-evaluations.html and this page). */
 function grant(btn){
-  btn.textContent='已批出 ✓';btn.disabled=true;
+  const card = document.getElementById('directTrialCard');
+  card.className = 'req done';
+  card.innerHTML = `
+    <div class="ic">✅</div>
+    <div class="body">
+      <b>已批出：陳凱怡老師、黃穎詩老師 · 智寫 寫作回饋工具（個人試用）</b>
+      <p>生效層級：Tier 1 · 基本資料（小規模試用預設層級，不涉及全班／全科規模存取，毋須經供應商資料存取審批個別核准）。生效日期：即日起。</p>
+      <div class="preview-mock">
+        <span class="pm-label">教師介面現在會顯示：</span>
+        <div class="pm-tool">🖊 <div><b>寫作回饋工具</b><span>智寫科技 · 校方已採購 · 個人試用</span></div></div>
+      </div>
+      <p class="note-row">🔐 此批出只決定「用不用這件工具」；若日後試用擴展至整組學生，資料存取層級須另經<a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a>個別審批。</p>
+    </div>`;
   toast('已批出試用權限 · 工具將自動出現在兩位教師的介面');
   const countEl = document.getElementById('pendingCount');
   countEl.textContent = Math.max(0, parseInt(countEl.textContent||'0',10)-1);
+}
+function toggleDetail(){
+  const d = document.getElementById('directTrialDetail');
+  const btn = document.getElementById('detailBtn');
+  const showing = d.style.display !== 'none';
+  d.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? '詳情' : '收合詳情';
+}
+function remindPanelHead(btn){
+  const card = document.getElementById('deptTrialCard');
+  card.className = 'req reminded';
+  card.innerHTML = `
+    <div class="ic">🔔</div>
+    <div class="body">
+      <b>已提醒李天佑主任完成「智寫」寫作回饋工具的科組試用評估</b>
+      <p>提醒已送出（示意）。李天佑主任會在<a href="dept-trial-evaluations.html" style="color:var(--ec-blue-dark);font-weight:700;">工具試用評估</a>開始一週實測評估；評估通過並提交建議後，全科採用的批出按鈕才會在此處解鎖——這是另一頁的獨立狀態，本頁不會自動偵測到評估完成，須你之後回來查看。</p>
+      <span class="scope">⏳ 待科主任評估建議 · 暫不能批出</span>
+    </div>
+    <div class="btns">
+      <button class="btn ghost" onclick="location.href='dept-trial-evaluations.html'">前往工具試用評估 →</button>
+    </div>`;
+  toast('已提醒李天佑主任開始評估');
 }
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}

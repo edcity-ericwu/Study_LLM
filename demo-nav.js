@@ -25,7 +25,7 @@ const CSS = `
  * disk — just not listed here for this walkthrough). See feature-flags.js for
  * what each flag covers and why. */
 const PAGES = [
-  {group:'👩‍🏫 教師（陳老師）', items:[
+  {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['index.html','AI 工具首頁',''],
     ['chat.html','AI 對話（科目助理）',''],
     ['agents.html','Apps／代理庫',''],
@@ -37,7 +37,7 @@ const PAGES = [
     ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
     ['insights.html','班級學習面貌（核心價值，含多班切換）','r'],
   ]},
-  {group:'📈 科主任（李主任）', items:[
+  {group:'📈 科主任（李天佑主任）', items:[
     ['dept.html','科組統計視圖','y','subjectPanelView'],
     ['dept-trial-evaluations.html','工具試用評估','y','toolTrial'],
   ]},

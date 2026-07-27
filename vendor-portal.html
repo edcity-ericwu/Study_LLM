@@ -181,7 +181,7 @@
       <h3>邀請老師試用工具</h3>
       <div class="sub" style="margin:0 0 14px;">你必須已經和該老師接觸過（如電郵、電話、學校活動）才能發出邀請——這不是繞過學校的資料查詢，而是為既有接洽補一個正式起點。老師確認後，邀請會交由資訊科技統籌核實試用時限與資料層級，才會正式開始；試用固定為 Tier 1 · 基本資料，最長 14 天。</div>
       <div class="invite-form">
-        <label>老師姓名<input type="text" id="inv-teacher" value="陳老師"></label>
+        <label>老師<select id="inv-teacher"></select></label>
         <label>班別<select id="inv-class" onchange="populateGroupSelect()"></select></label>
         <label>組別範圍<select id="inv-group"></select></label>
         <label>試用工具／方案名稱<input type="text" id="inv-tool" placeholder="例如：寫作回饋工具 · 進階版試用"></label>
@@ -224,13 +224,17 @@ function resubmit(btn){btn.textContent='已上傳 · 待覆核 ✓';btn.disabled
 /* This vendor persona is 智寫科技 (zhixie). Trials created here are pushed into the
  * SHARED TRIALS array from vendor-data.js — the same array trial-invites.html (teacher
  * confirm) and eddata-console.html (IT confirm) read from — so an invite sent here
- * actually appears on 陳老師's screen, closing the loop that was previously just asserted. */
+ * actually appears on the invited teacher's screen, closing the loop that was previously just asserted. */
 const MY_VENDOR_ID = 'zhixie';
 const MY_VENDOR_NAME = '智寫科技';
 
 function populateClassSelect(){
   const sel = document.getElementById('inv-class');
   sel.innerHTML = CLASS_LIST.map(c=>`<option value="${c.id}">${c.className}（${c.subjectLabel}）</option>`).join('');
+}
+function populateTeacherSelect(){
+  const sel = document.getElementById('inv-teacher');
+  sel.innerHTML = activeTeachers().map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
 }
 function populateGroupSelect(){
   const classId = document.getElementById('inv-class').value;
@@ -249,7 +253,7 @@ function renderInvites(){
   document.getElementById('inviteList').innerHTML = mine.length ? mine.map(t=>`
     <div class="invite-row">
       <div class="i-body">
-        <b>${t.teacher} · ${t.group}</b>
+        <b>${teacherName(t.teacherId)} · ${t.group}</b>
         <small>${t.tool}${t.status==='declined' ? ' · '+t.declineReason : ''}${t.cooldownUntil ? '（冷靜期至 '+t.cooldownUntil+'，此組別在此之前不能再次邀請）' : ''}</small>
       </div>
       <span class="invite-chip ${t.status}">${inviteStatusLabel(t.status)}</span>
@@ -264,7 +268,7 @@ function showTab(name){
 }
 
 function sendInvite(){
-  const teacher = document.getElementById('inv-teacher').value.trim() || '陳老師';
+  const teacherId = document.getElementById('inv-teacher').value;
   const classId = document.getElementById('inv-class').value;
   const groupId = document.getElementById('inv-group').value;
   const tool = document.getElementById('inv-tool').value.trim() || MY_VENDOR_NAME+' · 試用';
@@ -288,16 +292,17 @@ function sendInvite(){
 
   const headcount = groupId==='__whole_class__' ? wholeClassMembers(classId).length : groupHeadcount(classId, groupId);
   TRIALS.push({
-    id:'v-'+Date.now(), vendor:MY_VENDOR_NAME, vendorId:MY_VENDOR_ID, teacher, classId, groupId, group:groupText, headcount,
+    id:'v-'+Date.now(), vendor:MY_VENDOR_NAME, vendorId:MY_VENDOR_ID, teacherId, classId, groupId, group:groupText, headcount,
     tool, status:'awaiting_teacher', expiresAt:null, declineReason:null, cooldownUntil:null, declinedBy:null,
   });
   renderInvites();
   document.getElementById('inv-tool').value = '';
-  toast('已發出邀請 · 待'+teacher+'在「試用邀請」確認');
+  toast('已發出邀請 · 待'+teacherName(teacherId)+'在「試用邀請」確認');
 }
 
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
+populateTeacherSelect();
 populateClassSelect();
 populateGroupSelect();
 renderInvites();

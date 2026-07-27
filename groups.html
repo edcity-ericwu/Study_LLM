@@ -66,16 +66,17 @@
   .col .c-goal{font-size:.68rem;color:var(--ink-3);margin-bottom:10px;line-height:1.5;}
   .stu{
     display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;
-    padding:7px 10px;font-size:.78rem;margin-bottom:6px;cursor:pointer;background:#fafcfd;
+    padding:7px 10px;font-size:.78rem;margin-bottom:6px;background:#fafcfd;
   }
-  .stu:hover{border-color:var(--ec-blue);}
   .stu[draggable=true]{cursor:grab;}
+  .stu[draggable=true]:hover{border-color:var(--ec-blue);}
   .stu.dragging{opacity:.4;}
   .col.dragover{border-color:var(--ec-blue);box-shadow:0 0 0 2px #c4e5f5;background:#f7fbfe;}
   .stu .av{width:22px;height:22px;border-radius:50%;background:#e6f4fb;color:var(--ec-blue-dark);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0;}
-  .stu .mv{margin-left:auto;font-size:.62rem;color:var(--ink-3);}
+  .stu .no{color:var(--ink-3);font-size:.68rem;font-variant-numeric:tabular-nums;flex-shrink:0;}
   .stu.left{opacity:.45;text-decoration:line-through;cursor:default;}
-  .stu.left .mv{display:none;}
+  .board-search{border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:.78rem;font-family:inherit;min-width:200px;}
+  .col .stu-empty{font-size:.72rem;color:var(--ink-3);padding:10px 0;text-align:center;}
   .col .assign{
     width:100%;margin-top:8px;border:1px dashed var(--line);background:transparent;border-radius:9px;
     padding:8px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
@@ -121,9 +122,16 @@
   .sg-create{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:16px 18px;margin-top:12px;}
   .sg-create input[type=text]{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:.8rem;font-family:inherit;margin-bottom:8px;}
   .sg-create .sg-pick-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .sg-pick-col{flex:1;min-width:180px;border:1px solid var(--line);border-radius:9px;padding:9px;}
-  .sg-pick-col h6{font-size:.68rem;color:var(--ink-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+  .sg-pick-col{flex:1;min-width:200px;border:1px solid var(--line);border-radius:9px;padding:9px;}
+  .sg-pick-col h6{font-size:.68rem;color:var(--ink-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:4px;}
+  .sg-pick-col h6 .sg-pick-sel{color:var(--ec-teal);text-transform:none;letter-spacing:0;font-weight:600;}
+  .sg-pick-search{width:100%;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:.74rem;font-family:inherit;margin-bottom:6px;box-sizing:border-box;}
+  .sg-pick-gfilter{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px;}
+  .sg-pick-gchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 9px;font-size:.68rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .sg-pick-gchip.on{background:var(--ec-teal);border-color:var(--ec-teal);color:#fff;}
+  .sg-pick-list{max-height:200px;overflow-y:auto;}
   .sg-pick-opt{display:flex;align-items:center;gap:6px;font-size:.76rem;padding:3px 0;}
+  .sg-pick-no{display:inline-block;min-width:20px;color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:.7rem;}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
   .toast.show{opacity:.94;}
@@ -159,7 +167,7 @@
   </nav>
   <div class="user">
     <div class="avatar">陳</div>
-    <div class="meta"><b>陳老師</b><span>中文科</span></div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
   </div>
 </aside>
 
@@ -179,7 +187,8 @@
 
   <div class="toolbar">
     <button class="btn" onclick="toast('原型示範：建立新分組')">＋ 新增分組</button>
-    <span class="hint-move">提示：拖放學生到另一組，或點按移至下一組</span>
+    <input type="text" class="board-search" id="boardSearchInput" placeholder="搜尋姓名或班號" oninput="onBoardSearch(this)">
+    <span class="hint-move">提示：拖放學生到另一組</span>
   </div>
 
   <div class="board" id="board"></div>
@@ -233,23 +242,45 @@ function toggleClassMenu(){ document.getElementById('classMenu').classList.toggl
 function switchClass(classId){
   activeClassId = classId;
   document.getElementById('classMenu').classList.remove('show');
+  boardSearch = '';
+  document.getElementById('boardSearchInput').value = '';
   renderClassSwitcher();
   render();
   toast('已切換至 '+CLASSES[classId].className);
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) document.getElementById('classMenu').classList.remove('show'); });
 
+/* Search added 2026-07-27: classes are now ~35 students, split across 3
+ * columns (e.g. 核心組 alone can hold 19+) — scanning a flat list to find one
+ * student, or to safely drag the right one, is exactly the mistake-prone
+ * scenario Eric flagged. Search narrows each column to matching students by
+ * name or 班號 (class seat number, shown on every row so a name collision
+ * like 陳嘉欣 is never the only way to tell students apart); sorting by 班號
+ * keeps each column in the same order the teacher already uses for a seating
+ * chart / attendance list, rather than raw insertion order. The header count
+ * always reflects the FULL group membership, not the filtered view, so
+ * narrowing the list to search never reads as the group having changed. */
+let boardSearch = '';
+function onBoardSearch(input){
+  boardSearch = input.value;
+  render();
+}
 function render(){
   const c = CLASSES[activeClassId];
+  const q = boardSearch.trim();
   document.getElementById('board').innerHTML = c.groups.map((grp)=>{
     const members = c.students.filter(s=>s.g===grp.id);
     const active = members.filter(s=>!s.left).length;
+    let visible = members;
+    if(q) visible = visible.filter(s=>s.n.includes(q) || String(s.no).includes(q) || (/^\d+$/.test(q) && s.no===parseInt(q,10)));
+    visible = visible.slice().sort((a,b)=>(a.no||0)-(b.no||0));
+    const rowsHtml = visible.map(s=>`<div class="stu ${s.left?'left':''}" ${s.left?'':'draggable="true" ondragstart="dragStu(event,\''+s.n+'\')" ondragend="this.classList.remove(\'dragging\')"'}>
+        <span class="av">${s.n[0]}</span><span class="no">${s.no!=null?String(s.no).padStart(2,'0'):''}</span>${s.n}${s.left?'（已轉班 · 自動退出）':''}
+      </div>`).join('');
     return `<div class="col" data-gi="${grp.id}" ondragover="dragOver(event)" ondragleave="this.classList.remove('dragover')" ondrop="dropStu(event,'${grp.id}')">
       <div class="c-head"><span class="dot" style="background:${grp.color}"></span><b>${grp.name}</b><span class="n">${active} 人</span></div>
       <div class="c-goal">${grp.goal}</div>
-      ${members.map(s=>`<div class="stu ${s.left?'left':''}" ${s.left?'':'draggable="true" ondragstart="dragStu(event,\''+s.n+'\')" ondragend="this.classList.remove(\'dragging\')"'} onclick="${s.left?'':'moveStu(\''+s.n+'\')'}">
-        <span class="av">${s.n[0]}</span>${s.n}${s.left?'（已轉班 · 自動退出）':''}<span class="mv">移組 ›</span>
-      </div>`).join('')}
+      ${visible.length ? rowsHtml : (q ? '<div class="stu-empty">沒有符合的學生</div>' : '')}
       <button class="assign" onclick="toast('原型示範：指派教材給「${grp.name}」')">📎 指派教材／練習給此組</button>
     </div>`;
   }).join('');
@@ -280,15 +311,11 @@ function dropStu(ev,gid){
   toast(name+' → '+grp.name);
   dragName=null;
 }
-function moveStu(name){
-  const c = CLASSES[activeClassId];
-  const s = c.students.find(x=>x.n===name);
-  const idx = c.groups.findIndex(g=>g.id===s.g);
-  const next = c.groups[(idx+1) % c.groups.length];
-  s.g = next.id;
-  render();
-  toast(name + ' → ' + next.name);
-}
+/* moveStu() (click-a-row-to-cycle-to-the-next-group) removed 2026-07-27 per
+ * Eric: with columns this large, a plain click silently moving a student to
+ * whatever group happens to be "next" (not a chosen destination) was causing
+ * real mistakes. Drag-and-drop remains the only way to move a student between
+ * groups, since it requires picking the actual destination column. */
 /* Study groups (Story 1, wave-one build) — deliberately rendered independent
  * of activeClassId, since the whole point is they aren't scoped to one class.
  * Kept in this same file (not a separate page) because the ownership note
@@ -313,14 +340,76 @@ function renderStudyGroups(){
   }).join('') : '<div class="sg-card" style="color:var(--ink-3);text-align:center;">尚未建立任何跨班學習小組</div>';
 }
 
+/* Picker redesign (2026-07-27): classes now run ~35 students each, so a flat
+ * checkbox list per class (the original build) forces the teacher to scroll
+ * and eyeball-match names with no way to narrow down — exactly the
+ * "mistake-prone under load" problem Eric flagged. Fix: per-class search
+ * (name or 班號), a group filter (matches the teacher's existing mental model
+ * of 增潤/核心/支援, so narrowing down doesn't require learning a new
+ * grouping), and 班號 shown on every row so a name collision (e.g. 陳嘉欣 in
+ * both 2b and 1a) is never the only way to tell two students apart.
+ * Selection state is tracked in sgPickSelected (not just DOM checkbox state),
+ * because filtering/searching re-renders the row list — losing checked state
+ * on every keystroke would be worse than the problem being fixed. */
+let sgPickFilters = {};  // {classId: {q, group}}
+let sgPickSelected = {}; // {classId: Set<studentName>}
+
 function renderSgPickRow(){
   document.getElementById('sgPickRow').innerHTML = CLASS_LIST.map(cl=>{
-    const active = cl.students.filter(s=>!s.left);
+    if(!sgPickFilters[cl.id]) sgPickFilters[cl.id] = {q:'', group:'all'};
+    if(!sgPickSelected[cl.id]) sgPickSelected[cl.id] = new Set();
+    const gfilter = sgPickFilters[cl.id].group;
     return `<div class="sg-pick-col">
-      <h6>${cl.className}</h6>
-      ${active.map(s=>`<label class="sg-pick-opt"><input type="checkbox" data-classid="${cl.id}" data-name="${s.n}">${s.n}</label>`).join('') || '<span style="color:var(--ink-3);font-size:.72rem;">無在校學生</span>'}
+      <h6>${cl.className}<span class="sg-pick-sel" id="sgSelCount-${cl.id}"></span></h6>
+      <input type="text" class="sg-pick-search" placeholder="搜尋姓名或班號" data-cls="${cl.id}" oninput="onSgPickSearch(this)">
+      <div class="sg-pick-gfilter">
+        <button type="button" class="sg-pick-gchip ${gfilter==='all'?'on':''}" data-cls="${cl.id}" data-g="all" onclick="onSgPickGroupFilter(this)">全部</button>
+        ${cl.groups.map(g=>`<button type="button" class="sg-pick-gchip ${gfilter===g.id?'on':''}" data-cls="${cl.id}" data-g="${g.id}" onclick="onSgPickGroupFilter(this)">${g.name}</button>`).join('')}
+      </div>
+      <div class="sg-pick-list" id="sgPickList-${cl.id}"></div>
     </div>`;
   }).join('');
+  CLASS_LIST.forEach(cl=>renderSgPickList(cl.id));
+}
+
+function renderSgPickList(classId){
+  const cl = CLASSES[classId];
+  const filt = sgPickFilters[classId];
+  const selected = sgPickSelected[classId];
+  const q = filt.q.trim();
+  let rows = cl.students.filter(s=>!s.left);
+  if(filt.group!=='all') rows = rows.filter(s=>s.g===filt.group);
+  if(q) rows = rows.filter(s=>s.n.includes(q) || String(s.no).includes(q) || (/^\d+$/.test(q) && s.no===parseInt(q,10)));
+  rows = rows.slice().sort((a,b)=>(a.no||0)-(b.no||0));
+  document.getElementById('sgPickList-'+classId).innerHTML = rows.length ? rows.map(s=>{
+    const checked = selected.has(s.n) ? 'checked' : '';
+    const no = s.no!=null ? String(s.no).padStart(2,'0') : '—';
+    return `<label class="sg-pick-opt"><input type="checkbox" data-classid="${classId}" data-name="${s.n}" ${checked} onchange="onSgPickCheck(this)"><span class="sg-pick-no">${no}</span>${s.n}</label>`;
+  }).join('') : '<span style="color:var(--ink-3);font-size:.72rem;">沒有符合的學生</span>';
+  updateSgSelCount(classId);
+}
+
+function updateSgSelCount(classId){
+  const n = sgPickSelected[classId].size;
+  document.getElementById('sgSelCount-'+classId).textContent = n ? '（已選 '+n+'）' : '';
+}
+
+function onSgPickSearch(input){
+  const classId = input.dataset.cls;
+  sgPickFilters[classId].q = input.value;
+  renderSgPickList(classId);
+}
+function onSgPickGroupFilter(btn){
+  const classId = btn.dataset.cls;
+  sgPickFilters[classId].group = btn.dataset.g;
+  document.querySelectorAll(`.sg-pick-gchip[data-cls="${classId}"]`).forEach(b=>b.classList.toggle('on', b===btn));
+  renderSgPickList(classId);
+}
+function onSgPickCheck(cb){
+  const classId = cb.dataset.classid;
+  if(cb.checked) sgPickSelected[classId].add(cb.dataset.name);
+  else sgPickSelected[classId].delete(cb.dataset.name);
+  updateSgSelCount(classId);
 }
 
 function createStudyGroup(){
@@ -328,14 +417,17 @@ function createStudyGroup(){
   if(!name){ toast('請先填寫小組名稱'); return; }
   const goal = document.getElementById('sgGoalInput').value.trim();
   const expiresAt = document.getElementById('sgExpiryInput').value || null;
-  const checked = [...document.querySelectorAll('#sgPickRow input[type=checkbox]:checked')];
-  if(!checked.length){ toast('請至少選一位學生'); return; }
-  const memberRefs = checked.map(cb=>({classId:cb.dataset.classid, name:cb.dataset.name}));
-  STUDY_GROUPS.push({id:'sg'+(sgIdSeq++), name, goal, teacher:'陳老師', color:'var(--ec-teal)', expiresAt, memberRefs});
+  const memberRefs = [];
+  Object.keys(sgPickSelected).forEach(classId=>{
+    sgPickSelected[classId].forEach(name=>memberRefs.push({classId, name}));
+  });
+  if(!memberRefs.length){ toast('請至少選一位學生'); return; }
+  STUDY_GROUPS.push({id:'sg'+(sgIdSeq++), name, goal, teacherId:'T1001', color:'var(--ec-teal)', expiresAt, memberRefs});
   document.getElementById('sgNameInput').value = '';
   document.getElementById('sgGoalInput').value = '';
   document.getElementById('sgExpiryInput').value = '';
-  document.querySelectorAll('#sgPickRow input[type=checkbox]').forEach(cb=>cb.checked=false);
+  Object.keys(sgPickSelected).forEach(classId=>sgPickSelected[classId].clear());
+  renderSgPickRow();
   renderStudyGroups();
   toast('已建立學習小組：'+name+'（'+memberRefs.length+' 人）');
 }

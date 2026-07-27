@@ -7,6 +7,7 @@
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-green:#00AC6C;--ec-amber:#F5A623;
+    --ec-purple:#7C5CDB;--ec-teal:#0f8c8c;
     --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#dde3e8;--bg:#eef1f4;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -94,8 +95,15 @@
   .tab-btn{border:none;background:none;font-family:inherit;font-size:.82rem;font-weight:600;color:var(--ink-3);
     padding:10px 4px;margin-right:22px;cursor:pointer;border-bottom:2px solid transparent;}
   .tab-btn.active{color:var(--ec-blue-dark);border-bottom-color:var(--ec-blue);}
-  .tab-btn .tab-count{font-weight:500;color:var(--ink-3);}
-  .tab-btn.active .tab-count{color:var(--ec-blue-dark);}
+  /* Tab counts follow the same convention as subscriptions.html/eddata-console.html/
+   * group-access-requests.html: a number only appears when something on that tab
+   * needs the user's attention (never a plain total), shown as a colored pill whose
+   * color matches the issue's severity — amber for "needs review/action" (pending
+   * approval, unassigned student, teacher reassignment needed), red for "blocks a
+   * commit" (ambiguous 批量編班 rows that must be resolved before proceeding). */
+  .tab-btn .tab-count{font-size:.64rem;font-weight:700;border-radius:99px;padding:1px 8px;margin-left:2px;}
+  .tab-btn .tab-count.warn{color:#8a5a00;background:#fdf1c7;}
+  .tab-btn .tab-count.danger{color:#b91c1c;background:#fee2e2;}
   .tab-pane{display:none;}
   .tab-pane.active{display:block;}
   .scope-note{font-size:.72rem;color:var(--ink-3);margin:10px 0 0;line-height:1.6;max-width:52em;}
@@ -166,11 +174,11 @@
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="teachers" onclick="showTab('teachers')">教師名冊 <span class="tab-count" id="countTeachers"></span></button>
-    <button class="tab-btn" data-tab="assign" onclick="showTab('assign')">任教編配 <span class="tab-count" id="countAssign"></span></button>
-    <button class="tab-btn" data-tab="bulk" onclick="showTab('bulk')">批量編班 <span class="tab-count" id="countBulk"></span></button>
-    <button class="tab-btn" data-tab="students" onclick="showTab('students')">學生編班 <span class="tab-count" id="countStudents"></span></button>
-    <button class="tab-btn" data-tab="roles" onclick="showTab('roles')">角色與權限 <span class="tab-count" id="countRoles"></span></button>
+    <button class="tab-btn active" data-tab="teachers" onclick="showTab('teachers')">教師名冊 <span class="tab-count" id="countTeachers" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="assign" onclick="showTab('assign')">任教編配 <span class="tab-count" id="countAssign" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="bulk" onclick="showTab('bulk')">批量編班 <span class="tab-count" id="countBulk" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="students" onclick="showTab('students')">學生編班 <span class="tab-count" id="countStudents" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="roles" onclick="showTab('roles')">角色與權限 <span class="tab-count" id="countRoles" style="display:none;"></span></button>
   </div>
 
   <section class="tab-pane active" data-pane="teachers">
@@ -178,7 +186,7 @@
     <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
 
     <table>
-      <thead><tr><th>教師</th><th>所屬科組</th><th>聯絡方式</th><th>狀態</th><th></th></tr></thead>
+      <thead><tr><th>教師</th><th>教師編號</th><th>所屬科組</th><th>聯絡方式</th><th>狀態</th><th></th></tr></thead>
       <tbody id="teacherTbody"></tbody>
     </table>
   </section>
@@ -264,20 +272,44 @@ function showTab(name){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
 }
 
+/* Shared tab-count setter — see the CSS comment above .tab-btn .tab-count:
+ * a count only ever means "N items need your attention", never a plain total,
+ * and its color (severity) is passed in per call site rather than hardcoded
+ * here, since what counts as "needs attention" — and how urgent it is —
+ * differs per tab. */
+function setTabCount(elId, count, severity){
+  const el = document.getElementById(elId);
+  if(count > 0){
+    el.textContent = count;
+    el.className = 'tab-count ' + severity;
+    el.style.display = 'inline-block';
+  } else {
+    el.textContent = '';
+    el.style.display = 'none';
+  }
+}
+
 /* Teaching-assignment records for 任教編配 — page-local (not shared with other
  * pages, since this tab stays illustrative per Eric's earlier scope call), but the
  * 科目 field is sourced from vendor-data.js's shared SUBJECTS via subjectId, same
  * as 教師名冊's TEACHERS, so the two tabs can no longer silently disagree. */
 const ASSIGNMENTS = [
-  {id:'a1', teacher:'陳老師', cls:'中二乙班', subjectId:'chi', year:'2025/26'},
-  {id:'a2', teacher:'陳老師', cls:'中一丙班', subjectId:'chi', year:'2025/26 · 本學期新接手'},
-  {id:'a3', teacher:'黃老師', cls:'中一甲班', subjectId:'chi', year:'2025/26'},
+  {id:'a1', teacherId:'T1001', cls:'中二乙班', subjectId:'chi', year:'2025/26'},
+  {id:'a2', teacherId:'T1001', cls:'中一丙班', subjectId:'chi', year:'2025/26 · 本學期新接手'},
+  {id:'a3', teacherId:'T1002', cls:'中一甲班', subjectId:'chi', year:'2025/26'},
 ];
 function renderAssignments(){
-  document.getElementById('countAssign').textContent = '('+ASSIGNMENTS.length+')';
+  // "Needs attention" here = an assignment still pointing at a teacher who is no
+  // longer active (on leave/departed) — reads TEACHERS.status, so 教師名冊's
+  // status changes and 任教編配's badge can never silently disagree.
+  const needsReassign = ASSIGNMENTS.filter(a=>{
+    const t = TEACHERS.find(x=>x.id===a.teacherId);
+    return t && t.status !== 'active';
+  }).length;
+  setTabCount('countAssign', needsReassign, 'warn');
   document.getElementById('assignTbody').innerHTML = ASSIGNMENTS.map(a=>`
     <tr data-id="${a.id}">
-      <td><b>${a.teacher}</b></td>
+      <td><b>${teacherLabel(a.teacherId)}</b></td>
       <td>${a.cls}</td>
       <td>${subjectName(a.subjectId)}</td>
       <td>${a.year}</td>
@@ -287,28 +319,28 @@ function renderAssignments(){
 function startReassign(id){
   const a = ASSIGNMENTS.find(x=>x.id===id);
   // only active teachers can receive a new class — 教師名冊's status is what this reads.
-  const candidates = activeTeachers().map(t=>t.name).filter(n=>n!==a.teacher);
+  const candidates = activeTeachers().filter(t=>t.id!==a.teacherId);
   const options = candidates.length
-    ? candidates.map(t=>`<option value="${t}">${t}</option>`).join('')
+    ? candidates.map(t=>`<option value="${t.id}">${teacherLabel(t.id)}</option>`).join('')
     : `<option value="">（沒有其他在職教師可選）</option>`;
   document.getElementById('reassignBox').innerHTML = `
     <div class="reassign-row">
-      將 <b>${a.cls}</b>（${subjectName(a.subjectId)}）由 <b>${a.teacher}</b> 重新編配給
+      將 <b>${a.cls}</b>（${subjectName(a.subjectId)}）由 <b>${teacherLabel(a.teacherId)}</b> 重新編配給
       <select id="reassignPick">${options}</select>
       <button class="act" onclick="confirmReassign('${id}')">確認編配</button>
       <button class="act" onclick="document.getElementById('reassignBox').innerHTML=''">取消</button>
     </div>`;
 }
 function confirmReassign(id){
-  const toTeacher = document.getElementById('reassignPick').value;
-  if(!toTeacher){ toast('沒有其他在職教師可選，無法編配'); return; }
+  const toTeacherId = document.getElementById('reassignPick').value;
+  if(!toTeacherId){ toast('沒有其他在職教師可選，無法編配'); return; }
   const a = ASSIGNMENTS.find(x=>x.id===id);
-  const fromTeacher = a.teacher;
-  a.teacher = toTeacher;
+  const fromTeacherId = a.teacherId;
+  a.teacherId = toTeacherId;
   renderAssignments();
   document.getElementById('reassignBox').innerHTML =
-    `<div class="reassign-row" style="background:#effaf5;border-color:#bfe8d7;">✓ ${a.cls}（${subjectName(a.subjectId)}）已由 ${fromTeacher} 轉交 ${toTeacher}。（此原型未接通教學分組等畫面，實際變動僅在此示意）</div>`;
-  toast('已將 '+a.cls+' 由 '+fromTeacher+' 轉交 '+toTeacher);
+    `<div class="reassign-row" style="background:#effaf5;border-color:#bfe8d7;">✓ ${a.cls}（${subjectName(a.subjectId)}）已由 ${teacherLabel(fromTeacherId)} 轉交 ${teacherLabel(toTeacherId)}。（此原型未接通教學分組等畫面，實際變動僅在此示意）</div>`;
+  toast('已將 '+a.cls+' 由 '+teacherLabel(fromTeacherId)+' 轉交 '+teacherLabel(toTeacherId));
 }
 
 /* Student-class assignment reads/writes the SAME CLASSES object (from vendor-data.js)
@@ -347,13 +379,10 @@ function toggleSortDir(){
 }
 
 function renderStudents(){
-  // tab count reflects total currently-enrolled students, not the filtered/searched view —
-  // filtering the table shouldn't make the tab label lie about how many students exist.
-  // Includes UNASSIGNED_STUDENTS — they're real students whose identity 曾主任
-  // (School Records Officer) has approved, just not yet organized into a class,
-  // so they still count as "enrolled" for this purpose.
-  const totalEnrolled = CLASS_LIST.reduce((sum,c)=>sum + c.students.filter(s=>!s.left).length, 0) + UNASSIGNED_STUDENTS.length;
-  document.getElementById('countStudents').textContent = '('+totalEnrolled+')';
+  // "Needs attention" here = students whose identity 曾主任 has already approved
+  // but who haven't yet been organized into a class (UNASSIGNED_STUDENTS) — a
+  // real outstanding action for 何主任, not just a headcount.
+  setTabCount('countStudents', UNASSIGNED_STUDENTS.length, 'warn');
   const searchTerm = (document.getElementById('studentSearch').value || '').trim();
   const filterClass = document.getElementById('studentClassFilter').value;
   const sortBy = document.getElementById('studentSortBy').value;
@@ -541,23 +570,28 @@ function confirmUnassignedAssign(sid){
  * both read the same array of objects. */
 const STATUS_LABEL = {active:'在職', leave:'請假', departed:'已離職'};
 function renderTeachers(){
-  document.getElementById('countTeachers').textContent = '('+TEACHERS.length+')';
+  // "Needs attention" here = status-change requests still awaiting 校務紀錄組's
+  // approval — the record hasn't actually changed yet, so this is a real
+  // outstanding item, not a headcount.
+  const pendingStatusCount = TEACHER_STATUS_REQUESTS.filter(r=>r.status==='pending').length;
+  setTabCount('countTeachers', pendingStatusCount, 'warn');
   document.getElementById('teacherTbody').innerHTML = TEACHERS.map(t=>{
     // A pending TEACHER_STATUS_REQUESTS entry means 何主任 already asked 曾主任
     // (School Records Officer) to change this — the dropdown is replaced with a
     // plain pending badge so it's clear the record hasn't actually changed yet
     // and isn't hers to set.
-    const pendingReq = TEACHER_STATUS_REQUESTS.find(r=>r.teacherName===t.name && r.status==='pending');
+    const pendingReq = TEACHER_STATUS_REQUESTS.find(r=>r.teacherId===t.id && r.status==='pending');
     const statusCell = pendingReq
       ? `${STATUS_LABEL[t.status]}　<span class="st warn">⏳ 已請求改為「${STATUS_LABEL[pendingReq.newStatus]}」，待校務紀錄組審批</span>`
-      : `<select onchange="proposeTeacherStatus(this,'${t.name}')">
+      : `<select onchange="proposeTeacherStatus(this,'${t.id}')">
           <option value="active" ${t.status==='active'?'selected':''}>在職</option>
           <option value="leave" ${t.status==='leave'?'selected':''}>請假</option>
           <option value="departed" ${t.status==='departed'?'selected':''}>已離職</option>
         </select>`;
     return `
-    <tr data-teacher="${t.name}">
+    <tr data-teacher-id="${t.id}">
       <td><b>${t.name}</b></td>
+      <td>${t.id}</td>
       <td>${subjectName(t.subjectId)}</td>
       <td>${t.contact}</td>
       <td>${statusCell}</td>
@@ -576,9 +610,9 @@ function renderTeachers(){
  * set directly, same as before this request/execute pattern existed. Routing
  * every status flip through an approval queue would make a routine, temporary
  * change (someone going on leave) wait on the records layer for no real reason. */
-function proposeTeacherStatus(selectEl, name){
+function proposeTeacherStatus(selectEl, teacherId){
   const newStatus = selectEl.value;
-  const t = TEACHERS.find(x=>x.name===name);
+  const t = TEACHERS.find(x=>x.id===teacherId);
   if (newStatus === t.status) return;
   document.querySelectorAll('.status-confirm-row').forEach(r=>r.remove());
   const requiresRecordsApproval = newStatus === 'departed';
@@ -590,16 +624,16 @@ function proposeTeacherStatus(selectEl, name){
   const tail = requiresRecordsApproval ? '——核准後'+impact+'。確定送出請求嗎？' : '——'+impact+'。確定嗎？';
   const row = document.createElement('tr');
   row.className = 'status-confirm-row';
-  row.innerHTML = `<td colspan="5" style="padding:0;">
+  row.innerHTML = `<td colspan="6" style="padding:0;">
     <div class="reassign-row" style="margin:8px 14px;border-radius:8px;">
-      ${actionLabel} <b>${name}</b> 的狀態改為「${STATUS_LABEL[newStatus]}」${tail}
-      <button class="act" onclick="confirmTeacherStatus('${name}','${newStatus}')">${confirmLabel}</button>
+      ${actionLabel} <b>${teacherLabel(teacherId)}</b> 的狀態改為「${STATUS_LABEL[newStatus]}」${tail}
+      <button class="act" onclick="confirmTeacherStatus('${teacherId}','${newStatus}')">${confirmLabel}</button>
       <button class="act" onclick="renderTeachers()">取消</button>
     </div>
   </td>`;
   selectEl.closest('tr').insertAdjacentElement('afterend', row);
 }
-function confirmTeacherStatus(name, status){
+function confirmTeacherStatus(teacherId, status){
   if (status === 'departed'){
     // Departure is an identity/records fact (SMS's identity layer), not an
     // organizational one — SMS can only request it here, mirroring the vendor
@@ -608,20 +642,20 @@ function confirmTeacherStatus(name, status){
     // once 曾主任 (School Records Officer) approves on records-console.html.
     TEACHER_STATUS_REQUESTS.push({
       id: 'tsr' + Date.now(),
-      teacherName: name,
+      teacherId: teacherId,
       newStatus: status,
       requestedBy: '何主任',
       status: 'pending'
     });
     renderTeachers();
-    toast('已向校務紀錄組送出請求：將 '+name+' 的狀態改為「'+STATUS_LABEL[status]+'」，待審批');
+    toast('已向校務紀錄組送出請求：將 '+teacherLabel(teacherId)+' 的狀態改為「'+STATUS_LABEL[status]+'」，待審批');
     return;
   }
   // 在職／請假 are reversible organizational states — SMS applies these directly.
-  const t = TEACHERS.find(x=>x.name===name);
+  const t = TEACHERS.find(x=>x.id===teacherId);
   t.status = status;
   renderTeachers();
-  toast(name+' 狀態已更新為「'+STATUS_LABEL[status]+'」');
+  toast(teacherLabel(teacherId)+' 狀態已更新為「'+STATUS_LABEL[status]+'」');
 }
 
 /* 批量編班 — Corrected scope (Eric, 2026-07-22): this is NOT the annual/official
@@ -746,8 +780,12 @@ function bulkRowBadge(r){
 
 function renderBulkPreview(){
   const wrap = document.getElementById('bulkPreviewWrap');
-  if (!BULK_ROWS.length){ wrap.innerHTML = ''; document.getElementById('countBulk').textContent = ''; return; }
-  document.getElementById('countBulk').textContent = '('+BULK_ROWS.length+')';
+  if (!BULK_ROWS.length){ wrap.innerHTML = ''; setTabCount('countBulk', 0, 'danger'); return; }
+  // "Needs attention" here = rows still stuck on an ambiguous same-name match —
+  // the one thing that actually blocks 執行匯入 (see canCommit below), so this
+  // is the same count that gates the commit button, not just a row total.
+  const ambiguousCount = BULK_ROWS.filter(r=>r.mode==='ambiguous').length;
+  setTabCount('countBulk', ambiguousCount, 'danger');
 
   const showSensitive = document.getElementById('bulkShowSensitive') ? document.getElementById('bulkShowSensitive').checked : false;
   const newCount = BULK_ROWS.filter(r=>r.mode==='new').length;
@@ -877,24 +915,27 @@ function renderRoleLegend(){
 }
 
 function renderRoles(){
-  document.getElementById('countRoles').textContent = '('+TEACHERS.length+')';
+  // No outstanding-item concept exists for roles (no pending-request model,
+  // and a teacher holding only the default role isn't a problem) — so unlike
+  // the other tabs, this badge is never shown rather than inventing a signal.
+  setTabCount('countRoles', 0, 'warn');
   document.getElementById('roleTbody').innerHTML = TEACHERS.map(t=>{
     const roles = t.roles || ['classroom_teacher'];
     const chips = roles.map(rid=>{
       const removable = rid !== 'classroom_teacher';
-      return `<span class="role-chip" style="background:${roleColor(rid)};">${roleLabel(rid)}${removable ? `<span class="role-chip rm" onclick="removeRole('${t.name}','${rid}')" title="收回此角色">✕</span>` : ''}</span>`;
+      return `<span class="role-chip" style="background:${roleColor(rid)};">${roleLabel(rid)}${removable ? `<span class="role-chip rm" onclick="removeRole('${t.id}','${rid}')" title="收回此角色">✕</span>` : ''}</span>`;
     }).join('');
     const assignable = ROLE_DEFS.filter(r=>r.id!=='classroom_teacher' && !roles.includes(r.id));
     const addPicker = assignable.length
-      ? `<select class="role-add-pick" onchange="if(this.value){addRole('${t.name}', this.value); this.value='';}">
+      ? `<select class="role-add-pick" onchange="if(this.value){addRole('${t.id}', this.value); this.value='';}">
           <option value="">+ 賦予角色…</option>
           ${assignable.map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}
         </select>`
       : '';
-    const selected = ROLE_SELECTED.has(t.name);
-    return `<tr data-role-teacher="${t.name}" class="${selected?'row-selected':''}">
-      <td><input type="checkbox" class="row-check" ${selected?'checked':''} onchange="toggleRoleSelect('${t.name}', this)"></td>
-      <td><b>${t.name}</b></td>
+    const selected = ROLE_SELECTED.has(t.id);
+    return `<tr data-role-teacher-id="${t.id}" class="${selected?'row-selected':''}">
+      <td><input type="checkbox" class="row-check" ${selected?'checked':''} onchange="toggleRoleSelect('${t.id}', this)"></td>
+      <td><b>${t.name}</b><small style="display:block;color:var(--ink-3);">${t.id}</small></td>
       <td>${subjectName(t.subjectId)}</td>
       <td><div class="role-chip-row">${chips}</div></td>
       <td>${addPicker}</td>
@@ -903,24 +944,24 @@ function renderRoles(){
   renderRoleBulkBar();
 }
 
-function addRole(name, roleId){
-  const t = TEACHERS.find(x=>x.name===name);
+function addRole(teacherId, roleId){
+  const t = TEACHERS.find(x=>x.id===teacherId);
   if (!t) return;
   if (!t.roles) t.roles = ['classroom_teacher'];
   if (!t.roles.includes(roleId)) t.roles.push(roleId);
   renderRoles();
-  toast('已賦予 '+name+'「'+roleLabel(roleId)+'」角色');
+  toast('已賦予 '+t.name+'「'+roleLabel(roleId)+'」角色');
 }
-function removeRole(name, roleId){
-  const t = TEACHERS.find(x=>x.name===name);
+function removeRole(teacherId, roleId){
+  const t = TEACHERS.find(x=>x.id===teacherId);
   if (!t) return;
   t.roles = (t.roles||[]).filter(r=>r!==roleId);
   renderRoles();
-  toast('已收回 '+name+'「'+roleLabel(roleId)+'」角色');
+  toast('已收回 '+t.name+'「'+roleLabel(roleId)+'」角色');
 }
 
-function toggleRoleSelect(name, el){
-  if (el.checked) ROLE_SELECTED.add(name); else ROLE_SELECTED.delete(name);
+function toggleRoleSelect(teacherId, el){
+  if (el.checked) ROLE_SELECTED.add(teacherId); else ROLE_SELECTED.delete(teacherId);
   renderRoles();
 }
 /* Batch apply/revoke — this is the actual fix for "何主任 mustn't touch
@@ -943,8 +984,8 @@ function clearRoleSelect(){ ROLE_SELECTED.clear(); renderRoles(); }
 function bulkApplyRole(){
   const roleId = document.getElementById('roleBulkPick').value;
   let count = 0;
-  ROLE_SELECTED.forEach(name=>{
-    const t = TEACHERS.find(x=>x.name===name);
+  ROLE_SELECTED.forEach(teacherId=>{
+    const t = TEACHERS.find(x=>x.id===teacherId);
     if (!t) return;
     if (!t.roles) t.roles = ['classroom_teacher'];
     if (!t.roles.includes(roleId)){ t.roles.push(roleId); count++; }
@@ -955,8 +996,8 @@ function bulkApplyRole(){
 function bulkRevokeRole(){
   const roleId = document.getElementById('roleBulkPick').value;
   let count = 0;
-  ROLE_SELECTED.forEach(name=>{
-    const t = TEACHERS.find(x=>x.name===name);
+  ROLE_SELECTED.forEach(teacherId=>{
+    const t = TEACHERS.find(x=>x.id===teacherId);
     if (!t || !t.roles) return;
     if (t.roles.includes(roleId)){ t.roles = t.roles.filter(r=>r!==roleId); count++; }
   });

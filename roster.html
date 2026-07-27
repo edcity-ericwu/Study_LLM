@@ -118,9 +118,38 @@
   .reassign-row select{font-family:inherit;font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:6px 9px;margin:0 8px;}
   .reassign-row .impact{color:#8a5a00;}
 
-  .table-toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-  .table-toolbar input[type=text]{flex:1;min-width:160px;font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
+  /* Toolbar is grouped by function, not by markup order — search (find),
+   * filter (narrow), and sort (order) are three different kinds of decision,
+   * so each gets its own visual cluster with a divider between, rather than
+   * reading as one undifferentiated row of controls. */
+  .table-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
   .table-toolbar select{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff;}
+  .toolbar-group{display:flex;align-items:center;gap:8px;}
+  .toolbar-group-label{font-size:.68rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .toolbar-divider{width:1px;align-self:stretch;background:var(--line);}
+  .search-group{flex:1;min-width:180px;}
+  .search-group input[type=text]{width:100%;font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
+  /* Active-filters row: separate from the toolbar controls above it, and only
+   * shown once a filter is actually applied — so "what's narrowing the list
+   * right now" is a distinct, scannable row rather than baked into the
+   * dropdown's own appearance. */
+  .active-filters-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;margin-bottom:6px;border-top:1px solid var(--line);font-size:.78rem;}
+  .active-filters-row .af-label{color:var(--ink-2);font-weight:700;}
+  .af-chip{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:6px 8px 6px 14px;font-weight:700;}
+  .af-chip-x{border:none;background:none;color:#fff;cursor:pointer;font-size:.72rem;line-height:1;padding:2px;opacity:.85;}
+  .af-chip-x:hover{opacity:1;}
+  .af-clear-all{border:none;background:none;color:var(--ec-blue-dark);font-family:inherit;font-size:.78rem;font-weight:700;text-decoration:underline;cursor:pointer;padding:0;}
+  .af-chips{display:inline-flex;flex-wrap:wrap;gap:8px;}
+  /* Multi-select filter widget — a filter dimension can have more than one
+   * value picked at once (e.g. two classes, two subject departments), which
+   * a plain single-value <select> can't express. A button opens a checkbox
+   * panel; the active-filters row above renders one chip per selected value. */
+  .ms-filter{position:relative;display:inline-block;}
+  .ms-filter-btn{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff;cursor:pointer;color:var(--ink);}
+  .ms-filter-btn.active{background:#eaf1fd;border-color:#adc8f5;color:#1a56c4;font-weight:700;}
+  .ms-filter-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:8px;min-width:190px;max-height:260px;overflow-y:auto;z-index:20;}
+  .ms-filter-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.79rem;border-radius:6px;cursor:pointer;white-space:nowrap;}
+  .ms-filter-opt:hover{background:#f2f6fd;}
   .group-head td{background:#f6f8fa;font-weight:700;font-size:.72rem;color:var(--ink-2);padding:8px 14px;letter-spacing:.02em;border-bottom:1px solid var(--line);}
   .group-head .grp-count{float:right;color:var(--ink-3);font-weight:500;}
   .class-accent{border-left:4px solid var(--line);}
@@ -149,7 +178,6 @@
   tr:has(input.row-check):hover td{background:#f2f6fd;}
   tr.row-selected:has(input.row-check):hover td{background:#dce8fc;}
   .bulk-select-banner{background:#e8f0fe;border:1px solid #adc8f5;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.79rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .sort-toolbar{display:flex;align-items:center;gap:8px;}
   .stale-batch{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
 
   .role-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
@@ -157,6 +185,11 @@
   .role-chip.rm{cursor:pointer;background:none;border:1px solid rgba(255,255,255,.6);color:inherit;font-size:.68rem;font-weight:700;padding:0 5px;border-radius:50%;margin-left:2px;}
   .role-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
   .role-add-pick{font-family:inherit;font-size:.74rem;border:1px solid var(--line);border-radius:6px;padding:4px 8px;}
+  /* Same treatment as .role-add-pick / .reassign-row select — an unstyled
+   * <select> here rendered in raw browser chrome (square corners, default
+   * font) next to every other in-table dropdown on this page, which are all
+   * custom-styled. */
+  .status-pick{font-family:inherit;font-size:.79rem;border:1px solid var(--line);border-radius:6px;padding:6px 9px;background:#fff;}
 
   /* Feature flag (see feature-flags.js) — hides without deleting anything. */
   body.ff-hide-roles [data-tab="roles"], body.ff-hide-roles [data-pane="roles"]{display:none !important;}
@@ -201,7 +234,33 @@
     <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
 
     <div class="table-toolbar">
-      <input type="text" id="teacherSearch" placeholder="搜尋教師姓名、編號或科組" oninput="renderTeachers()">
+      <div class="toolbar-group search-group">
+        <input type="text" id="teacherSearch" placeholder="🔍 搜尋教師姓名、編號或科組" oninput="renderTeachers()">
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group filter-group">
+        <span class="toolbar-group-label">篩選</span>
+        <div class="ms-filter" id="teacherSubjectFilterWidget">
+          <button type="button" class="ms-filter-btn" id="teacherSubjectFilterBtn" onclick="toggleMsFilterPanel('teacherSubjectFilter')">+ 科組</button>
+          <div class="ms-filter-panel" id="teacherSubjectFilterPanel"></div>
+        </div>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group sort-group">
+        <span class="toolbar-group-label">排序</span>
+        <select id="teacherSortBy" onchange="renderTeachers()">
+          <option value="name-asc">姓名 ↑</option>
+          <option value="name-desc">姓名 ↓</option>
+          <option value="status-asc">狀態 ↑</option>
+          <option value="status-desc">狀態 ↓</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="active-filters-row" id="teacherSubjectFilterRow" style="display:none;">
+      <span class="af-label">已選篩選條件：</span>
+      <span class="af-chips" id="teacherSubjectFilterChips"></span>
+      <button type="button" class="af-clear-all" onclick="clearMsFilter('teacherSubjectFilter')">清除全部</button>
     </div>
 
     <table>
@@ -248,17 +307,39 @@
     <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班是正式的班別歸屬，教學分組、批改入檔、學生入口都跟著它走。</div>
 
     <div class="table-toolbar">
-      <input type="text" id="studentSearch" placeholder="🔍 搜尋學生姓名…" oninput="renderStudents()">
-      <select id="studentClassFilter" onchange="renderStudents()">
-        <option value="">全部班別</option>
-      </select>
-      <div class="sort-toolbar">
-        <select id="studentSortBy" onchange="renderStudents()">
-          <option value="name">依姓名排序</option>
-          <option value="status">依狀態排序</option>
-        </select>
-        <button class="act" id="sortDirBtn" onclick="toggleSortDir()">↑ 升序</button>
+      <div class="toolbar-group search-group">
+        <input type="text" id="studentSearch" placeholder="🔍 搜尋學生姓名…" oninput="renderStudents()">
       </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group filter-group">
+        <span class="toolbar-group-label">篩選</span>
+        <div class="ms-filter" id="classFilterWidget">
+          <button type="button" class="ms-filter-btn" id="classFilterBtn" onclick="toggleMsFilterPanel('classFilter')">+ 班別</button>
+          <div class="ms-filter-panel" id="classFilterPanel"></div>
+        </div>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group sort-group">
+        <span class="toolbar-group-label">排序</span>
+        <select id="studentSortBy" onchange="renderStudents()">
+          <option value="name-asc">姓名 ↑</option>
+          <option value="name-desc">姓名 ↓</option>
+          <option value="status-asc">狀態 ↑</option>
+          <option value="status-desc">狀態 ↓</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active-filters row: only appears once a filter is actually applied,
+     * listing each selected value as its own removable chip plus a single
+     * "清除全部" — separate from the toolbar above it, so the toolbar stays
+     * the place you make a choice and this row is the place you see/undo
+     * what's currently in effect. Multiple classes can be selected at once
+     * (see .ms-filter above), so more than one chip can show here. -->
+    <div class="active-filters-row" id="classFilterRow" style="display:none;">
+      <span class="af-label">已選篩選條件：</span>
+      <span class="af-chips" id="classFilterChips"></span>
+      <button type="button" class="af-clear-all" onclick="clearMsFilter('classFilter')">清除全部</button>
     </div>
 
     <div id="bulkSelectBar"></div>
@@ -275,6 +356,36 @@
     <div class="sub">現實系統目前只有「校務行政」一個角色，何主任要逐個帳戶手動賦予或收回權限。此處示範角色可以拆細：每位老師可同時持有多於一個角色，各自對應較窄的可見範圍，而非人人都看到全校資料。</div>
 
     <div id="roleLegend" class="role-legend"></div>
+
+    <div class="table-toolbar">
+      <div class="toolbar-group search-group">
+        <input type="text" id="roleSearch" placeholder="🔍 搜尋教師姓名、編號或科組" oninput="renderRoles()">
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group filter-group">
+        <span class="toolbar-group-label">篩選</span>
+        <div class="ms-filter" id="roleFilterWidget">
+          <button type="button" class="ms-filter-btn" id="roleFilterBtn" onclick="toggleMsFilterPanel('roleFilter')">+ 角色</button>
+          <div class="ms-filter-panel" id="roleFilterPanel"></div>
+        </div>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group sort-group">
+        <span class="toolbar-group-label">排序</span>
+        <select id="roleSortBy" onchange="renderRoles()">
+          <option value="name-asc">姓名 ↑</option>
+          <option value="name-desc">姓名 ↓</option>
+          <option value="subject-asc">科組 ↑</option>
+          <option value="subject-desc">科組 ↓</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="active-filters-row" id="roleFilterRow" style="display:none;">
+      <span class="af-label">已選篩選條件：</span>
+      <span class="af-chips" id="roleFilterChips"></span>
+      <button type="button" class="af-clear-all" onclick="clearMsFilter('roleFilter')">清除全部</button>
+    </div>
 
     <div class="bulk-select-banner" id="roleBulkBar" style="display:none;"></div>
 
@@ -310,6 +421,93 @@ function setTabCount(elId, count, severity){
   } else {
     el.textContent = '';
     el.style.display = 'none';
+  }
+}
+
+/* Generic multi-select filter widget, shared by all three filter dimensions
+ * on this page (學生編班's 班別, 教師名冊's 科組, 角色與權限's 角色). A plain
+ * single-value <select> can't express "these two classes" or "either of
+ * these two roles" — a real filter needs to narrow to more than one value
+ * at once. Each instance is identified by a filterId matching its own DOM
+ * ids (`${filterId}Btn`, `${filterId}Panel`, `${filterId}Row`,
+ * `${filterId}Chips`) and keeps its own Set of selected values; the calling
+ * table's render function reads that Set directly (via msFilterSelected)
+ * and calls syncMsFilterUI(filterId) once per render to keep the toolbar
+ * button and the active-filters row in sync with it. */
+const MS_FILTERS = {};
+
+function setupMsFilter(filterId, idleLabel, options, onChange){
+  MS_FILTERS[filterId] = {selected: new Set(), options, idleLabel, onChange};
+  const panel = document.getElementById(filterId+'Panel');
+  panel.innerHTML = options.map(o=>`
+    <label class="ms-filter-opt">
+      <input type="checkbox" value="${o.value}">
+      <span>${o.label}</span>
+    </label>`).join('');
+  panel.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.onchange = ()=>{
+      const st = MS_FILTERS[filterId];
+      if (cb.checked) st.selected.add(cb.value); else st.selected.delete(cb.value);
+      st.onChange();
+    };
+  });
+}
+function toggleMsFilterPanel(filterId){
+  document.querySelectorAll('.ms-filter-panel').forEach(p=>{
+    if (p.id !== filterId+'Panel') p.style.display = 'none';
+  });
+  const panel = document.getElementById(filterId+'Panel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+// Click-outside-to-close, same as any dropdown menu elsewhere in the suite.
+document.addEventListener('click', (e)=>{
+  Object.keys(MS_FILTERS).forEach(filterId=>{
+    const widget = document.getElementById(filterId+'Widget');
+    if (widget && !widget.contains(e.target)){
+      const panel = document.getElementById(filterId+'Panel');
+      if (panel) panel.style.display = 'none';
+    }
+  });
+});
+function msFilterSelected(filterId){
+  return MS_FILTERS[filterId] ? MS_FILTERS[filterId].selected : new Set();
+}
+function msFilterLabel(filterId, value){
+  const st = MS_FILTERS[filterId];
+  const opt = st && st.options.find(o=>o.value===value);
+  return opt ? opt.label : value;
+}
+function removeMsFilterValue(filterId, value){
+  const st = MS_FILTERS[filterId];
+  if (!st) return;
+  st.selected.delete(value);
+  const cb = document.querySelector(`#${filterId}Panel input[value="${value}"]`);
+  if (cb) cb.checked = false;
+  st.onChange();
+}
+function clearMsFilter(filterId){
+  const st = MS_FILTERS[filterId];
+  if (!st) return;
+  st.selected.clear();
+  document.querySelectorAll(`#${filterId}Panel input[type=checkbox]`).forEach(cb=>cb.checked=false);
+  st.onChange();
+}
+function syncMsFilterUI(filterId){
+  const st = MS_FILTERS[filterId];
+  if (!st) return;
+  const btn = document.getElementById(filterId+'Btn');
+  const n = st.selected.size;
+  btn.textContent = n ? '已選 '+n : st.idleLabel;
+  btn.classList.toggle('active', n>0);
+  const row = document.getElementById(filterId+'Row');
+  const chips = document.getElementById(filterId+'Chips');
+  if (n){
+    chips.innerHTML = [...st.selected].map(v=>
+      `<span class="af-chip">${msFilterLabel(filterId,v)}<button type="button" class="af-chip-x" onclick="removeMsFilterValue('${filterId}','${v}')">✕</button></span>`
+    ).join('');
+    row.style.display = 'flex';
+  } else {
+    row.style.display = 'none';
   }
 }
 
@@ -390,12 +588,7 @@ function confirmReassign(id){
  * "helping the eye tell rows apart" that a plain column can't. */
 const CLASS_ACCENT = ['var(--ec-blue)','var(--ec-green)','#9333ea','#e11d48','#f5a623'];
 function populateStudentClassFilter(){
-  const sel = document.getElementById('studentClassFilter');
-  CLASS_LIST.forEach(c=>{
-    const opt = document.createElement('option');
-    opt.value = c.id; opt.textContent = c.className;
-    sel.appendChild(opt);
-  });
+  setupMsFilter('classFilter', '+ 班別', CLASS_LIST.map(c=>({value:c.id, label:c.className})), renderStudents);
 }
 /* Manual bulk touch-up (Story 2's "move a specific few students after import")
  * lives here, as checkboxes on the roster you're already looking at — separate
@@ -405,12 +598,10 @@ function populateStudentClassFilter(){
  * the search doesn't silently drop the selection. */
 let BULK_SELECTED = new Set();
 
-let STUDENT_SORT_DIR = 'asc';
-function toggleSortDir(){
-  STUDENT_SORT_DIR = STUDENT_SORT_DIR === 'asc' ? 'desc' : 'asc';
-  document.getElementById('sortDirBtn').textContent = STUDENT_SORT_DIR === 'asc' ? '↑ 升序' : '↓ 降序';
-  renderStudents();
-}
+/* Sort key and direction used to be two separate controls (a select plus a
+ * ↑/↓ toggle button) for what is really one decision — how to order the
+ * list. Folded into a single select whose options carry the arrow, e.g.
+ * "姓名 ↑" / "姓名 ↓", so there's one control, one decision. */
 
 function renderStudents(){
   // "Needs attention" here = students whose identity 曾主任 has already approved
@@ -418,16 +609,17 @@ function renderStudents(){
   // real outstanding action for 何主任, not just a headcount.
   setTabCount('countStudents', UNASSIGNED_STUDENTS.length, 'warn');
   const searchTerm = (document.getElementById('studentSearch').value || '').trim();
-  const filterClass = document.getElementById('studentClassFilter').value;
-  const sortBy = document.getElementById('studentSortBy').value;
-  const dir = STUDENT_SORT_DIR === 'asc' ? 1 : -1;
+  const filterClasses = msFilterSelected('classFilter');
+  const [sortBy, sortDir] = document.getElementById('studentSortBy').value.split('-');
+  const dir = sortDir === 'desc' ? -1 : 1;
+  syncMsFilterUI('classFilter');
   const rows = [];
   // 未編班 group — where a student lands right after 曾主任 approves an intake
   // request, per Eric's correction: the identity layer creates the identity,
   // but assigning a class is a separate, later SMS-organizational step, not
-  // bundled into approval. Shown first (only when not filtering to a single class), with its
+  // bundled into approval. Shown first (only when no class filter is active), with its
   // own 編班 action rather than 轉班, since there's no "from" class yet.
-  if (!filterClass && UNASSIGNED_STUDENTS.length) {
+  if (!filterClasses.size && UNASSIGNED_STUDENTS.length) {
     const unassignedMatched = UNASSIGNED_STUDENTS.filter(s => !searchTerm || s.n.includes(searchTerm));
     if (unassignedMatched.length) {
       rows.push(`<tr class="group-head"><td colspan="6" style="border-left:4px solid var(--ec-amber);">未編班學生<span class="st warn" style="margin-left:10px;">⚠ 需要指派班別</span><span class="grp-count">${unassignedMatched.length} 人</span></td></tr>`);
@@ -437,7 +629,7 @@ function renderStudents(){
     }
   }
   CLASS_LIST.forEach((c, idx)=>{
-    if (filterClass && c.id !== filterClass) return;
+    if (filterClasses.size && !filterClasses.has(c.id)) return;
     const matched = c.students.filter(s => !searchTerm || s.n.includes(searchTerm));
     if (!matched.length) return;
     // Sort within each class group — sorting across the whole flat list would
@@ -619,6 +811,17 @@ function confirmUnassignedAssign(sid){
  * 任教編配's reassignment picker immediately, in the same page session, since
  * both read the same array of objects. */
 const STATUS_LABEL = {active:'在職', leave:'請假', departed:'已離職'};
+const TEACHER_STATUS_SORT_ORDER = {active:0, leave:1, departed:2};
+/* Subject-department filter options are built from what TEACHERS actually
+ * use, not the full shared SUBJECTS list — 教師名冊's filter should only ever
+ * offer choices that could actually narrow the list to something non-empty. */
+function populateTeacherSubjectFilter(){
+  const usedSubjectIds = [...new Set(TEACHERS.map(t=>t.subjectId))];
+  const options = usedSubjectIds
+    .map(id=>({value:id, label:subjectName(id)}))
+    .sort((a,b)=>a.label.localeCompare(b.label,'zh-Hant-u-co-stroke'));
+  setupMsFilter('teacherSubjectFilter', '+ 科組', options, renderTeachers);
+}
 function renderTeachers(){
   // "Needs attention" here = status-change requests still awaiting 校務紀錄組's
   // approval — the record hasn't actually changed yet, so this is a real
@@ -629,10 +832,22 @@ function renderTeachers(){
   // from 6) — a flat unfiltered list of that size is exactly the scanning
   // problem this suite has already fixed elsewhere (groups.html's board,
   // groups.html's study-group picker). Matches name, id, or subject name.
+  // Filter (科組) and sort follow the same grouped-toolbar + active-filters-row
+  // + merged sort-control convention established on 學生編班; filter now
+  // supports selecting more than one 科組 at once (see MS_FILTERS above).
   const q = (document.getElementById('teacherSearch').value || '').trim();
-  const visible = q
+  const filterSubjects = msFilterSelected('teacherSubjectFilter');
+  const [sortBy, sortDir] = document.getElementById('teacherSortBy').value.split('-');
+  const dir = sortDir === 'desc' ? -1 : 1;
+  syncMsFilterUI('teacherSubjectFilter');
+  let visible = q
     ? TEACHERS.filter(t=>t.name.includes(q) || t.id.includes(q) || subjectName(t.subjectId).includes(q))
-    : TEACHERS;
+    : TEACHERS.slice();
+  if (filterSubjects.size) visible = visible.filter(t=>filterSubjects.has(t.subjectId));
+  visible = visible.slice().sort((a,b)=>{
+    if (sortBy === 'status') return (TEACHER_STATUS_SORT_ORDER[a.status]-TEACHER_STATUS_SORT_ORDER[b.status])*dir;
+    return a.name.localeCompare(b.name,'zh-Hant-u-co-stroke')*dir;
+  });
   document.getElementById('teacherTbody').innerHTML = visible.map(t=>{
     // A pending TEACHER_STATUS_REQUESTS entry means 何主任 already asked 曾主任
     // (School Records Officer) to change this — the dropdown is replaced with a
@@ -641,7 +856,7 @@ function renderTeachers(){
     const pendingReq = TEACHER_STATUS_REQUESTS.find(r=>r.teacherId===t.id && r.status==='pending');
     const statusCell = pendingReq
       ? `${STATUS_LABEL[t.status]}　<span class="st warn">⏳ 已請求改為「${STATUS_LABEL[pendingReq.newStatus]}」，待校務紀錄組審批</span>`
-      : `<select onchange="proposeTeacherStatus(this,'${t.id}')">
+      : `<select class="status-pick" onchange="proposeTeacherStatus(this,'${t.id}')">
           <option value="active" ${t.status==='active'?'selected':''}>在職</option>
           <option value="leave" ${t.status==='leave'?'selected':''}>請假</option>
           <option value="departed" ${t.status==='departed'?'selected':''}>已離職</option>
@@ -972,12 +1187,36 @@ function renderRoleLegend(){
   ).join('');
 }
 
+/* Filter dimension here is "holds this role" — classroom_teacher is excluded
+ * from the options since every teacher has it; filtering by it would never
+ * narrow anything, same reasoning as leaving its badge un-removable above. */
+function populateRoleFilter(){
+  const options = ROLE_DEFS.filter(r=>r.id!=='classroom_teacher').map(r=>({value:r.id, label:r.label}));
+  setupMsFilter('roleFilter', '+ 角色', options, renderRoles);
+}
+
 function renderRoles(){
   // No outstanding-item concept exists for roles (no pending-request model,
   // and a teacher holding only the default role isn't a problem) — so unlike
   // the other tabs, this badge is never shown rather than inventing a signal.
   setTabCount('countRoles', 0, 'warn');
-  document.getElementById('roleTbody').innerHTML = TEACHERS.map(t=>{
+  const q = (document.getElementById('roleSearch').value || '').trim();
+  const filterRoles = msFilterSelected('roleFilter');
+  const [sortBy, sortDir] = document.getElementById('roleSortBy').value.split('-');
+  const dir = sortDir === 'desc' ? -1 : 1;
+  syncMsFilterUI('roleFilter');
+  let visible = q
+    ? TEACHERS.filter(t=>t.name.includes(q) || t.id.includes(q) || subjectName(t.subjectId).includes(q))
+    : TEACHERS.slice();
+  // A teacher matches if they hold ANY of the selected roles — filtering by
+  // "科主任 + SEN 統籌" means "show me either", not "show me only someone
+  // holding both simultaneously".
+  if (filterRoles.size) visible = visible.filter(t=>(t.roles||['classroom_teacher']).some(r=>filterRoles.has(r)));
+  visible = visible.slice().sort((a,b)=>{
+    if (sortBy === 'subject') return subjectName(a.subjectId).localeCompare(subjectName(b.subjectId),'zh-Hant-u-co-stroke')*dir;
+    return a.name.localeCompare(b.name,'zh-Hant-u-co-stroke')*dir;
+  });
+  document.getElementById('roleTbody').innerHTML = visible.map(t=>{
     const roles = t.roles || ['classroom_teacher'];
     const chips = roles.map(rid=>{
       const removable = rid !== 'classroom_teacher';
@@ -1082,9 +1321,11 @@ renderAssignments();
 populateStudentClassFilter();
 populateValidClassCodesHint();
 renderStudents();
+populateTeacherSubjectFilter();
 renderTeachers();
 renderSupportStaff();
 renderRoleLegend();
+populateRoleFilter();
 renderRoles();
 </script>
 <script src="demo-nav.js"></script>

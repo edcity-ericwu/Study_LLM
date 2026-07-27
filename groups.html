@@ -228,13 +228,22 @@ document.body.classList.toggle('ff-hide-studygroups', typeof featureOn==='functi
  * eddata-console.html so a tool request always compares against the same membership
  * this board shows. A teacher can teach more than one class (same subject) — see
  * activeClassId below — so every lookup is keyed by class, not just group. */
+/* The logged-in teacher for this page — same persona as the sidebar badge
+ * (陳凱怡老師). Used to scope the class switcher: it used to list every class
+ * in CLASS_LIST regardless of who teaches it, so 陳凱怡 could switch to 中一甲班
+ * even though that's 黃穎詩's class, not hers — same category of bug just
+ * fixed in group-access-requests.html's "我的請求", here applied to which
+ * classes appear at all rather than which requests appear. */
+const MY_TEACHER_ID = 'T1001';
 let activeClassId = '2b';
+
+function myClasses(){ return CLASS_LIST.filter(cl=>cl.teacherId===MY_TEACHER_ID); }
 
 function renderClassSwitcher(){
   const c = CLASSES[activeClassId];
   document.getElementById('classLabel').textContent = c.className;
   document.getElementById('classMeta').textContent = '· '+c.subjectLabel;
-  document.getElementById('classMenu').innerHTML = CLASS_LIST.map(cl=>
+  document.getElementById('classMenu').innerHTML = myClasses().map(cl=>
     `<div class="class-opt ${cl.id===activeClassId?'on':''}" data-c="${cl.id}" onclick="switchClass('${cl.id}')">${cl.className}<small>${cl.subjectLabel}</small></div>`
   ).join('');
 }
@@ -355,7 +364,10 @@ let sgPickFilters = {};  // {classId: {q, group}}
 let sgPickSelected = {}; // {classId: Set<studentName>}
 
 function renderSgPickRow(){
-  document.getElementById('sgPickRow').innerHTML = CLASS_LIST.map(cl=>{
+  // Cross-class only means "across the classes I teach" — pulling students
+  // from 黃穎詩's 中一甲班 into 陳凱怡's own study group would be the same
+  // access-scope bug as the class switcher above, just one level deeper.
+  document.getElementById('sgPickRow').innerHTML = myClasses().map(cl=>{
     if(!sgPickFilters[cl.id]) sgPickFilters[cl.id] = {q:'', group:'all'};
     if(!sgPickSelected[cl.id]) sgPickSelected[cl.id] = new Set();
     const gfilter = sgPickFilters[cl.id].group;
@@ -369,7 +381,7 @@ function renderSgPickRow(){
       <div class="sg-pick-list" id="sgPickList-${cl.id}"></div>
     </div>`;
   }).join('');
-  CLASS_LIST.forEach(cl=>renderSgPickList(cl.id));
+  myClasses().forEach(cl=>renderSgPickList(cl.id));
 }
 
 function renderSgPickList(classId){

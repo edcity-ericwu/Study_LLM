@@ -185,9 +185,20 @@
     <h1>教師名冊</h1>
     <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
 
+    <div class="table-toolbar">
+      <input type="text" id="teacherSearch" placeholder="搜尋教師姓名、編號或科組" oninput="renderTeachers()">
+    </div>
+
     <table>
       <thead><tr><th>教師</th><th>教師編號</th><th>所屬科組</th><th>聯絡方式</th><th>狀態</th><th></th></tr></thead>
       <tbody id="teacherTbody"></tbody>
+    </table>
+
+    <h2 style="margin-top:26px;">其他職員（非教學）</h2>
+    <div class="sub" style="margin-bottom:12px;">圖書館、資訊科技組、總務處等非教學同工——只作名冊記錄，不涉及任教編配、角色與權限等課堂層級功能。</div>
+    <table>
+      <thead><tr><th>姓名</th><th>職員編號</th><th>所屬部門</th><th>狀態</th></tr></thead>
+      <tbody id="supportStaffTbody"></tbody>
     </table>
   </section>
 
@@ -199,8 +210,6 @@
       <thead><tr><th>老師</th><th>班別</th><th>科目</th><th>學年</th><th></th></tr></thead>
       <tbody id="assignTbody"></tbody>
     </table>
-
-    <div id="reassignBox"></div>
   </section>
 
   <section class="tab-pane" data-pane="bulk">
@@ -316,20 +325,32 @@ function renderAssignments(){
       <td><button class="act" onclick="startReassign('${a.id}')">重新編配</button></td>
     </tr>`).join('');
 }
+/* Inline picker: inserted as a row directly under the assignment that was
+ * clicked, not appended to a fixed box below the whole table — same fix,
+ * same reasoning, as 學生編班's startClassTransfer() below: a box anchored to
+ * the bottom of the table landed off-screen the moment you clicked 重新編配
+ * for any row above the fold, so there was no visible next step. */
 function startReassign(id){
+  document.querySelectorAll('.transfer-row').forEach(r=>r.remove()); // only one picker open at a time
   const a = ASSIGNMENTS.find(x=>x.id===id);
   // only active teachers can receive a new class — 教師名冊's status is what this reads.
   const candidates = activeTeachers().filter(t=>t.id!==a.teacherId);
   const options = candidates.length
     ? candidates.map(t=>`<option value="${t.id}">${teacherLabel(t.id)}</option>`).join('')
     : `<option value="">（沒有其他在職教師可選）</option>`;
-  document.getElementById('reassignBox').innerHTML = `
-    <div class="reassign-row">
+  const anchorRow = document.querySelector(`tr[data-id="${id}"]`);
+  const tr = document.createElement('tr');
+  tr.className = 'transfer-row';
+  tr.innerHTML = `<td colspan="5" style="padding:0;">
+    <div class="reassign-row" style="margin:10px 14px;border-radius:8px;">
       將 <b>${a.cls}</b>（${subjectName(a.subjectId)}）由 <b>${teacherLabel(a.teacherId)}</b> 重新編配給
       <select id="reassignPick">${options}</select>
       <button class="act" onclick="confirmReassign('${id}')">確認編配</button>
-      <button class="act" onclick="document.getElementById('reassignBox').innerHTML=''">取消</button>
-    </div>`;
+      <button class="act" onclick="this.closest('tr').remove()">取消</button>
+    </div>
+  </td>`;
+  anchorRow.insertAdjacentElement('afterend', tr);
+  if (tr.scrollIntoView) tr.scrollIntoView({block:'nearest', behavior:'smooth'});
 }
 function confirmReassign(id){
   const toTeacherId = document.getElementById('reassignPick').value;
@@ -338,8 +359,6 @@ function confirmReassign(id){
   const fromTeacherId = a.teacherId;
   a.teacherId = toTeacherId;
   renderAssignments();
-  document.getElementById('reassignBox').innerHTML =
-    `<div class="reassign-row" style="background:#effaf5;border-color:#bfe8d7;">✓ ${a.cls}（${subjectName(a.subjectId)}）已由 ${teacherLabel(fromTeacherId)} 轉交 ${teacherLabel(toTeacherId)}。（此原型未接通教學分組等畫面，實際變動僅在此示意）</div>`;
   toast('已將 '+a.cls+' 由 '+teacherLabel(fromTeacherId)+' 轉交 '+teacherLabel(toTeacherId));
 }
 
@@ -575,7 +594,15 @@ function renderTeachers(){
   // outstanding item, not a headcount.
   const pendingStatusCount = TEACHER_STATUS_REQUESTS.filter(r=>r.status==='pending').length;
   setTabCount('countTeachers', pendingStatusCount, 'warn');
-  document.getElementById('teacherTbody').innerHTML = TEACHERS.map(t=>{
+  // Search added alongside the 2026-07-27 roster fill (55 teaching staff, up
+  // from 6) — a flat unfiltered list of that size is exactly the scanning
+  // problem this suite has already fixed elsewhere (groups.html's board,
+  // groups.html's study-group picker). Matches name, id, or subject name.
+  const q = (document.getElementById('teacherSearch').value || '').trim();
+  const visible = q
+    ? TEACHERS.filter(t=>t.name.includes(q) || t.id.includes(q) || subjectName(t.subjectId).includes(q))
+    : TEACHERS;
+  document.getElementById('teacherTbody').innerHTML = visible.map(t=>{
     // A pending TEACHER_STATUS_REQUESTS entry means 何主任 already asked 曾主任
     // (School Records Officer) to change this — the dropdown is replaced with a
     // plain pending badge so it's clear the record hasn't actually changed yet
@@ -1005,6 +1032,19 @@ function bulkRevokeRole(){
   toast('已為 '+count+' 位教師收回「'+roleLabel(roleId)+'」角色');
 }
 
+/* Read-only — no status dropdown, no role picker, no reassignment (see the
+ * SUPPORT_STAFF comment in vendor-data.js for why these aren't folded into
+ * TEACHERS). Just a name/id/dept/status list. */
+function renderSupportStaff(){
+  document.getElementById('supportStaffTbody').innerHTML = SUPPORT_STAFF.map(s=>`
+    <tr>
+      <td><b>${s.name}</b></td>
+      <td>${s.id}</td>
+      <td>${s.dept}</td>
+      <td>${STATUS_LABEL[s.status]}</td>
+    </tr>`).join('');
+}
+
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 renderAssignments();
@@ -1012,6 +1052,7 @@ populateStudentClassFilter();
 populateValidClassCodesHint();
 renderStudents();
 renderTeachers();
+renderSupportStaff();
 renderRoleLegend();
 renderRoles();
 </script>

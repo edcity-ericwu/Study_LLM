@@ -178,6 +178,15 @@ document.body.classList.toggle('ff-hide-trial', typeof featureOn==='function' &&
 document.body.classList.toggle('ff-hide-studygroups', typeof featureOn==='function' && !featureOn('studyGroups'));
 
 const REQUESTABLE_VENDORS = ['zhixie','diandu','unknownvendor'];
+/* The logged-in teacher for this page — same persona as the sidebar badge
+ * below (陳凱怡老師). Used to scope "我的請求與狀態": that section is titled
+ * MY requests, but its filter was only ever checking classId, never who
+ * actually made the request — meaning any teacher's request on the class
+ * you're viewing showed up as if it were yours. That was easy to miss with
+ * only one teacher per class in the earlier small-roster data, but is a real
+ * bug now that multiple teachers (e.g. 陳凱怡 and 黃穎詩) can each have their
+ * own request scoped to the same class (2b). */
+const MY_TEACHER_ID = 'T1001';
 let activeClassId = '2b';
 
 function renderClassSwitcher(){
@@ -344,13 +353,15 @@ function submitRequest(groupId){
 }
 
 function myRelevantEntries(){
-  // grants + pending requests belonging to the active class (or whole class within it) —
-  // study-group-scoped entries (classId:null) are shown separately below, always,
+  // grants + pending requests belonging to the active class AND made by ME —
+  // classId alone isn't enough once more than one teacher can have a request
+  // scoped to the same class (see MY_TEACHER_ID comment above). Study-group-
+  // scoped entries (classId:null) are shown separately below, always,
   // regardless of which class is active, since they were never scoped to one.
   const out = [];
   VENDORS.forEach(v=>{
-    v.grants.forEach(g=>{ if(g.classId===activeClassId) out.push({v, entry:g, kind:'grant'}); });
-    v.pending.forEach(p=>{ if(p.classId===activeClassId) out.push({v, entry:p, kind:'pending'}); });
+    v.grants.forEach(g=>{ if(g.classId===activeClassId && g.teacherId===MY_TEACHER_ID) out.push({v, entry:g, kind:'grant'}); });
+    v.pending.forEach(p=>{ if(p.classId===activeClassId && p.teacherId===MY_TEACHER_ID) out.push({v, entry:p, kind:'pending'}); });
   });
   return out;
 }
@@ -358,18 +369,18 @@ function myRelevantEntries(){
 function myStudyGroupEntries(){
   const out = [];
   VENDORS.forEach(v=>{
-    v.grants.forEach(g=>{ if(isStudyGroupScope(g.groupId)) out.push({v, entry:g, kind:'grant'}); });
-    v.pending.forEach(p=>{ if(isStudyGroupScope(p.groupId)) out.push({v, entry:p, kind:'pending'}); });
+    v.grants.forEach(g=>{ if(isStudyGroupScope(g.groupId) && g.teacherId===MY_TEACHER_ID) out.push({v, entry:g, kind:'grant'}); });
+    v.pending.forEach(p=>{ if(isStudyGroupScope(p.groupId) && p.teacherId===MY_TEACHER_ID) out.push({v, entry:p, kind:'pending'}); });
   });
   return out;
 }
 
 function myRelevantTrials(){
-  return TRIALS.filter(t=>t.classId===activeClassId && t.origin==='teacher');
+  return TRIALS.filter(t=>t.classId===activeClassId && t.origin==='teacher' && t.teacherId===MY_TEACHER_ID);
 }
 
 function myStudyGroupTrials(){
-  return TRIALS.filter(t=>isStudyGroupScope(t.groupId) && t.origin==='teacher');
+  return TRIALS.filter(t=>isStudyGroupScope(t.groupId) && t.origin==='teacher' && t.teacherId===MY_TEACHER_ID);
 }
 
 const TRIAL_STATUS_CHIP = {

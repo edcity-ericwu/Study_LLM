@@ -34,9 +34,18 @@
  * ever read className/subjectLabel/groups/students off CLASS_LIST entries, so
  * adding these fields doesn't touch anything else — verified via grep before
  * making this change. */
+/* teacherId added 2026-07-27: which teacher actually teaches this class was
+ * previously only encoded as free text inside subjectLabel (e.g. "黃穎詩老師任教")
+ * — fine for display, useless for filtering. Pages with a class switcher
+ * (groups.html, and potentially others sharing the same CLASS_LIST-driven
+ * dropdown) need a real field to filter "classes I teach" from "every class
+ * that exists", the same gap just fixed in group-access-requests.html's
+ * "我的請求" for vendor requests. Matches roster.html's own ASSIGNMENTS array
+ * (a1/a2: 陳凱怡→2b/1c, a3: 黃穎詩→1a) — kept in sync by hand since ASSIGNMENTS
+ * carries extra fields (subjectId, year) this doesn't need. */
 const CLASSES = {
   '2b': {
-    className:'中二乙班', subjectLabel:'中文 · 35 人 · 任教中', form:'S2', formLabel:'中二',
+    className:'中二乙班', subjectLabel:'中文 · 35 人 · 任教中', form:'S2', formLabel:'中二', teacherId:'T1001',
     groups:[
       {id:'stretch', name:'增潤組', color:'var(--ec-purple)', goal:'進度較快，適合延伸閱讀與較深的寫作任務'},
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
@@ -56,7 +65,7 @@ const CLASSES = {
    * dataset, not a cosmetic label swap, so switching classes actually changes what
    * every 課堂管理 page shows. */
   '1c': {
-    className:'中一丙班', subjectLabel:'中文 · 35 人 · 本學期剛接手', form:'S1', formLabel:'中一',
+    className:'中一丙班', subjectLabel:'中文 · 35 人 · 本學期剛接手', form:'S1', formLabel:'中一', teacherId:'T1001',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
       {id:'support', name:'支援組', color:'var(--ec-green)', goal:'剛接手，仍在觀察哪些學生需要較多支援'},
@@ -70,7 +79,7 @@ const CLASSES = {
    * Giving Form 1 a second class is also what makes 批量編班's form-then-class
    * navigation demonstrate something real instead of a single-class no-op. */
   '1a': {
-    className:'中一甲班', subjectLabel:'中文 · 35 人 · 黃穎詩老師任教', form:'S1', formLabel:'中一',
+    className:'中一甲班', subjectLabel:'中文 · 35 人 · 黃穎詩老師任教', form:'S1', formLabel:'中一', teacherId:'T1002',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
       {id:'support', name:'支援組', color:'var(--ec-green)', goal:'需要多些時間，由黃穎詩老師親自帶領'},
@@ -150,6 +159,22 @@ const UNASSIGNED_STUDENTS = [
 const SUBJECTS = [
   {id:'chi', name:'中文科'},
   {id:'ls', name:'通識科'},
+  /* Added 2026-07-27 alongside the staff roster scale-up (see TEACHERS below) —
+   * a realistic HK secondary school runs a full subject panel structure, not
+   * just the two subjects this prototype's core storylines happen to touch. */
+  {id:'eng', name:'英文科'},
+  {id:'math', name:'數學科'},
+  {id:'sci', name:'科學科'},
+  {id:'hist', name:'歷史科'},
+  {id:'geo', name:'地理科'},
+  {id:'econ', name:'經濟科'},
+  {id:'bafs', name:'企業會計財務概論科'},
+  {id:'ict', name:'資訊及通訊科技科'},
+  {id:'art', name:'視覺藝術科'},
+  {id:'music', name:'音樂科'},
+  {id:'pe', name:'體育科'},
+  {id:'putonghua', name:'普通話科'},
+  {id:'re', name:'宗教及倫理科'},
 ];
 function subjectName(id){ const s = SUBJECTS.find(x=>x.id===id); return s ? s.name : id; }
 
@@ -195,8 +220,88 @@ const TEACHERS = [
   /* New example teacher so sen_coordinator has a concrete holder to demonstrate
    * against too, not just a role that exists in name only. */
   {id:'T1006', name:'梁凱晴', subjectId:'ls', contact:'leung.teacher@school.edu.hk', status:'active', roles:['classroom_teacher','sen_coordinator']},
+  /* Bulk roster fill added 2026-07-27, per Eric: "reflect a real school", not
+   * "wire every teacher into the demo". These 49 exist so 教師名冊/角色與權限 show
+   * a realistic HK secondary school's full scale (~55 teaching staff across a
+   * full subject panel structure, per EDB staff-establishment norms for a
+   * ~24-class school) — NONE of them are referenced by ASSIGNMENTS, VENDORS,
+   * TRIALS, or STUDY_GROUPS; the original T1001–T1006 remain the only teachers
+   * with a real story elsewhere in the prototype. contact is left blank
+   * (not needed for any flow). */
+  {id:'T1007', name:'石曉希', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher','subject_panel_head']},
+  {id:'T1008', name:'鄧啟賢', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1009', name:'羅子軒', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1010', name:'溫俊熙', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1011', name:'沈家豪', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1012', name:'施嘉諾', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1013', name:'蔡俊賢', subjectId:'eng', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1014', name:'王浩澤', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher','subject_panel_head']},
+  {id:'T1015', name:'龍浩騫', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1016', name:'尹詩珩', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1017', name:'邱嘉俊', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1018', name:'范嘉諾', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1019', name:'邵嘉朗', subjectId:'math', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1020', name:'區嘉睿', subjectId:'sci', contact:'', status:'active', roles:['classroom_teacher','subject_panel_head']},
+  {id:'T1021', name:'黃嘉俐', subjectId:'sci', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1022', name:'劉嘉文', subjectId:'sci', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1023', name:'溫家豪', subjectId:'sci', contact:'', status:'departed', roles:['classroom_teacher']},
+  {id:'T1024', name:'余慧敏', subjectId:'sci', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1025', name:'龍子傲', subjectId:'chi', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1026', name:'林浩霖', subjectId:'chi', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1027', name:'余曉彤', subjectId:'hist', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1028', name:'劉詩妍', subjectId:'hist', contact:'', status:'leave', roles:['classroom_teacher']},
+  {id:'T1029', name:'謝浩騫', subjectId:'hist', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1030', name:'許子謹', subjectId:'geo', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1031', name:'吳子誠', subjectId:'geo', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1032', name:'李啟賢', subjectId:'geo', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1033', name:'阮浩然', subjectId:'econ', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1034', name:'曾浩澤', subjectId:'econ', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1035', name:'尹子悅', subjectId:'bafs', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1036', name:'高穎詩', subjectId:'bafs', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1037', name:'馬俊皓', subjectId:'ict', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1038', name:'石家豪', subjectId:'ict', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1039', name:'杜子誠', subjectId:'ict', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1040', name:'梁嘉朗', subjectId:'art', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1041', name:'潘啟賢', subjectId:'art', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1042', name:'沈俊賢', subjectId:'music', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1043', name:'潘子悅', subjectId:'music', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1044', name:'施嘉俊', subjectId:'pe', contact:'', status:'departed', roles:['classroom_teacher']},
+  {id:'T1045', name:'邱嘉睿', subjectId:'pe', contact:'', status:'active', roles:['classroom_teacher','subject_panel_head']},
+  {id:'T1046', name:'梁詩喬', subjectId:'pe', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1047', name:'洪子瑤', subjectId:'pe', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1048', name:'龍曉希', subjectId:'putonghua', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1049', name:'羅嘉怡', subjectId:'putonghua', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1050', name:'馬家豪', subjectId:'re', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1051', name:'周嘉文', subjectId:'re', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1052', name:'龍詩慧', subjectId:'ls', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1053', name:'董子誠', subjectId:'ls', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1054', name:'鄧天佑', subjectId:'ls', contact:'', status:'active', roles:['classroom_teacher']},
+  {id:'T1055', name:'何詩敏', subjectId:'ls', contact:'', status:'active', roles:['classroom_teacher']},
 ];
 function activeTeachers(){ return TEACHERS.filter(t=>t.status==='active'); }
+
+/* Non-teaching staff — added alongside the 2026-07-27 roster fill so 教師名冊
+ * reflects a real school's full headcount (a ~800-student secondary school
+ * typically also carries library, IT, general office, school social work, and
+ * lab-technician staff), not just teaching establishment. Deliberately a
+ * SEPARATE array from TEACHERS (not folded in with subjectId:null) — these
+ * people aren't teachers-with-a-blank-subject, they're a different job
+ * category with no subject panel, no classroom_teacher role, and nothing in
+ * ROLE_DEFS describes what they do. Read-only in roster.html: no status
+ * dropdown, no role picker — same "don't have to link them to the entire
+ * ecosystem" scope Eric gave for the new teaching staff above. */
+const SUPPORT_STAFF = [
+  {id:'ST001', name:'李詠恩', dept:'圖書館', status:'active'},
+  {id:'ST002', name:'陳嘉朗', dept:'圖書館', status:'active'},
+  {id:'ST003', name:'黃俊熙', dept:'資訊科技組', status:'active'},
+  {id:'ST004', name:'馬浩然', dept:'資訊科技組', status:'active'},
+  {id:'ST005', name:'林詩敏', dept:'總務處', status:'active'},
+  {id:'ST006', name:'曾嘉俐', dept:'總務處', status:'active'},
+  {id:'ST007', name:'蔡浩德', dept:'總務處', status:'active'},
+  {id:'ST008', name:'邱雅晴', dept:'社工組', status:'active'},
+  {id:'ST009', name:'沈子誠', dept:'實驗室', status:'active'},
+  {id:'ST010', name:'許嘉頌', dept:'實驗室', status:'active'},
+];
 function teacherById(id){ return TEACHERS.find(t=>t.id===id); }
 function teacherName(id){ const t = teacherById(id); return t ? t.name : id; }
 /* Full name + id, e.g. "陳凱怡（T1001）" — use in admin/record contexts

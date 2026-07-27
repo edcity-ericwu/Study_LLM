@@ -120,7 +120,7 @@
     </div>
     <div class="nav-group" style="margin-top:18px;">
       <h6>其他系統（同一人，不同帳戶）</h6>
-      <a href="eddata-console.html">🔐 EdData 存取審批 →</a>
+      <a href="eddata-console.html">🔐 供應商資料存取審批 →</a>
     </div>
     <div class="nav-group" style="margin-top:18px;">
       <h6>教師視圖</h6>
@@ -178,7 +178,7 @@
   <section class="tab-pane" data-pane="plans">
     <div class="sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
     <div class="plan-grid" id="planGrid"></div>
-    <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">EdData 存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動滙總，不會出現兩邊數字不一致的情況。</div>
+    <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動滙總，不會出現兩邊數字不一致的情況。</div>
   </section>
 
   <section class="tab-pane" data-pane="existing">
@@ -212,7 +212,7 @@
       </tbody>
     </table>
     <div class="note-row">訂閱屆滿後，工具會從教師介面移除，但<b>已收集的標籤數據會保留為歷史紀錄</b>，不會因不續期而消失。教師介面（Apps／代理）中「校方已採購」的標示，正是由此處的授權驅動。</div>
-    <div class="note-row">🔐 本頁只決定「用不用這件工具」；教師組別的<b>資料存取層級</b>是另一個決定，記錄在 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">EdData 存取審批</a>（校管系統，另一系統）。</div>
+    <div class="note-row">🔐 本頁只決定「用不用這件工具」；教師組別的<b>資料存取層級</b>是另一個決定，記錄在 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a>（校管系統，另一系統）。</div>
   </section>
 </div>
 </main>
@@ -277,7 +277,7 @@ function renderCapacityAlerts(){
           <div class="ic">📊</div>
           <div class="body">
             <b>${req.teacher}為${req.group}申請「${v.name}」${v.product}</b>
-            <p>「${v.name}」${check.plan.plan}的學生名額目前用去 ${check.usage.students} / ${check.plan.studentCap} 個，批出這個請求需要另加 ${req.headcount} 個，會超出上限 ${check.overBy} 個。這是<b>方案容量</b>的決定，不是資料存取層級的決定，所以在進入 EdData 審批前，先由此攔截。</p>
+            <p>「${v.name}」${check.plan.plan}的學生名額目前用去 ${check.usage.students} / ${check.plan.studentCap} 個，批出這個請求需要另加 ${req.headcount} 個，會超出上限 ${check.overBy} 個。這是<b>方案容量</b>的決定，不是資料存取層級的決定，所以在進入供應商資料存取審批前，先由此攔截。</p>
             <span class="scope">⚠ 超出方案名額 ${check.overBy} 個 · 需要方案決定</span>
           </div>
           <div class="btns">

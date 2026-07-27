@@ -21,12 +21,12 @@ const FEATURE_FLAGS = {
   // 涉及頁面：trial-invites.html（整頁）、dept-trial-evaluations.html（整頁）、
   // vendor-portal.html 的「邀請老師試用」分頁、eddata-console.html 的「試用請求」分頁、
   // group-access-requests.html 裏的 🧪 申請試用按鈕。
-  toolTrial: true,
+  toolTrial: false,
 
   // 跨班學習小組（2026-07-22 新增，Story 1）。
   // 涉及頁面：groups.html 的「學習小組（跨班）」區塊、
   // group-access-requests.html 的「學習小組（跨班）」申請區。
-  studyGroups: true,
+  studyGroups: false,
 
   // SMS 角色與權限／RBAC（2026-07-22 新增，Story 3）。
   // 涉及頁面：roster.html 的「角色與權限」分頁。
@@ -34,12 +34,31 @@ const FEATURE_FLAGS = {
 
   // 校務紀錄組身分審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）。
   // 涉及頁面：records-console.html（整頁）。
-  recordsApproval: true,
+  recordsApproval: false,
+
+  // 科主任視圖 — 科組統計。
+  // 涉及頁面：dept.html（整頁）。
+  subjectPanelView: false,
+
+  // 內容審核員視圖 — 標籤審核與管理。
+  // 涉及頁面：tags.html（整頁）。
+  contentModeration: false,
 };
 
 function featureOn(key){
   return FEATURE_FLAGS[key] !== false; // missing key defaults to on
 }
+
+/* Generic auto-hide: any element tagged data-feature="someFlag" is hidden on
+ * load if that flag is off — no per-page JS needed. Used for the permanent
+ * sidebar nav links (each page's own left-hand .nav, not the floating
+ * 🧭示範導覽 panel, which demo-nav.js already filters separately). Safe to
+ * apply the same data-feature attribute to any other static link/section later. */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-feature]').forEach(el => {
+    if (!featureOn(el.dataset.feature)) el.style.display = 'none';
+  });
+});
 
 /* Whole-page guard — call at the very top of a flagged page's own inline
  * script (before any render calls) if that ENTIRE page is behind one flag.

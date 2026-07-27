@@ -38,12 +38,12 @@ const PAGES = [
     ['insights.html','班級學習面貌（核心價值，含多班切換）','r'],
   ]},
   {group:'📈 科主任（李主任）', items:[
-    ['dept.html','科組統計視圖','y'],
+    ['dept.html','科組統計視圖','y','subjectPanelView'],
     ['dept-trial-evaluations.html','工具試用評估','y','toolTrial'],
   ]},
   {group:'🔧 資訊科技統籌（馮 Sir）', items:[
     ['subscriptions.html','訂閱管理','y'],
-    ['eddata-console.html','EdData 資料存取審批','r'],
+    ['eddata-console.html','供應商資料存取審批（EdData）','r'],
   ]},
   {group:'📋 校務處（何主任）', items:[
     ['roster.html','校務處控制台（教師名冊／任教編配／批量編班／學生編班）','y'],
@@ -55,14 +55,14 @@ const PAGES = [
     ['student.html','學生／家長入口','r'],
   ]},
   {group:'🏷 內容審核員（平台營運）', items:[
-    ['tags.html','標籤審核與管理','r'],
+    ['tags.html','標籤審核與管理','r','contentModeration'],
   ]},
   {group:'🤝 供應商關係主任（方小姐 · 平台營運）', items:[
     ['vetting.html','供應商審核','y'],
   ]},
   {group:'🏢 供應商（智寫科技）', items:[
     ['vendor-portal.html','供應商入口','y'],
-    ['vendor-data-console.html','資料存取控制台（接收 EdData 批出的資料）','r'],
+    ['vendor-data-console.html','資料存取控制台（接收學校核准後的供應商資料）','r'],
   ]},
 ];
 function init(){

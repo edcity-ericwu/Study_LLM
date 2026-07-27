@@ -143,11 +143,12 @@
 </main>
 
 <div class="toast" id="toast"></div>
+<script src="feature-flags.js"></script>
 <script>
+guardWholePage('subjectPanelView', '.main');
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
 </script>
-<script src="feature-flags.js"></script>
 <script src="demo-nav.js"></script>
 </body>
 </html>

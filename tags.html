@@ -162,7 +162,9 @@
 </main>
 
 <div class="toast" id="toast"></div>
+<script src="feature-flags.js"></script>
 <script>
+guardWholePage('contentModeration', '.main');
 function approve(btn){btn.textContent='已核准 ✓';btn.disabled=true;btn.nextElementSibling.disabled=true;toast('已核准 · 標籤現可計入下游統計');}
 function fixTag(btn){
   const tag=btn.closest('.item').querySelector('.ptag');
@@ -173,7 +175,6 @@ function fixTag(btn){
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 </script>
-<script src="feature-flags.js"></script>
 <script src="demo-nav.js"></script>
 </body>
 </html>

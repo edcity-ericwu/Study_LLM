@@ -134,6 +134,9 @@
   .role-chip.rm{cursor:pointer;background:none;border:1px solid rgba(255,255,255,.6);color:inherit;font-size:.68rem;font-weight:700;padding:0 5px;border-radius:50%;margin-left:2px;}
   .role-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
   .role-add-pick{font-family:inherit;font-size:.74rem;border:1px solid var(--line);border-radius:6px;padding:4px 8px;}
+
+  /* Feature flag (see feature-flags.js) — hides without deleting anything. */
+  body.ff-hide-roles [data-tab="roles"], body.ff-hide-roles [data-pane="roles"]{display:none !important;}
 </style>
 </head>
 <body>
@@ -255,6 +258,7 @@
 <script src="feature-flags.js"></script>
 <script src="vendor-data.js"></script>
 <script>
+document.body.classList.toggle('ff-hide-roles', typeof featureOn==='function' && !featureOn('rolesPermissions'));
 function showTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));

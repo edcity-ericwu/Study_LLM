@@ -44,7 +44,14 @@
   .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
   .topbar .who small{display:block;font-size:.66rem;color:var(--ink-3);text-align:right;}
 
-  .wrap{max-width:880px;margin:0 auto;padding:24px 20px 80px;}
+  /* Was max-width:880px — far narrower than every sibling console page in this
+   * suite (eddata-console.html, subscriptions.html, etc. just fill flex:1 with
+   * no cap at all). On a wide screen that squeezed the table toolbars (search +
+   * filters + sort button) and multi-column tables into a column much narrower
+   * than the available viewport, forcing wraps that had nothing to do with
+   * actual content length. 1400px keeps a sane upper bound for ultra-wide
+   * monitors while giving normal wide screens room to lay out in one line. */
+  .wrap{max-width:1400px;margin:0 auto;padding:24px 20px 80px;}
   .ribbons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;border-radius:99px;padding:5px 14px;}
   .ribbon.live{color:#0c6b48;background:#e6f7ef;border:1px solid #b3e2cc;}
@@ -133,6 +140,14 @@
    * per Eric's screenshot reference, selection state should be visible at a
    * glance across a table of hundreds of rows. */
   tr.row-selected td{background:#e8f0fe;}
+  /* Row click also toggles selection (see rowClickToggleCheckbox()) — the
+   * checkbox target alone was too small to reliably hit. Only rows that
+   * actually have a checkbox get the pointer cursor/hover tint, so this never
+   * implies a header row or a departed-student row (no checkbox there) is
+   * clickable when it isn't. */
+  tr:has(input.row-check){cursor:pointer;}
+  tr:has(input.row-check):hover td{background:#f2f6fd;}
+  tr.row-selected:has(input.row-check):hover td{background:#dce8fc;}
   .bulk-select-banner{background:#e8f0fe;border:1px solid #adc8f5;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.79rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .sort-toolbar{display:flex;align-items:center;gap:8px;}
   .stale-batch{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
@@ -450,12 +465,28 @@ function renderStudents(){
       const key = c.id+'::'+s.n;
       const selected = BULK_SELECTED.has(key);
       const checkbox = s.left ? '' : `<input type="checkbox" class="row-check" data-key="${key}" ${selected?'checked':''} onchange="toggleRowSelect(this)">`;
-      rows.push(`<tr data-class="${c.id}" data-name="${s.n}" class="${selected?'row-selected':''}"><td style="border-left:4px solid ${accent};">${checkbox}</td><td><b>${s.n}</b></td><td>${s.sid||'—'}</td><td>${c.className}</td><td>${status}</td><td>${action}</td></tr>`);
+      rows.push(`<tr data-class="${c.id}" data-name="${s.n}" class="${selected?'row-selected':''}" onclick="rowClickToggleCheckbox(event, this)"><td style="border-left:4px solid ${accent};">${checkbox}</td><td><b>${s.n}</b></td><td>${s.sid||'—'}</td><td>${c.className}</td><td>${status}</td><td>${action}</td></tr>`);
     });
   });
   if (!rows.length) rows.push('<tr><td colspan="6" style="text-align:center;color:var(--ink-3);padding:26px;">沒有符合條件的學生</td></tr>');
   document.getElementById('studentTbody').innerHTML = rows.join('');
   renderBulkSelectBar();
+}
+/* Lets clicking anywhere in a row toggle its checkbox — the checkbox itself
+ * is a small target, easy to miss across a table with dozens/hundreds of
+ * rows. Excludes clicks on anything that already has its own interaction
+ * (轉班/action buttons, the role add-picker select, a role chip's ✕ remove
+ * control) so those keep working exactly as before; everything else on the
+ * row falls through to toggling selection. Dispatching a real 'change' event
+ * (rather than calling toggleRowSelect/toggleRoleSelect directly) means this
+ * works for BOTH tables' checkboxes without needing to know which onchange
+ * handler a given row's checkbox uses. */
+function rowClickToggleCheckbox(e, tr){
+  if (e.target.closest('button, a, select, input, label, .rm')) return;
+  const cb = tr.querySelector('input.row-check');
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  cb.dispatchEvent(new Event('change', {bubbles:true}));
 }
 function toggleRowSelect(el){
   const tr = el.closest('tr');
@@ -960,7 +991,7 @@ function renderRoles(){
         </select>`
       : '';
     const selected = ROLE_SELECTED.has(t.id);
-    return `<tr data-role-teacher-id="${t.id}" class="${selected?'row-selected':''}">
+    return `<tr data-role-teacher-id="${t.id}" class="${selected?'row-selected':''}" onclick="rowClickToggleCheckbox(event, this)">
       <td><input type="checkbox" class="row-check" ${selected?'checked':''} onchange="toggleRoleSelect('${t.id}', this)"></td>
       <td><b>${t.name}</b><small style="display:block;color:var(--ink-3);">${t.id}</small></td>
       <td>${subjectName(t.subjectId)}</td>

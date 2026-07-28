@@ -178,6 +178,42 @@ const SUBJECTS = [
 ];
 function subjectName(id){ const s = SUBJECTS.find(x=>x.id===id); return s ? s.name : id; }
 
+/* Shared skill-tag taxonomy (Story 6 · 內容審核／共用分類). marking.html's own
+ * copy already claimed tags "採用平台共用分類" before this existed as real
+ * data — it was a stub "+" button with no actual list behind it, so nothing
+ * stopped a teacher from inventing her own tag name. This is what makes that
+ * claim true: one fixed, approved list, referenced by name so every page reads
+ * the exact same set instead of each page (marking.html, tags.html,
+ * insights.html, student.html) keeping its own copy that can drift.
+ *
+ * This is also the specific missing piece insights.html's and tags.html's
+ * ribbons point at ("依賴共用分類法（尚未存在）") — a unified view of student
+ * capability across classes/subjects, or across a student's own subjects, is
+ * only possible if the tags feeding it come from one shared vocabulary, not
+ * whatever each teacher (or each page) happened to type in.
+ *
+ * `domain` is the curriculum-area grouping already used in insights.html's
+ * and student.html's display ("閱讀理解 · 推論", "寫作 · 段落結構") — kept as
+ * real metadata here rather than baked into the display string in 4 places,
+ * so a domain rename is one edit instead of a find-and-replace across pages.
+ * Reconciled 2026-07-28: before this, marking.html/insights.html/tags.html/
+ * student.html each used a DIFFERENT name for the same dimension (e.g.
+ * "主旨理解" vs "主旨"; "段落結構"／"論證組織" vs "結構組織"; tags.html's
+ * "詞義理解" and insights/student's "文言字詞" didn't exist in this list at
+ * all) — the exact drift bug this taxonomy exists to prevent, just not
+ * caught yet because nothing referenced it consistently. */
+const SKILL_TAGS = [
+  {name:'推論', domain:'閱讀理解'},
+  {name:'主旨理解', domain:'閱讀理解'},
+  {name:'文意理解', domain:'閱讀理解'},
+  {name:'引例支持', domain:'閱讀理解'},
+  {name:'寫作手法', domain:'寫作'},
+  {name:'段落結構', domain:'寫作'},
+  {name:'論證組織', domain:'寫作'},
+  {name:'詞彙運用', domain:'語文基礎'},
+];
+function skillDomain(name){ const s = SKILL_TAGS.find(x=>x.name===name); return s ? s.domain : ''; }
+
 /* Teacher identity/employment record — SMS's job, same reasoning as CLASSES: the
  * status/subject/contact facts here are what everything downstream (任教編配's
  * reassignment picker, vendor invites, tool requests) should be trusting, rather

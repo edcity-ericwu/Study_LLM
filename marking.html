@@ -114,6 +114,22 @@
   .skill:hover{border-color:var(--ec-blue);}
   .skill.on{background:#effaf5;border-color:#bfe8d7;color:var(--ec-green);font-weight:600;}
   .skill.on.dev{background:#fdf6ec;border-color:#f3e3c3;color:#b07c10;}
+  /* Add-tag picker — deliberately NOT a text input anywhere in here. The only
+   * way to attach a tag is to click one of these buttons, and this list is
+   * exactly SKILL_TAGS (vendor-data.js), nothing else. */
+  .tag-menu{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.14);padding:8px;min-width:260px;z-index:30;display:flex;flex-direction:column;gap:1px;}
+  .tag-menu .tm-label{font-size:.64rem;color:var(--ink-3);font-weight:700;padding:4px 8px 8px;letter-spacing:.02em;line-height:1.5;max-width:220px;}
+  /* Each row is ONE skill name plus TWO separate level buttons — picking a
+   * level is what commits the tag; there's no bare tag-name button that
+   * would force a hidden default level. */
+  .tag-menu .tm-row{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:8px;}
+  .tag-menu .tm-row:hover{background:#fafcfd;}
+  .tag-menu .tm-name{flex:1;font-size:.78rem;color:var(--ink);}
+  .tag-menu .tm-name small{display:block;font-size:.64rem;color:var(--ink-3);font-weight:400;}
+  .tag-menu .tm-lvl{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 10px;font-size:.68rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink-2);white-space:nowrap;}
+  .tag-menu .tm-lvl.secure:hover{background:#effaf5;border-color:#bfe8d7;color:var(--ec-green);}
+  .tag-menu .tm-lvl.dev:hover{background:#fdf6ec;border-color:#f3e3c3;color:#b07c10;}
+  .tag-menu .tm-empty{font-size:.74rem;color:var(--ink-3);padding:6px 9px;}
 
   /* side panel */
   .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:sticky;top:26px;}
@@ -159,8 +175,8 @@
   <nav class="nav">
     <div class="nav-group">
       <h6>AI 工具</h6>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>AI 工具</a>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>AI 對話</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>AI 工具</a>
       <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／代理</a>
       <a href="marking.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>AI 批改</a>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
@@ -246,7 +262,7 @@
       <h3>批改進度</h3>
       <div class="prog"><div class="bar"><i id="progBar"></i></div><span id="progText">13 / 32</span></div>
       <ul>
-        <li>技能標籤採用平台共用分類（推論、主旨、文意理解⋯），供日後個人及科組統計使用。</li>
+        <li>技能標籤採用平台共用分類（推論、主旨理解、文意理解⋯），供日後個人及科組統計使用。</li>
         <li>AI 建議的標籤須經內容審核後方會計入任何統計（故事 6）。</li>
       </ul>
       <div class="release" style="border-top:1px dashed var(--line);padding-top:12px;margin-top:14px;font-size:.72rem;color:var(--ink-2);">
@@ -262,6 +278,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="vendor-data.js"></script>
 <script>
 const RESP = [
   {name:'陳嘉欣', grp:'core', gl:'核心組', ans:'作者透過父親買橘子的背影，表達了父親對兒子深沉而不善言辭的愛。「蹣跚」一詞寫出父親行動不便，更突顯他堅持親自去買的心意。', score:'8', skills:[['推論','secure'],['主旨理解','secure']]},
@@ -269,6 +286,10 @@ const RESP = [
   {name:'王思穎', grp:'stretch', gl:'增潤組', ans:'「背影」既是實寫父親攀爬月台的身影，亦是象徵——兒子成年後回望，才讀懂那個笨拙背影裏未曾說出口的愛。作者以四次流淚為線索，層層遞進。', score:'10', skills:[['推論','secure'],['寫作手法','secure']]},
 ];
 let group='all';
+/* Which response's "add a tag" menu is currently open — at most one at a
+ * time, same convention as every other single-open-picker in this suite
+ * (roster.html's transfer-row, group-access-requests.html's class menu). */
+let addMenuOpenFor = null;
 function setGroup(btn){
   group=btn.dataset.g;
   document.querySelectorAll('.gchip').forEach(b=>b.classList.remove('on'));
@@ -276,9 +297,52 @@ function setGroup(btn){
   render();
   toast(btn.textContent.trim().split(' ')[0] + '：顯示該組學生作答');
 }
+/* A teacher can only ATTACH a tag from SKILL_TAGS (vendor-data.js) — never
+ * type a new one. That's the whole point: 技能標籤 feeding any cross-teacher
+ * or cross-class statistic (insights.html, tags.html) have to come from one
+ * shared vocabulary, or "推論" from one teacher and "推理能力" from another
+ * would silently be two different tags to any downstream aggregation. */
+function toggleAddMenu(i){
+  addMenuOpenFor = (addMenuOpenFor === i) ? null : i;
+  render();
+}
+/* 標籤名稱（來自 SKILL_TAGS）與 熟練程度（穩固／發展中）是兩個獨立判斷，不是
+ * 綁在一起的單一選項——技能名稱是共用分類決定的固定事實，程度是老師對這位
+ * 學生當下表現的判斷，每次都要分開選，不能替老師預設。 */
+function addSkillTag(i, tagName, level){
+  const shown = RESP.filter(r=>group==='all'||r.grp===group);
+  const r = shown[i];
+  if (!r.skills.some(([s])=>s===tagName)) r.skills.push([tagName, level]);
+  addMenuOpenFor = null;
+  render();
+}
+document.addEventListener('click', e=>{
+  if (addMenuOpenFor !== null && !e.target.closest('.tags')) { addMenuOpenFor = null; render(); }
+});
 function render(){
   const shown = RESP.filter(r=>group==='all'||r.grp===group);
-  document.getElementById('respList').innerHTML = shown.map((r,i)=>`
+  document.getElementById('respList').innerHTML = shown.map((r,i)=>{
+    const remaining = SKILL_TAGS.filter(t=>!r.skills.some(([s])=>s===t.name));
+    // Name and level are two separate choices per row — the tag name comes
+    // from the fixed SKILL_TAGS list (no free text), the level is the
+    // teacher's own judgment for THIS student, picked explicitly each time
+    // rather than defaulted. Domain shown alongside the name (same grouping
+    // insights.html/student.html display) so it reads as one taxonomy, not
+    // a flat unrelated word list.
+    const addMenu = addMenuOpenFor===i
+      ? `<div class="tag-menu">
+          <div class="tm-label">從共用分類揀選標籤，並為這位學生判斷程度</div>
+          ${remaining.length
+            ? remaining.map(t=>`
+              <div class="tm-row">
+                <span class="tm-name">${t.name}<small>${t.domain}</small></span>
+                <button class="tm-lvl secure" onclick="addSkillTag(${i},'${t.name}','secure');event.stopPropagation()">穩固</button>
+                <button class="tm-lvl dev" onclick="addSkillTag(${i},'${t.name}','dev');event.stopPropagation()">發展中</button>
+              </div>`).join('')
+            : `<div class="tm-empty">已加入所有共用分類標籤</div>`}
+        </div>`
+      : '';
+    return `
     <div class="resp">
       <div class="r-head">
         <div class="stu">${r.name[0]}</div><b>${r.name}</b>
@@ -289,9 +353,13 @@ function render(){
       <div class="tags">
         <span class="t-label">技能標籤：</span>
         ${r.skills.map(([s,lv])=>`<button class="skill on ${lv==='dev'?'dev':''}" onclick="this.classList.toggle('on');event.stopPropagation()">${s} · ${lv==='dev'?'發展中':'穩固'}</button>`).join('')}
-        <button class="skill" onclick="toast('原型示範：加入標籤')">＋</button>
+        <span style="position:relative;">
+          <button class="skill" onclick="toggleAddMenu(${i});event.stopPropagation()">＋</button>
+          ${addMenu}
+        </span>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function fillDrop(){
   const d=document.getElementById('dropMain');

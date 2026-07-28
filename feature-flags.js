@@ -38,11 +38,11 @@ const FEATURE_FLAGS = {
 
   // 科主任視圖 — 科組統計。
   // 涉及頁面：dept.html（整頁）。
-  subjectPanelView: false,
+  subjectPanelView: true,
 
   // 內容審核員視圖 — 標籤審核與管理。
   // 涉及頁面：tags.html（整頁）。
-  contentModeration: false,
+  contentModeration: true,
 };
 
 function featureOn(key){

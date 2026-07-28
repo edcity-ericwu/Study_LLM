@@ -104,8 +104,8 @@
   <nav class="nav">
     <div class="nav-group">
       <h6>AI 工具</h6>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>AI 工具</a>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>AI 對話</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>AI 工具</a>
       <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／代理</a>
       <a href="marking.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>AI 批改</a>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
@@ -170,7 +170,7 @@
     </div>
   </div>
 
-  <div class="caution" id="cautionBox">🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。文言字詞落後的五位同學，需要的是不同的路徑，不是同一條路走快些。</div>
+  <div class="caution" id="cautionBox">🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -184,28 +184,28 @@ const CLASS_DATA = {
       {n:'1',l:'覆蓋不足的技能維度', warn:true},
     ],
     hasImpact:true,
-    caution:'🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。文言字詞落後的五位同學，需要的是不同的路徑，不是同一條路走快些。',
+    caution:'🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。',
     groups:{
       all:{title:'技能面貌 · 全班（35 人）', rows:[
         ['閱讀理解 · 推論','up','▲ 進步中','28 份樣本','新閱讀策略似乎見效——增潤組已可挑戰更深層提問'],
-        ['閱讀理解 · 主旨','up','▲ 進步中','26 份樣本','—'],
-        ['寫作 · 結構組織','flat','▶ 大致持平','19 份樣本','三個分組差異不大，可全班同步處理'],
-        ['文言字詞','down','▼ 需要關注','22 份樣本','困難集中在支援組及部分核心組同學'],
+        ['閱讀理解 · 主旨理解','up','▲ 進步中','26 份樣本','—'],
+        ['寫作 · 段落結構','flat','▶ 大致持平','19 份樣本','三個分組差異不大，可全班同步處理'],
+        ['語文基礎 · 詞彙運用','down','▼ 需要關注','22 份樣本','困難集中在支援組及部分核心組同學'],
       ]},
       stretch:{title:'技能面貌 · 增潤組（3 人）', rows:[
         ['閱讀理解 · 推論','up','▲ 穩固','9 份樣本','可加開放式提問——先寫再看評語'],
-        ['寫作 · 結構組織','up','▲ 進步中','7 份樣本','適合嘗試議論文結構'],
-        ['文言字詞','flat','▶ 大致持平','8 份樣本','—'],
+        ['寫作 · 段落結構','up','▲ 進步中','7 份樣本','適合嘗試議論文結構'],
+        ['語文基礎 · 詞彙運用','flat','▶ 大致持平','8 份樣本','—'],
       ]},
       core:{title:'技能面貌 · 核心組（5 人）', rows:[
         ['閱讀理解 · 推論','up','▲ 進步中','15 份樣本','—'],
-        ['寫作 · 結構組織','flat','▶ 大致持平','10 份樣本','開頭段落是共同弱項'],
-        ['文言字詞','down','▼ 需要關注','12 份樣本','三位同學連續兩次未達穩固'],
+        ['寫作 · 段落結構','flat','▶ 大致持平','10 份樣本','開頭段落是共同弱項'],
+        ['語文基礎 · 詞彙運用','down','▼ 需要關注','12 份樣本','三位同學連續兩次未達穩固'],
       ]},
       support:{title:'技能面貌 · 支援組（2 人）', rows:[
         ['閱讀理解 · 推論','up','▲ 進步中','4 份樣本','工作紙 v2 之後有起色（見下方）'],
-        ['寫作 · 結構組織','flat','▶ 大致持平','2 份樣本','樣本太少，暫不作判斷'],
-        ['文言字詞','down','▼ 需要關注','6 份樣本','建議配合筆順與詞語卡，從字入手'],
+        ['寫作 · 段落結構','flat','▶ 大致持平','2 份樣本','樣本太少，暫不作判斷'],
+        ['語文基礎 · 詞彙運用','down','▼ 需要關注','6 份樣本','建議配合筆順與詞語卡，從字入手'],
       ]},
     },
   },

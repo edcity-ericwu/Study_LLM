@@ -26,8 +26,8 @@ const CSS = `
  * what each flag covers and why. */
 const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
-    ['index.html','AI 工具首頁',''],
     ['chat.html','AI 對話（科目助理）',''],
+    ['index.html','AI 工具首頁',''],
     ['agents.html','Apps／代理庫',''],
     ['marking.html','AI 批改','y'],
     ['materials.html','教材準備（三大用例）','y'],

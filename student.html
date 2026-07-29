@@ -137,8 +137,13 @@
   .rec .go.done{color:#fff;background:var(--ec-green);border-color:var(--ec-green);cursor:default;}
   .rec.hidden{display:none;}
   .parent-panel{display:none;}
-  .parent-panel .q{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #f2f6f8;font-size:.8rem;line-height:1.65;color:var(--ink-2);}
-  .parent-panel .q .n{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#effaf5;color:#0c6b48;font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  /* Each talk-topic used to be a thin divider-separated row — easy to skim
+   * past. Now every topic is its own tinted card with more breathing room,
+   * a bigger number badge, and larger text, so it reads as "here's a real
+   * suggestion" rather than a line of fine print. */
+  .parent-panel .q{display:flex;gap:14px;align-items:flex-start;padding:16px;margin-bottom:12px;background:#faf8ff;border:1px solid #ece5fa;border-radius:14px;font-size:.88rem;line-height:1.75;color:var(--ink);}
+  .parent-panel .q:last-child{margin-bottom:0;}
+  .parent-panel .q .n{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--ec-purple,#7C5CDB);color:#fff;font-size:.82rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;box-shadow:0 2px 6px rgba(124,92,219,.35);}
   .mood-result{border-top:2px dashed #dcf3e8;padding-top:12px;margin-top:2px;}
   .snap-row-wrap{margin-bottom:14px;}
   .snap-row{display:flex;gap:10px;flex-wrap:wrap;}
@@ -146,10 +151,15 @@
   .snap .s-ic{font-size:1.15rem;display:block;margin-bottom:6px;}
   .snap b{font-size:.82rem;display:block;color:var(--ink);}
   .snap small{font-size:.68rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
-  .q-actions{display:flex;gap:6px;flex-shrink:0;align-self:center;}
-  .q-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 12px;font-size:.68rem;color:var(--ink-2);font-weight:600;cursor:pointer;font-family:inherit;}
+  .q-actions{display:flex;flex-direction:column;gap:7px;flex-shrink:0;align-self:center;}
+  .q-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font-size:.76rem;color:var(--ink-2);font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
   .q-btn:hover{border-color:var(--ec-green);color:#0c6b48;}
-  .q-btn.done{background:var(--ec-green);border-color:var(--ec-green);color:#fff;cursor:default;}
+  /* 試過了 is the button a parent actually wants to reach for — give it real
+   * weight (solid fill) from the start instead of looking identical to the
+   * low-stakes "換一題" skip option until after it's clicked. */
+  .q-btn.primary{background:var(--ec-green);border-color:var(--ec-green);color:#fff;box-shadow:0 2px 8px rgba(0,172,108,.28);}
+  .q-btn.primary:hover{background:#059669;border-color:#059669;color:#fff;}
+  .q-btn.done{background:#e6f4fb;border-color:#c4e5f5;color:var(--ec-blue-dark);box-shadow:none;}
   .joint{background:#fff;border:1px solid #bfe8d7;border-left:4px solid var(--ec-green);border-radius:16px;padding:20px;margin-bottom:14px;}
   .snap-row-wrap .kicker{margin-left:2px;}
   .joint h3{font-size:.92rem;font-weight:700;margin-bottom:6px;}
@@ -265,9 +275,9 @@
       <span class="kicker talk">💬 話題 · 不是打分，只是聊天引子</span>
       <h3>本週可以跟 Karen 聊的三件事</h3>
       <div class="src">根據她的學習紀錄生成 · 只提供話題，不鼓勵施壓</div>
-      <div class="q"><span class="n">1</span><span><b>推論題</b>她已連續練習了四星期；三月時她還說最怕這類題。不妨問問她：「你是怎樣不再怕它的？」</span><span class="q-actions"><button class="q-btn" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
-      <div class="q"><span class="n">2</span><span><b>詞彙運用</b>是她暫時覺得最難的部分。與其問她「溫咗書未」，不如陪她讀一段〈背影〉，請她教你一個生字。</span><span class="q-actions"><button class="q-btn" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
-      <div class="q"><span class="n">3</span><span>這星期她完成了三次練習，全部由她自己選擇、自己安排。值得讚她一句：「你安排得很好。」</span><span class="q-actions"><button class="q-btn" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
+      <div class="q"><span class="n">1</span><span><b>推論題</b>她已連續練習了四星期；三月時她還說最怕這類題。不妨問問她：「你是怎樣不再怕它的？」</span><span class="q-actions"><button class="q-btn primary" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
+      <div class="q"><span class="n">2</span><span><b>詞彙運用</b>是她暫時覺得最難的部分。與其問她「溫咗書未」，不如陪她讀一段〈背影〉，請她教你一個生字。</span><span class="q-actions"><button class="q-btn primary" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
+      <div class="q"><span class="n">3</span><span>這星期她完成了三次練習，全部由她自己選擇、自己安排。值得讚她一句：「你安排得很好。」</span><span class="q-actions"><button class="q-btn primary" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
     </div>
 
     <div class="joint">

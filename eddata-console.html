@@ -69,6 +69,17 @@
   .tier-card.t3{border-top:3px solid var(--ink-3);opacity:.65;}
   .tier-card.t3 small.flag{color:#b07c10;font-weight:700;}
 
+  /* Tier descriptions used to sit as a permanent card row at the top of the
+   * page — supplementary reference info that pushed the actual queue down.
+   * Now it's collapsed behind a small (i) icon next to the tier-pick buttons
+   * themselves, right where the decision is actually made, and only expands
+   * on click (one at a time, same pattern as .revoke-zone). */
+  .tier-info-btn{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#eef3f6;color:var(--ink-3);font-size:.64rem;font-weight:700;cursor:pointer;margin-left:6px;vertical-align:middle;border:none;font-family:inherit;padding:0;line-height:1;}
+  .tier-info-btn:hover{background:#dfe7ec;color:var(--ink-2);}
+  .tier-info-pop{display:none;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .tier-info-pop.show{display:flex;}
+  .tier-info-pop .tier-card{min-width:160px;padding:9px 11px;}
+
   /* vendor-relationship cards — the primary structure */
   .vendor{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden;}
   .v-head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
@@ -271,13 +282,6 @@
   </div>
 
   <section class="tab-pane active" data-pane="relations">
-    <h2>資料層級</h2>
-    <div class="tier-row">
-      <div class="tier-card t1"><b>Tier 1 · 基本資料</b><small>姓名、班別、組別身分。現時已存在，敏感度最低。</small></div>
-      <div class="tier-card t2"><b>Tier 2 · 敏感個人資料</b><small>SEN 標籤、支援計劃狀態等 PDPO 敏感資料。現時已存在，是目前主要把關對象。</small></div>
-      <div class="tier-card t3"><b>Tier 3 · 表現數據</b><small class="flag">⚠ 尚在建立中，暫不開放</small><small>評估與學習表現數據。架構已預留此層級，但累積樣本仍太少，暫不能核實開放。</small></div>
-    </div>
-
     <h2>供應商關係</h2>
     <div class="queue-summary" id="queueSummary"></div>
     <div id="vendorList"></div>
@@ -338,12 +342,29 @@ function entitlementChip(vendor){
   return `<span class="vchip entitle">目前最高：${top.tier}</span>`;
 }
 
+function tierInfoPopHtml(){
+  return `<div class="tier-row">
+      <div class="tier-card t1"><b>Tier 1 · 基本資料</b><small>姓名、班別、組別身分。現時已存在，敏感度最低。</small></div>
+      <div class="tier-card t2"><b>Tier 2 · 敏感個人資料</b><small>SEN 標籤、支援計劃狀態等 PDPO 敏感資料。現時已存在，是目前主要把關對象。</small></div>
+      <div class="tier-card t3"><b>Tier 3 · 表現數據</b><small class="flag">⚠ 尚在建立中，暫不開放</small><small>評估與學習表現數據。架構已預留此層級，但累積樣本仍太少，暫不能核實開放。</small></div>
+    </div>`;
+}
+function toggleTierInfo(id){
+  const pop = document.getElementById('tierinfo-'+id);
+  if (!pop) return;
+  const opening = !pop.classList.contains('show');
+  document.querySelectorAll('.tier-info-pop.show').forEach(p=>{ if(p!==pop) p.classList.remove('show'); });
+  pop.classList.toggle('show', opening);
+  if (opening && !pop.dataset.filled) { pop.innerHTML = tierInfoPopHtml(); pop.dataset.filled = '1'; }
+}
 function tierPickHtml(vendorId, req, vendorName){
+  const infoId = vendorId+'-'+req.id;
   return `<div class="release-zone">
     <div class="rz-label">⚠ 資料釋放決定</div>
     <div class="rz-chain">
       <div class="rz-step"><div class="scope-chip"><span class="sc-ic">👥</span>${req.group} 的學生資料</div></div>
-      <div class="rz-arrow">↓ 選擇釋放層級</div>
+      <div class="rz-arrow">↓ 選擇釋放層級<button class="tier-info-btn" type="button" onclick="toggleTierInfo('${infoId}')" title="各層級說明">ⓘ</button></div>
+      <div class="tier-info-pop" id="tierinfo-${infoId}"></div>
       <div class="tier-pick">
         <button class="tpick" data-t="Tier 1 · 基本資料" onclick="pickTier('${vendorId}','${req.id}',this)"><b>Tier 1</b><small>基本資料</small></button>
         <button class="tpick" data-t="Tier 2 · 敏感個人資料" onclick="pickTier('${vendorId}','${req.id}',this)"><b>Tier 2</b><small>敏感個人資料</small></button>

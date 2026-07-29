@@ -44,6 +44,8 @@
   .skill-row .nm{width:150px;font-size:.8rem;flex-shrink:0;}
   .skill-row .bar{flex:1;height:9px;border-radius:99px;background:#eef3f6;overflow:hidden;}
   .skill-row .bar i{display:block;height:100%;border-radius:99px;}
+  .skill-row .spark{flex:1;min-width:0;display:flex;align-items:center;}
+  .skill-row .spark svg{display:block;width:100%;height:28px;}
   .skill-row .st{width:86px;text-align:right;font-size:.72rem;font-weight:700;flex-shrink:0;}
   .skill-row .st small{display:block;font-size:.62rem;font-weight:400;color:var(--ink-3);}
   .g .bar i{background:var(--ec-green);} .g .st{color:var(--ec-green);}
@@ -72,11 +74,27 @@
   .kicker.locked{color:var(--ink-3);background:#f5f8fa;border:1px solid var(--line);}
   .rec-card.required{border-left:4px solid var(--ec-maroon);}
   .rec-card.choice{border-left:4px solid var(--ec-green);}
+  .rec-card.talk{border-left:4px solid var(--ec-purple);}
   .prog-card{border-left:4px solid var(--ec-blue);}
+  /* Parent view: same "bordered card + left-border accent matching the
+   * kicker colour" treatment as the student view, so 快照/話題/行動 read as
+   * three distinct sections at a glance instead of blending together. */
+  .snap-row-wrap{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ec-green);border-radius:16px;padding:20px;margin-bottom:14px;}
+  .snap-row-wrap .snap{border:1px solid #eef2f5;}
 
   .rec-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px;}
   .rec-card h3{font-size:.92rem;font-weight:700;margin-bottom:4px;}
   .rec-card .src{font-size:.7rem;color:var(--ink-3);margin-bottom:14px;}
+  /* Parent-added activities (inserted by addJoint()) live inside the same
+   * "今晚的練習" card as the AI's mood-based suggestions, but they're a
+   * different kind of thing — someone did this for you, it's not filtered
+   * by mood, and it's meant to be done together. Give it its own tint,
+   * rounded block, and a small badge so it doesn't read as just another
+   * AI suggestion in the list. */
+  .rec.family{background:#f7fdf9;border:1px solid #bfe8d7;border-top:1px solid #bfe8d7;border-radius:12px;padding:11px 12px;margin-top:8px;}
+  .rec.family .ic{background:#e3f6ec;}
+  .rec.family small{display:block;margin-bottom:4px;}
+  .fam-badge{display:inline-flex;align-items:center;gap:4px;font-size:.62rem;font-weight:700;color:#0c6b48;background:#e3f6ec;border-radius:99px;padding:2px 9px;}
   .rec{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #f2f6f8;}
   .rec .ic{width:36px;height:36px;border-radius:10px;background:#e6f4fb;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
   .rec b{font-size:.82rem;display:block;}
@@ -142,6 +160,26 @@
 
   .role-banner{background:#effaf5;border-bottom:1px solid #bfe8d7;color:#0c6b48;
     font-size:.7rem;font-weight:700;letter-spacing:.18em;padding:9px 26px;position:sticky;top:0;z-index:50;}
+
+  /* Assignment-launch modal — same pattern as chat.html's tool-detail modal
+   * (agents.html's modal, one level removed): show what you're about to open
+   * before you open it, rather than jumping straight into the doing→done
+   * button cycle with no context on where the practice actually lives. */
+  .tool-overlay{position:fixed;inset:0;background:rgba(20,30,40,.4);display:none;align-items:center;justify-content:center;z-index:200;}
+  .tool-overlay.show{display:flex;}
+  .tool-modal{background:#fff;border-radius:20px;width:min(440px,92vw);padding:26px 26px 22px;position:relative;box-shadow:0 24px 60px rgba(20,30,40,.25);}
+  .tool-modal .close{position:absolute;top:14px;right:16px;border:none;background:transparent;font-size:1.1rem;color:var(--ink-3);cursor:pointer;padding:6px;}
+  .tool-modal .tm-head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+  .tool-modal .tm-face{width:52px;height:52px;border-radius:50%;flex-shrink:0;font-size:1.5rem;display:flex;align-items:center;justify-content:center;background:#e6f4fb;border:2px solid #c4e5f5;}
+  .tool-modal h2{font-size:1.05rem;font-weight:700;}
+  .tool-modal .tm-sub{font-size:.72rem;color:var(--ink-3);margin-top:3px;}
+  .tool-modal .tm-chip{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;border-radius:99px;padding:4px 11px;margin-bottom:12px;}
+  .tool-modal .tm-chip.vendor{color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
+  .tool-modal .tm-chip.official{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  .tool-modal p.tm-desc{font-size:.82rem;color:var(--ink-2);line-height:1.7;margin:0 0 18px;}
+  .tool-modal .tm-actions{display:flex;gap:10px;}
+  .tool-modal .primary{flex:1;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));color:#fff;border:none;border-radius:12px;padding:12px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;}
+  .tool-modal .secondary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -173,7 +211,7 @@
     <span class="kicker required">🔴 必做 · 老師指派</span>
     <h3 style="margin-bottom:4px;">📌 老師指派的功課</h3>
     <div class="src">由你的老師直接指派，不受今晚的心情篩選影響——這裏一定會顯示，直到完成或到期。</div>
-    <div class="rec"><div class="ic">✍️</div><div><b>《背影》字詞重溫小測</b><small>8 分鐘 · 陳凱怡老師指派 · 建議本週內完成</small></div><button class="go" onclick="startRec(this)">開始</button></div>
+    <div class="rec" data-src="vendor:墨言科技"><div class="ic">✍️</div><div><b>《背影》字詞重溫小測</b><small>8 分鐘 · 陳凱怡老師指派 · 建議本週內完成</small></div><button class="go" onclick="openAssignmentModal(this)">開始</button></div>
   </div>
 
   <div class="rec-card choice" style="margin-top:14px;">
@@ -187,9 +225,9 @@
   <div class="mood-result">
     <h3 id="recTitle" style="margin-bottom:4px;font-size:.88rem;color:var(--ec-green);">🍃 輕鬆練習（10 分鐘內做完）</h3>
     <div class="src">由 EdCity AI 建議 · 針對「文言字詞」— 與老師使用同一個官方推薦引擎，只推薦免費官方資源</div>
-    <div class="rec" data-m="light focus"><div class="ic">🃏</div><div><b>文言字詞學習卡 — 中二選篇</b><small>10 分鐘 · 官方免費資源</small></div><button class="go" onclick="startRec(this)">開始</button></div>
-    <div class="rec" data-m="focus"><div class="ic">📜</div><div><b>文言常用虛詞練習（一）</b><small>15 分鐘 · 官方免費資源</small></div><button class="go" onclick="startRec(this)">開始</button></div>
-    <div class="rec" data-m="review"><div class="ic">🔁</div><div><b>推論題錯題回顧</b><small>12 分鐘 · 取自你之前做錯的題目</small></div><button class="go" onclick="startRec(this)">開始</button></div>
+    <div class="rec" data-m="light focus"><div class="ic">🃏</div><div><b>文言字詞學習卡 — 中二選篇</b><small>10 分鐘 · 官方免費資源</small></div><button class="go" onclick="openAssignmentModal(this)">開始</button></div>
+    <div class="rec" data-m="focus"><div class="ic">📜</div><div><b>文言常用虛詞練習（一）</b><small>15 分鐘 · 官方免費資源</small></div><button class="go" onclick="openAssignmentModal(this)">開始</button></div>
+    <div class="rec" data-m="review"><div class="ic">🔁</div><div><b>推論題錯題回顧</b><small>12 分鐘 · 取自你之前做錯的題目</small></div><button class="go" onclick="openAssignmentModal(this)">開始</button></div>
   </div>
   </div><!-- /practice-card -->
 
@@ -199,10 +237,7 @@
     <h3>技能進度</h3>
     <div class="skill-dep">🔴 待決策 · 依賴共用分類法（尚未存在）</div>
     <div class="skill-source">📊 這裏每一條，都是你各科老師批改時標記、經內容審核通過後的技能標籤累積而成——標籤來自全平台共用的同一套分類，未經審核的標籤不會計入，你自己也一樣看不到未審核的（與教師的「班級學習面貌」用同一套規則）。</div>
-    <div class="skill-row g"><span class="nm">閱讀理解 · 推論</span><div class="bar"><i style="width:72%"></i></div><span class="st">進步中 ▲<small>18 次已審核</small></span></div>
-    <div class="skill-row g"><span class="nm">閱讀理解 · 主旨理解</span><div class="bar"><i style="width:64%"></i></div><span class="st">進步中 ▲<small>15 次已審核</small></span></div>
-    <div class="skill-row a"><span class="nm">寫作 · 段落結構</span><div class="bar"><i style="width:48%"></i></div><span class="st">持平 ▶<small>11 次已審核</small></span></div>
-    <div class="skill-row r"><span class="nm">語文基礎 · 詞彙運用</span><div class="bar"><i style="width:31%"></i></div><span class="st">未跟上 ▼<small>9 次已審核</small></span></div>
+    <div id="skillProgressRows"></div>
     <div class="persist">
       <span class="p-ic">🌱</span>
       <div><b>你堅持住的事</b><br>推論題你已連續四星期堅持練習。三月時你說最怕這類題，現在它是你進步最快的一項。詞彙運用暫時未跟上也不要緊，一步一步來就好。
@@ -226,7 +261,7 @@
         <div class="snap"><span class="s-ic">📜</span><b>本週生字：蹣跚</b><small>她在〈背影〉學到的——可以請她教你</small></div>
       </div>
     </div>
-    <div class="rec-card">
+    <div class="rec-card talk">
       <span class="kicker talk">💬 話題 · 不是打分，只是聊天引子</span>
       <h3>本週可以跟 Karen 聊的三件事</h3>
       <div class="src">根據她的學習紀錄生成 · 只提供話題，不鼓勵施壓</div>
@@ -253,7 +288,121 @@
   </div>
 </div>
 
+<div class="tool-overlay" id="toolOverlay" onclick="if(event.target===this)closeToolModal()">
+  <div class="tool-modal">
+    <button class="close" onclick="closeToolModal()">✕</button>
+    <div class="tm-head">
+      <div class="tm-face" id="tmFace">📘</div>
+      <div>
+        <h2 id="tmName">—</h2>
+        <div class="tm-sub" id="tmSub">—</div>
+      </div>
+    </div>
+    <span class="tm-chip official" id="tmChip">📘 教育城官方資源</span>
+    <p class="tm-desc" id="tmDesc">—</p>
+    <div class="tm-actions">
+      <button class="primary" id="tmUse" onclick="launchFromModal()">開始練習 →</button>
+      <button class="secondary" onclick="closeToolModal()">取消</button>
+    </div>
+  </div>
+</div>
+
 <script>
+/* Skill-progress sparklines — same pattern as insights.html/dept.html:
+ * derive the trend direction/label from a real 6-point series instead of
+ * hand-typing an arrow+label that could drift from the bar's own width.
+ * series values are "已掌握程度" over the last 6 marking cycles; the last
+ * point is what the old static bar's width used to show. */
+const SKILL_PROGRESS = [
+  {name:'閱讀理解 · 推論', series:[48,54,60,65,69,72], sample:18},
+  {name:'閱讀理解 · 主旨理解', series:[42,47,52,57,61,64], sample:15},
+  {name:'寫作 · 段落結構', series:[46,49,45,47,46,48], sample:11},
+  {name:'語文基礎 · 詞彙運用', series:[44,40,36,33,32,31], sample:9},
+];
+const SKILL_TREND_COLOR = {up:'#00AC6C', flat:'#b07c10', down:'#ED1A2E'};
+function skillTrendMeta(series){
+  const delta = series[series.length-1] - series[0];
+  if (delta >= 5) return {dir:'g', cls:'g', label:'進步中 ▲'};
+  if (delta <= -5) return {dir:'r', cls:'r', label:'未跟上 ▼'};
+  return {dir:'a', cls:'a', label:'持平 ▶'};
+}
+function skillSparkSVG(values, color){
+  const w = 140, h = 28, pad = 3;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = (max - min) || 1;
+  const pts = values.map((v,i)=>{
+    const x = pad + (i/(values.length-1)) * (w - pad*2);
+    const y = h - pad - ((v - min)/range) * (h - pad*2);
+    return [x,y];
+  });
+  const path = pts.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const last = pts[pts.length-1];
+  return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+    + '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<circle cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="2.6" fill="'+color+'"/>'
+    + '</svg>';
+}
+function renderSkillProgress(){
+  const host = document.getElementById('skillProgressRows');
+  if (!host) return;
+  host.innerHTML = SKILL_PROGRESS.map(s=>{
+    const meta = skillTrendMeta(s.series);
+    const color = SKILL_TREND_COLOR[meta.dir==='g'?'up':meta.dir==='r'?'down':'flat'];
+    return '<div class="skill-row '+meta.cls+'">'
+      + '<span class="nm">'+s.name+'</span>'
+      + '<div class="spark">'+skillSparkSVG(s.series, color)+'</div>'
+      + '<span class="st">'+meta.label+'<small>'+s.sample+' 次已審核</small></span>'
+      + '</div>';
+  }).join('');
+}
+renderSkillProgress();
+
+/* Assignment-launch modal — same pattern as chat.html's tool-detail modal:
+ * show what you're about to open (and who runs it) before actually opening
+ * it. data-src on the .rec div marks whether it's a third-party vendor tool
+ * ("vendor:<name>") or an EdCity official resource (no attribute = official).
+ * The modal's primary button then hands off to the existing startRec()
+ * doing→done cycle — the modal is a preview step in front of it, not a
+ * replacement for it. */
+const VENDOR_INFO = {
+  '墨言科技': {face:'✍️', desc:'此工具由第三方供應商營運。按「前往使用」會以單一登入方式開啟，毋須另行輸入密碼，完成後自動回到這裏。'},
+};
+let pendingRecBtn = null;
+function openAssignmentModal(btn){
+  const rec = btn.closest('.rec');
+  const name = rec.querySelector('b').textContent;
+  const meta = rec.querySelector('small').textContent;
+  const icon = rec.querySelector('.ic') ? rec.querySelector('.ic').textContent : '📘';
+  const src = rec.dataset.src || '';
+  const isVendor = src.startsWith('vendor:');
+  const vendorName = isVendor ? src.slice('vendor:'.length) : null;
+  const info = isVendor ? (VENDOR_INFO[vendorName] || {}) : null;
+
+  pendingRecBtn = btn;
+  document.getElementById('tmFace').textContent = isVendor ? (info.face || '🔗') : icon;
+  document.getElementById('tmName').textContent = name;
+  document.getElementById('tmSub').textContent = meta;
+  const chip = document.getElementById('tmChip');
+  if(isVendor){
+    chip.textContent = '🔗 由 '+vendorName+' 提供';
+    chip.className = 'tm-chip vendor';
+    document.getElementById('tmDesc').textContent = info.desc || ('此工具由 '+vendorName+' 提供。');
+    document.getElementById('tmUse').textContent = '↗ 前往使用（單一登入）';
+  } else {
+    chip.textContent = '📘 教育城官方資源';
+    chip.className = 'tm-chip official';
+    document.getElementById('tmDesc').textContent = '免費官方資源，直接在教育城平台內開啟，不會轉去其他網站，也不需要另外登入。';
+    document.getElementById('tmUse').textContent = '開始練習 →';
+  }
+  document.getElementById('toolOverlay').classList.add('show');
+}
+function launchFromModal(){
+  document.getElementById('toolOverlay').classList.remove('show');
+  if(pendingRecBtn) startRec(pendingRecBtn);
+}
+function closeToolModal(){ document.getElementById('toolOverlay').classList.remove('show'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeToolModal(); });
+
 /* mood check-in filters practice list */
 const MOOD_TITLES = {light:'🍃 輕鬆練習（10 分鐘內做完）', focus:'💪 認真練：集中文言字詞', review:'🔁 溫故知新'};
 let mood='light';
@@ -302,7 +451,7 @@ function addJoint(){
   b.textContent='已加入 Karen 的清單 ✓'; b.disabled=true;
   const list=document.querySelector('#stuView .mood-result');
   list.insertAdjacentHTML('beforeend',
-    `<div class="rec" data-m="light focus review"><div class="ic">👨‍👩‍👧</div><div><b>和爸媽一起讀〈背影〉第 4 段</b><small>約 10 分鐘 · 由家長加入 · 讀完互相說一件小事</small></div><button class="go" onclick="startRec(this)">開始</button></div>`);
+    `<div class="rec family" data-m="light focus review"><div class="ic">👨‍👩‍👧</div><div><b>和爸媽一起讀〈背影〉第 4 段</b><small>約 10 分鐘 · 讀完互相說一件小事</small><span class="fam-badge">👨‍👩‍👧 爸媽加入</span></div><button class="go" onclick="startRec(this)">開始</button></div>`);
   sToast('已加入她的今晚練習清單——切回學生視圖看看');
 }
 

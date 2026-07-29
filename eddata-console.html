@@ -88,6 +88,27 @@
   .v-section:last-child{border-bottom:none;}
   .v-section h4{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase;margin-bottom:10px;}
 
+  /* Strong visual split between "needs your decision" and "already decided" —
+   * previously both were plain white .v-section blocks with only a small
+   * uppercase h4 telling them apart, easy to blur together while scrolling.
+   * Pending now renders FIRST (action before reference) with an amber tint;
+   * approved grants are visually demoted to a quieter, neutral zone after. */
+  .v-section.sec-pending{background:#fffbf0;}
+  .v-section.sec-pending h4{color:#8a5a00;text-transform:none;font-size:.8rem;letter-spacing:0;display:flex;align-items:center;gap:7px;}
+  .v-section.sec-approved{background:#fafcfd;}
+  .v-section.sec-approved h4{color:var(--ink-2);text-transform:none;font-size:.8rem;letter-spacing:0;display:flex;align-items:center;gap:7px;}
+  .sec-count{font-size:.64rem;font-weight:700;border-radius:99px;padding:1px 9px;}
+  .sec-pending .sec-count{color:#8a5a00;background:#fdf1c7;}
+  .sec-approved .sec-count{color:#0c6b48;background:#e6f7ef;}
+
+  /* Page-level queue summary — announces the split before you even reach the
+   * first vendor card, and lets you jump straight to whichever matters. */
+  .queue-summary{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .qs-card{flex:1;min-width:200px;border-radius:12px;padding:13px 16px;font-size:.78rem;line-height:1.5;}
+  .qs-card b{font-size:1.15rem;display:block;margin-bottom:2px;}
+  .qs-card.pending{background:#fffbf0;border:1px solid #f0dfa0;color:#8a5a00;}
+  .qs-card.approved{background:#fff;border:1px solid var(--line);color:var(--ink-2);}
+
   .grant-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f2f4f6;font-size:.79rem;flex-wrap:wrap;}
   .grant-row:first-child{border-top:none;}
   .grant-row .g-tier{font-size:.64rem;font-weight:700;border-radius:99px;padding:3px 10px;background:#e6f7ef;color:#0c6b48;white-space:nowrap;}
@@ -253,6 +274,7 @@
     </div>
 
     <h2>供應商關係</h2>
+    <div class="queue-summary" id="queueSummary"></div>
     <div id="vendorList"></div>
 
   </section>
@@ -340,16 +362,41 @@ function driftNoteHtml(entry, vendorId, kind){
   </div>`;
 }
 
+/* 待審批請求 only ever showed r.status==='pending' actions as clickable — but
+ * rendered every entry in v.pending regardless of status, so an approved/denied
+ * request kept sitting here (with disabled buttons) even after it already had
+ * a permanent home elsewhere (已核准的組別, or 稽核記錄 for denials). That
+ * duplication was itself part of "already approved and waiting mixed
+ * together" — this section now only ever shows requests that still need a
+ * decision. */
+function actionablePending(v){ return v.pending.filter(r=>r.status==='pending'); }
+
+function renderQueueSummary(){
+  const pendingTotal = VENDORS.reduce((n,v)=>n+actionablePending(v).length, 0);
+  const grantsTotal = VENDORS.reduce((n,v)=>n+v.grants.length, 0);
+  document.getElementById('queueSummary').innerHTML = `
+    <div class="qs-card pending"><b>${pendingTotal}</b>項待你審批 · 橫跨 ${VENDORS.filter(v=>actionablePending(v).length>0).length} 個供應商</div>
+    <div class="qs-card approved"><b>${grantsTotal}</b>項已核准的存取，目前生效中</div>
+  `;
+}
+
 function renderVendors(){
-  document.getElementById('vendorList').innerHTML = VENDORS.map(v=>{
+  renderQueueSummary();
+  // Vendors with something waiting on you float to the top — otherwise you'd
+  // scroll past an all-approved, nothing-to-do vendor card to find the one
+  // that actually needs a decision. Sorts a copy; VENDORS itself (shared
+  // across pages via vendor-data.js) stays in its original order.
+  const sorted = [...VENDORS].sort((a,b)=> actionablePending(b).length - actionablePending(a).length);
+
+  document.getElementById('vendorList').innerHTML = sorted.map(v=>{
     const grantsHtml = v.grants.length
       ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div>${driftNoteHtml(g, v.id, 'grant')}<div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
       : `<div class="empty-note">此供應商目前未獲任何組別的資料存取權</div>`;
 
     const blocked = v.vetting.status!=='certified';
-    const pendingHtml = v.pending.length
-      ? v.pending.map(r=>{
-          const statusLabel = r.status==='pending' ? '⏳ 待審批' : r.status==='approved' ? '✓ 已核准 · '+r.tier : '✕ 已拒絕';
+    const pending = actionablePending(v);
+    const pendingHtml = pending.length
+      ? pending.map(r=>{
           return `<div class="req" id="req-${v.id}-${r.id}">
             <div class="r-head">
               <div class="req-context">
@@ -358,15 +405,15 @@ function renderVendors(){
                 <span class="tool-target">${v.name}</span>
                 <small>${r.src}</small>
               </div>
-              <span class="status ${r.status}">${statusLabel}</span>
+              <span class="status pending">⏳ 待審批</span>
             </div>
             ${r.overlapNote ? `<div class="drift-note"><b>⚠ 範圍可能重疊</b>${r.overlapNote}</div>` : ''}
             ${driftNoteHtml(r, v.id, 'pending')}
             ${blocked ? `<div class="block-note">🚫 此供應商尚未通過供應商審核，按管治規則不能核准任何資料層級，請先完成合規閘，或拒絕此請求。</div>` : ''}
-            ${r.status==='pending' && !blocked ? tierPickHtml(v.id, r, v.name) : ''}
+            ${!blocked ? tierPickHtml(v.id, r, v.name) : ''}
             <div class="btns">
-              <button class="act" id="approve-${v.id}-${r.id}" ${r.status!=='pending'||blocked?'disabled':''} onclick="approve('${v.id}','${r.id}')">✓ 核准</button>
-              <button class="act deny" ${r.status!=='pending'?'disabled':''} onclick="deny('${v.id}','${r.id}')">拒絕</button>
+              <button class="act" id="approve-${v.id}-${r.id}" ${blocked?'disabled':''} onclick="approve('${v.id}','${r.id}')">✓ 核准</button>
+              <button class="act deny" onclick="deny('${v.id}','${r.id}')">拒絕</button>
             </div>
           </div>`;
         }).join('')
@@ -381,13 +428,13 @@ function renderVendors(){
           ${entitlementChip(v)}
         </div>
       </div>
-      <div class="v-section">
-        <h4>目前已核准的組別</h4>
-        ${grantsHtml}
-      </div>
-      <div class="v-section">
-        <h4>待審批請求</h4>
+      <div class="v-section sec-pending">
+        <h4>⏳ 待審批請求<span class="sec-count">${pending.length}</span></h4>
         ${pendingHtml}
+      </div>
+      <div class="v-section sec-approved">
+        <h4>✓ 已核准的組別<span class="sec-count">${v.grants.length}</span></h4>
+        ${grantsHtml}
       </div>
     </div>`;
   }).join('');

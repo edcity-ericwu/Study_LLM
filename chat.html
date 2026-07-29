@@ -136,6 +136,38 @@
   .msg.ai .gatebox{display:block;font-size:.7rem;color:#991b1b;background:#fff5f5;border:1px solid #f5c6c6;border-radius:9px;padding:8px 11px;margin-top:10px;line-height:1.6;}
   .msg.ai a{color:var(--ec-blue-dark);font-weight:700;}
 
+  /* Product card inside a chat reply — 工具指引 used to just link to Apps／代理 at
+   * the end of a wall of text; this surfaces each recommended tool as its own
+   * card with a direct 開啟 action, so going to the product is one click, not
+   * read-then-search. */
+  .msg.ai .tool-card{display:flex;gap:12px;align-items:center;background:#f8fafb;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;}
+  .msg.ai .tool-card .tc-face{width:42px;height:42px;border-radius:10px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+  .msg.ai .tool-card .tc-body{flex:1;min-width:0;}
+  .msg.ai .tool-card .tc-name{font-weight:700;font-size:.85rem;color:var(--ink);}
+  .msg.ai .tool-card .tc-meta{font-size:.7rem;color:var(--ink-3);margin-top:2px;}
+  .msg.ai .tool-card .tc-go{flex-shrink:0;background:var(--ec-blue);color:#fff;border:none;border-radius:8px;padding:9px 15px;font-size:.76rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;font-family:inherit;}
+  .msg.ai .tool-card .tc-go:hover{background:var(--ec-blue-dark);}
+  .msg.ai .tool-card.dim .tc-go{background:#fff;color:var(--ink-2);border:1px solid var(--line);}
+
+  /* Tool detail modal — opens right on this page instead of navigating to
+   * agents.html, so checking a recommended tool doesn't lose the conversation. */
+  .tool-overlay{position:fixed;inset:0;background:rgba(20,30,40,.4);display:none;align-items:center;justify-content:center;z-index:80;}
+  .tool-overlay.show{display:flex;}
+  .tool-modal{background:#fff;border-radius:20px;width:min(480px,92vw);padding:28px 28px 24px;position:relative;box-shadow:0 24px 60px rgba(20,30,40,.25);}
+  .tool-modal .close{position:absolute;top:14px;right:16px;border:none;background:transparent;font-size:1.1rem;color:var(--ink-3);cursor:pointer;padding:6px;}
+  .tool-modal .tm-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .tool-modal .tm-face{width:58px;height:58px;border-radius:50%;flex-shrink:0;font-size:1.7rem;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,white),color-mix(in srgb,var(--accent) 5%,white));border:2px solid color-mix(in srgb,var(--accent) 30%,white);}
+  .tool-modal h2{font-size:1.15rem;font-weight:700;}
+  .tool-modal .tm-sub{font-size:.72rem;color:var(--ink-3);margin-top:3px;}
+  .tool-modal p.tm-desc{font-size:.85rem;color:var(--ink-2);line-height:1.7;margin:6px 0 16px;}
+  .tool-modal .tm-caps{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+  .tool-modal .tm-cap{font-size:.7rem;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:5px 12px;}
+  .tool-modal .tm-fit{margin-bottom:20px;}
+  .tool-modal .tm-actions{display:flex;gap:10px;}
+  .tool-modal .primary{flex:1;background:linear-gradient(120deg,var(--ec-blue),var(--ec-green));color:#fff;border:none;border-radius:12px;padding:12px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;}
+  .tool-modal .secondary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:.85rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .tool-modal .secondary:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+
   /* Messages */
   .thread{margin-top:10px;display:flex;flex-direction:column;gap:14px;}
   .msg{max-width:78%;padding:12px 16px;border-radius:16px;font-size:.88rem;line-height:1.65;}
@@ -444,6 +476,26 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="tool-overlay" id="toolOverlay" onclick="if(event.target===this)closeToolModal()">
+  <div class="tool-modal" id="toolModal" style="--accent:var(--ec-blue)">
+    <button class="close" onclick="closeToolModal()">✕</button>
+    <div class="tm-head">
+      <div class="tm-face" id="tmFace">🤖</div>
+      <div>
+        <h2 id="tmName">—</h2>
+        <div class="tm-sub" id="tmSub">—</div>
+      </div>
+    </div>
+    <p class="tm-desc" id="tmDesc">—</p>
+    <div class="tm-fit" id="tmFit"></div>
+    <div class="tm-caps" id="tmCaps"></div>
+    <div class="tm-actions">
+      <button class="primary" id="tmUse">開始使用</button>
+      <button class="secondary" onclick="closeToolModal()">關閉</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let mode = null;           // null | 'ask' | 'plan'
 let model = '自動';
@@ -536,6 +588,49 @@ function sendMsg(){
     scrollBottom();
   }, 900);
 }
+/* Tool detail data for the 工具指引 product cards' modal — kept local to this
+ * page (not a fetch from agents.html) since this is a same-page popup, not a
+ * navigation. Mirrors the fields agents.html's own modal uses (face/name/vendor/
+ * tag/lic/desc/caps), plus the fit-evidence chips shown in the chat reply. */
+const TOOL_DETAILS = {
+  zhixie: {
+    face:'🖋️', color:'var(--ec-blue)', name:'AI 中文作文批改', vendor:'墨言科技',
+    tag:'小學及中學 · 中文', lic:'school',
+    desc:'供應商提供的作文批改引擎：支援手寫辨識掃描、錯別字與病句偵測，並按香港評分框架生成分項回饋。此工具由第三方供應商營運，使用時將於供應商平台開啟。',
+    caps:['手寫辨識','批量批改','校本準則對應'],
+    fit:[['✓','混合程度分層回饋：已核實'],['✓','AI 出錯時的處理流程：已提供'],['✓','教師覆核：預設開啟']],
+  },
+  other: {
+    face:'📝', color:'var(--ec-amber)', name:'另一款已認證工具', vendor:'供應商暫不具名',
+    tag:'中學 · 中文', lic:'sub',
+    desc:'第二個通過教育城合規審核的寫作回饋工具，具體供應商資料尚待正式版本決定是否可具名顯示（見下方採購中立說明）。',
+    caps:['弱勢學生適用性證據已核實'],
+    fit:[['✓','弱勢學生適用性證據：已核實'],['—','分層回饋：供應商未提交證據']],
+  },
+};
+function openToolModal(key){
+  const i = TOOL_DETAILS[key];
+  if (!i) return;
+  document.getElementById('toolModal').style.setProperty('--accent', i.color);
+  document.getElementById('tmFace').textContent = i.face;
+  document.getElementById('tmName').textContent = i.name;
+  document.getElementById('tmSub').textContent = `${i.tag} · 由 ${i.vendor} 提供 · ${i.lic==='school'?'校方已採購':'需另行訂閱'}`;
+  document.getElementById('tmDesc').textContent = i.desc;
+  document.getElementById('tmFit').innerHTML = i.fit.map(([mark,label])=>`<span class="fitchip"><i>${mark}</i>${label}</span>`).join('');
+  document.getElementById('tmCaps').innerHTML = i.caps.map(c=>`<span class="tm-cap">${c}</span>`).join('');
+  const use = document.getElementById('tmUse');
+  if (i.lic==='school'){
+    use.textContent = '↗ 前往使用';
+    use.onclick = () => toast('原型示範：於 '+i.vendor+' 平台開啟（單一登入）');
+  } else {
+    use.textContent = '向學校申請訂閱';
+    use.onclick = () => toast('原型示範：訂閱申請已送交學校管理員');
+  }
+  document.getElementById('toolOverlay').classList.add('show');
+}
+function closeToolModal(){ document.getElementById('toolOverlay').classList.remove('show'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeToolModal(); });
+
 /* 故事 5：EdCity.ai 工具指引 — 核實的適配資料，不作採購推薦 */
 function askToolFit(){
   document.getElementById('hero').style.display='none';
@@ -549,13 +644,29 @@ function askToolFit(){
     typing.remove();
     thread.insertAdjacentHTML('beforeend', `
       <div class="msg ai"><span class="tag">工具指引 · 只列核實事實</span><br>
-      按你班的情況（中二・混合程度・對照官方課程框架），目錄中有兩個<b>已通過教育城合規審核</b>的寫作回饋工具。以下是供應商提交、教育城核實的適配資料——不是評分，也不是排名：<br><br>
-      <b>1. 智寫 — 寫作回饋工具</b>（校方已採購 · 可直接開啟）<br>
-      <span class="fitchip"><i>✓</i>混合程度分層回饋：已核實</span><span class="fitchip"><i>✓</i>AI 出錯時的處理流程：已提供</span><span class="fitchip"><i>✓</i>教師覆核：預設開啟</span><br><br>
-      <b>2. 另一款已認證工具</b>（需向學校申請訂閱）<br>
-      <span class="fitchip"><i>✓</i>弱勢學生適用性證據：已核實</span><span class="fitchip"><i>—</i>分層回饋：供應商未提交證據</span><br>
-      <span class="gatebox">🔴 待決策 · 採購中立界線：教育城<b>不會推薦你購買任何工具</b>——以上只是核實過的事實，選擇權在你和學校。正式版本能否顯示「需購買」的工具，仍待中立性裁定；若裁定從嚴，這裏只會顯示免費官方資源。</span><br>
-      你可以到 <a href="agents.html">Apps／代理</a> 查看完整資料，或先用免費的官方批改工具。</div>`);
+      按你班的情況（中二・混合程度・對照官方課程框架），目錄中有兩個<b>已通過教育城合規審核</b>的寫作回饋工具。以下是供應商提交、教育城核實的適配資料——不是評分，也不是排名：
+
+      <div class="tool-card">
+        <div class="tc-face">🖋️</div>
+        <div class="tc-body">
+          <div class="tc-name">AI 中文作文批改<span style="font-weight:400;color:var(--ink-3);"> · 墨言科技</span></div>
+          <div class="tc-meta">校方已採購 · 可直接開啟</div>
+          <div style="margin-top:6px;"><span class="fitchip"><i>✓</i>混合程度分層回饋：已核實</span><span class="fitchip"><i>✓</i>AI 出錯時的處理流程：已提供</span><span class="fitchip"><i>✓</i>教師覆核：預設開啟</span></div>
+        </div>
+        <button class="tc-go" onclick="openToolModal('zhixie')">開啟 →</button>
+      </div>
+
+      <div class="tool-card dim">
+        <div class="tc-face">📝</div>
+        <div class="tc-body">
+          <div class="tc-name">另一款已認證工具<span style="font-weight:400;color:var(--ink-3);"> · 供應商暫不具名</span></div>
+          <div class="tc-meta">需向學校申請訂閱</div>
+          <div style="margin-top:6px;"><span class="fitchip"><i>✓</i>弱勢學生適用性證據：已核實</span><span class="fitchip"><i>—</i>分層回饋：供應商未提交證據</span></div>
+        </div>
+        <button class="tc-go" onclick="openToolModal('other')">查看詳情 →</button>
+      </div>
+
+      <span class="gatebox">🔴 待決策 · 採購中立界線：教育城<b>不會推薦你購買任何工具</b>——以上只是核實過的事實，選擇權在你和學校。正式版本能否顯示「需購買」的工具，仍待中立性裁定；若裁定從嚴，這裏只會顯示免費官方資源。</span></div>`);
     scrollBottom();
   }, 1100);
 }

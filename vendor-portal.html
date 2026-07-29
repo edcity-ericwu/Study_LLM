@@ -77,6 +77,26 @@
   .conform .chip{margin-left:auto;flex-shrink:0;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;align-self:center;}
   .chip.ok{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .chip.gated{color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;}
+  .chip.review{color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
+
+  /* Vendor → EdCity tag-mapping table (共用分類法輸出) — pulled out of the generic
+   * 技術對接 card into its own card with an amber accent so it reads as a distinct,
+   * important workflow rather than one row buried in a conformance checklist. */
+  .tagmap-card{border-left:5px solid var(--ec-amber);background:#fffdf8;}
+  .tagmap-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+  .tagmap-head h3{display:inline;margin:0;}
+  .tagmap-ic{font-size:1.3rem;margin-right:8px;vertical-align:-2px;}
+  .tagmap-head-chip{font-size:.74rem;padding:6px 13px;font-weight:800;}
+  .tagmap-note{font-size:.72rem;color:var(--ink-3);line-height:1.65;background:#f5f8fa;border:1px solid var(--line);border-radius:10px;padding:10px 13px;}
+  .tagmap-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #f2f6f8;font-size:.8rem;flex-wrap:wrap;}
+  .tagmap-row:first-child{border-top:none;}
+  .tagmap-row .tm-vendor,.tagmap-row .tm-edcity{flex:1;min-width:140px;}
+  .tagmap-row .tm-vendor small,.tagmap-row .tm-edcity small{display:block;font-size:.66rem;color:var(--ink-3);font-weight:400;margin-top:2px;}
+  .tagmap-row .tm-arrow{color:var(--ink-3);flex-shrink:0;}
+  .tagmap-row .tm-status{flex-shrink:0;font-size:.66rem;font-weight:700;border-radius:99px;padding:4px 10px;}
+  .tagmap-row.unmapped{opacity:.85;}
+  .tagmap-row-note{font-size:.72rem;color:#991b1b;background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:7px 11px;margin:-3px 0 8px;line-height:1.6;}
+  .tagmap-row-note.amber{color:#8a5a09;background:#fdf6ec;border-color:#f3e3c3;}
 
   .remind{
     background:#e6f4fb;border:1px solid #c4e5f5;border-radius:12px;padding:11px 15px;
@@ -172,8 +192,19 @@
     <div class="card">
       <h3>技術對接 — 讓你的工具說平台的語言</h3>
       <div class="conform"><span class="ic">🔗</span><span>單一登入（SSO）對接<small>學校授權後，教師在教育城介面內直接開啟你的工具，無需另行登入</small></span><span class="chip ok">✓ 測試通過</span></div>
-      <div class="conform"><span class="ic">🏷</span><span>共用分類法輸出<small>你的工具回報的技能數據須使用平台共用標籤（科目 × 技能 × 掌握程度），才能匯入教師與科組視圖</small></span><span class="chip gated">🔴 待分類法發布</span></div>
-      <div class="conform"><span class="ic">📊</span><span>過渡安排<small>分類法發布前，你的數據會以並列方式顯示：不會被拒諸門外，但暫不與平台數據合併</small></span><span class="chip ok">已確認</span></div>
+    </div>
+
+    <div class="card tagmap-card">
+      <div class="tagmap-head">
+        <div><span class="tagmap-ic">🏷</span><h3>共用分類法輸出 — 你的標籤如何對應教育城分類</h3></div>
+        <span class="chip tagmap-head-chip" id="tagMapChip"></span>
+      </div>
+      <div class="sub" style="margin:0 0 14px;">你的工具回報的技能數據，須先對應到平台共用分類（科目 × 技能維度 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
+      <div id="tagMapPanel">
+        <div class="tagmap-note" style="margin-bottom:10px;">對應由系統比對你提交的分類名稱與教育城共用分類產生——<b>只是建議，不會自動生效</b>：信心不足的對應與完全對應不到的分類，都要教育城人手覆核或確認排除後，才會（或不會）計入平台統計。與 tags.html 對 AI 建議標籤的把關，是同一個原則，只是這裏把關的是你整批分類對應，不是單一學生作答。</div>
+        <div id="tagMapList"></div>
+      </div>
+      <div style="margin-top:12px;"><button class="btn ghost" id="tagMapBtn" onclick="toggleTagMap()">收起標籤對應表 ▴</button></div>
     </div>
 
     <div class="remind">ℹ️ 提醒：「符合教育城基準準則」是合規認證，<b>不是教育城的採購推薦</b>。教育城秉持採購中立：工具上架後，由學校依據公開的適配資料自行判斷。</div>
@@ -230,6 +261,61 @@ function resubmit(btn){btn.textContent='已上傳 · 待覆核 ✓';btn.disabled
  * actually appears on the invited teacher's screen, closing the loop that was previously just asserted. */
 const MY_VENDOR_ID = 'zhixie';
 const MY_VENDOR_NAME = '智寫科技';
+
+/* 供應商送來的技能標籤，用他們自己的分類命名——這正是「共用分類法輸出」要解決
+ * 的問題：智寫科技回報的技能，必須先對應到 EdCity 的共用分類（SKILL_TAGS，見
+ * vendor-data.js）才能匯入教師與科組視圖。對應本身也需要人手覆核，不是系統比對
+ * 完就自動生效——同一個「AI 只建議，不直接套用」的原則（見 tags.html），這裏用
+ * 在供應商整批標籤對應的把關上，不只是單一學生作答的標籤。 */
+const VENDOR_TAG_MAP = [
+  {vendorTag:'邏輯推斷', edcity:'推論', status:'ok'},
+  {vendorTag:'中心思想掌握', edcity:'主旨理解', status:'ok'},
+  {vendorTag:'字面理解', edcity:'文意理解', status:'ok'},
+  {vendorTag:'舉證能力', edcity:'引例支持', status:'ok'},
+  {vendorTag:'修辭手法', edcity:'寫作手法', status:'ok'},
+  {vendorTag:'段落連貫性', edcity:'段落結構', status:'ok'},
+  {vendorTag:'字詞應用', edcity:'詞彙運用', status:'ok'},
+  {vendorTag:'篇章邏輯', edcity:'論證組織', status:'review',
+    note:'系統比對信心不足——「篇章邏輯」可能對應「論證組織」，也可能是另一種寫作能力，需教育城人手確認後才會生效，目前不計入平台統計。'},
+  {vendorTag:'情感態度', edcity:null, status:'none',
+    note:'目前共用分類法沒有對應維度，不會匯入教師或科組視圖；智寫科技仍可在自己的系統內保留這項數據，只是不會出現在平台統計中。'},
+];
+
+function renderTagMap(){
+  const listEl = document.getElementById('tagMapList');
+  const chipEl = document.getElementById('tagMapChip');
+  if (!listEl || !chipEl) return;
+  listEl.innerHTML = VENDOR_TAG_MAP.map(m=>{
+    const domain = m.edcity && typeof skillDomain === 'function' ? skillDomain(m.edcity) : '';
+    const statusLabel = {ok:'✓ 已對應', review:'⏳ 待人手覆核', none:'✕ 未能對應'}[m.status];
+    const row = `<div class="tagmap-row ${m.status==='none'?'unmapped':''}">
+      <span class="tm-vendor">${m.vendorTag}<small>智寫科技的分類</small></span>
+      <span class="tm-arrow">→</span>
+      <span class="tm-edcity">${m.edcity ? m.edcity : '（無對應）'}<small>${domain || '—'}</small></span>
+      <span class="tm-status ${m.status}">${statusLabel}</span>
+    </div>`;
+    const note = m.note ? `<div class="tagmap-row-note ${m.status==='review'?'amber':''}">${m.note}</div>` : '';
+    return row + note;
+  }).join('');
+  const okCount = VENDOR_TAG_MAP.filter(m=>m.status==='ok').length;
+  const reviewCount = VENDOR_TAG_MAP.filter(m=>m.status==='review').length;
+  const totalTarget = VENDOR_TAG_MAP.filter(m=>m.status!=='none').length;
+  chipEl.textContent = reviewCount>0 ? `⏳ ${okCount}/${totalTarget} 已對應 · ${reviewCount} 項待覆核` : `✓ ${okCount}/${totalTarget} 已對應`;
+  chipEl.className = 'chip tagmap-head-chip ' + (reviewCount>0 ? 'review' : 'ok');
+  // Table is prominent-by-default (expanded), so lock in an explicit 'block' state
+  // up front — otherwise the first toggle click would be a no-op (empty inline
+  // style isn't strictly 'block', even though it renders that way).
+  const panel = document.getElementById('tagMapPanel');
+  if (panel) panel.style.display = 'block';
+}
+function toggleTagMap(){
+  const panel = document.getElementById('tagMapPanel');
+  const btn = document.getElementById('tagMapBtn');
+  const show = panel.style.display !== 'block';
+  panel.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '收起標籤對應表 ▴' : '查看標籤對應表 ▾';
+}
+document.addEventListener('DOMContentLoaded', renderTagMap);
 
 function populateClassSelect(){
   const sel = document.getElementById('inv-class');

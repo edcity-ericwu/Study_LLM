@@ -102,12 +102,17 @@
   .sec-approved .sec-count{color:#0c6b48;background:#e6f7ef;}
 
   /* Page-level queue summary — announces the split before you even reach the
-   * first vendor card, and lets you jump straight to whichever matters. */
+   * first vendor card, and doubles as a filter: click a card to show only
+   * that section across every vendor (待審批 / 已核准), click again (or hit
+   * 全部) to go back to the unfiltered view. */
   .queue-summary{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .qs-card{flex:1;min-width:200px;border-radius:12px;padding:13px 16px;font-size:.78rem;line-height:1.5;}
+  .qs-card{flex:1;min-width:160px;border-radius:12px;padding:13px 16px;font-size:.78rem;line-height:1.5;text-align:left;font-family:inherit;cursor:pointer;transition:box-shadow .12s;}
   .qs-card b{font-size:1.15rem;display:block;margin-bottom:2px;}
   .qs-card.pending{background:#fffbf0;border:1px solid #f0dfa0;color:#8a5a00;}
   .qs-card.approved{background:#fff;border:1px solid var(--line);color:var(--ink-2);}
+  .qs-card.all{background:#fff;border:1px solid var(--line);color:var(--ink-2);flex:.6;min-width:110px;}
+  .qs-card:hover{box-shadow:0 0 0 2px rgba(0,0,0,.05);}
+  .qs-card.active{box-shadow:0 0 0 2px var(--ec-blue);}
 
   .grant-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f2f4f6;font-size:.79rem;flex-wrap:wrap;}
   .grant-row:first-child{border-top:none;}
@@ -371,12 +376,24 @@ function driftNoteHtml(entry, vendorId, kind){
  * decision. */
 function actionablePending(v){ return v.pending.filter(r=>r.status==='pending'); }
 
+/* Queue filter — the summary cards double as filter buttons. 'all' shows
+ * every vendor with both sections; 'pending'/'approved' narrows the vendor
+ * list to only vendors with something in that bucket, and shows only the
+ * matching section within each card. Clicking the active filter again (or
+ * clicking 全部) resets to 'all'. */
+let queueFilter = 'all';
+function setQueueFilter(mode){
+  queueFilter = (queueFilter === mode) ? 'all' : mode;
+  renderVendors();
+}
+
 function renderQueueSummary(){
   const pendingTotal = VENDORS.reduce((n,v)=>n+actionablePending(v).length, 0);
   const grantsTotal = VENDORS.reduce((n,v)=>n+v.grants.length, 0);
   document.getElementById('queueSummary').innerHTML = `
-    <div class="qs-card pending"><b>${pendingTotal}</b>項待你審批 · 橫跨 ${VENDORS.filter(v=>actionablePending(v).length>0).length} 個供應商</div>
-    <div class="qs-card approved"><b>${grantsTotal}</b>項已核准的存取，目前生效中</div>
+    <button class="qs-card all ${queueFilter==='all'?'active':''}" onclick="setQueueFilter('all')">顯示<b>全部</b></button>
+    <button class="qs-card pending ${queueFilter==='pending'?'active':''}" onclick="setQueueFilter('pending')"><b>${pendingTotal}</b>項待你審批 · 橫跨 ${VENDORS.filter(v=>actionablePending(v).length>0).length} 個供應商</button>
+    <button class="qs-card approved ${queueFilter==='approved'?'active':''}" onclick="setQueueFilter('approved')"><b>${grantsTotal}</b>項已核准的存取，目前生效中</button>
   `;
 }
 
@@ -388,13 +405,17 @@ function renderVendors(){
   // across pages via vendor-data.js) stays in its original order.
   const sorted = [...VENDORS].sort((a,b)=> actionablePending(b).length - actionablePending(a).length);
 
-  document.getElementById('vendorList').innerHTML = sorted.map(v=>{
+  const cardsHtml = sorted.map(v=>{
+    const pending = actionablePending(v);
+    // Filtered out entirely if this vendor has nothing in the active bucket.
+    if (queueFilter==='pending' && pending.length===0) return '';
+    if (queueFilter==='approved' && v.grants.length===0) return '';
+
     const grantsHtml = v.grants.length
       ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div>${driftNoteHtml(g, v.id, 'grant')}<div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
       : `<div class="empty-note">此供應商目前未獲任何組別的資料存取權</div>`;
 
     const blocked = v.vetting.status!=='certified';
-    const pending = actionablePending(v);
     const pendingHtml = pending.length
       ? pending.map(r=>{
           return `<div class="req" id="req-${v.id}-${r.id}">
@@ -419,6 +440,15 @@ function renderVendors(){
         }).join('')
       : `<div class="empty-note">此供應商目前沒有待審批的請求</div>`;
 
+    const pendingSection = `<div class="v-section sec-pending">
+        <h4>⏳ 待審批請求<span class="sec-count">${pending.length}</span></h4>
+        ${pendingHtml}
+      </div>`;
+    const approvedSection = `<div class="v-section sec-approved">
+        <h4>✓ 已核准的組別<span class="sec-count">${v.grants.length}</span></h4>
+        ${grantsHtml}
+      </div>`;
+
     return `<div class="vendor" id="vendor-${v.id}">
       <div class="v-head">
         <div class="v-ic">${v.name[0]}</div>
@@ -428,16 +458,13 @@ function renderVendors(){
           ${entitlementChip(v)}
         </div>
       </div>
-      <div class="v-section sec-pending">
-        <h4>⏳ 待審批請求<span class="sec-count">${pending.length}</span></h4>
-        ${pendingHtml}
-      </div>
-      <div class="v-section sec-approved">
-        <h4>✓ 已核准的組別<span class="sec-count">${v.grants.length}</span></h4>
-        ${grantsHtml}
-      </div>
+      ${queueFilter==='approved' ? '' : pendingSection}
+      ${queueFilter==='pending' ? '' : approvedSection}
     </div>`;
   }).join('');
+
+  document.getElementById('vendorList').innerHTML = cardsHtml
+    || `<div class="empty-note" style="padding:24px;text-align:center;">沒有供應商符合目前的篩選——按「顯示全部」返回完整列表</div>`;
 
   VENDORS.forEach(v=> v.pending.forEach(r=>{
     if(r.status==='pending' && r._pickedTier){

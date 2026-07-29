@@ -43,6 +43,15 @@ const FEATURE_FLAGS = {
   // 內容審核員視圖 — 標籤審核與管理。
   // 涉及頁面：tags.html（整頁）。
   contentModeration: true,
+
+  // Reviewer-only meta annotations — build-status ribbons ("🟡 提案中" /
+  // "🔴 待決策"), data-source disclosures, and taxonomy-dependency notes.
+  // These exist so whoever's walking through the prototype knows what's real
+  // vs. proposed; they were never in-fiction UI an end-user persona would see.
+  // Default OFF so the suite reads clean, as if it were the real product —
+  // flip to true for an internal walkthrough that needs the caveats visible
+  // again. See the CSS injection at the bottom of this file for what's hidden.
+  protoAnnotations: false,
 };
 
 function featureOn(key){
@@ -76,4 +85,19 @@ function guardWholePage(flagKey, mainSelector){
     notice.innerHTML = '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此畫面目前不在本輪示範範圍內</b>此頁的建置內容完全保留，只是暫時從導覽中隱藏（feature-flags.js 內的設定）。';
     main.insertAdjacentElement('afterend', notice);
   });
+}
+
+/* Hide reviewer-only meta annotations (see protoAnnotations above) via an
+ * injected <style> rather than a one-time querySelectorAll pass — this way it
+ * also covers instances of these classes that get written into the DOM by a
+ * page's own render()/switchClass() calls after load, not just what's present
+ * in the initial HTML. Covers every file, since every file loads this script:
+ * ribbons ("提案中"/"待決策" banners), .no-story, .source-note (insights.html's
+ * data-source disclosure), .skill-dep/.skill-source (student.html's analogous
+ * per-card notes), and .gate-tag/.gatebox (the same "待決策" pattern reused
+ * under different names in student.html/vetting.html/chat.html). */
+if (!featureOn('protoAnnotations')) {
+  const style = document.createElement('style');
+  style.textContent = '.ribbon, .no-story, .source-note, .skill-dep, .skill-source, .gate-tag, .gatebox { display: none !important; }';
+  document.head.appendChild(style);
 }

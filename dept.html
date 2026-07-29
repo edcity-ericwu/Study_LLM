@@ -44,15 +44,25 @@
   .stat .v{font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:9px;}
   .stat .dir{font-size:.95rem;}
   .up{color:var(--ec-green);} .flat{color:var(--ec-amber);} .down{color:var(--ec-red);}
+  .stat-chart{margin-top:10px;}
+  .stat-chart svg{display:block;}
 
   h2{font-size:1rem;font-weight:700;margin:26px 0 12px;}
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
   th,td{text-align:left;padding:12px 16px;font-size:.82rem;border-bottom:1px solid var(--line);}
   th{font-size:.7rem;letter-spacing:.08em;color:var(--ink-3);font-weight:600;background:#fafcfd;}
   tr:last-child td{border-bottom:none;}
-  .trend{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:.8rem;}
+  .trend{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:.8rem;white-space:nowrap;}
   .dim-split td{background:#f7fdf9;color:#0c6b48;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:8px 16px;}
   .dim-note{font-size:.72rem;color:var(--ink-2);margin-top:10px;line-height:1.6;max-width:52em;}
+  .trend-cell{display:flex;align-items:center;gap:10px;}
+  .trend-cell .spark{flex-shrink:0;display:block;}
+
+  .trend-overview{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:22px 0;}
+  .trend-overview h3{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+  .trend-overview svg{display:block;}
+  .ov-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--ink-2);}
+  .ov-legend .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
 
   .trial-section{margin-top:26px;}
   .trial{
@@ -116,23 +126,37 @@
   <div class="sub">滙總全科五位教師的數據，只顯示<b>趨勢方向</b>（進步／持平／回落），按年級及技能維度呈現。2025/26 下學期。</div>
 
   <div class="cards">
-    <div class="stat"><div class="k">全科整體趨勢</div><div class="v up"><span class="dir">▲</span>進步中</div></div>
-    <div class="stat"><div class="k">中一級</div><div class="v up"><span class="dir">▲</span>進步中</div></div>
-    <div class="stat"><div class="k">中二級</div><div class="v flat"><span class="dir">▶</span>大致持平</div></div>
-    <div class="stat"><div class="k">中三級</div><div class="v down"><span class="dir">▼</span>需要關注</div></div>
+    <div class="stat" data-grade="全科整體" data-series="55,58,61,64,67,70">
+      <div class="k">全科整體趨勢</div><div class="v up"><span class="dir">▲</span>進步中</div>
+      <div class="stat-chart" id="chart-overall"></div>
+    </div>
+    <div class="stat" data-grade="中一級" data-series="50,55,60,65,70,75">
+      <div class="k">中一級</div><div class="v up"><span class="dir">▲</span>進步中</div>
+      <div class="stat-chart" id="chart-s1"></div>
+    </div>
+    <div class="stat" data-grade="中二級" data-series="58,60,57,59,58,60">
+      <div class="k">中二級</div><div class="v flat"><span class="dir">▶</span>大致持平</div>
+      <div class="stat-chart" id="chart-s2"></div>
+    </div>
+    <div class="stat" data-grade="中三級" data-series="62,58,54,50,47,44">
+      <div class="k">中三級</div><div class="v down"><span class="dir">▼</span>需要關注</div>
+      <div class="stat-chart" id="chart-s3"></div>
+    </div>
   </div>
+
+  <div class="trend-overview" id="deptOverview"></div>
 
   <h2>技能維度趨勢（全科）</h2>
   <table>
     <thead><tr><th>技能維度</th><th>學期趨勢</th><th>備註</th></tr></thead>
     <tbody>
-      <tr><td>閱讀理解 — 推論</td><td><span class="trend up">▲ 進步中</span></td><td>新閱讀計劃重點範疇</td></tr>
-      <tr><td>閱讀理解 — 主旨</td><td><span class="trend up">▲ 進步中</span></td><td>—</td></tr>
-      <tr><td>寫作 — 結構組織</td><td><span class="trend flat">▶ 大致持平</span></td><td>—</td></tr>
-      <tr><td>文言字詞</td><td><span class="trend down">▼ 需要關注</span></td><td>中三級回落較明顯</td></tr>
+      <tr><td>閱讀理解 · 推論</td><td><div class="trend-cell"><span class="spark-slot" data-series="50,54,58,62,66,70" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>新閱讀計劃重點範疇</td></tr>
+      <tr><td>閱讀理解 · 主旨理解</td><td><div class="trend-cell"><span class="spark-slot" data-series="52,55,58,61,64,67" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>—</td></tr>
+      <tr><td>寫作 · 段落結構</td><td><div class="trend-cell"><span class="spark-slot" data-series="56,58,55,57,56,58" data-dir="flat"></span><span class="trend flat">▶ 大致持平</span></div></td><td>—</td></tr>
+      <tr><td>語文基礎 · 詞彙運用</td><td><div class="trend-cell"><span class="spark-slot" data-series="60,56,52,48,44,40" data-dir="down"></span><span class="trend down">▼ 需要關注</span></div></td><td>中三級回落較明顯</td></tr>
       <tr class="dim-split"><td colspan="3">學習持續性 — 與成績並列的成效維度，非附註</td></tr>
-      <tr><td>課外自主閱讀（自願借閱／平台自選篇章）</td><td><span class="trend up">▲ 進步中</span></td><td>非考核指標</td></tr>
-      <tr><td>自願重寫／訂正率（沒有分數誘因下）</td><td><span class="trend flat">▶ 大致持平</span></td><td>非考核指標</td></tr>
+      <tr><td>課外自主閱讀（自願借閱／平台自選篇章）</td><td><div class="trend-cell"><span class="spark-slot" data-series="40,44,48,53,57,61" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>非考核指標</td></tr>
+      <tr><td>自願重寫／訂正率（沒有分數誘因下）</td><td><div class="trend-cell"><span class="spark-slot" data-series="45,47,44,46,45,47" data-dir="flat"></span><span class="trend flat">▶ 大致持平</span></div></td><td>非考核指標</td></tr>
     </tbody>
   </table>
 </div>
@@ -144,6 +168,73 @@
 guardWholePage('subjectPanelView', '.main');
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
+
+/* Chart helpers — same approach as insights.html's trend charts (sparkline per
+ * row + a multi-line overview), duplicated locally rather than shared, since
+ * this suite keeps each prototype page self-contained. Colors match this
+ * page's own .up/.flat/.down palette (note: dept.html's --ec-amber flat color
+ * differs slightly from insights.html's, so these are NOT copy-pasted hex
+ * values — they're this file's own root vars, resolved to hex here because
+ * SVG stroke attributes can't reference CSS custom properties directly). */
+const TREND_COLOR = {up:'#00AC6C', flat:'#F5A623', down:'#ED1A2E'};
+
+function sparklineSVG(values, color){
+  const w=86, h=26, pad=3;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = (max-min) || 1;
+  const stepX = (w-2*pad)/(values.length-1);
+  const y = v => h-pad - ((v-min)/range)*(h-2*pad);
+  const pts = values.map((v,i)=>`${(pad+i*stepX).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const last = values.length-1;
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"/>
+    <circle cx="${(pad+last*stepX).toFixed(1)}" cy="${y(values[last]).toFixed(1)}" r="2.4" fill="${color}"/>
+  </svg>`;
+}
+function multiSparklineSVG(seriesList, colors){
+  const w=600, h=150, pad=14;
+  const allVals = seriesList.flat();
+  const min = Math.min(...allVals), max = Math.max(...allVals);
+  const range = (max-min) || 1;
+  const n = seriesList[0].length;
+  const stepX = (w-2*pad)/(n-1);
+  const y = v => h-pad - ((v-min)/range)*(h-2*pad);
+  const grid = [0.25,0.5,0.75].map(f=>{
+    const yy = (pad + (h-2*pad)*f).toFixed(1);
+    return `<line x1="${pad}" y1="${yy}" x2="${w-pad}" y2="${yy}" stroke="#eef2f5" stroke-width="1"/>`;
+  }).join('');
+  const lines = seriesList.map((series,i)=>{
+    const pts = series.map((v,idx)=>`${(pad+idx*stepX).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${colors[i%colors.length]}" stroke-width="2.4"/>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">${grid}${lines}</svg>`;
+}
+function renderSparkSlots(){
+  document.querySelectorAll('.spark-slot').forEach(el=>{
+    const series = el.dataset.series.split(',').map(Number);
+    el.innerHTML = sparklineSVG(series, TREND_COLOR[el.dataset.dir]);
+  });
+}
+function renderStatCharts(){
+  const cards = document.querySelectorAll('.stat[data-series]');
+  cards.forEach(card=>{
+    const series = card.dataset.series.split(',').map(Number);
+    const dir = card.querySelector('.v').className.replace('v ','').trim();
+    const chartEl = card.querySelector('.stat-chart');
+    if(chartEl) chartEl.innerHTML = sparklineSVG(series, TREND_COLOR[dir]);
+  });
+}
+function renderDeptOverview(){
+  const cards = [...document.querySelectorAll('.stat[data-series]')];
+  const seriesList = cards.map(c=>c.dataset.series.split(',').map(Number));
+  const colors = cards.map(c=>TREND_COLOR[c.querySelector('.v').className.replace('v ','').trim()]);
+  const legend = cards.map((c,i)=>`<span><span class="dot" style="background:${colors[i]}"></span>${c.dataset.grade}</span>`).join('');
+  const chart = multiSparklineSVG(seriesList, colors);
+  document.getElementById('deptOverview').innerHTML = `<h3>學期趨勢走勢 · 全科與各級比較</h3>${chart}<div class="ov-legend">${legend}</div>`;
+}
+renderSparkSlots();
+renderStatCharts();
+renderDeptOverview();
 </script>
 <script src="demo-nav.js"></script>
 </body>

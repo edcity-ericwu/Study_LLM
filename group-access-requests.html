@@ -68,6 +68,11 @@
   .scope-card select{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.78rem;font-family:inherit;margin-bottom:8px;color:var(--ink);background:#fff;}
   .scope-card .go{width:100%;border:none;border-radius:8px;padding:9px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
   .overlap-note{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:8px;padding:8px 10px;font-size:.7rem;color:#8a5a00;line-height:1.6;margin-top:8px;}
+  .scope-card.submitted{background:#f3fbf7;border-color:#bfe8d7;}
+  .scope-card.submitted .sc-head b{color:#0c6b48;}
+  .submit-next{font-size:.72rem;color:var(--ink-2);line-height:1.65;margin-top:8px;}
+  .submit-next a{color:var(--ec-blue-dark);font-weight:700;}
+  .submit-chip{display:inline-block;font-size:.64rem;font-weight:700;color:#8a5a00;background:#fdf1c7;border-radius:99px;padding:3px 10px;margin-left:auto;white-space:nowrap;}
   .not-covered{font-size:.7rem;color:var(--ink-3);line-height:1.6;margin-top:14px;max-width:52em;}
 
   .req-card{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;}
@@ -232,7 +237,7 @@ function isCertified(vendorId){
 function renderScopeCards(){
   document.getElementById('groupScopeGrid').innerHTML = classGroups(activeClassId).map(g=>{
     const n = groupHeadcount(activeClassId, g.id);
-    return `<div class="scope-card">
+    return `<div class="scope-card" id="scopeCard-${g.id}">
       <div class="sc-head"><span class="dot" style="background:${g.color}"></span><b>${g.name}</b><span class="n">${n} 人</span></div>
       <div class="goal">${g.goal}</div>
       <select id="vendorPick-${g.id}" onchange="refreshTrialButton('${g.id}')">${vendorOptionsHtml()}</select>
@@ -242,7 +247,7 @@ function renderScopeCards(){
     </div>`;
   }).join('');
   const wc = wholeClassMembers(activeClassId).length;
-  document.getElementById('wholeScopeGrid').innerHTML = `<div class="scope-card whole">
+  document.getElementById('wholeScopeGrid').innerHTML = `<div class="scope-card whole" id="scopeCard-__whole_class__">
     <div class="sc-head"><b>全班</b><span class="n">${wc} 人</span></div>
     <div class="goal">不分組別，整班學生的資料一併申請，適合全班統一使用的工具。</div>
     <select id="vendorPick-__whole_class__" onchange="refreshTrialButton('__whole_class__')">${vendorOptionsHtml()}</select>
@@ -268,7 +273,7 @@ function renderStudyGroupScopeCards(){
   grid.innerHTML = STUDY_GROUPS.map(sg=>{
     const scopeKey = '__study_group__'+sg.id;
     const n = studyGroupHeadcount(sg.id);
-    return `<div class="scope-card" style="border-top:3px solid var(--ec-teal);">
+    return `<div class="scope-card" id="scopeCard-${scopeKey}" style="border-top:3px solid var(--ec-teal);">
       <div class="sc-head"><span class="dot" style="background:var(--ec-teal)"></span><b>${sg.name}</b><span class="n">${n} 人 · 跨班</span></div>
       <div class="goal">${sg.goal||'（未填寫目的）'}</div>
       <select id="vendorPick-${scopeKey}" onchange="refreshTrialButton('${scopeKey}')">${vendorOptionsHtml()}</select>
@@ -326,8 +331,6 @@ function submitTrialRequest(groupId){
 function submitRequest(groupId){
   const vendorId = document.getElementById('vendorPick-'+groupId).value;
   const v = VENDORS.find(x=>x.id===vendorId);
-  const noteEl = document.getElementById('overlapNote-'+groupId);
-
   let groupLbl, memberSnapshot, classId, overlap, successLabel;
   if(isStudyGroupScope(groupId)){
     const sgId = studyGroupIdFromScope(groupId);
@@ -344,9 +347,6 @@ function submitRequest(groupId){
     groupLbl = groupLabel(activeClassId, groupId);
     successLabel = groupId==='__whole_class__' ? '全班' : classGroups(activeClassId).find(g=>g.id===groupId).name;
   }
-  if(overlap){ noteEl.innerHTML = `<div class="overlap-note">⚠ ${overlap}</div>`; }
-  else if(noteEl){ noteEl.innerHTML = ''; }
-
   const headcount = memberSnapshot.length;
   const reqId = 'gr-'+Date.now();
   v.pending.push({
@@ -355,7 +355,30 @@ function submitRequest(groupId){
     overlapNote: overlap,
   });
   renderMyRequests();
+  renderSubmittedCard(groupId, v.name, successLabel, overlap);
   toast('已送出：'+successLabel+' 申請使用「'+v.name+'」，待資料存取審批');
+}
+
+/* Demo the actual next step instead of leaving 送出正式申請 as a dead-end toast:
+ * the request just pushed into v.pending is the exact same shared array
+ * eddata-console.html reads its 待審批 queue from (approve()/deny() there) — so
+ * this in-place card swap tells the teacher who acts next and where, mirroring
+ * the pattern already used for 科組試用評估 on subscriptions.html. Switching
+ * class or re-rendering scope cards will reset this card's visual state, but
+ * the underlying request itself is unaffected — it stays visible under 我的
+ * 請求與狀態 and in 馮 Sir's queue either way. */
+function renderSubmittedCard(groupId, vendorName, scopeLabel, overlap){
+  const card = document.getElementById('scopeCard-'+groupId);
+  if(!card) return;
+  card.classList.add('submitted');
+  const overlapHtml = overlap ? `<div class="overlap-note">⚠ ${overlap}</div>` : '';
+  card.innerHTML = `
+    <div class="sc-head"><b>✓ ${scopeLabel}</b><span class="submit-chip">⏳ 待審批</span></div>
+    <div class="goal" style="color:#0c6b48;">已送出「${vendorName}」的資料存取申請。</div>
+    ${overlapHtml}
+    <div class="submit-next">資訊科技統籌（馮 Sir）會在<a href="eddata-console.html">供應商資料存取控制台</a>審批這個請求——核准後，工具才會出現在相關學生的介面。這頁不會自動偵測審批結果，請到下方「我的請求與狀態」查看最新進度，或直接前往控制台查看審批隊列。</div>
+    <button class="go" style="margin-top:10px;" onclick="showTab('mine')">查看我的請求 →</button>
+  `;
 }
 
 function myRelevantEntries(){

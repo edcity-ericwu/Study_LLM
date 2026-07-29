@@ -71,9 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Whole-page guard — call at the very top of a flagged page's own inline
  * script (before any render calls) if that ENTIRE page is behind one flag.
- * Swaps the page's main content for a plain "hidden for this walkthrough"
- * notice, without deleting any of the markup underneath (it's just display:none'd,
- * not removed from the DOM) — flip the flag back and the page is untouched. */
+ * Swaps the page's main content for a placeholder notice, without deleting
+ * any of the markup underneath (it's just display:none'd, not removed from
+ * the DOM) — flip the flag back and the page is untouched.
+ * The notice text itself is gated by protoAnnotations: by default (clean
+ * reader mode) it's a neutral "not available" message with no mention of
+ * flags, files, or "this demo round" — the detailed builder version (which
+ * does name feature-flags.js) only shows when protoAnnotations is on. */
 function guardWholePage(flagKey, mainSelector){
   if (featureOn(flagKey)) return;
   document.addEventListener('DOMContentLoaded', () => {
@@ -82,7 +86,9 @@ function guardWholePage(flagKey, mainSelector){
     main.style.display = 'none';
     const notice = document.createElement('div');
     notice.style.cssText = 'max-width:640px;margin:80px auto;padding:24px 28px;background:#fff;border:1px solid #e6ebf0;border-radius:12px;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color:#55636f;font-size:.85rem;line-height:1.7;';
-    notice.innerHTML = '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此畫面目前不在本輪示範範圍內</b>此頁的建置內容完全保留，只是暫時從導覽中隱藏（feature-flags.js 內的設定）。';
+    notice.innerHTML = featureOn('protoAnnotations')
+      ? '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此畫面目前不在本輪示範範圍內</b>此頁的建置內容完全保留，只是暫時從導覽中隱藏（feature-flags.js 內的設定）。'
+      : '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此功能目前未開放</b>請聯絡你的資訊科技統籌了解詳情。';
     main.insertAdjacentElement('afterend', notice);
   });
 }

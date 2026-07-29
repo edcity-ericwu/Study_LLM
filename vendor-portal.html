@@ -102,6 +102,18 @@
     background:#e6f4fb;border:1px solid #c4e5f5;border-radius:12px;padding:11px 15px;
     font-size:.76rem;color:var(--ec-blue-dark);line-height:1.65;margin-top:4px;
   }
+  /* Staged-criterion policy note: 共用分類法 is NOT part of 合規閘 (which blocks
+   * step 4/上架 EdMarket) — it's a step-3/基準認證 requirement with its own
+   * grace period. Sits right under the stepper so the distinction is visible
+   * before the reader even reaches the 合規閘/技術對接 cards. */
+  .stage-note{
+    background:#fdf6ec;border:1px solid #f3e3c3;border-radius:12px;padding:12px 16px;
+    font-size:.78rem;color:#8a5a09;line-height:1.7;margin:0 0 20px;
+  }
+  .deadline-note{
+    font-size:.72rem;color:#8a5a09;background:#fdf6ec;border:1px solid #f3e3c3;
+    border-radius:8px;padding:7px 12px;margin-bottom:12px;line-height:1.6;
+  }
 
   .invite-form{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px;}
   .invite-form label{font-size:.72rem;color:var(--ink-3);display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px;}
@@ -170,8 +182,12 @@
     <div class="stepper">
       <div class="step done"><span class="dot">✓</span><b>提交申請</b><small>6 月 28 日</small></div>
       <div class="step now"><span class="dot">2</span><b>合規閘審核</b><small>4/5 通過 · 待補交</small></div>
-      <div class="step"><span class="dot">3</span><b>基準認證</b><small>—</small></div>
-      <div class="step"><span class="dot">4</span><b>上架 EdMarket</b><small>—</small></div>
+      <div class="step"><span class="dot">3</span><b>基準認證</b><small>待共用分類法輸出完成</small></div>
+      <div class="step"><span class="dot">4</span><b>上架 EdMarket</b><small>合規閘通過即可有條件上架</small></div>
+    </div>
+
+    <div class="stage-note">
+      <b>共用分類法輸出不會擋你上架 EdMarket。</b>它不是合規閘的一部分——合規閘（下方）全數通過後，你可以先以<b>「有條件上架」</b>方式進入 EdMarket，教師已經可以開始使用你的工具。但它是「基準認證」徽章的必要條件：合規閘通過起計 90 天內（即 <b>2026-09-26</b> 前）完成分類法對應（包括所有待人手覆核的項目），才會獲發基準認證徽章；90 天後仍未完成，有條件上架資格將被暫停，直至完成為止。
     </div>
 
     <div class="card">
@@ -199,7 +215,8 @@
         <div><span class="tagmap-ic">🏷</span><h3>共用分類法輸出 — 你的標籤如何對應教育城分類</h3></div>
         <span class="chip tagmap-head-chip" id="tagMapChip"></span>
       </div>
-      <div class="sub" style="margin:0 0 14px;">你的工具回報的技能數據，須先對應到平台共用分類（科目 × 技能維度 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
+      <div class="sub" style="margin:0 0 8px;">你的工具回報的技能數據，須先對應到平台共用分類（科目 × 技能維度 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
+      <div class="deadline-note">🗓 基準認證徽章截止日：<b>2026-09-26</b>（合規閘通過起計 90 天）· 逾期未完成，有條件上架資格將被暫停</div>
       <div id="tagMapPanel">
         <div class="tagmap-note" style="margin-bottom:10px;">對應由系統比對你提交的分類名稱與教育城共用分類產生——<b>只是建議，不會自動生效</b>：信心不足的對應與完全對應不到的分類，都要教育城人手覆核或確認排除後，才會（或不會）計入平台統計。與 tags.html 對 AI 建議標籤的把關，是同一個原則，只是這裏把關的是你整批分類對應，不是單一學生作答。</div>
         <div id="tagMapList"></div>

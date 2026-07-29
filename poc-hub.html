@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity AI 教學工具 — POC 導覽</title>
+<style>
+  :root{
+    --ec-blue:#008BD1;
+    --ec-blue-dark:#0072ab;
+    --ec-red:#ED1A2E;
+    --ec-green:#00AC6C;
+    --ec-maroon:#7B2539;
+    --ec-amber:#F5A623;
+    --ec-purple:#7C5CDB;
+    --ink:#1e2a35;
+    --ink-2:#55636f;
+    --ink-3:#8a97a3;
+    --line:#e6ebf0;
+    --bg:#f5f8fa;
+    --card:#ffffff;
+    --radius:14px;
+    font-size:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);
+    min-height:100vh;
+  }
+
+  /* No sidebar on this page on purpose — this isn't part of the teacher's
+   * day-to-day tool nav, it's a separate outward-facing hub whose only job
+   * is: brand it, point people at a POC, let them find their way back here. */
+  .wrap{max-width:920px;margin:0 auto;padding:40px 24px 60px;}
+
+  .top-logo{display:flex;align-items:center;gap:12px;margin-bottom:34px;}
+  .top-logo img{height:34px;width:auto;display:block;}
+  .top-logo .div{width:1px;height:22px;background:var(--line);}
+  .top-logo .sub{font-size:.78rem;color:var(--ink-3);}
+
+  .hero{
+    border-radius:18px;padding:34px 38px;position:relative;overflow:hidden;
+    background:linear-gradient(115deg,#e8f5fc 0%,#eefaf3 55%,#fdf6ec 100%);
+    border:1px solid #ddeef7;margin-bottom:30px;
+  }
+  .hero .eyebrow{font-size:.7rem;letter-spacing:.22em;color:var(--ec-blue-dark);font-weight:600;margin-bottom:10px;}
+  .hero h1{font-size:1.9rem;font-weight:700;margin-bottom:10px;}
+  .hero h1 em{font-style:normal;border-bottom:3px solid var(--ec-blue);padding-bottom:2px;}
+  .hero p{font-size:.9rem;color:var(--ink-2);max-width:38em;line-height:1.7;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+  .poc-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px;position:relative;text-align:left;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .poc-card::before{
+    content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:99px;
+    background:var(--accent,var(--ec-blue));
+  }
+  .poc-card.ready{cursor:pointer;}
+  .poc-card.ready:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(30,42,53,.09);}
+  .poc-card .tile{
+    width:46px;height:46px;border-radius:12px;margin-bottom:16px;
+    display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+    background:color-mix(in srgb, var(--accent,var(--ec-blue)) 12%, white);
+  }
+  .poc-card h3{font-size:1.05rem;font-weight:700;margin-bottom:4px;}
+  .poc-card .en{font-size:.68rem;color:var(--ink-3);font-weight:500;display:block;margin-bottom:10px;}
+  .poc-card p{font-size:.8rem;color:var(--ink-2);line-height:1.6;margin-bottom:16px;}
+  .status-pill{
+    display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:700;
+    border-radius:99px;padding:5px 12px;
+  }
+  .status-pill.soon{color:#8a5a09;background:#fdf6ec;border:1px solid #f3e3c3;}
+  .status-pill.ready{color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;}
+
+  footer.note{margin-top:44px;font-size:.72rem;color:var(--ink-3);text-align:center;line-height:1.7;}
+  footer.note a{color:var(--ec-blue-dark);text-decoration:none;font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top-logo">
+    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+    <div class="div"></div>
+    <div class="sub">AI 教學工具 · POC 導覽</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">PROOF OF CONCEPT · 導覽頁</div>
+    <h1>選擇一個<em>科目</em>，前往對應的 POC</h1>
+    <p>這裏是各科 AI 教學工具 POC 的共同入口。點擊任一科目前往對應的示範環境；完成後，隨時可以回到這一頁，再前往其他科目。</p>
+  </div>
+
+  <div class="grid" id="pocGrid"></div>
+
+  <footer class="note">此頁只作導覽用途，不代表任何科目已完成建置。<br>已上線的 POC 會在此頁面直接顯示連結，取代「即將推出」標籤。</footer>
+</div>
+
+<script>
+/* Single source of truth for this hub's cards — to wire up a real POC once
+ * it exists, just fill in `url` (relative path or full link). A null url
+ * keeps the card in its current "即將推出" placeholder state automatically;
+ * nothing else on the page needs to change. If the POC lives on another
+ * origin, consider target:'_blank' so "come back to this hub" stays true —
+ * this tab never navigates away. */
+const POCS = [
+  {key:'chinese', accent:'var(--ec-red)',   tile:'🈶', name:'中文', en:'CHINESE', desc:'中文科 AI 教學工具 POC，涵蓋批改、教材準備與學習面貌等示範。', url:null},
+  {key:'english', accent:'var(--ec-blue)',  tile:'🔤', name:'英文', en:'ENGLISH', desc:'英文科 AI 教學工具 POC，示範同一套平台機制應用於另一科目的樣貌。', url:null},
+  {key:'science', accent:'var(--ec-green)', tile:'🔬', name:'科學', en:'SCIENCE', desc:'科學科 AI 教學工具 POC，示範同一套平台機制應用於另一科目的樣貌。', url:null},
+];
+
+function renderPocGrid(){
+  document.getElementById('pocGrid').innerHTML = POCS.map(p=>{
+    const ready = !!p.url;
+    const tag = ready
+      ? `<a class="status-pill ready" href="${p.url}"${p.target?` target="${p.target}"`:''}>→ 前往 POC</a>`
+      : `<span class="status-pill soon">🕐 即將推出</span>`;
+    const openCall = p.target === '_blank' ? `window.open('${p.url}','_blank')` : `location.href='${p.url}'`;
+    return `<div class="poc-card${ready?' ready':''}" style="--accent:${p.accent};" ${ready?`onclick="${openCall}"`:''}>
+      <div class="tile">${p.tile}</div>
+      <h3>${p.name}</h3>
+      <span class="en">${p.en}</span>
+      <p>${p.desc}</p>
+      ${tag}
+    </div>`;
+  }).join('');
+}
+renderPocGrid();
+</script>
+
+</body>
+</html>

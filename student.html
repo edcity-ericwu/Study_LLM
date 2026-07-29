@@ -56,6 +56,24 @@
   }
   .persist .p-ic{font-size:1.15rem;flex-shrink:0;}
   .persist b{color:var(--ink);}
+  /* Section-intent kickers — a quick scannable "what is this card asking of
+   * me" signal, so a student/parent skimming top-to-bottom doesn't have to
+   * read each card's prose to know whether it's mandatory, optional, or just
+   * a trend view with no action needed. Color repeats as a left-border accent
+   * on the card itself, so the signal is visible even before you get close
+   * enough to read the small text. */
+  .kicker{font-size:.66rem;font-weight:700;letter-spacing:.03em;display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;margin-bottom:10px;}
+  .kicker.required{color:var(--ec-maroon);background:#faf1f3;border:1px solid #e5cdd4;}
+  .kicker.choice{color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;}
+  .kicker.progress{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  .kicker.snapshot{color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;}
+  .kicker.talk{color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
+  .kicker.action{color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;}
+  .kicker.locked{color:var(--ink-3);background:#f5f8fa;border:1px solid var(--line);}
+  .rec-card.required{border-left:4px solid var(--ec-maroon);}
+  .rec-card.choice{border-left:4px solid var(--ec-green);}
+  .prog-card{border-left:4px solid var(--ec-blue);}
+
   .rec-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px;}
   .rec-card h3{font-size:.92rem;font-weight:700;margin-bottom:4px;}
   .rec-card .src{font-size:.7rem;color:var(--ink-3);margin-bottom:14px;}
@@ -104,7 +122,8 @@
   .parent-panel .q{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #f2f6f8;font-size:.8rem;line-height:1.65;color:var(--ink-2);}
   .parent-panel .q .n{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#effaf5;color:#0c6b48;font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px;}
   .mood-result{border-top:2px dashed #dcf3e8;padding-top:12px;margin-top:2px;}
-  .snap-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .snap-row-wrap{margin-bottom:14px;}
+  .snap-row{display:flex;gap:10px;flex-wrap:wrap;}
   .snap{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px;}
   .snap .s-ic{font-size:1.15rem;display:block;margin-bottom:6px;}
   .snap b{font-size:.82rem;display:block;color:var(--ink);}
@@ -113,7 +132,8 @@
   .q-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 12px;font-size:.68rem;color:var(--ink-2);font-weight:600;cursor:pointer;font-family:inherit;}
   .q-btn:hover{border-color:var(--ec-green);color:#0c6b48;}
   .q-btn.done{background:var(--ec-green);border-color:var(--ec-green);color:#fff;cursor:default;}
-  .joint{background:#fff;border:1px solid #bfe8d7;border-radius:16px;padding:20px;margin-bottom:14px;}
+  .joint{background:#fff;border:1px solid #bfe8d7;border-left:4px solid var(--ec-green);border-radius:16px;padding:20px;margin-bottom:14px;}
+  .snap-row-wrap .kicker{margin-left:2px;}
   .joint h3{font-size:.92rem;font-weight:700;margin-bottom:6px;}
   .joint p{font-size:.78rem;color:var(--ink-2);line-height:1.7;margin-bottom:12px;}
   .joint .j-btn{border:none;border-radius:11px;padding:11px 18px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;color:#fff;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));}
@@ -149,13 +169,15 @@
    * mood-filtered list below: an assignment isn't optional or mood-dependent
    * the way "今晚想輕鬆定認真" is, so it shouldn't be hideable by picking a
    * different mood. It always shows until done or overdue. -->
-  <div class="rec-card" style="margin-top:14px;">
+  <div class="rec-card required" style="margin-top:14px;">
+    <span class="kicker required">🔴 必做 · 老師指派</span>
     <h3 style="margin-bottom:4px;">📌 老師指派的功課</h3>
     <div class="src">由你的老師直接指派，不受今晚的心情篩選影響——這裏一定會顯示，直到完成或到期。</div>
     <div class="rec"><div class="ic">✍️</div><div><b>《背影》字詞重溫小測</b><small>8 分鐘 · 陳凱怡老師指派 · 建議本週內完成</small></div><button class="go" onclick="startRec(this)">開始</button></div>
   </div>
 
-  <div class="rec-card" style="margin-top:14px;">
+  <div class="rec-card choice" style="margin-top:14px;">
+    <span class="kicker choice">🟢 自選 · 跟著心情走</span>
     <h3 style="margin-bottom:10px;">今晚的練習 · 先選你的狀態</h3>
   <div class="mood-row" style="margin:0 0 14px;">
     <button class="mood on" data-m="light" onclick="setMood(this)"><b>🍃 輕鬆練 10 分鐘</b><small>短練習，做完就休息</small></button>
@@ -173,6 +195,7 @@
 
 
   <div class="prog-card">
+    <span class="kicker progress">🔵 長期進度 · 不是今天的任務</span>
     <h3>技能進度</h3>
     <div class="skill-dep">🔴 待決策 · 依賴共用分類法（尚未存在）</div>
     <div class="skill-source">📊 這裏每一條，都是你各科老師批改時標記、經內容審核通過後的技能標籤累積而成——標籤來自全平台共用的同一套分類，未經審核的標籤不會計入，你自己也一樣看不到未審核的（與教師的「班級學習面貌」用同一套規則）。</div>
@@ -195,12 +218,16 @@
     <div class="sub">家長視角 · 2025/26 下學期 · 中文科</div>
     <div class="parent-note">🤝 這一頁的目的是幫你<b>陪伴 Karen</b>，而不是給你一張成績單。你看到的資料與她看到的相同：只有她自己的進度，沒有名次，也不會跟其他孩子比較。</div>
 
-    <div class="snap-row">
-      <div class="snap"><span class="s-ic">🌱</span><b>連續 4 星期</b><small>推論題練習沒有中斷——三月時她最怕的正是這類題</small></div>
-      <div class="snap"><span class="s-ic">🧭</span><b>3 次自選練習</b><small>全部由她自己選擇、自己安排時間</small></div>
-      <div class="snap"><span class="s-ic">📜</span><b>本週生字：蹣跚</b><small>她在〈背影〉學到的——可以請她教你</small></div>
+    <div class="snap-row-wrap">
+      <span class="kicker snapshot">📊 快照 · 這星期發生的事</span>
+      <div class="snap-row">
+        <div class="snap"><span class="s-ic">🌱</span><b>連續 4 星期</b><small>推論題練習沒有中斷——三月時她最怕的正是這類題</small></div>
+        <div class="snap"><span class="s-ic">🧭</span><b>3 次自選練習</b><small>全部由她自己選擇、自己安排時間</small></div>
+        <div class="snap"><span class="s-ic">📜</span><b>本週生字：蹣跚</b><small>她在〈背影〉學到的——可以請她教你</small></div>
+      </div>
     </div>
     <div class="rec-card">
+      <span class="kicker talk">💬 話題 · 不是打分，只是聊天引子</span>
       <h3>本週可以跟 Karen 聊的三件事</h3>
       <div class="src">根據她的學習紀錄生成 · 只提供話題，不鼓勵施壓</div>
       <div class="q"><span class="n">1</span><span><b>推論題</b>她已連續練習了四星期；三月時她還說最怕這類題。不妨問問她：「你是怎樣不再怕它的？」</span><span class="q-actions"><button class="q-btn" onclick="topicDone(this)">試過了</button><button class="q-btn" onclick="swapTopic(this)">換一題</button></span></div>
@@ -209,7 +236,8 @@
     </div>
 
     <div class="joint">
-      <h3>🕯 今晚一起做一件小事（約 10 分鐘）</h3>
+      <span class="kicker action">🕯 行動 · 非必須，一起做才有意思</span>
+      <h3>今晚一起做一件小事（約 10 分鐘）</h3>
       <p>陪她讀〈背影〉第 4 段——就是父親買橘子那一段。你不用教，只需要聽她讀，再請她解釋一個她喜歡的詞。讀完可以互相說一件「對方為你做過、但你沒說出口多謝」的小事。</p>
       <button class="j-btn" id="jointBtn" onclick="addJoint()">加入 Karen 的今晚練習清單 →</button>
     </div>
@@ -217,7 +245,8 @@
 
   <div class="tutor">
     <div class="gate-tag">🔴 待決策 · 試點構想，尚未獲領導層批准</div>
-    <h3>💬 AI 導師即時對話（構想中）</h3>
+    <span class="kicker locked">🔒 未開放 · 構想中</span>
+    <h3>💬 AI 導師即時對話</h3>
     <p>與 AI 導師即時對話練習，只限個別試點學校及單一科目。開始使用前，<b>必須先取得家長明確同意</b>：這是獨立的同意步驟，不是藏在條款裏的剔選框。對話中若有內容被標示為需要關注，你學校的老師<b>當日內</b>便會看到並跟進。</p>
     <div class="consent"><span class="cb"></span>家長／監護人同意書 — 待家長於家長端確認（此示意畫面不可操作）</div>
     <button class="btn" disabled>暫未開放 · 待領導層風險決策</button>

@@ -152,6 +152,20 @@
   .xs-pick.on{background:#effaf5;border-color:#bfe8d7;color:var(--ec-green);font-weight:700;}
   .collab{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:11px;padding:10px 14px;font-size:.73rem;color:#8a6d00;line-height:1.6;margin-top:12px;}
 
+  /* Mock save-to-library flow — a short multi-step sequence (not just a
+   * toast) so "saving" reads as a real pipeline step (store → tag with
+   * provenance/curriculum mapping → done), ending in a real deep-link into
+   * material-library.html carrying the new item's details via query string.
+   * This suite has no cross-page persistence (no localStorage — see
+   * roster.html's note on the same constraint), so the "save" is simulated
+   * one-way: material-library.html reads the query string once on load and
+   * prepends a matching row, tagged 剛剛儲存. */
+  .save-flow{margin-top:12px;background:#f7fdf9;border:1px solid #bfe8d7;border-radius:11px;padding:12px 15px;font-size:.78rem;color:#0c6b48;line-height:1.6;display:none;}
+  .save-flow.show{display:block;}
+  .save-flow .sf-step{display:flex;align-items:center;gap:8px;}
+  .save-flow a.lbtn{display:inline-flex;align-items:center;gap:5px;margin-top:9px;border:1px solid #bfe8d7;background:#fff;border-radius:9px;padding:7px 14px;font-size:.74rem;color:#0c6b48;font-weight:700;text-decoration:none;}
+  .save-flow a.lbtn:hover{border-color:var(--ec-green);}
+
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
   .toast.show{opacity:.94;}
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
@@ -249,9 +263,10 @@
       <span class="enrich">・按三個教學分組各加一條分層提問（增潤／核心／支援）<br>・加入一條開放式問題，讓學生先寫作、後看評語（配合「先讓學生想」的發還設定）<br>・可連結教育城《朱自清散文選讀》配套音頻</span>
     </span></div>
     <div style="margin-top:14px;display:flex;gap:9px;">
-      <button class="btn" onclick="toast('原型示範：套用選取的增潤建議，另存新版本')">套用增潤（另存新版）</button>
-      <button class="btn" style="background:#fff;border:1px solid var(--line);color:var(--ink-2);" onclick="toast('原型示範：僅儲存驗證報告')">只要驗證報告</button>
+      <button class="btn" onclick="saveUC1('enrich')">套用增潤（另存新版）</button>
+      <button class="btn" style="background:#fff;border:1px solid var(--line);color:var(--ink-2);" onclick="saveUC1('report')">只要驗證報告</button>
     </div>
+    <div class="save-flow" id="saveFlowP1"></div>
     </div><!-- /reportStep -->
   </div>
 
@@ -273,8 +288,9 @@
       <aside class="basket">
         <h4>已選材料（<span id="bCount">0</span>）</h4>
         <div id="bList"><div class="empty-b">尚未選取，按「＋加入」開始組合</div></div>
-        <button class="btn" id="composeBtn" disabled onclick="toast('原型示範：組合成工作紙草稿，交你審訂')">組合成工作紙 →</button>
+        <button class="btn" id="composeBtn" disabled onclick="saveUC2()">組合成工作紙 →</button>
         <div class="cp">📎 出處自動標註於成品；<b>校本授權課本</b>內容僅限校內使用，不可發佈至公開資源庫。</div>
+        <div class="save-flow" id="saveFlowP2"></div>
       </aside>
     </div>
   </div>
@@ -308,8 +324,9 @@
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin:18px 0 10px;">第四步 · 兩科共同審訂</div>
     <div class="collab">🤝 <b>審訂責任：</b>中文環節由你審訂，科學環節則邀請科學科同事負責。跨科教材必須兩科教師都核准，才會發佈。</div>
     <div style="margin-top:14px;">
-      <button class="btn" id="inviteBtn" onclick="this.textContent='已邀請 · 待對方審訂 ✓';this.disabled=true;toast('已向科學科同事發出共同審訂邀請')">邀請科學科同事共同審訂 →</button>
+      <button class="btn" id="inviteBtn" onclick="inviteCoReview()">邀請科學科同事共同審訂 →</button>
     </div>
+    <div class="save-flow" id="saveFlowP3"></div>
     </div><!-- /xsOutline -->
   </div>
 </main>
@@ -340,6 +357,7 @@ function genOutline(){
     o.scrollIntoView?.({behavior:'smooth',block:'nearest'});
     const inv=document.getElementById('inviteBtn');
     inv.textContent='邀請科學科同事共同審訂 →'; inv.disabled=false;
+    document.getElementById('saveFlowP3').classList.remove('show');
     toast('大綱草稿已生成，待兩科教師審訂');
   }, 800);
 }
@@ -359,6 +377,7 @@ function pickSource(k){
   document.getElementById('matChip').textContent = f.chip;
   document.getElementById('fileStep').style.display = '';
   document.getElementById('reportStep').style.display = 'none';
+  document.getElementById('saveFlowP1').classList.remove('show');
   const cb = document.getElementById('checkBtn');
   cb.textContent = '🛡️ 開始檢查（對照官方課程框架）'; cb.disabled = false;
   toast(k==='plat' ? '已選取平台內教材（示例）' : '已上載平台外檔案（示例）');
@@ -369,6 +388,7 @@ function runCheck(){
   setTimeout(()=>{
     cb.textContent = '✓ 檢查完成';
     document.getElementById('reportStep').style.display = '';
+    document.getElementById('saveFlowP1').classList.remove('show');
     document.getElementById('reportStep').scrollIntoView?.({behavior:'smooth', block:'nearest'});
     toast('檢查完成：2 項通過、1 項提示、3 項增潤建議');
   }, 800);
@@ -425,6 +445,53 @@ function renderBasket(){
     : '<div class="empty-b">尚未選取，按「＋加入」開始組合</div>';
   document.getElementById('composeBtn').disabled = basket.length===0;
 }
+/* Mock save-to-library flow, shared by all three use cases. Runs a short
+ * step sequence (rather than an instant toast) so "saved" reads as a real
+ * pipeline — store, then tag with provenance/curriculum mapping — and ends
+ * with a real link into material-library.html carrying the new item's
+ * details in the query string (name/type/tag/usage state), since this suite
+ * has no cross-page persistence to actually push the row there directly. */
+const SAVE_TYPE_LABEL = {report:'驗證報告', sheet:'工作紙', xs:'跨科教材'};
+function runSaveFlow(elId, item){
+  const el = document.getElementById(elId);
+  el.classList.add('show');
+  const steps = ['💾 正在儲存至教材庫…', '🏷 標註出處與課程對應…', 'done'];
+  let i = 0;
+  const tick = () => {
+    if(steps[i] === 'done'){
+      const params = new URLSearchParams({
+        justSaved:'1', name:item.name, type:item.type, t:item.t,
+        usage:item.usage||'未連結課室', state:item.state||'none',
+      });
+      el.innerHTML = `<div class="sf-step">✓ 已儲存至教材庫：<b>${item.name}</b>（${SAVE_TYPE_LABEL[item.type]||'工作紙'}）</div>
+        <a class="lbtn" href="material-library.html?${params.toString()}">📚 前往教材庫查看 →</a>`;
+      return;
+    }
+    el.innerHTML = `<div class="sf-step">${steps[i]}</div>`;
+    i++;
+    setTimeout(tick, 650);
+  };
+  tick();
+}
+function saveUC1(kind){
+  const baseName = document.getElementById('matName').textContent;
+  if(kind==='enrich'){
+    runSaveFlow('saveFlowP1', {name:baseName+'（增潤版）', type:'sheet', t:'p1', usage:'未連結課室', state:'none'});
+  } else {
+    runSaveFlow('saveFlowP1', {name:baseName+' · 驗證報告', type:'report', t:'p1', usage:'未連結課室', state:'none'});
+  }
+}
+function saveUC2(){
+  runSaveFlow('saveFlowP2', {name:`組合工作紙（${basket.length} 項來源）`, type:'sheet', t:'p2', usage:'未連結課室', state:'none'});
+}
+function inviteCoReview(){
+  const btn = document.getElementById('inviteBtn');
+  btn.textContent = '已邀請 · 待對方審訂 ✓'; btn.disabled = true;
+  toast('已向科學科同事發出共同審訂邀請');
+  const name = document.getElementById('xsTheme').value;
+  runSaveFlow('saveFlowP3', {name, type:'xs', t:'p3', usage:'待科學科同事審訂', state:'pending'});
+}
+
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1500);}
 renderRes();

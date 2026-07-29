@@ -94,6 +94,18 @@
   .grant-row .g-since{font-size:.68rem;color:var(--ink-3);margin-left:auto;white-space:nowrap;}
   .empty-note{font-size:.76rem;color:var(--ink-3);}
 
+  /* Revoke-access flow — mirrors .release-zone's "walk the decision, don't
+   * just click a button" treatment, but red-tinted since this is the inverse
+   * (cutting a vendor off), not a grant. Requires a reason before confirming,
+   * same accountability bar as declineTrial's declineReason, and lands in the
+   * audit trail like every other access decision on this page. */
+  .revoke-btn{font-size:.68rem;font-weight:700;color:#b91c1c;background:#fff;border:1px solid var(--line);border-radius:7px;padding:4px 11px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .revoke-btn:hover{border-color:#f5c6c6;background:#fff5f5;}
+  .revoke-zone{background:#fff5f5;border:1px solid #f5c6c6;border-radius:10px;padding:13px 15px;margin:9px 0 4px;}
+  .revoke-zone .rz-warn{font-size:.79rem;color:var(--ink-2);line-height:1.65;margin-bottom:11px;}
+  .revoke-zone select{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.78rem;font-family:inherit;margin-bottom:12px;color:var(--ink);background:#fff;}
+  .revoke-zone label{font-size:.72rem;color:var(--ink-3);display:block;margin-bottom:6px;}
+
   .block-note{
     background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:10px 13px;
     font-size:.76rem;color:#991b1b;line-height:1.6;margin-bottom:10px;
@@ -331,7 +343,7 @@ function driftNoteHtml(entry, vendorId, kind){
 function renderVendors(){
   document.getElementById('vendorList').innerHTML = VENDORS.map(v=>{
     const grantsHtml = v.grants.length
-      ? v.grants.map(g=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span></div>${driftNoteHtml(g, v.id, 'grant')}`).join('')
+      ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div>${driftNoteHtml(g, v.id, 'grant')}<div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
       : `<div class="empty-note">此供應商目前未獲任何組別的資料存取權</div>`;
 
     const blocked = v.vetting.status!=='certified';
@@ -493,6 +505,41 @@ function reconfirmScope(vendorId, kind, id){
   AUDIT.unshift({ic:'✓', text:'馮 Sir 已知悉'+v.name+'（'+entry.group+'）的成員異動，並更新記錄範圍至 '+current.length+' 人', time:'2026-07-21'});
   renderVendors(); renderAudit();
   toast('已更新記錄範圍：'+current.length+' 人');
+}
+const REVOKE_REASONS = [
+  '供應商關係終止',
+  '這組別已不再使用此工具',
+  '資料層級需要調整（將重新申請）',
+  '學校／老師要求撤銷',
+];
+function toggleRevoke(vendorId, idx){
+  const zone = document.getElementById('revoke-'+vendorId+'-'+idx);
+  const isOpen = zone.style.display !== 'none';
+  // Only one confirm panel open at a time — same single-open-picker convention
+  // used for the tag/assign menus on marking.html/groups.html.
+  document.querySelectorAll('.revoke-zone').forEach(z=>{ z.style.display='none'; });
+  if(isOpen) return;
+  const v = VENDORS.find(x=>x.id===vendorId);
+  const g = v.grants[idx];
+  zone.innerHTML = `
+    <div class="rz-warn">⚠ 撤銷後，<b>${v.name}</b> 將立即失去 <b>${g.group}</b> 的 ${g.tier} 存取權——教育城平台這邊會停止再提供新資料，但已同步至供應商系統的既有資料需由供應商自行刪除。此操作會記錄在稽核記錄，且不能復原；如日後需要，須重新提出申請並再次核准。</div>
+    <label>撤銷原因</label>
+    <select id="revokeReason-${vendorId}-${idx}">${REVOKE_REASONS.map(r=>`<option>${r}</option>`).join('')}</select>
+    <div style="display:flex;gap:8px;">
+      <button class="act deny" onclick="confirmRevoke('${vendorId}',${idx})">確認撤銷</button>
+      <button class="act" onclick="toggleRevoke('${vendorId}',${idx})">取消</button>
+    </div>`;
+  zone.style.display = '';
+}
+function confirmRevoke(vendorId, idx){
+  const v = VENDORS.find(x=>x.id===vendorId);
+  const g = v.grants[idx];
+  const reasonSel = document.getElementById('revokeReason-'+vendorId+'-'+idx);
+  const reason = reasonSel ? reasonSel.value : '未說明原因';
+  v.grants.splice(idx, 1);
+  AUDIT.unshift({ic:'🚫', text:'馮 Sir 撤銷'+v.name+'對'+g.group+'的'+g.tier+'存取權限（原因：'+reason+'）', time:'2026-07-29'});
+  renderVendors(); renderAudit();
+  toast('已撤銷：'+v.name+' 對 '+g.group+' 的存取權');
 }
 function findReq(vendorId, reqId){
   const v = VENDORS.find(x=>x.id===vendorId);

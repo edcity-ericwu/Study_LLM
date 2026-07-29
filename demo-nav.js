@@ -43,6 +43,7 @@ const PAGES = [
   ]},
   {group:'🔧 資訊科技統籌（馮 Sir）', items:[
     ['subscriptions.html','訂閱管理','y'],
+    ['usage-report.html','使用報告',''],
     ['eddata-console.html','供應商資料存取審批（EdData）','r'],
   ]},
   {group:'📋 校務處（何主任）', items:[

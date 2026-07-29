@@ -101,11 +101,13 @@ function guardWholePage(flagKey, mainSelector){
  * ribbons ("提案中"/"待決策" banners), .no-story, .source-note (insights.html's
  * data-source disclosure), .skill-dep/.skill-source (student.html's analogous
  * per-card notes), and .gate-tag/.gatebox (the same "待決策" pattern reused
- * under different names in student.html/vetting.html/chat.html), and
- * .reality (vetting.html's "現況：..." disclosure about the beta gap between
- * the intended vetting process and what's actually live today). */
+ * under different names in student.html/vetting.html/chat.html), .reality
+ * (vetting.html's "現況：..." disclosure about the beta gap between the
+ * intended vetting process and what's actually live today), and .data-note
+ * (usage-report.html's disclosure that its usage figures are illustrative
+ * since vendor-data.js has no real login/session source yet). */
 if (!featureOn('protoAnnotations')) {
   const style = document.createElement('style');
-  style.textContent = '.ribbon, .no-story, .source-note, .skill-dep, .skill-source, .gate-tag, .gatebox, .reality { display: none !important; }';
+  style.textContent = '.ribbon, .no-story, .source-note, .skill-dep, .skill-source, .gate-tag, .gatebox, .reality, .data-note { display: none !important; }';
   document.head.appendChild(style);
 }

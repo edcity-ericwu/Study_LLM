@@ -93,6 +93,39 @@ function guardWholePage(flagKey, mainSelector){
   });
 }
 
+/* Site-wide <select> standardization — an audit found several dropdowns
+ * (e.g. roster.html's 批量轉班 select) with zero styling at all, rendering in
+ * raw OS chrome next to custom-styled buttons/inputs right beside them. Most
+ * other <select> elements across the suite WERE already styled, but with
+ * drifted radii (6px vs 8px) and, in a few places, a `background:#fff`
+ * shorthand that silently cancels any background-image — which matters here
+ * because this rule adds a custom arrow via background-image now that every
+ * select gets appearance:none (removing the inconsistent native arrow too).
+ * This is a base layer only (plain `select` selector = lowest specificity):
+ * any page's own class-specific rule (`.status-pick`, `.scope-card select`,
+ * etc.) still wins for whatever properties it sets, so deliberately compact
+ * in-table selects keep their tighter padding/font-size — they just also
+ * inherit the same border-radius, arrow, and focus/hover treatment unless
+ * they say otherwise. Always on (not gated by protoAnnotations): this is a
+ * real visual-consistency fix, not a reviewer-only annotation. */
+(function(){
+  const style = document.createElement('style');
+  style.textContent = `
+    select{
+      font-family:inherit;color:inherit;cursor:pointer;
+      border:1px solid var(--line,#dde3e8);border-radius:8px;
+      background-color:#fff;padding:7px 30px 7px 11px;
+      appearance:none;-webkit-appearance:none;-moz-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2355636f' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 10px center;background-size:10px 6px;
+    }
+    select:hover{border-color:var(--ec-blue,#0072ab);}
+    select:focus{outline:none;border-color:var(--ec-blue,#0072ab);}
+    select:disabled{opacity:.5;cursor:not-allowed;}
+  `;
+  document.head.appendChild(style);
+})();
+
 /* Hide reviewer-only meta annotations (see protoAnnotations above) via an
  * injected <style> rather than a one-time querySelectorAll pass — this way it
  * also covers instances of these classes that get written into the DOM by a

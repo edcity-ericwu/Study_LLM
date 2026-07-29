@@ -115,7 +115,7 @@
   .tab-pane.active{display:block;}
   .scope-note{font-size:.72rem;color:var(--ink-3);margin:10px 0 0;line-height:1.6;max-width:52em;}
   .reassign-row{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:.79rem;}
-  .reassign-row select{font-family:inherit;font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:6px 9px;margin:0 8px;}
+  .reassign-row select{font-family:inherit;font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:6px 26px 6px 9px;margin:0 8px;}
   .reassign-row .impact{color:#8a5a00;}
 
   /* Toolbar is grouped by function, not by markup order — search (find),
@@ -123,7 +123,7 @@
    * so each gets its own visual cluster with a divider between, rather than
    * reading as one undifferentiated row of controls. */
   .table-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
-  .table-toolbar select{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff;}
+  .table-toolbar select{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 30px 8px 12px;background-color:#fff;}
   .toolbar-group{display:flex;align-items:center;gap:8px;}
   .toolbar-group-label{font-size:.68rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
   .toolbar-divider{width:1px;align-self:stretch;background:var(--line);}
@@ -163,7 +163,7 @@
   .bulk-toggle{font-size:.76rem;color:var(--ink-2);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
   .bulk-toggle .toggle-note{color:var(--ink-3);font-size:.7rem;}
   tr.bulk-row td{vertical-align:top;}
-  select.ambig-pick{font-family:inherit;font-size:.76rem;border:1px solid var(--line);border-radius:6px;padding:5px 8px;}
+  select.ambig-pick{font-family:inherit;font-size:.76rem;border:1px solid var(--line);border-radius:6px;padding:5px 22px 5px 8px;}
 
   /* Gmail-style selection: the whole row lights up, not just a tiny checkbox —
    * per Eric's screenshot reference, selection state should be visible at a
@@ -184,12 +184,12 @@
   .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;border-radius:99px;padding:4px 12px;color:#fff;}
   .role-chip.rm{cursor:pointer;background:none;border:1px solid rgba(255,255,255,.6);color:inherit;font-size:.68rem;font-weight:700;padding:0 5px;border-radius:50%;margin-left:2px;}
   .role-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
-  .role-add-pick{font-family:inherit;font-size:.74rem;border:1px solid var(--line);border-radius:6px;padding:4px 8px;}
+  .role-add-pick{font-family:inherit;font-size:.74rem;border:1px solid var(--line);border-radius:6px;padding:4px 22px 4px 8px;}
   /* Same treatment as .role-add-pick / .reassign-row select — an unstyled
    * <select> here rendered in raw browser chrome (square corners, default
    * font) next to every other in-table dropdown on this page, which are all
    * custom-styled. */
-  .status-pick{font-family:inherit;font-size:.79rem;border:1px solid var(--line);border-radius:6px;padding:6px 9px;background:#fff;}
+  .status-pick{font-family:inherit;font-size:.79rem;border:1px solid var(--line);border-radius:6px;padding:6px 24px 6px 9px;background-color:#fff;}
 
   /* Feature flag (see feature-flags.js) — hides without deleting anything. */
   body.ff-hide-roles [data-tab="roles"], body.ff-hide-roles [data-pane="roles"]{display:none !important;}

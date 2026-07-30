@@ -128,18 +128,12 @@
 
   .result-count{font-size:.75rem;color:var(--ink-3);margin:14px 2px 12px;}
 
-  /* ─── Recommended shelf ─── */
-  .rec-section{margin-top:24px;}
-  .rec-label{font-size:.68rem;letter-spacing:.2em;color:var(--ec-blue-dark);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-  .rec-label .star{color:var(--ec-amber);letter-spacing:0;}
-  .rec-level-note{letter-spacing:0;font-weight:500;color:var(--ink-3);}
-  .rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
-  .rec-grid .card{padding-top:42px;}
-  /* top-left, not top-right — .badge-level already lives there */
-  .rec-badge{
-    position:absolute;top:14px;left:22px;font-size:.62rem;font-weight:700;
-    color:#8a5a09;background:#fdf6ec;border:1px solid #f3e3c3;
-    padding:3px 9px;border-radius:99px;display:flex;align-items:center;gap:4px;
+  /* Recommended tools aren't a separate section — they're sorted first
+   * within the normal grid (see applyFilters()) and just wear this small
+   * inline tag next to their name, same row as the isNew badge. */
+  .rec-tag{
+    font-size:.6rem;font-weight:700;color:#8a5a09;background:#fdf6ec;
+    border:1px solid #f3e3c3;padding:2px 8px;border-radius:99px;letter-spacing:.02em;
   }
 
   /* ─── Subject row (inside hero) ─── */
@@ -274,16 +268,6 @@
     </div>
   </div>
 
-  <!-- Sits below the 學段 toggle on purpose: which tools are "recommended"
-   * can differ by 小學 vs 中學 (see TOOLS' recommended:true + level fields),
-   * so this shelf needs the level already chosen above it to make sense —
-   * showing it above the toggle would suggest the picks are level-agnostic
-   * when they're not. -->
-  <div class="rec-section" id="recSection">
-    <div class="rec-label"><span class="star">⭐</span>推 薦 工 具<span class="rec-level-note" id="recLevelNote"></span></div>
-    <div class="rec-grid" id="recGrid"></div>
-  </div>
-
   <div class="tabs-row">
     <span class="tabs-label">你 的 工 具 箱</span>
     <button class="tab on" data-cat="all" onclick="setCat(this)">全部工具</button>
@@ -399,32 +383,10 @@ function levelBadge(t){
  * grid; this is a shortcut to a few tools worth trying first, not a
  * separate/exclusive list. Uses the same onclick branch (real `link` vs
  * tool-form.html placeholder) as the main grid. */
-function renderRecommended(){
-  const wrap = document.getElementById('recSection');
-  if(subject !== 'chi'){ wrap.style.display = 'none'; return; }
-  const picks = TOOLS.filter(t => t.recommended && (t.level==='both' || t.level===level));
-  wrap.style.display = picks.length ? 'block' : 'none';
-  document.getElementById('recLevelNote').textContent = '· ' + (level==='primary' ? '小學' : '中學') + '學段';
-  document.getElementById('recGrid').innerHTML = picks.map(t => `
-    <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? `location.href='${t.link}'` : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')`}">
-      <span class="rec-badge">⭐ 推薦</span>
-      ${levelBadge(t)}
-      <div class="top">
-        <div class="tile">${IC[t.icon]}</div>
-        <div>
-          <h3>${t.name}</h3>
-          <span class="en">${t.en}</span>
-        </div>
-      </div>
-      <p>${t.desc}</p>
-    </div>`).join('');
-}
-
 function applyFilters(){
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const grid = document.getElementById('grid');
   const cs = document.getElementById('comingSoon');
-  renderRecommended();
   if(subject !== 'chi'){
     grid.innerHTML = '';
     document.getElementById('empty').style.display = 'none';
@@ -441,13 +403,19 @@ function applyFilters(){
     (cat==='all' || t.cat===cat) &&
     (!q || t.name.toLowerCase().includes(q) || t.en.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
   );
+  /* Recommended tools float to the top of whatever's already showing —
+   * a stable sort, so within "recommended" and within "not recommended"
+   * the original catalog order is preserved. No separate list, no
+   * duplication; just a "推薦" tag (see .rec-tag) so it reads as a label,
+   * not a different set of tools. */
+  shown.sort((a,b) => (b.recommended?1:0) - (a.recommended?1:0));
   grid.innerHTML = shown.map(t => `
     <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? `location.href='${t.link}'` : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')`}">
       ${levelBadge(t)}
       <div class="top">
         <div class="tile">${IC[t.icon]}</div>
         <div>
-          <h3>${t.name}</h3>
+          <h3>${t.name}${t.recommended ? '<span class="rec-tag">⭐ 推薦</span>' : ''}</h3>
           <span class="en">${t.en}</span>
         </div>
       </div>

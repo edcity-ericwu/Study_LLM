@@ -20,8 +20,9 @@
      holding student/teacher identity records. Same blue family as roster.html is kept anyway
      — still a reasonable choice (both are SMS-family screens), just not for the reason
      originally given. The actor distinction (何主任 vs 馮 Sir) is carried by the topbar avatar. */
-  .sys-sidebar{width:200px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
+  .sys-sidebar{width:248px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:.1em;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:12px 10px;flex:1;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c7d2da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -253,6 +254,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">資訊科技統籌（馮 Sir）</div>
+  <div class="role-tag">🔧 校務行政層級 · 資訊科技統籌視圖</div>
   <nav class="sys-nav">
     <a href="eddata-console.html" class="active">🔐 供應商資料存取審批</a>
   </nav>

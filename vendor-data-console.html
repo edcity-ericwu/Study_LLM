@@ -17,8 +17,9 @@
    * this page is also outside EdCity.ai, on the vendor's own system, so it should
    * read as the same "space" as the vendor portal, not blend into the SMS/EdData
    * blue/purple pair. */
-  .sys-sidebar{width:200px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
+  .sys-sidebar{width:248px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:.1em;color:#f0abb8;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -108,6 +109,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">供應商側系統</div>
+  <div class="role-tag">🏢 供應商層級 · 智寫科技視圖</div>
   <nav class="sys-nav">
     <a href="vendor-portal.html">📈 EdMarket 認證進度</a>
     <a href="vendor-data-console.html" class="active">🔓 資料存取控制台</a>

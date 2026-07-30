@@ -18,8 +18,9 @@
    * glance — matched by eddata-console.html (purple), vendor-portal.html and
    * vendor-data-console.html (maroon), all still the same dark, "plainer than
    * EdCity.ai" shell shape, just a different hue per system. */
-  .sys-sidebar{width:200px;flex-shrink:0;background:#123a52;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue);}
+  .sys-sidebar{width:248px;flex-shrink:0;background:#123a52;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:.1em;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -199,6 +200,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">校務處（何主任）</div>
+  <div class="role-tag">📋 校務行政層級 · 校務處視圖</div>
   <nav class="sys-nav">
     <a href="roster.html" class="active">📋 校務處控制台</a>
   </nav>

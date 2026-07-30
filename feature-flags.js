@@ -42,7 +42,9 @@ const FEATURE_FLAGS = {
 
   // 內容審核員視圖 — 標籤審核與管理。
   // 涉及頁面：tags.html（整頁）。
-  contentModeration: true,
+  // 暫時關閉（2026-07-30）：這個角色與相關動作的實際定位尚未想清楚，先從
+  // 導覽中隱藏，頁面建置內容完全保留。
+  contentModeration: false,
 
   // Reviewer-only meta annotations — build-status ribbons ("🟡 提案中" /
   // "🔴 待決策"), data-source disclosures, and taxonomy-dependency notes.

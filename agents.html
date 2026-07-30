@@ -239,7 +239,7 @@
   <section class="hero">
     <div class="eyebrow">可 分 享 資 源 庫</div>
     <h1>Apps／<u>智能代理</u></h1>
-    <p>合作夥伴提供的現成教學工具，加上同事建立、分享的小應用與對話代理，統一在此按任務挑選 — 例如批改中文作文。</p>
+    <p>合作夥伴提供的現成教學工具，加上同事建立、分享的小應用與對話代理，統一在此按任務挑選。</p>
   </section>
 
   <div class="type-tabs">
@@ -261,8 +261,6 @@
   </div>
 
   <div class="filterbar">
-    <button class="vis-btn" id="visPublic" onclick="setVis('public')">🌐 公開</button>
-    <button class="vis-btn on" id="visPrivate" onclick="setVis('private')">🔒 私人</button>
     <div class="lib-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ink-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <input id="libSearch" type="text" placeholder="搜尋 Apps 與代理，例如「作文批改」…">
@@ -282,6 +280,10 @@
   <div class="vendor-head" style="margin-top:44px;">
     <h2>社群與個人項目</h2>
     <span class="sub">你和其他老師建立的 Apps 與代理</span>
+    <div style="margin-left:auto;display:flex;gap:8px;align-self:center;">
+      <button class="vis-btn" id="visPublic" onclick="setVis('public')">🌐 公開</button>
+      <button class="vis-btn on" id="visPrivate" onclick="setVis('private')">🔒 私人</button>
+    </div>
   </div>
   <div class="result-count" id="resultCount" style="margin-top:6px;"></div>
   <div class="grid" id="grid"></div>

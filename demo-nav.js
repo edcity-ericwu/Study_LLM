@@ -27,7 +27,7 @@ const CSS = `
 const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['chat.html','AI 對話（科目助理）',''],
-    ['index.html','AI 工具首頁',''],
+    ['index.html','教學工具首頁',''],
     ['agents.html','Apps／代理庫',''],
     ['materials.html','教材準備（三大用例）','y'],
     ['material-library.html','教材庫（我的教材）','y'],

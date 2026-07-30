@@ -37,7 +37,10 @@
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 18px;max-width:48em;line-height:1.6;}
 
   .stat-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
-  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:140px;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:140px;cursor:pointer;font-family:inherit;text-align:left;transition:box-shadow .12s;}
+  .stat:hover{box-shadow:0 0 0 2px rgba(0,0,0,.05);}
+  .stat.on{border-color:var(--ec-blue);box-shadow:0 0 0 2px #e6f4fb;background:#f7fbfe;}
+  .stat.on b{color:var(--ec-blue-dark);}
   .stat b{display:block;font-size:1.05rem;color:var(--ink);margin-bottom:2px;}
 
   .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
@@ -91,7 +94,7 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>AI 對話</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／代理</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
       <a href="material-library.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
     </div>
@@ -150,10 +153,23 @@ const ITEMS = [
 const TYPE_TAG = {report:'report', sheet:'sheet', xs:'xs'};
 const STRIPE = {p1:'var(--ec-blue)', p2:'var(--ec-green)', p3:'var(--ec-purple)'};
 let filter='all';
+/* Second, independent filter dimension: usageState (live/pending/none),
+ * driven by the stat cards. Combines with `filter` (which use-case produced
+ * it) and the search box via AND — e.g. "正在課室使用中" while the toolbar
+ * is scoped to 🔗 跨科教材 shows only live cross-subject items, not every
+ * live item platform-wide. 教材總數 doubles as the "view all" / cancel
+ * button for this dimension specifically (the toolbar below already has
+ * its own 全部 for the type dimension) — same single-select, no-toggle-off
+ * pattern as the .fchip row, so the two rows behave consistently. */
+let usageFilter='all';
 function setFilter(btn){
   document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');
   filter=btn.dataset.t;
+  render();
+}
+function setUsageFilter(mode){
+  usageFilter = mode;
   render();
 }
 function usageHtml(it){
@@ -163,7 +179,12 @@ function usageHtml(it){
 }
 function render(){
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
-  const rows = ITEMS.filter(it => (filter==='all'||it.t===filter) && (q===''||it.n.toLowerCase().includes(q)||it.d.toLowerCase().includes(q)));
+  // Scoped by type-filter + search only — this is what the stat counts
+  // describe, so the numbers stay meaningful regardless of which usage
+  // filter is currently active (clicking one doesn't make its own count
+  // collapse to itself).
+  const scoped = ITEMS.filter(it => (filter==='all'||it.t===filter) && (q===''||it.n.toLowerCase().includes(q)||it.d.toLowerCase().includes(q)));
+  const rows = scoped.filter(it => usageFilter==='all' || it.usageState===usageFilter);
   document.getElementById('tbody').innerHTML = rows.length ? rows.map(it=>`
     <tr>
       <td><div class="m-name"><span class="stripe" style="background:${STRIPE[it.t]}"></span><span><b>${it.n}${it.justSaved?'<span class="just-saved">剛剛儲存</span>':''}</b><small>${it.d}</small></span></div></td>
@@ -173,9 +194,9 @@ function render(){
       <td><a class="lbtn" href="${it.open}">重新開啟 →</a></td>
     </tr>`).join('') : `<tr><td colspan="5" class="empty-msg">沒有符合條件的教材</td></tr>`;
   document.getElementById('statRow').innerHTML = `
-    <div class="stat"><b>${ITEMS.length}</b>教材總數</div>
-    <div class="stat"><b>${ITEMS.filter(i=>i.usageState==='live').length}</b>正在課室使用中</div>
-    <div class="stat"><b>${ITEMS.filter(i=>i.usageState==='pending').length}</b>待審訂／待處理</div>
+    <button class="stat${usageFilter==='all'?' on':''}" onclick="setUsageFilter('all')"><b>${scoped.length}</b>教材總數 · 顯示全部</button>
+    <button class="stat${usageFilter==='live'?' on':''}" onclick="setUsageFilter('live')"><b>${scoped.filter(i=>i.usageState==='live').length}</b>正在課室使用中</button>
+    <button class="stat${usageFilter==='pending'?' on':''}" onclick="setUsageFilter('pending')"><b>${scoped.filter(i=>i.usageState==='pending').length}</b>待審訂／待處理</button>
   `;
 }
 /* Closes the loop on materials.html's mock save-flow: this suite has no

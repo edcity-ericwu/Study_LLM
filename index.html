@@ -71,27 +71,24 @@
   .main{flex:1;min-width:0;padding:26px 34px 60px;}
 
   .hero{
-    border-radius:18px;padding:30px 34px;position:relative;overflow:hidden;
+    border-radius:18px;padding:34px 38px;position:relative;overflow:hidden;
     background:linear-gradient(115deg,#e8f5fc 0%,#eefaf3 55%,#fdf6ec 100%);
-    border:1px solid #ddeef7;
+    border:1px solid #ddeef7;margin-bottom:24px;
   }
   .hero .eyebrow{
-    font-size:.7rem;letter-spacing:.22em;color:var(--ec-blue-dark);font-weight:600;margin-bottom:10px;
+    font-size:.7rem;letter-spacing:.24em;color:var(--ec-blue-dark);font-weight:600;margin-bottom:12px;
   }
-  .hero h1{font-size:2rem;font-weight:700;margin-bottom:8px;}
+  .hero h1{font-size:2rem;font-weight:800;margin-bottom:10px;}
   .hero h1 em{font-style:normal;}
-  .hero p{font-size:.9rem;color:var(--ink-2);max-width:34em;}
-  .hero .stats{margin-top:2px;font-size:.8rem;color:var(--ink-2);display:flex;gap:18px;align-items:center;}
-  .hero .stats b{font-size:1.05rem;color:var(--ink);}
-  .hero .dot{width:7px;height:7px;border-radius:50%;background:var(--ec-green);display:inline-block;margin-right:6px;}
+  .hero p{font-size:.92rem;color:var(--ink-2);max-width:36em;}
   .hero .guide-btn{
-    position:absolute;top:26px;right:28px;background:#fff;border:1px solid var(--line);
+    position:absolute;top:28px;right:30px;background:#fff;border:1px solid var(--line);
     border-radius:99px;padding:8px 16px;font-size:.8rem;color:var(--ink-2);cursor:pointer;
   }
   .hero .guide-btn:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
 
   /* ─── Search + toggle row ─── */
-  .controls{display:flex;gap:14px;align-items:center;margin:22px 0 6px;flex-wrap:wrap;}
+  .controls{display:flex;gap:14px;align-items:center;margin:0 0 6px;flex-wrap:wrap;}
   .search{
     flex:1;min-width:260px;display:flex;align-items:center;background:#fff;
     border:1px solid var(--line);border-radius:99px;padding:4px 4px 4px 18px;
@@ -251,10 +248,6 @@
       <button class="subj" data-subj="sci" onclick="setSubject(this)">科學<span class="soon">即將推出</span></button>
     </div>
 
-    <div class="stats">
-      <span id="subjectStat"><b id="toolCount">0</b> 個中文科工具</span>
-      <span><span class="dot"></span>每週更新</span>
-    </div>
   </section>
 
   <div class="controls">
@@ -405,10 +398,8 @@ function applyFilters(){
     cs.style.display = 'block';
     document.getElementById('csTitle').textContent = SUBJ_NAME[subject] + '科 · 即將推出';
     document.getElementById('resultCount').textContent = SUBJ_NAME[subject] + '科工具籌備中';
-    document.getElementById('subjectStat').innerHTML = SUBJ_NAME[subject] + '科工具 · 即將推出';
     return;
   }
-  document.getElementById('subjectStat').innerHTML = '<b id="toolCount">0</b> 個中文科工具';
   cs.style.display = 'none';
   const shown = TOOLS.filter(t =>
     (t.level==='both' || t.level===level) &&
@@ -436,7 +427,6 @@ function applyFilters(){
   document.getElementById('empty').style.display = shown.length ? 'none' : 'block';
   document.getElementById('resultCount').textContent =
     `顯示 ${shown.length} 個工具 · ${level==='primary'?'小學':'中學'}學段`;
-  document.getElementById('toolCount').textContent = TOOLS.filter(t=>t.level==='both'||t.level===level).length;
 }
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 applyFilters();

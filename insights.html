@@ -34,9 +34,9 @@
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
   h1{font-size:1.5rem;font-weight:800;}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 4px;max-width:46em;line-height:1.6;}
+  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:46em;line-height:1.6;}
   .class-dd{position:relative;}
   .class-btn{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);}
   .class-btn b{color:var(--ec-blue-dark);}
@@ -52,10 +52,6 @@
     padding:11px 15px;font-size:.76rem;color:var(--ec-blue-dark);line-height:1.65;max-width:52em;
   }
 
-  .stat-row{display:flex;gap:12px;margin:0 0 18px;flex-wrap:wrap;}
-  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:150px;}
-  .stat b{display:block;font-size:1.05rem;color:var(--ink);margin-bottom:2px;}
-  .stat.warn b{color:#b07c10;}
 
   .empty-row td{padding:30px 16px;text-align:center;color:var(--ink-3);font-size:.8rem;line-height:1.75;}
   .empty-row .lbtn{margin-top:10px;display:inline-flex;}
@@ -153,7 +149,6 @@
 
   <div class="source-note">ℹ️ 數據來源：AI 批改，以及已完成標籤對應、通過教育城核實的供應商工具——所有標籤須先對應到共用分類法（科目 × 技能維度 × 掌握程度），<b>再經內容審核</b>，才會計入。未完成對應或未經審核的標籤不會出現在這裏。只有你看到本班的完整面貌；科組只見趨勢方向，學生只見自己。</div>
 
-  <div class="stat-row" id="statRow"></div>
 
   <div class="gchips">
     <span class="lbl">按 分 組 檢 視</span>
@@ -305,18 +300,12 @@ function switchClass(c){
   document.getElementById('classMeta').textContent=cd.meta;
   document.querySelectorAll('.class-opt').forEach(o=>o.classList.toggle('on',o.dataset.c===c));
   document.getElementById('classMenu').classList.remove('show');
-  renderStats(cd.stats);
   document.getElementById('impactCard').style.display=cd.hasImpact?'':'none';
   document.getElementById('cautionBox').innerHTML=cd.caution;
   document.querySelectorAll('.gchip').forEach(b=>b.classList.toggle('on',b.dataset.g==='all'));
   render('all');
   renderTrendOverview('all');
   toast('已切換班別：'+cd.label);
-}
-function renderStats(stats){
-  document.getElementById('statRow').innerHTML = stats.map(s=>
-    `<div class="stat${s.warn?' warn':''}"><b>${s.n}</b>${s.l}</div>`
-  ).join('');
 }
 function setG(btn){
   document.querySelectorAll('.gchip').forEach(c=>c.classList.remove('on'));
@@ -341,7 +330,6 @@ function render(g){
 }
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1500);}
-renderStats(CLASS_DATA['2b'].stats);
 render('all');
 renderTrendOverview('all');
 </script>

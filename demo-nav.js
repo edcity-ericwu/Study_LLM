@@ -29,7 +29,6 @@ const PAGES = [
     ['chat.html','AI 對話（科目助理）',''],
     ['index.html','AI 工具首頁',''],
     ['agents.html','Apps／代理庫',''],
-    ['marking.html','AI 批改','y'],
     ['materials.html','教材準備（三大用例）','y'],
     ['material-library.html','教材庫（我的教材）','y'],
     ['groups.html','教學分組','y'],

@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdCity Apps／智能代理 — 中文科（教師版）</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --ec-blue:#008BD1;
@@ -22,7 +30,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);display:flex;min-height:100vh;
   }
 
@@ -33,10 +41,10 @@
   }
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:.02em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
-  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;padding:0 10px 8px;text-transform:uppercase;}
+  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
   .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
@@ -55,7 +63,7 @@
   .hero{
     margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);position:relative;
   }
-  .hero .eyebrow{font-size:.7rem;letter-spacing:.24em;color:var(--ec-green);font-weight:600;margin-bottom:12px;}
+  .hero .eyebrow{font-size:.7rem;letter-spacing:normal;color:var(--ec-green);font-weight:600;margin-bottom:12px;}
   .hero h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
   .hero h1 u{text-decoration:none;}
   .hero p{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
@@ -112,7 +120,7 @@
   }
   .acard .type-badge{
     position:absolute;top:12px;left:12px;background:#fff;border:1px solid var(--line);
-    font-size:.6rem;font-weight:700;letter-spacing:.08em;color:var(--ink-2);
+    font-size:.6rem;font-weight:700;letter-spacing:normal;color:var(--ink-2);
     border-radius:99px;padding:4px 10px;display:flex;align-items:center;gap:5px;
   }
   .acard .type-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}

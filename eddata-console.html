@@ -4,13 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>供應商資料存取審批（EdData）— 校管系統（示意）</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-green:#00AC6C;--ec-amber:#F5A623;--ec-maroon:#7B2539;--ec-purple:#7C5CDB;
     --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#dde3e8;--bg:#f1f2f8;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
 
   /* shared "system" sidebar — separate visual language from the EdCity.ai teacher sidebar,
      so it's clear this is navigation WITHIN the SMS/EdData system, not the teaching-tools app.
@@ -21,7 +29,7 @@
      — still a reasonable choice (both are SMS-family screens), just not for the reason
      originally given. The actor distinction (何主任 vs 馮 Sir) is carried by the topbar avatar. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
-  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:.1em;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
   .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:12px 10px;flex:1;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c7d2da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
@@ -33,7 +41,7 @@
   .sys-main{flex:1;min-width:0;}
 
   /* deliberately the same plain SMS-family shell as roster.html — this is EdData, not the Resources Platform */
-  .role-banner{background:#0f3347;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:.18em;padding:9px 26px;position:sticky;top:0;z-index:50;}
+  .role-banner{background:#0f3347;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
   .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-blue-dark);}
@@ -99,7 +107,7 @@
 
   .v-section{padding:14px 18px;border-bottom:1px solid var(--line);}
   .v-section:last-child{border-bottom:none;}
-  .v-section h4{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--ink-3);text-transform:uppercase;margin-bottom:10px;}
+  .v-section h4{font-size:.72rem;font-weight:700;letter-spacing:normal;color:var(--ink-3);text-transform:uppercase;margin-bottom:10px;}
 
   /* Strong visual split between "needs your decision" and "already decided" —
    * previously both were plain white .v-section blocks with only a small
@@ -175,7 +183,7 @@
   .req-context small{width:100%;font-size:.7rem;color:var(--ink-3);margin-top:1px;}
 
   .release-zone{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:10px;padding:13px 15px;margin:11px 0;}
-  .release-zone .rz-label{font-size:.66rem;font-weight:700;color:#8a5a00;letter-spacing:.05em;margin-bottom:11px;text-transform:uppercase;}
+  .release-zone .rz-label{font-size:.66rem;font-weight:700;color:#8a5a00;letter-spacing:normal;margin-bottom:11px;text-transform:uppercase;}
   .rz-chain{display:flex;flex-direction:column;gap:9px;align-items:stretch;}
   .rz-step{display:flex;align-items:center;gap:9px;}
   .rz-arrow{font-size:.72rem;color:#b07c10;font-weight:700;padding-left:4px;white-space:nowrap;}

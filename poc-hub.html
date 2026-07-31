@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdCity AI 教學工具 — POC 導覽</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --ec-blue:#008BD1;
@@ -24,7 +32,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);
     min-height:100vh;
   }
@@ -44,7 +52,7 @@
     background:#e8f5fc;
     border:1px solid #ddeef7;margin-bottom:30px;
   }
-  .hero .eyebrow{font-size:.7rem;letter-spacing:.22em;color:var(--ec-blue-dark);font-weight:600;margin-bottom:10px;}
+  .hero .eyebrow{font-size:.7rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-bottom:10px;}
   .hero h1{font-size:1.9rem;font-weight:700;margin-bottom:10px;}
   .hero h1 em{font-style:normal;border-bottom:3px solid var(--ec-blue);padding-bottom:2px;}
   .hero p{font-size:.9rem;color:var(--ink-2);max-width:38em;line-height:1.7;}

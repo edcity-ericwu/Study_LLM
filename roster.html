@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>學校管理系統（SMS）— 校務處控制台（示意）</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-green:#00AC6C;--ec-amber:#F5A623;
@@ -11,7 +19,7 @@
     --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#dde3e8;--bg:#f1f2f8;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
 
   /* System color-coding: SMS = blue. The sidebar's actual background carries the
    * color (not just a thin accent stripe) so the system is unmistakable at a
@@ -19,7 +27,7 @@
    * vendor-data-console.html (maroon), all still the same dark, "plainer than
    * EdCity.ai" shell shape, just a different hue per system. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#123a52;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue);}
-  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:.1em;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
   .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
@@ -31,7 +39,7 @@
   .sys-main{flex:1;min-width:0;}
 
   /* deliberately plainer shell — this is SMS, not the Resources Platform */
-  .role-banner{background:#1a4763;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:.18em;padding:9px 26px;position:sticky;top:0;z-index:50;}
+  .role-banner{background:#1a4763;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
   .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-blue-dark);}
@@ -69,7 +77,7 @@
 
   table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);}
   th,td{text-align:left;padding:12px 14px;font-size:.82rem;border-bottom:1px solid var(--line);vertical-align:middle;}
-  th{font-size:.7rem;letter-spacing:.06em;color:var(--ink-3);font-weight:700;background:#f6f8fa;}
+  th{font-size:.7rem;letter-spacing:normal;color:var(--ink-3);font-weight:700;background:#f6f8fa;}
   tr:last-child td{border-bottom:none;}
   .st{font-size:.66rem;font-weight:700;border-radius:4px;padding:3px 9px;display:inline-block;}
   .st.ok{color:#0c6b48;background:#e6f7ef;}
@@ -127,7 +135,7 @@
   .table-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
   .table-toolbar select{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 30px 8px 12px;background-color:#fff;}
   .toolbar-group{display:flex;align-items:center;gap:8px;}
-  .toolbar-group-label{font-size:.68rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .toolbar-group-label{font-size:.68rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:normal;}
   .toolbar-divider{width:1px;align-self:stretch;background:var(--line);}
   .search-group{flex:1;min-width:180px;}
   .search-group input[type=text]{width:100%;font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
@@ -152,7 +160,7 @@
   .ms-filter-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:8px;min-width:190px;max-height:260px;overflow-y:auto;z-index:20;}
   .ms-filter-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.79rem;border-radius:6px;cursor:pointer;white-space:nowrap;}
   .ms-filter-opt:hover{background:#f2f6fd;}
-  .group-head td{background:#f6f8fa;font-weight:700;font-size:.72rem;color:var(--ink-2);padding:8px 14px;letter-spacing:.02em;border-bottom:1px solid var(--line);}
+  .group-head td{background:#f6f8fa;font-weight:700;font-size:.72rem;color:var(--ink-2);padding:8px 14px;letter-spacing:normal;border-bottom:1px solid var(--line);}
   .group-head .grp-count{float:right;color:var(--ink-3);font-weight:500;}
   .class-accent{border-left:4px solid var(--line);}
 

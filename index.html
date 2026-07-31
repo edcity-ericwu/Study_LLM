@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdCity 教學工具 — 中文科（教師版）</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   :root{
     --ec-blue:#008BD1;
@@ -24,7 +32,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);
     display:flex;min-height:100vh;
   }
@@ -36,11 +44,11 @@
   }
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:.02em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
   .nav-group h6{
-    font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;
+    font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;
     padding:0 10px 8px;text-transform:uppercase;
   }
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
@@ -74,7 +82,7 @@
     margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);position:relative;
   }
   .hero .eyebrow{
-    font-size:.7rem;letter-spacing:.24em;color:var(--ec-blue-dark);font-weight:600;margin-bottom:12px;
+    font-size:.7rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-bottom:12px;
   }
   .hero h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
   .hero h1 em{font-style:normal;}
@@ -113,7 +121,7 @@
     display:flex;align-items:center;gap:8px;margin:16px 0 4px;flex-wrap:wrap;
     padding-bottom:14px;border-bottom:1px dashed var(--line);
   }
-  .tabs-label{font-size:.68rem;letter-spacing:.2em;color:var(--ec-maroon);font-weight:600;margin-right:6px;}
+  .tabs-label{font-size:.68rem;letter-spacing:normal;color:var(--ec-maroon);font-weight:600;margin-right:6px;}
   .tab{
     background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 16px;
     font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
@@ -128,12 +136,12 @@
    * inline tag next to their name, same row as the isNew badge. */
   .rec-tag{
     font-size:.6rem;font-weight:700;color:#8a5a09;background:#fdf6ec;
-    border:1px solid #f3e3c3;padding:2px 8px;border-radius:99px;letter-spacing:.02em;
+    border:1px solid #f3e3c3;padding:2px 8px;border-radius:99px;letter-spacing:normal;
   }
 
   /* ─── Subject row (inside hero) ─── */
   .subject-row{display:flex;align-items:center;gap:8px;margin:18px 0 16px;flex-wrap:wrap;}
-  .subject-label{font-size:.68rem;letter-spacing:.2em;color:var(--ec-blue-dark);font-weight:600;margin-right:6px;}
+  .subject-label{font-size:.68rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-right:6px;}
   .subj{
     display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
     border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:500;
@@ -142,7 +150,7 @@
   .subj.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
   .subj .soon{
     font-size:.58rem;font-weight:700;color:var(--ec-amber);background:#fdf6ec;
-    border:1px solid #f3e3c3;border-radius:99px;padding:2px 7px;letter-spacing:.04em;
+    border:1px solid #f3e3c3;border-radius:99px;padding:2px 7px;letter-spacing:normal;
   }
   .subj.on .soon{color:#fff;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);}
   .coming-soon{
@@ -157,13 +165,13 @@
   .card{
     background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
     padding:18px 18px 18px 22px;position:relative;cursor:pointer;
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
   .card::before{
     content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:99px;
     background:var(--accent,var(--ec-blue));
   }
-  .card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(30,42,53,.09);}
+  .card:hover{transform:translateY(-3px);border-color:var(--ec-blue);box-shadow:0 10px 26px rgba(0,139,209,.16);}
   .card .top{display:flex;align-items:flex-start;gap:12px;}
   .card .tile{
     width:42px;height:42px;border-radius:11px;flex-shrink:0;

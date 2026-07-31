@@ -8,11 +8,11 @@ const CSS = `
 .um-modal{
   background:#fff;border-radius:20px;width:min(880px,94vw);max-height:88vh;display:flex;overflow:hidden;
   box-shadow:0 28px 70px rgba(20,30,40,.3);position:relative;
-  font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;color:var(--ink,#1e2a35);
+  font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;color:var(--ink,#1e2a35);
 }
 .um-close{position:absolute;top:14px;right:16px;border:none;background:transparent;font-size:1.05rem;color:var(--ink-3,#8a97a3);cursor:pointer;padding:6px;z-index:2;}
 .um-nav{width:200px;flex-shrink:0;background:#f7fafc;border-right:1px solid var(--line,#e6ebf0);padding:22px 12px;}
-.um-nav h6{font-size:.66rem;font-weight:600;color:var(--ink-3,#8a97a3);letter-spacing:.12em;padding:0 10px 10px;}
+.um-nav h6{font-size:.66rem;font-weight:600;color:var(--ink-3,#8a97a3);letter-spacing:normal;padding:0 10px 10px;}
 .um-nav button{
   display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:none;background:transparent;
   padding:9px 10px;border-radius:9px;font-size:.84rem;color:var(--ink-2,#55636f);cursor:pointer;font-family:inherit;margin-bottom:2px;
@@ -23,7 +23,7 @@ const CSS = `
 .um-body h2{font-size:1.05rem;font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:10px;}
 .um-body h2 .plan{
   font-size:.62rem;font-weight:700;color:var(--ec-blue-dark,#0072ab);background:#e6f4fb;
-  border-radius:99px;padding:3px 10px;letter-spacing:.05em;
+  border-radius:99px;padding:3px 10px;letter-spacing:normal;
 }
 .um-sect{margin-top:26px;}
 .um-sect h3{font-size:.92rem;font-weight:700;margin-bottom:14px;}

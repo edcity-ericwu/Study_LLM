@@ -54,6 +54,11 @@ const FEATURE_FLAGS = {
   // flip to true for an internal walkthrough that needs the caveats visible
   // again. See the CSS injection at the bottom of this file for what's hidden.
   protoAnnotations: false,
+
+  // Site-wide "POC v0.1" corner ribbon (see the IIFE near the bottom of this
+  // file). Default OFF (2026-07-31): hidden per Eric's request. Flip back to
+  // true to reinstate the always-visible "this isn't real" corner disclaimer.
+  pocRibbon: false,
 };
 
 function featureOn(key){
@@ -87,7 +92,7 @@ function guardWholePage(flagKey, mainSelector){
     if (!main) return;
     main.style.display = 'none';
     const notice = document.createElement('div');
-    notice.style.cssText = 'max-width:640px;margin:80px auto;padding:24px 28px;background:#fff;border:1px solid #e6ebf0;border-radius:12px;font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color:#55636f;font-size:.85rem;line-height:1.7;';
+    notice.style.cssText = 'max-width:640px;margin:80px auto;padding:24px 28px;background:#fff;border:1px solid #e6ebf0;border-radius:12px;font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;color:#55636f;font-size:.85rem;line-height:1.7;';
     notice.innerHTML = featureOn('protoAnnotations')
       ? '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此畫面目前不在本輪示範範圍內</b>此頁的建置內容完全保留，只是暫時從導覽中隱藏（feature-flags.js 內的設定）。'
       : '<b style="color:#1e2a35;display:block;margin-bottom:6px;">此功能目前未開放</b>請聯絡你的資訊科技統籌了解詳情。';
@@ -154,9 +159,10 @@ function guardWholePage(flagKey, mainSelector){
     color:#fff;font-weight:800;font-size:.92rem;letter-spacing:.07em;
     padding:11px 0;box-shadow:0 2px 10px rgba(0,0,0,.35);
     text-shadow:0 1px 2px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5);
-    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
   `;
   wrap.appendChild(ribbon);
+  if (!featureOn('pocRibbon')) return;
   function mount(){ document.body.appendChild(wrap); }
   if (document.body) mount();
   else document.addEventListener('DOMContentLoaded', mount);

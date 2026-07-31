@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdCity.ai — 中文科（教師版）</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
 <style>
   /* Headline typeface, matching digitaleducation.hk's headline font — used
    * only for the "EdCity.ai" wordmark below, not site-wide. Static weight
@@ -32,7 +40,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{
-    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);
     display:flex;min-height:100vh;
   }
@@ -44,11 +52,11 @@
   }
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:.02em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
   .nav-group h6{
-    font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;
+    font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;
     padding:0 10px 8px;text-transform:uppercase;
   }
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
@@ -84,12 +92,12 @@
     background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:34px;
   }
   .whatsnew .wn-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-  .whatsnew .wn-head b{font-size:.72rem;letter-spacing:.18em;color:var(--ink-2);font-weight:600;}
+  .whatsnew .wn-head b{font-size:.72rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;}
   .whatsnew .wn-head a{font-size:.72rem;color:var(--ec-blue);text-decoration:none;}
   .whatsnew .row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:.8rem;color:var(--ink);}
   .whatsnew .patch{
     font-size:.58rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border-radius:6px;
-    padding:2px 7px;letter-spacing:.05em;
+    padding:2px 7px;letter-spacing:normal;
   }
   .whatsnew .ver{color:var(--ink-3);font-size:.72rem;}
   .whatsnew .row .arrow{margin-left:auto;color:var(--ink-3);}
@@ -97,7 +105,7 @@
   /* Hero */
   .hero-chat{text-align:center;margin-bottom:16px;}
   .hero-chat h1{
-    font-family:'Aspekta','PingFang TC','Microsoft JhengHei','Noto Sans TC',-apple-system,"Segoe UI",sans-serif;
+    font-family:'Aspekta','Chiron GoRound TC','PingFang TC','Microsoft JhengHei','Noto Sans TC',-apple-system,"Segoe UI",sans-serif;
     font-size:3rem;font-weight:800;letter-spacing:.01em;color:var(--ec-blue);
   }
   .hero-chat p{font-size:.92rem;color:var(--ink-2);margin-top:14px;}
@@ -123,12 +131,12 @@
   .sugg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 8px;}
   .sugg .s-card{
     background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;
-    cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+    cursor:pointer;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     text-align:center;display:flex;flex-direction:column;align-items:center;
   }
-  .sugg .s-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(30,42,53,.08);}
+  .sugg .s-card:hover{transform:translateY(-2px);border-color:var(--ec-blue);box-shadow:0 8px 22px rgba(0,139,209,.14);}
   .sugg .s-card .cat{
-    font-size:.62rem;letter-spacing:.14em;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:.62rem;letter-spacing:normal;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .sugg .s-card .hr{width:26px;height:1px;background:var(--line);margin:10px auto;}
   .sugg .s-card h4{font-size:.85rem;font-weight:600;line-height:1.5;text-align:center;}
@@ -186,7 +194,7 @@
   .msg.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;}
   .msg.ai .tag{
     display:inline-block;font-size:.6rem;font-weight:700;color:var(--ec-blue-dark);
-    background:#e6f4fb;border-radius:6px;padding:2px 7px;margin-bottom:6px;letter-spacing:.05em;
+    background:#e6f4fb;border-radius:6px;padding:2px 7px;margin-bottom:6px;letter-spacing:normal;
   }
   .typing{align-self:flex-start;color:var(--ink-3);font-size:.8rem;padding:4px 6px;}
 
@@ -256,7 +264,7 @@
   }
   .menu.show{display:block;}
   .menu .m-sect{
-    font-size:.62rem;letter-spacing:.14em;font-weight:700;color:var(--ink-3);
+    font-size:.62rem;letter-spacing:normal;font-weight:700;color:var(--ink-3);
     padding:10px 12px 6px;text-transform:uppercase;
   }
   .menu .m-item{
@@ -520,7 +528,7 @@
         </button>
       </div>
     </div>
-    <div class="hint">EdCity.ai · 內部示範原型，回覆為預設示例，僅供概念演示</div>
+    <div class="hint" style="display:none;">EdCity.ai · 內部示範原型，回覆為預設示例，僅供概念演示</div>
   </div>
 </main>
 

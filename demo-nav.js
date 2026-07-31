@@ -3,13 +3,13 @@
 const CSS = `
 .dn-pill{position:fixed;bottom:22px;right:22px;z-index:90;background:#1e2a35;color:#fff;border:none;
   border-radius:99px;padding:11px 18px;font-size:.8rem;font-weight:600;cursor:pointer;
-  font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;box-shadow:0 8px 24px rgba(20,30,40,.25);}
+  font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;box-shadow:0 8px 24px rgba(20,30,40,.25);}
 .dn-panel{position:fixed;bottom:70px;right:22px;z-index:91;background:#fff;border:1px solid #e6ebf0;
   border-radius:16px;box-shadow:0 18px 48px rgba(20,30,40,.2);width:400px;max-width:calc(100vw - 44px);padding:14px;display:none;
-  font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
   max-height:min(70vh,560px);overflow-y:auto;overscroll-behavior:contain;}
 .dn-panel.show{display:block;}
-.dn-panel h6{font-size:.64rem;letter-spacing:.14em;color:#8a97a3;font-weight:700;margin:10px 4px 6px;position:sticky;top:-14px;background:#fff;padding-top:14px;z-index:1;}
+.dn-panel h6{font-size:.64rem;letter-spacing:normal;color:#8a97a3;font-weight:700;margin:10px 4px 6px;position:sticky;top:-14px;background:#fff;padding-top:14px;z-index:1;}
 .dn-panel h6:first-child{margin-top:0;}
 .dn-panel a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;
   font-size:.8rem;color:#55636f;text-decoration:none;}

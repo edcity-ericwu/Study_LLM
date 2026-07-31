@@ -8,7 +8,7 @@
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
     --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
-    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f5f8fa;font-size:18px;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
@@ -16,7 +16,7 @@
   .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
   .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.68rem;color:var(--ink-3);margin-top:8px;letter-spacing:.04em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:8px;letter-spacing:.02em;}
   .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:9px;color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
   .nav{padding:14px 10px;flex:1;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;padding:0 10px 8px;text-transform:uppercase;}
@@ -124,7 +124,7 @@
 <aside class="sidebar">
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-    <div class="logo-sub">AI 教學工具平台 · 原型 v0.1</div>
+    <div class="logo-sub">AI 教學工具平台 · POC v0.1</div>
     <div class="role-tag">🔧 學校行政層級 · 資訊科技統籌視圖</div>
   </div>
   <nav class="nav">
@@ -145,7 +145,7 @@
 </aside>
 
 <main class="main" style="padding-top:0;">
-<div class="role-banner">學 校 行 政 層 級 — 資 訊 科 技 統 籌 視 圖</div>
+<div class="role-banner">學校行政層級 — 資訊科技統籌視圖</div>
 <div style="padding:26px 0 0;">
   <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
 
@@ -338,7 +338,7 @@ function grant(btn){
   card.innerHTML = `
     <div class="ic">✅</div>
     <div class="body">
-      <b>已批出：陳凱怡老師、黃穎詩老師 · 智寫 寫作回饋工具（個人試用）</b>
+      <b>已批出：陳凱怡老師、黃穎詩老師 · 智寫寫作回饋工具（個人試用）</b>
       <p>生效層級：Tier 1 · 基本資料（小規模試用預設層級，不涉及全班／全科規模存取，毋須經供應商資料存取審批個別核准）。生效日期：即日起。</p>
       <div class="preview-mock">
         <span class="pm-label">教師介面現在會顯示：</span>

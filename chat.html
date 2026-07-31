@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity AI 對話 — 中文科（教師版）</title>
+<title>EdCity.ai — 中文科（教師版）</title>
 <style>
+  /* Headline typeface, matching digitaleducation.hk's headline font — used
+   * only for the "EdCity.ai" wordmark below, not site-wide. Static weight
+   * files (not the variable font) since only one weight is needed here. */
+  @font-face{
+    font-family:'Aspekta';
+    src:url('../fonts/webfonts/Aspekta-800.woff2') format('woff2'),
+        url('../fonts/ttf/Aspekta-800.ttf') format('truetype');
+    font-weight:800;font-style:normal;font-display:swap;
+  }
   :root{
     --ec-blue:#008BD1;
     --ec-blue-dark:#0072ab;
@@ -17,7 +26,7 @@
     --ink-2:#55636f;
     --ink-3:#8a97a3;
     --line:#e6ebf0;
-    --bg:#f5f8fa;
+    --bg:#f1f2f8;
     --card:#ffffff;
     font-size:18px;
   }
@@ -35,7 +44,7 @@
   }
   .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.68rem;color:var(--ink-3);margin-top:8px;letter-spacing:.04em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:8px;letter-spacing:.02em;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
   .nav-group h6{
@@ -68,7 +77,7 @@
   /* ─── Main chat column ─── */
   .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;}
   .chat-scroll{flex:1;overflow-y:auto;padding:26px 34px 10px;}
-  .chat-inner{max-width:860px;margin:0 auto;}
+  .chat-inner{max-width:1120px;margin:0 auto;}
 
   /* What's new */
   .whatsnew{
@@ -86,51 +95,50 @@
   .whatsnew .row .arrow{margin-left:auto;color:var(--ink-3);}
 
   /* Hero */
-  .hero-chat{text-align:center;margin-bottom:26px;}
-  .hero-chat .eyebrow{
-    font-size:.7rem;letter-spacing:.28em;color:var(--ink-3);font-weight:600;
-    display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:14px;
-  }
-  .hero-chat .eyebrow::before,.hero-chat .eyebrow::after{
-    content:"";height:1px;width:60px;background:linear-gradient(90deg,transparent,var(--line));
-  }
-  .hero-chat .eyebrow::after{background:linear-gradient(90deg,var(--line),transparent);}
+  .hero-chat{text-align:center;margin-bottom:16px;}
   .hero-chat h1{
-    font-size:2rem;font-weight:800;letter-spacing:.01em;
-    background:linear-gradient(100deg,var(--ec-blue) 10%,var(--ec-green) 90%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-family:'Aspekta','PingFang TC','Microsoft JhengHei','Noto Sans TC',-apple-system,"Segoe UI",sans-serif;
+    font-size:3rem;font-weight:800;letter-spacing:.01em;color:var(--ec-blue);
   }
-  .hero-chat p{font-size:.92rem;color:var(--ink-2);margin-top:10px;}
+  .hero-chat p{font-size:.92rem;color:var(--ink-2);margin-top:14px;}
   .role-pill{
     display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:99px;
-    padding:3px;margin-top:18px;
+    padding:3px;margin-top:20px;gap:2px;
   }
   .role-pill span{
     padding:8px 26px;border-radius:99px;font-size:.85rem;color:var(--ec-blue-dark);
     background:#e6f4fb;font-weight:600;
   }
-  .role-pill em{
-    padding:8px 14px;font-size:.68rem;color:var(--ink-3);font-style:normal;align-self:center;
+  .role-pill .soon{
+    display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;
+    font-size:.85rem;color:var(--ink-3);background:transparent;border:none;
+    font-family:inherit;cursor:default;
+  }
+  .role-pill .soon em{
+    font-style:normal;font-size:.6rem;font-weight:700;color:#8a5a09;
+    background:#fdf6ec;border:1px solid #f3e3c3;border-radius:99px;padding:2px 8px;
   }
 
   /* Suggestion cards */
-  .sugg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 10px;}
+  .sugg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 8px;}
   .sugg .s-card{
-    background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;
     cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+    text-align:center;display:flex;flex-direction:column;align-items:center;
   }
   .sugg .s-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(30,42,53,.08);}
   .sugg .s-card .cat{
-    font-size:.62rem;letter-spacing:.14em;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;
+    font-size:.62rem;letter-spacing:.14em;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;
   }
-  .sugg .s-card h4{font-size:.85rem;font-weight:600;line-height:1.5;}
+  .sugg .s-card .hr{width:26px;height:1px;background:var(--line);margin:10px auto;}
+  .sugg .s-card h4{font-size:.85rem;font-weight:600;line-height:1.5;text-align:center;}
   .sugg .s-card:nth-child(1) .cat{color:var(--ec-blue);}
   .sugg .s-card:nth-child(2) .cat{color:var(--ec-green);}
   .sugg .s-card:nth-child(3) .cat{color:var(--ec-amber);}
   .sugg .s-card:nth-child(4) .cat{color:var(--ec-purple);}
   .sugg .s-card:nth-child(5) .cat{color:var(--ec-maroon);}
   .sugg .s-card:nth-child(4),.sugg .s-card:nth-child(5){grid-column:span 1;}
-  .sugg-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 auto;}
+  .sugg-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 auto;}
   .msg.ai .fitchip{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;color:var(--ink-2);background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:3px 10px;margin:3px 4px 0 0;}
   .msg.ai .fitchip i{font-style:normal;color:var(--ec-green);font-weight:700;}
   .msg.ai .gatebox{display:block;font-size:.7rem;color:#991b1b;background:#fff5f5;border:1px solid #f5c6c6;border-radius:9px;padding:8px 11px;margin-top:10px;line-height:1.6;}
@@ -168,9 +176,12 @@
   .tool-modal .secondary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:.85rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
   .tool-modal .secondary:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
 
-  /* Messages */
-  .thread{margin-top:10px;display:flex;flex-direction:column;gap:14px;}
-  .msg{max-width:78%;padding:12px 16px;border-radius:16px;font-size:.88rem;line-height:1.65;}
+  /* Messages — narrower than the hero/suggestion-card area on purpose: a
+   * 1120px-wide reading column makes AI reply text run far too long per
+   * line, so this centers a standard chat-width (760px) column for the
+   * thread, independent of .chat-inner's wider max-width. */
+  .thread{max-width:760px;margin:10px auto 0;display:flex;flex-direction:column;gap:14px;}
+  .msg{max-width:82%;padding:12px 16px;border-radius:16px;font-size:.88rem;line-height:1.65;}
   .msg.user{align-self:flex-end;background:var(--ec-blue);color:#fff;border-bottom-right-radius:5px;}
   .msg.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;}
   .msg.ai .tag{
@@ -182,7 +193,7 @@
   /* ─── Composer ─── */
   .composer-wrap{padding:12px 34px 22px;border-top:1px solid var(--line);background:var(--bg);}
   .composer{
-    max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--line);
+    max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--line);
     border-radius:20px;padding:14px 16px 10px;box-shadow:0 4px 18px rgba(30,42,53,.05);
     position:relative;
   }
@@ -191,14 +202,14 @@
     font-size:.92rem;color:var(--ink);min-height:44px;background:transparent;
   }
   .composer textarea::placeholder{color:var(--ink-3);}
-  .composer .bar{display:flex;align-items:center;gap:6px;margin-top:6px;}
+  .composer .bar{display:flex;align-items:center;gap:8px;margin-top:10px;}
   .cbtn{
-    display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;
     color:var(--ink-2);font-size:.8rem;font-family:inherit;cursor:pointer;
-    padding:7px 10px;border-radius:9px;position:relative;
+    padding:9px 13px;border-radius:12px;position:relative;
   }
-  .cbtn:hover{background:#f2f6f9;}
-  .cbtn.open{background:#e6f4fb;color:var(--ec-blue-dark);}
+  .cbtn:hover{border-color:#d3dde3;background:#f8fafb;}
+  .cbtn.open{background:#e6f4fb;color:var(--ec-blue-dark);border-color:#c4e5f5;}
   .cbtn .chev{font-size:.6rem;color:var(--ink-3);}
   .cbtn .ic{width:16px;height:16px;}
   .cbtn .badge-mode{
@@ -221,17 +232,20 @@
     font-size:.62rem;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;
   }
   .cbtn.has-tools{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:700;}
+  .cbtn-icon{padding:9px;}
   .spacer{flex:1;}
   .send{
-    width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
-    background:linear-gradient(120deg,var(--ec-blue),var(--ec-green));color:#fff;
+    width:40px;height:40px;border-radius:12px;border:none;cursor:pointer;
+    background:var(--ec-blue);color:#fff;
     display:flex;align-items:center;justify-content:center;
+    transition:background .15s;
   }
-  .send svg{width:17px;height:17px;}
-  .mic{background:transparent;border:none;color:var(--ink-2);cursor:pointer;padding:8px;border-radius:9px;}
-  .mic:hover{background:#f2f6f9;}
+  .send:hover{background:var(--ec-blue-dark);}
+  .send svg{width:18px;height:18px;}
+  .mic{background:#fff;border:1px solid var(--line);color:var(--ink-2);cursor:pointer;padding:9px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .mic:hover{border-color:#d3dde3;background:#f8fafb;}
   .hint{
-    max-width:860px;margin:8px auto 0;text-align:center;font-size:.66rem;color:var(--ink-3);
+    max-width:760px;margin:8px auto 0;text-align:center;font-size:.66rem;color:var(--ink-3);
   }
 
   /* ─── Popover menus ─── */
@@ -287,24 +301,19 @@
 <aside class="sidebar">
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-    <div class="logo-sub">教學工具平台 · 原型 v0.1</div>
+    <div class="logo-sub">教學工具平台 · POC v0.1</div>
     <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
-      <a href="chat.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>AI 對話</a>
+      <a href="chat.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
       <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-    </div>
-    <div class="nav-group governance" style="margin-top:18px;">
-      <h6>課堂管理</h6>
-      <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
-      <a href="group-access-requests.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a4 4 0 100-8 4 4 0 000 8zM3 21c0-3.87 4-7 9-7s9 3.13 9 7"/></svg>學生工具申請</a>
-      <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
       <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
   </nav>
   <div class="user">
@@ -318,38 +327,47 @@
   <div class="chat-scroll" id="chatScroll">
     <div class="chat-inner">
 
-      <div class="hero-chat" id="hero" style="margin-top:60px;">
-        <div class="eyebrow">教 師 工 作 空 間</div>
-        <h1>EdCity AI 對話</h1>
+      <div class="hero-chat" id="hero" style="margin-top:24px;">
+        <h1>EdCity.ai</h1>
         <p>隨時提問 — 備課支援、教學設計、創意靈感</p>
-        <div class="role-pill"><span>👩‍🏫 教師</span><em>本原型只涵蓋教師版</em></div>
+        <div class="role-pill">
+          <span>👩‍🏫 教師</span>
+          <button class="soon" disabled>🎒 學生<em>即將推出</em></button>
+          <button class="soon" disabled>👨‍👩‍👧 家長<em>即將推出</em></button>
+        </div>
 
         <div class="sugg">
           <div class="s-card" onclick="askToolFit()">
-            <div class="cat" style="color:var(--ec-red)">🧭 工具指引</div>
-            <h4>哪個寫作回饋工具適合我班？</h4>
+            <div class="cat" style="color:var(--ec-red)">🧭 AI 教學工具</div>
+            <div class="hr"></div>
+            <h4>哪個寫作回饋工具最適合我班？</h4>
           </div>
-          <div class="s-card" onclick="useSuggestion('替我草擬一封有關中文週活動的家長通告')">
-            <div class="cat">📄 建立文件</div>
-            <h4>家長通告 — 中文週活動安排</h4>
+          <div class="s-card" onclick="useSuggestion('製作一份唐詩三百首的課堂簡報初稿')">
+            <div class="cat">📊 生成教材</div>
+            <div class="hr"></div>
+            <h4>唐詩三百首 — 課堂簡報初稿生成</h4>
           </div>
-          <div class="s-card" onclick="useSuggestion('製作一份介紹唐詩三首的課堂簡報')">
-            <div class="cat">📊 製作簡報</div>
-            <h4>唐詩三首 — 課堂簡報</h4>
+          <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略與教案')">
+            <div class="cat">🔍 搜尋教城資源</div>
+            <div class="hr"></div>
+            <h4>最新讀寫教學策略與教案搜尋</h4>
           </div>
         </div>
         <div class="sugg sugg-row2">
-          <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略')">
-            <div class="cat" style="color:var(--ec-purple)">🔍 搜尋網上資源</div>
-            <h4>最新讀寫教學策略</h4>
-          </div>
-          <div class="s-card" onclick="useSuggestion('用時間線視覺化中國文學發展史')">
-            <div class="cat" style="color:var(--ec-maroon)">📈 視覺化</div>
-            <h4>中國文學發展史時間線</h4>
+          <div class="s-card" onclick="useSuggestion('製作中文科重點概念與文本關係的視覺化知識圖譜')">
+            <div class="cat" style="color:var(--ec-purple)">📈 製作知識圖譜</div>
+            <div class="hr"></div>
+            <h4>中文科重點概念與文本關係視覺化圖譜</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('幫我把《背影》一課設計成互動課堂問答遊戲')">
-            <div class="cat">🧩 建立小應用</div>
-            <h4>課堂問答遊戲 —《背影》搶答挑戰</h4>
+            <div class="cat" style="color:var(--ec-maroon)">🧩 AI 教學小應用</div>
+            <div class="hr"></div>
+            <h4>課堂問答遊戲 —《背影》搶答挑戰設計</h4>
+          </div>
+          <div class="s-card" onclick="useSuggestion('生成一份 AI 中文作文批改與回饋建議')">
+            <div class="cat">🤖 AI 智能代理</div>
+            <div class="hr"></div>
+            <h4>AI 中文作文批改與回饋建議生成</h4>
           </div>
         </div>
       </div>
@@ -366,11 +384,11 @@
       <div class="bar">
 
         <!-- ＋ menu -->
-        <button class="cbtn" id="btnPlus" onclick="toggleMenu('menuPlus',this)" aria-haspopup="true">
+        <button class="cbtn cbtn-icon" id="btnPlus" onclick="toggleMenu('menuPlus',this)" aria-haspopup="true">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           <span class="badge-mode" id="modeBadge" style="display:none"></span>
         </button>
-        <div class="menu" id="menuPlus" style="left:0;">
+        <div class="menu" id="menuPlus">
           <div class="m-item" data-mode="ask" onclick="setMode('ask')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>
             <span><b>提問模式</b><small>只提供答案 — 不使用工具或建立檔案</small></span>
@@ -402,7 +420,7 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
           工具 <span class="tcount" id="toolCount" style="display:none">0</span> <span class="chev">▼</span>
         </button>
-        <div class="menu" id="menuTools" style="left:44px;">
+        <div class="menu" id="menuTools">
           <div class="m-sect">啟用工具</div>
           <div class="m-item on" data-tool="網上搜尋" onclick="toggleTool(this,'網上搜尋')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -434,11 +452,11 @@
         <!-- Model menu -->
         <button class="cbtn" id="btnModel" onclick="toggleMenu('menuModel',this)" aria-haspopup="true">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
-          <span id="modelLabel">自動</span> <span class="chev">▼</span>
+          <span id="modelLabel">智能模型</span> <span class="chev">▼</span>
         </button>
-        <div class="menu" id="menuModel" style="left:110px;min-width:320px;max-height:380px;overflow-y:auto;">
+        <div class="menu" id="menuModel" style="min-width:320px;max-height:380px;overflow-y:auto;">
           <div class="m-sect">對話模型</div>
-          <div class="m-item selected" data-model="自動" onclick="setModel(this,'自動')">
+          <div class="m-item" data-model="自動" onclick="setModel(this,'自動')">
             <span><b>自動</b><small>按任務自動挑選最合適的模型</small></span>
             <span class="m-caps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></span>
             <span class="check">✓</span>
@@ -447,17 +465,49 @@
             <span><b>快速模型</b><small>回應快速，適合簡單提問</small></span>
             <span class="check">✓</span>
           </div>
-          <div class="m-item" data-model="智能模型" onclick="setModel(this,'智能模型')">
+          <div class="m-item selected" data-model="智能模型" onclick="setModel(this,'智能模型')">
             <span><b>智能模型</b><small>處理較複雜的教學設計任務</small></span>
             <span class="check">✓</span>
           </div>
           <div class="m-sect">更多模型</div>
+          <div class="m-item" data-model="英華智能教學模型" onclick="setModel(this,'英華智能教學模型')">
+            <span><b>英華智能教學模型</b><small>按香港課程框架調校，本地化教學用語</small></span>
+            <span class="check">✓</span>
+          </div>
+          <div class="m-item" data-model="DeepSeek V4" onclick="setModel(this,'DeepSeek V4')"><span><b>DeepSeek V4</b></span><span class="check">✓</span></div>
+          <div class="m-item" data-model="豆包 Pro" onclick="setModel(this,'豆包 Pro')"><span><b>豆包 Pro</b></span><span class="check">✓</span></div>
+          <div class="m-item" data-model="GLM-5.2" onclick="setModel(this,'GLM-5.2')"><span><b>GLM-5.2</b></span><span class="check">✓</span></div>
           <div class="m-item" data-model="Gemini 3 Flash" onclick="setModel(this,'Gemini 3 Flash')"><span><b>Gemini 3 Flash</b></span><span class="check">✓</span></div>
           <div class="m-item" data-model="Gemini 3.1 Pro" onclick="setModel(this,'Gemini 3.1 Pro')"><span><b>Gemini 3.1 Pro</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="Claude Sonnet 5" onclick="setModel(this,'Claude Sonnet 5')"><span><b>Claude Sonnet 5</b></span><span class="check">✓</span></div>
           <div class="m-item" data-model="GPT-5.4" onclick="setModel(this,'GPT-5.4')"><span><b>GPT-5.4</b></span><span class="check">✓</span></div>
           <div class="m-item" data-model="GPT-5.4 Mini" onclick="setModel(this,'GPT-5.4 Mini')"><span><b>GPT-5.4 Mini</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="GLM-5.2" onclick="setModel(this,'GLM-5.2')"><span><b>GLM-5.2</b></span><span class="check">✓</span></div>
+        </div>
+
+        <!-- Knowledge base menu -->
+        <button class="cbtn" id="btnKB" onclick="toggleMenu('menuKB',this)" aria-haspopup="true">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z"/></svg>
+          <span id="kbLabel">教育城資源庫</span> <span class="chev">▼</span>
+        </button>
+        <div class="menu" id="menuKB" style="min-width:280px;">
+          <div class="m-sect">知識庫來源</div>
+          <div class="m-item selected" data-kb="教育城資源庫" onclick="setKB(this,'教育城資源庫')">
+            <span><b>教育城資源庫</b><small>官方公用教學資源，預設來源</small></span>
+            <span class="check">✓</span>
+          </div>
+          <hr>
+          <div class="m-sect">內容供應商</div>
+          <div class="m-item" data-kb="晴川文創" onclick="setKB(this,'晴川文創')">
+            <span><b>晴川文創</b><small>已授權課本與教材內容</small></span>
+            <span class="check">✓</span>
+          </div>
+          <div class="m-item" data-kb="拾光教育科技" onclick="setKB(this,'拾光教育科技')">
+            <span><b>拾光教育科技</b><small>已授權課本與教材內容</small></span>
+            <span class="check">✓</span>
+          </div>
+          <div class="m-item" data-kb="硯青文化" onclick="setKB(this,'硯青文化')">
+            <span><b>硯青文化</b><small>已授權課本與教材內容</small></span>
+            <span class="check">✓</span>
+          </div>
         </div>
 
         <span class="spacer"></span>
@@ -465,11 +515,11 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
         </button>
         <button class="send" onclick="sendMsg()" aria-label="送出">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
       </div>
     </div>
-    <div class="hint">EdCity AI 對話 · 內部示範原型，回覆為預設示例，僅供概念演示</div>
+    <div class="hint">EdCity.ai · 內部示範原型，回覆為預設示例，僅供概念演示</div>
   </div>
 </main>
 
@@ -497,14 +547,29 @@
 
 <script>
 let mode = null;           // null | 'ask' | 'plan'
-let model = '自動';
+let model = '智能模型';
+let kb = '教育城資源庫';
 let openMenu = null;
 
 function toggleMenu(id, btn){
   const m = document.getElementById(id);
   const wasOpen = m.classList.contains('show');
   closeMenus();
-  if(!wasOpen){ m.classList.add('show'); btn.classList.add('open'); openMenu = m; }
+  if(!wasOpen){
+    m.classList.add('show'); btn.classList.add('open'); openMenu = m;
+    // Position the popover directly under the button that opened it, rather
+    // than relying on hardcoded per-menu left offsets (which drift out of
+    // sync any time a button's width/order changes and end up looking
+    // detached from the button that triggered them).
+    const composer = btn.closest('.composer');
+    const bRect = btn.getBoundingClientRect();
+    const cRect = composer.getBoundingClientRect();
+    let left = bRect.left - cRect.left;
+    const menuWidth = m.offsetWidth;
+    const maxLeft = Math.max(6, composer.clientWidth - menuWidth - 6);
+    left = Math.min(Math.max(6, left), maxLeft);
+    m.style.left = left + 'px';
+  }
 }
 function closeMenus(){
   document.querySelectorAll('.menu').forEach(x=>x.classList.remove('show'));
@@ -552,6 +617,14 @@ function setModel(el, name){
   document.getElementById('modelLabel').textContent = name;
   closeMenus();
   toast('對話模型：' + name);
+}
+function setKB(el, name){
+  kb = name;
+  document.querySelectorAll('#menuKB .m-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('kbLabel').textContent = name;
+  closeMenus();
+  toast('知識庫：' + name);
 }
 function newChat(){
   document.getElementById('thread').innerHTML='';

@@ -128,6 +128,40 @@ function guardWholePage(flagKey, mainSelector){
   document.head.appendChild(style);
 })();
 
+/* Site-wide POC corner ribbon — a permanent, impossible-to-miss diagonal
+ * ribbon pinned to the top-right corner of every page, so nobody who
+ * stumbles onto this prototype (a screenshot, a shared link, a stakeholder
+ * browsing without context) mistakes it for a real, shipping EdCity product.
+ * Always on — NOT gated by protoAnnotations, since this isn't a
+ * reviewer/builder note, it's a permanent "this isn't real" disclaimer meant
+ * for every audience including end users of the walkthrough. Unlike a
+ * top banner, a corner ribbon doesn't consume layout height, so it needs no
+ * body-padding/sidebar-height compensation elsewhere. pointer-events:none on
+ * the outer wrapper so it never blocks clicks on whatever sits underneath it
+ * (e.g. a page's own top-right "guide" button). */
+(function(){
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `
+    position:fixed;top:0;right:0;width:170px;height:170px;overflow:hidden;
+    z-index:99999;pointer-events:none;
+  `;
+  const ribbon = document.createElement('div');
+  ribbon.textContent = 'POC v0.1';
+  ribbon.style.cssText = `
+    position:absolute;top:32px;right:-46px;width:220px;text-align:center;
+    transform:rotate(45deg);
+    background:repeating-linear-gradient(45deg,#1e2a35,#1e2a35 10px,#f5a623 10px,#f5a623 20px);
+    color:#fff;font-weight:800;font-size:.8rem;letter-spacing:.06em;
+    padding:6px 0;box-shadow:0 2px 8px rgba(0,0,0,.3);
+    text-shadow:0 1px 2px rgba(0,0,0,.45);
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+  `;
+  wrap.appendChild(ribbon);
+  function mount(){ document.body.appendChild(wrap); }
+  if (document.body) mount();
+  else document.addEventListener('DOMContentLoaded', mount);
+})();
+
 /* Hide reviewer-only meta annotations (see protoAnnotations above) via an
  * injected <style> rather than a one-time querySelectorAll pass — this way it
  * also covers instances of these classes that get written into the DOM by a

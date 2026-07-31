@@ -26,15 +26,13 @@ const CSS = `
  * what each flag covers and why. */
 const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
-    ['chat.html','AI 對話（科目助理）',''],
+    ['chat.html','EdCity.ai（科目助理）',''],
     ['index.html','教學工具首頁',''],
     ['agents.html','Apps／智能代理',''],
     ['materials.html','教材準備（三大用例）','y'],
     ['material-library.html','教材庫（我的教材）','y'],
-    ['groups.html','教學分組','y'],
-    ['group-access-requests.html','學生工具申請（含全班／分組、成員異動提示）','y'],
-    ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
     ['insights.html','班級學習面貌（核心價值，含多班切換）','r'],
+    ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
   ]},
   {group:'📈 科主任（李天佑主任）', items:[
     ['dept.html','科組統計視圖','y','subjectPanelView'],

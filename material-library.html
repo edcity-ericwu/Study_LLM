@@ -8,7 +8,7 @@
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
     --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
-    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f5f8fa;font-size:18px;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
@@ -16,7 +16,7 @@
   .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
   .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.68rem;color:var(--ink-3);margin-top:8px;letter-spacing:.04em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:8px;letter-spacing:.02em;}
   .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:9px;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;padding:0 10px 8px;text-transform:uppercase;}
@@ -33,8 +33,9 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 18px;max-width:48em;line-height:1.6;}
+  .hero{margin-bottom:24px;}
+  h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
   .stat-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
   .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:140px;cursor:pointer;font-family:inherit;text-align:left;transition:box-shadow .12s;}
@@ -86,24 +87,19 @@
 <aside class="sidebar">
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-    <div class="logo-sub">教學工具平台 · 原型 v0.1</div>
+    <div class="logo-sub">教學工具平台 · POC v0.1</div>
     <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
-      <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>AI 對話</a>
+      <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
       <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
       <a href="material-library.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-    </div>
-    <div class="nav-group governance" style="margin-top:18px;">
-      <h6>課堂管理</h6>
-      <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
-      <a href="group-access-requests.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a4 4 0 100-8 4 4 0 000 8zM3 21c0-3.87 4-7 9-7s9 3.13 9 7"/></svg>學生工具申請</a>
-      <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
       <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
   </nav>
   <div class="user">
@@ -113,10 +109,11 @@
 </aside>
 
 <main class="main">
-  <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「教材準備」三大用例產出後應存放在哪裏</div>
-
-  <h1>教材庫</h1>
-  <div class="sub">「教材準備」三個用例（把關、組合、跨科）產出的每一份教材，都會存放在這裏——收藏你製作的一切，也讓你看到哪一份仍在課堂中使用。</div>
+  <section class="hero">
+    <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「教材準備」三大用例產出後應存放在哪裏</div>
+    <h1>教材庫</h1>
+    <div class="sub">「教材準備」三個用例（把關、組合、跨科）產出的每一份教材，都會存放在這裏——收藏你製作的一切，也讓你看到哪一份仍在課堂中使用。</div>
+  </section>
 
   <div class="stat-row" id="statRow"></div>
 
@@ -133,7 +130,7 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <div class="link-note">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">班級學習面貌</a>因果卡片中提到的那一份；按「重新開啟」會回到教材準備對應的用例，帶著同一份教材繼續編輯。</div>
+  <div class="link-note" style="display:none;">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">班級學習面貌</a>因果卡片中提到的那一份；按「重新開啟」會回到教材準備對應的用例，帶著同一份教材繼續編輯。</div>
 </main>
 
 <div class="toast" id="toast"></div>

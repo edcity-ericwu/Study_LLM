@@ -85,7 +85,7 @@ const HTML = `
 <div class="um-modal" role="dialog" aria-label="用量與代幣">
   <button class="um-close" onclick="closeUsage()">✕</button>
   <nav class="um-nav">
-    <h6>設 定</h6>
+    <h6>設定</h6>
     <button data-p="general" onclick="umPane(this)">⚙️ 一般</button>
     <button data-p="account" onclick="umPane(this)">👤 帳戶</button>
     <button class="on" data-p="usage" onclick="umPane(this)">📊 用量與代幣</button>

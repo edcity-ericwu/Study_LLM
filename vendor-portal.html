@@ -40,13 +40,14 @@
   /* Widened from 820px — the invite-form's select/select/select/input/button row (see #inv-teacher etc.)
    * was hitting its flex-wrap point well before the real viewport ran out of room, same category of
    * bug fixed on roster.html's .wrap. 1300px gives that row space to sit on one line on a normal monitor. */
-  .wrap{max-width:1300px;margin:0 auto;padding:26px 20px 90px;}
+  .wrap{max-width:1300px;margin:0 auto;padding:44px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:8px;}
   .no-story{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#5b6773;background:#eef2f5;border:1px solid #d8e0e6;border-radius:99px;padding:5px 14px;margin:0 0 16px 8px;}
-  h1{font-size:1.5rem;font-weight:800;}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 20px;line-height:1.6;}
+  h1{font-size:1.5rem;font-weight:800;color:#5a2731;}
+  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
   /* stepper */
   .stepper{display:flex;gap:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin-bottom:18px;flex-wrap:wrap;}
@@ -170,10 +171,11 @@
 </div>
 
 <div class="wrap">
-  <span class="ribbon">🟡 提案中 · 設計方案，未建置</span><span class="no-story">📝 此畫面未經用戶故事驗證 — 假設待與真實供應商求證</span>
-
-  <h1>你的申請 — 寫作回饋工具</h1>
-  <div class="sub">申請編號 EM-2026-0147 · 提交於 2026-06-28 · 目標：獲認證後上架 EdMarket，經學校訂閱進入教師介面</div>
+  <section class="hero">
+    <span class="ribbon">🟡 提案中 · 設計方案，未建置</span><span class="no-story">📝 此畫面未經用戶故事驗證 — 假設待與真實供應商求證</span>
+    <h1>你的申請 — 寫作回饋工具</h1>
+    <div class="sub">申請編號 EM-2026-0147 · 提交於 2026-06-28 · 目標：獲認證後上架 EdMarket，經學校訂閱進入教師介面</div>
+  </section>
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="cert" onclick="showTab('cert')">認證進度</button>

@@ -42,9 +42,9 @@
     width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
   }
-  .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:8px;letter-spacing:.02em;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:.02em;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
   .nav-group h6{
@@ -250,7 +250,7 @@
 
   /* ─── Popover menus ─── */
   .menu{
-    position:absolute;bottom:calc(100% + 10px);background:#fff;border:1px solid var(--line);
+    position:absolute;background:#fff;border:1px solid var(--line);
     border-radius:14px;box-shadow:0 12px 34px rgba(30,42,53,.14);min-width:280px;
     padding:6px;display:none;z-index:30;
   }
@@ -280,7 +280,7 @@
     content:"";position:absolute;top:2.5px;left:3px;width:14px;height:14px;border-radius:50%;
     background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);
   }
-  .m-item.on .switch{background:var(--ec-green);}
+  .m-item.on .switch{background:var(--ec-blue);}
   .m-item.on .switch::after{left:17px;}
 
   .toast{
@@ -292,7 +292,7 @@
 
   @media (max-width:900px){ .sidebar{display:none;} .sugg{grid-template-columns:1fr;} .sugg-row2{max-width:100%;grid-template-columns:1fr;} }
 
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:9px;}
+  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
 </style>
 </head>
 <body>
@@ -343,12 +343,12 @@
             <h4>哪個寫作回饋工具最適合我班？</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('製作一份唐詩三百首的課堂簡報初稿')">
-            <div class="cat">📊 生成教材</div>
+            <div class="cat" style="color:var(--ec-green)">📊 生成教材</div>
             <div class="hr"></div>
             <h4>唐詩三百首 — 課堂簡報初稿生成</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略與教案')">
-            <div class="cat">🔍 搜尋教城資源</div>
+            <div class="cat" style="color:#8a5a09">🔍 搜尋教城資源</div>
             <div class="hr"></div>
             <h4>最新讀寫教學策略與教案搜尋</h4>
           </div>
@@ -365,7 +365,7 @@
             <h4>課堂問答遊戲 —《背影》搶答挑戰設計</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('生成一份 AI 中文作文批改與回饋建議')">
-            <div class="cat">🤖 AI 智能代理</div>
+            <div class="cat" style="color:var(--ec-blue-dark)">🤖 AI 智能代理</div>
             <div class="hr"></div>
             <h4>AI 中文作文批改與回饋建議生成</h4>
           </div>
@@ -469,6 +469,7 @@
             <span><b>智能模型</b><small>處理較複雜的教學設計任務</small></span>
             <span class="check">✓</span>
           </div>
+          <hr>
           <div class="m-sect">更多模型</div>
           <div class="m-item" data-model="英華智能教學模型" onclick="setModel(this,'英華智能教學模型')">
             <span><b>英華智能教學模型</b><small>按香港課程框架調校，本地化教學用語</small></span>
@@ -569,6 +570,14 @@ function toggleMenu(id, btn){
     const maxLeft = Math.max(6, composer.clientWidth - menuWidth - 6);
     left = Math.min(Math.max(6, left), maxLeft);
     m.style.left = left + 'px';
+    // Anchor to the button's own top edge, not the composer's full height —
+    // .composer includes the textarea above the button row, so a CSS
+    // bottom:100% (relative to the whole composer box) left a large gap
+    // between the button and its popover. Compute the gap from the button
+    // itself instead, so every menu sits the same small distance above
+    // whichever row triggered it.
+    const gap = 6;
+    m.style.bottom = (cRect.bottom - bRect.top + gap) + 'px';
   }
 }
 function closeMenus(){

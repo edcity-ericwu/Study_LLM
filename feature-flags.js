@@ -142,18 +142,18 @@ function guardWholePage(flagKey, mainSelector){
 (function(){
   const wrap = document.createElement('div');
   wrap.style.cssText = `
-    position:fixed;top:0;right:0;width:170px;height:170px;overflow:hidden;
+    position:fixed;top:0;right:0;width:190px;height:190px;overflow:hidden;
     z-index:99999;pointer-events:none;
   `;
   const ribbon = document.createElement('div');
   ribbon.textContent = 'POC v0.1';
   ribbon.style.cssText = `
-    position:absolute;top:32px;right:-46px;width:220px;text-align:center;
+    position:absolute;top:28px;right:-50px;width:240px;text-align:center;
     transform:rotate(45deg);
-    background:repeating-linear-gradient(45deg,#1e2a35,#1e2a35 10px,#f5a623 10px,#f5a623 20px);
-    color:#fff;font-weight:800;font-size:.8rem;letter-spacing:.06em;
-    padding:6px 0;box-shadow:0 2px 8px rgba(0,0,0,.3);
-    text-shadow:0 1px 2px rgba(0,0,0,.45);
+    background:repeating-linear-gradient(45deg,#1e2a35,#1e2a35 12px,#8a5a09 12px,#8a5a09 24px);
+    color:#fff;font-weight:800;font-size:.92rem;letter-spacing:.07em;
+    padding:11px 0;box-shadow:0 2px 10px rgba(0,0,0,.35);
+    text-shadow:0 1px 2px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5);
     font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
   `;
   wrap.appendChild(ribbon);

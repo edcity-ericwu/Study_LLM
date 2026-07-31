@@ -14,10 +14,10 @@
   body{font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
   .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
-  .sidebar .logo-wrap{padding:20px 16px 14px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:8px;letter-spacing:.02em;}
-  .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:9px;color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:.02em;}
+  .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
   .nav{padding:14px 10px;flex:1;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:.12em;padding:0 10px 8px;text-transform:uppercase;}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
@@ -30,8 +30,9 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:10px;}
-  h1{font-size:1.5rem;font-weight:800;}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 20px;max-width:52em;line-height:1.6;}
+  h1{font-size:1.5rem;font-weight:800;color:var(--ec-purple);}
+  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   h2{font-size:1rem;font-weight:700;margin:26px 0 12px;}
 
   /* Fabricated-data disclosure — separate from the "提案中" ribbon above,
@@ -120,11 +121,12 @@
 
 <main class="main" style="padding-top:0;">
 <div class="role-banner">學校行政層級 — 資訊科技統籌視圖</div>
-<div style="padding:26px 0 0;">
-  <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
-
-  <h1>使用報告</h1>
-  <div class="sub">訂閱管理只回答「有沒有批出授權」；這一頁回答下一個問題——<b>批出之後，這件工具有沒有人在用</b>。續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
+<div style="padding:44px 0 0;">
+  <section class="hero">
+    <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
+    <h1>使用報告</h1>
+    <div class="sub">訂閱管理只回答「有沒有批出授權」；這一頁回答下一個問題——<b>批出之後，這件工具有沒有人在用</b>。續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
+  </section>
 
   <div class="data-note">
     📊 本頁的活躍人數、趨勢與最後使用日期為<b>示範數據</b>，用來示意「使用報告」畫面建成後的樣貌——目前 vendor-data.js 並無任何登入或互動紀錄可供讀取，這是尚待建置的資料來源，非真實使用紀錄。<br>

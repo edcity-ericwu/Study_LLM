@@ -61,14 +61,39 @@
   .poc-card{
     background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
     padding:26px 24px;position:relative;text-align:left;
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
   .poc-card::before{
     content:"";position:absolute;left:0;top:16px;bottom:16px;width:3px;border-radius:99px;
     background:var(--accent,var(--ec-blue));
   }
   .poc-card.ready{cursor:pointer;}
-  .poc-card.ready:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(30,42,53,.09);}
+  /* Travelling border highlight on hover — only on .ready cards, since the
+   * others aren't clickable and shouldn't advertise an affordance. --angle
+   * must be registered via @property or the browser can't interpolate it
+   * and the conic gradient would jump rather than rotate. The masks knock
+   * out everything but a 1px ring so only the outline paints. (::before is
+   * already taken by the left accent bar.) */
+  @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+  .poc-card.ready::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:conic-gradient(from var(--angle),
+      transparent 0deg, transparent 200deg,
+      rgba(0,139,209,.55) 250deg, #4fb8e8 285deg, var(--ec-blue) 300deg,
+      rgba(0,139,209,.55) 330deg, transparent 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+            mask-composite:exclude;
+    opacity:0;transition:opacity .25s ease;pointer-events:none;
+  }
+  .poc-card.ready:hover{transform:translateY(-3px);border-color:#c4e5f5;box-shadow:0 10px 26px rgba(30,42,53,.09);}
+  .poc-card.ready:hover::after{opacity:1;animation:border-trace 2.4s linear infinite;}
+  @keyframes border-trace{to{--angle:360deg;}}
+  @media (prefers-reduced-motion:reduce){
+    .poc-card.ready:hover::after{animation:none;}
+    .poc-card.ready:hover{border-color:var(--ec-blue);}
+  }
   .poc-card .tile{
     width:46px;height:46px;border-radius:12px;margin-bottom:16px;
     display:flex;align-items:center;justify-content:center;font-size:1.3rem;

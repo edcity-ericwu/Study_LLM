@@ -172,7 +172,8 @@
   .snap-row-wrap .kicker{margin-left:2px;}
   .joint h3{font-size:.92rem;font-weight:700;margin-bottom:6px;}
   .joint p{font-size:.78rem;color:var(--ink-2);line-height:1.7;margin-bottom:12px;}
-  .joint .j-btn{border:none;border-radius:11px;padding:11px 18px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;color:#fff;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));}
+  .joint .j-btn{border:none;border-radius:11px;padding:11px 18px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;color:#fff;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));transition:filter .15s ease;}
+  .joint .j-btn:not(:disabled):hover{filter:brightness(.93);}
   .joint .j-btn:disabled{background:#e6ebf0;color:#8a97a3;cursor:default;}
   .parent-note{display:none;}
 
@@ -196,7 +197,8 @@
   .tool-modal .tm-chip.official{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
   .tool-modal p.tm-desc{font-size:.82rem;color:var(--ink-2);line-height:1.7;margin:0 0 18px;}
   .tool-modal .tm-actions{display:flex;gap:10px;}
-  .tool-modal .primary{flex:1;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));color:#fff;border:none;border-radius:12px;padding:12px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;}
+  .tool-modal .primary{flex:1;background:linear-gradient(120deg,var(--ec-green),var(--ec-blue));color:#fff;border:none;border-radius:12px;padding:12px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:filter .15s ease;}
+  .tool-modal .primary:hover{filter:brightness(.93);}
   .tool-modal .secondary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
 </style>
 </head>

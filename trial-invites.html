@@ -75,7 +75,8 @@
   .invite .i-body-text{padding:13px 18px;font-size:.79rem;color:var(--ink-2);line-height:1.65;}
   .invite .i-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:9px;align-items:center;flex-wrap:wrap;}
   .invite .i-foot .note{font-size:.72rem;color:var(--ink-3);}
-  .btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
 
   .empty-msg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}

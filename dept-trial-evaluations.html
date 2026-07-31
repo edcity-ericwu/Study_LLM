@@ -61,7 +61,8 @@
   .trial .state-chip.declined{color:#b91c1c;background:#fee2e2;}
   .trial .reason-box{background:#fee2e2;border-radius:8px;padding:9px 12px;margin-top:9px;font-size:.75rem;color:#991b1b;line-height:1.6;width:100%;}
   .trial .cooldown-note{font-size:.72rem;color:var(--ink-3);margin-top:8px;width:100%;}
-  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
   .toast.show{opacity:.94;}

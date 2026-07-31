@@ -56,7 +56,8 @@
   .req.gated .ic{background:#faf1f3;}
   .req.gated .scope{color:var(--ec-maroon);background:#faf1f3;border:1px solid #e5cdd4;}
   .req .btns{display:flex;gap:8px;align-self:center;flex-shrink:0;}
-  .btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
   .btn:disabled{background:#e6ebf0;color:#8a97a3;cursor:default;}
 

@@ -155,7 +155,8 @@
    * a plain single-value <select> can't express. A button opens a checkbox
    * panel; the active-filters row above renders one chip per selected value. */
   .ms-filter{position:relative;display:inline-block;}
-  .ms-filter-btn{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff;cursor:pointer;color:var(--ink);}
+  .ms-filter-btn{font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff;cursor:pointer;color:var(--ink);transition:border-color .15s ease;}
+  .ms-filter-btn:not(.active):hover{border-color:#adc8f5;}
   .ms-filter-btn.active{background:#eaf1fd;border-color:#adc8f5;color:#1a56c4;font-weight:700;}
   .ms-filter-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:8px;min-width:190px;max-height:260px;overflow-y:auto;z-index:20;}
   .ms-filter-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.79rem;border-radius:6px;cursor:pointer;white-space:nowrap;}

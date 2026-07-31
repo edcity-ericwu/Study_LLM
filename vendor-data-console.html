@@ -92,7 +92,8 @@
   .sync-row .s-ic{flex-shrink:0;}
   .sync-row .s-time{font-size:.68rem;color:var(--ink-3);margin-left:auto;white-space:nowrap;padding-left:10px;}
   .sync-actions{margin-top:14px;display:flex;gap:9px;}
-  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.79rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.79rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
 
   .revoke-note{

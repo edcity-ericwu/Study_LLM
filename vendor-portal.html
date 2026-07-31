@@ -77,7 +77,8 @@
   .gate-row small{display:block;font-size:.7rem;color:var(--ink-3);margin-top:2px;line-height:1.5;}
   .gate-row.fail{background:#fff5f5;margin:0 -20px;padding:9px 20px;border-radius:0;}
   .gate-row.fail .fix-note{display:block;font-size:.72rem;color:#991b1b;background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:7px 11px;margin-top:7px;line-height:1.55;}
-  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.79rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:10px;padding:10px 17px;font-size:.79rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
   .btn:disabled{background:#e6ebf0;color:#8a97a3;cursor:default;}
 

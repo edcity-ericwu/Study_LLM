@@ -105,8 +105,8 @@
   }
   .search button{
     background:var(--ec-blue);color:#fff;border:none;border-radius:99px;
-    padding:9px 22px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;
-  }
+    padding:9px 22px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s ease;}
+  .search button:hover{background:var(--ec-blue-dark);}
   .level-toggle{
     display:flex;background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px;
   }
@@ -121,13 +121,18 @@
     display:flex;align-items:center;gap:8px;margin:16px 0 4px;flex-wrap:wrap;
     padding-bottom:14px;border-bottom:1px dashed var(--line);
   }
-  .tabs-label{font-size:.68rem;letter-spacing:normal;color:var(--ec-maroon);font-weight:600;margin-right:6px;}
+  /* Neutral, not an accent colour — these row labels ("你的工具箱", "科目")
+   * only name the filter beside them; colouring them implied a category
+   * meaning that doesn't exist. */
+  .tabs-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
   .tab{
     background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 16px;
-    font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
-  }
-  .tab:hover{border-color:var(--ec-blue);}
-  .tab.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
+    font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .tab:not(.on):hover{border-color:var(--ec-blue);}
+  /* Same selected-pill treatment as .subj.on below — both rows are
+   * single-select filters doing the same job, so they shouldn't read as
+   * two different kinds of control. */
+  .tab.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
 
   .result-count{font-size:.75rem;color:var(--ink-3);margin:14px 2px 12px;}
 
@@ -141,12 +146,11 @@
 
   /* ─── Subject row (inside hero) ─── */
   .subject-row{display:flex;align-items:center;gap:8px;margin:18px 0 16px;flex-wrap:wrap;}
-  .subject-label{font-size:.68rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-right:6px;}
+  .subject-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
   .subj{
     display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
-    border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:500;
-  }
-  .subj:hover{border-color:var(--ec-blue);}
+    border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:500;transition:border-color .15s ease;}
+  .subj:not(.on):hover{border-color:var(--ec-blue);}
   .subj.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
   .subj .soon{
     font-size:.58rem;font-weight:700;color:var(--ec-amber);background:#fdf6ec;
@@ -171,7 +175,32 @@
     content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:99px;
     background:var(--accent,var(--ec-blue));
   }
-  .card:hover{transform:translateY(-3px);border-color:var(--ec-blue);box-shadow:0 10px 26px rgba(0,139,209,.16);}
+  /* Travelling border highlight on hover. --angle must be registered via
+   * @property or the browser can't interpolate it and the conic gradient
+   * would jump rather than rotate. The ::after holds a conic gradient with
+   * one bright arc; the two stacked masks knock out everything but a 1px
+   * ring at the edge, so only that ring paints and the arc appears to run
+   * around the card. (::before is already taken by the left accent bar.) */
+  @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+  .card::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:conic-gradient(from var(--angle),
+      transparent 0deg, transparent 200deg,
+      rgba(0,139,209,.55) 250deg, #4fb8e8 285deg, var(--ec-blue) 300deg,
+      rgba(0,139,209,.55) 330deg, transparent 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+            mask-composite:exclude;
+    opacity:0;transition:opacity .25s ease;pointer-events:none;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#c4e5f5;box-shadow:0 10px 26px rgba(0,139,209,.16);}
+  .card:hover::after{opacity:1;animation:border-trace 2.4s linear infinite;}
+  @keyframes border-trace{to{--angle:360deg;}}
+  @media (prefers-reduced-motion:reduce){
+    .card:hover::after{animation:none;}
+    .card:hover{border-color:var(--ec-blue);}
+  }
   .card .top{display:flex;align-items:flex-start;gap:12px;}
   .card .tile{
     width:42px;height:42px;border-radius:11px;flex-shrink:0;
@@ -242,10 +271,10 @@
 
     <div class="subject-row" role="tablist" aria-label="科目">
       <span class="subject-label">科目</span>
+      <button class="subj" data-subj="sci" onclick="setSubject(this)">科學</button>
       <button class="subj on" data-subj="chi" onclick="setSubject(this)">中文</button>
       <button class="subj" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
       <button class="subj" data-subj="eng" onclick="setSubject(this)">英文<span class="soon">即將推出</span></button>
-      <button class="subj" data-subj="sci" onclick="setSubject(this)">科學<span class="soon">即將推出</span></button>
     </div>
 
   </section>
@@ -301,6 +330,10 @@ const IC = {
 };
 
 /* levels: 'both' | 'primary' | 'secondary'
+ * subject: 'chi' | 'sci' | 'maths' | 'eng' — which subject's catalog a tool
+ *   belongs to. Entries without it default to 'chi' (see applyFilters), since
+ *   this catalog was Chinese-only before 科學 gained its first live tool and
+ *   backfilling the field onto every entry would be noise.
  * `recommended:true` sorts a tool to the top of the grid (see applyFilters())
  * and gives it a small "⭐ 推薦" tag — not a separate list, just an ordering
  * + label on the same catalog. */
@@ -351,7 +384,15 @@ const TOOLS = [
   {name:'文言文解讀助手', en:'Classical Chinese Assistant', cat:'literacy', level:'secondary', color:'var(--ec-green)', icon:'scroll', isNew:true, recommended:true,
    desc:'為文言篇章生成語譯對照、重點虛詞解說及課堂提問設計。'},
   {name:'議論文寫作教練', en:'Argumentative Writing Coach', cat:'literacy', level:'secondary', color:'var(--ec-green)', icon:'debate', isNew:false,
-   desc:'協助建立論點、論據與駁論結構，並生成寫作評改重點。'}
+   desc:'協助建立論點、論據與駁論結構，並生成寫作評改重點。'},
+
+  /* ── 科學科 ──
+   * PLACEHOLDER — name/en/desc below are invented and MUST be replaced with
+   * the real tool's details before this page is shown to anyone. The subject
+   * row now presents 科學 as live (no 即將推出 tag), so leaving fabricated
+   * copy here would misrepresent what's actually shipped. */
+  {name:'科學探究活動設計', en:'Science Inquiry Activity Designer', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'sci',
+   desc:'（佔位內容，待填入真實工具資料）根據課題生成探究式實驗活動建議與課堂流程。'}
 ];
 
 let level = 'primary';
@@ -392,7 +433,12 @@ function applyFilters(){
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const grid = document.getElementById('grid');
   const cs = document.getElementById('comingSoon');
-  if(subject !== 'chi'){
+  /* Coming-soon is now driven by whether the subject actually has any tools,
+   * rather than a hardcoded `subject !== 'chi'`. That check predated 科學
+   * having a live tool and would have kept the 即將推出 panel up even once
+   * one existed. Subjects with an empty catalog still fall through to it. */
+  const forSubject = TOOLS.filter(t => (t.subject || 'chi') === subject);
+  if(forSubject.length === 0){
     grid.innerHTML = '';
     document.getElementById('empty').style.display = 'none';
     cs.style.display = 'block';
@@ -401,7 +447,7 @@ function applyFilters(){
     return;
   }
   cs.style.display = 'none';
-  const shown = TOOLS.filter(t =>
+  const shown = forSubject.filter(t =>
     (t.level==='both' || t.level===level) &&
     (cat==='all' || t.cat===cat) &&
     (!q || t.name.toLowerCase().includes(q) || t.en.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))

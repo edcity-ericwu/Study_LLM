@@ -72,7 +72,8 @@
   .fit-chip{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--ink-2);background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:4px 11px;margin:0 5px 5px 0;}
   .fit-chip .v{color:var(--ec-green);font-weight:700;}
   .btns{margin-top:12px;display:flex;gap:8px;}
-  .btn{border:none;border-radius:9px;padding:8px 15px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .btn{border:none;border-radius:9px;padding:8px 15px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
 
   .wording{

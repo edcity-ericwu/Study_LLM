@@ -67,9 +67,8 @@
   .chips{display:flex;gap:8px;flex-wrap:wrap;}
   .chip-opt{
     display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:99px;
-    padding:8px 16px;font-size:.78rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
-  }
-  .chip-opt:hover{border-color:var(--ec-blue);}
+    padding:8px 16px;font-size:.78rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .chip-opt:not(.on):hover{border-color:var(--ec-blue);}
   .chip-opt.on{background:#e6f4fb;border-color:var(--ec-blue);color:var(--ec-blue-dark);font-weight:700;}
   .chip-big{
     flex:1;min-width:130px;text-align:center;border:1px solid var(--line);border-radius:13px;background:#fff;
@@ -80,8 +79,8 @@
   .attach-note{font-size:.7rem;color:var(--ink-3);text-align:center;margin-top:10px;}
   .cta{
     width:100%;margin-top:22px;border:none;border-radius:13px;padding:14px;font-size:.92rem;font-weight:800;
-    cursor:pointer;font-family:inherit;color:#fff;background:linear-gradient(100deg,var(--ec-blue),var(--ec-green));
-  }
+    cursor:pointer;font-family:inherit;color:#fff;background:linear-gradient(100deg,var(--ec-blue),var(--ec-green));transition:filter .15s ease;}
+  .cta:hover{filter:brightness(.93);}
   .cta:disabled{background:#e6ebf0;color:#8a97a3;cursor:default;}
   .hitl{font-size:.7rem;color:var(--ink-3);text-align:center;margin-top:10px;line-height:1.6;}
 
@@ -93,7 +92,8 @@
   .output ul{list-style:none;font-size:.8rem;color:var(--ink-2);line-height:1.8;}
   .output ul li::before{content:"·";color:var(--ec-green);font-weight:800;margin-right:8px;}
   .output .o-actions{display:flex;gap:9px;margin-top:14px;}
-  .o-btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;}
+  .o-btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
+  .o-btn:not(.ghost):hover{background:var(--ec-blue-dark);}
   .o-btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink-2);font-weight:600;}
 
   .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}

@@ -65,7 +65,7 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;border-radius:99px;padding:5px 14px;}
   .ribbon.live{color:#0c6b48;background:#e6f7ef;border:1px solid #b3e2cc;}
   .ribbon.prop{color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;}
-  h1{font-size:1.5rem;font-weight:800;color:#1a4763;}
+  h1{font-size:1.8rem;font-weight:800;color:#1a4763;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -244,7 +244,7 @@
   <section class="tab-pane active" data-pane="teachers">
     <div class="hero">
       <h1>教師名冊</h1>
-      <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
+      <div class="sub">教師的在職狀態、所屬科組與聯絡方式由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
     </div>
 
     <div class="table-toolbar">
@@ -293,7 +293,7 @@
   <section class="tab-pane" data-pane="assign">
     <div class="hero">
       <h1>任教編配</h1>
-      <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面看到的班別，源頭都在這裡，不是各自另外設定。</div>
+      <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，源頭都在這裡，而不是各自另外設定。</div>
     </div>
 
     <table>
@@ -305,7 +305,7 @@
   <section class="tab-pane" data-pane="bulk">
     <div class="hero">
       <h1>批量編班</h1>
-      <div class="sub">貼上或上載 CSV，一次處理多位學生的班別——用於<b>學期中的例外情況</b>：個別插班生、學期中改組等。系統會逐行判斷：這個名字是新生，還是已存在、要轉班？</div>
+      <div class="sub">貼上或上載 CSV，一次處理多位學生的班別——用於<b>學期中的例外情況</b>，例如個別插班生、學期中改組等。<br>系統會逐行判斷：這個名字是新生，還是已存在、需要轉班。</div>
     </div>
     <div class="bulk-input">
       <textarea id="bulkCsvInput" rows="6" placeholder="姓名,學生編號(選填),目標班別代碼,HKID尾4碼(選填),家長聯絡電話(選填),SEN備註(選填)"></textarea>
@@ -323,7 +323,7 @@
   <section class="tab-pane" data-pane="students">
     <div class="hero">
       <h1>學生編班</h1>
-      <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班是正式的班別歸屬，教學分組、批改入檔、學生入口都跟著它走。</div>
+      <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班則是正式的班別歸屬，教學分組、批改入檔和學生入口都跟著它走。</div>
     </div>
 
     <div class="table-toolbar">
@@ -374,7 +374,7 @@
   <section class="tab-pane" data-pane="roles">
     <div class="hero">
       <h1>角色與權限</h1>
-      <div class="sub">現實系統目前只有「校務行政」一個角色，何主任要逐個帳戶手動賦予或收回權限。此處示範角色可以拆細：每位老師可同時持有多於一個角色，各自對應較窄的可見範圍，而非人人都看到全校資料。</div>
+      <div class="sub">現時系統只有「校務行政」一個角色，何主任要逐個帳戶手動賦予或收回權限。<br>此處示範角色可以拆細：每位老師可同時持有多於一個角色，各自對應較窄的可見範圍，而非人人都看到全校資料。</div>
     </div>
 
     <div id="roleLegend" class="role-legend"></div>
@@ -671,7 +671,7 @@ function renderStudents(){
     const leftCount = c.students.filter(s=>s.left).length;
     const statusBadge = leftCount > 0
       ? `<span class="st warn" style="margin-left:10px;">⚠ ${leftCount} 筆已轉出學生的記錄待移除</span>`
-      : `<span class="st ok" style="margin-left:10px;">✓ 沒有待移除的轉出記錄</span>`;
+      : `<span class="st ok" style="margin-left:10px;"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 沒有待移除的轉出記錄</span>`;
     rows.push(`<tr class="group-head"><td colspan="6" style="border-left:4px solid ${accent};">${c.className}${statusBadge}<span class="grp-count">${matched.length} 人</span></td></tr>`);
     matched.forEach(s=>{
       const status = s.left ? '<span class="st warn">已轉出</span>' : '<span class="st ok">在校</span>';
@@ -1070,7 +1070,7 @@ function bulkRowBadge(r){
   if (r.mode === 'ambiguous') return `<span class="st warn">⚠ 需要人手核實</span>`;
   const hardProblems = r.problems.filter(p=>!p.includes('需要人手核實'));
   if (hardProblems.length) return `<span class="st warn">⚠ ${hardProblems.join('；')}（將略過）</span>`;
-  return `<span class="st ok">✓ 可處理</span>`;
+  return `<span class="st ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 可處理</span>`;
 }
 
 function renderBulkPreview(){
@@ -1191,7 +1191,7 @@ function commitBulkBatch(){
     document.getElementById('bulkCsvInput').value = '';
   }
   renderBulkPreview();
-  const banner = `<div class="bulk-summary" style="background:#effaf5;border-color:#bfe8d7;">✓ 已處理：${requested} 筆新生已送交校務紀錄組請求建立（待曾主任審批後，會先以「未編班」狀態出現在「學生編班」，仍需你手動指派班別），轉班 ${reassigned} 位現有學生已即時生效。${skippedCount ? '尚有 '+skippedCount+' 筆未能處理，已保留在下方及輸入框中——修正後按「解析並預覽」可重新嘗試。' : '全部資料已處理完成。'}轉班結果可到「學生編班」查看；新生請求狀態可請曾主任於校務紀錄審批控制台查看（本頁開啟期間有效，沒有跨頁面的資料儲存）。</div>`;
+  const banner = `<div class="bulk-summary" style="background:#effaf5;border-color:#bfe8d7;"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已處理：${requested} 筆新生已送交校務紀錄組請求建立（待曾主任審批後，會先以「未編班」狀態出現在「學生編班」，仍需你手動指派班別），轉班 ${reassigned} 位現有學生已即時生效。${skippedCount ? '尚有 '+skippedCount+' 筆未能處理，已保留在下方及輸入框中——修正後按「解析並預覽」可重新嘗試。' : '全部資料已處理完成。'}轉班結果可到「學生編班」查看；新生請求狀態可請曾主任於校務紀錄審批控制台查看（本頁開啟期間有效，沒有跨頁面的資料儲存）。</div>`;
   document.getElementById('bulkPreviewWrap').innerHTML = banner + document.getElementById('bulkPreviewWrap').innerHTML;
   toast('批量編班完成 · '+requested+' 筆新生請求已送出，轉班 '+reassigned+(skippedCount ? '，尚有 '+skippedCount+' 筆待處理' : ''));
 }

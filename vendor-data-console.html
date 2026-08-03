@@ -51,7 +51,7 @@
   .wrap{max-width:840px;margin:0 auto;padding:26px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:#5a2731;}
+  h1{font-size:1.8rem;font-weight:800;color:#5a2731;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -190,7 +190,7 @@ let accounts = [
   {name:'鄭家朗', cls:'中二乙班', mapped:'Level 2 · Support Track', status:'active'},
 ];
 let syncLog = [
-  {ic:'✓', text:'同步完成：組別成員 2 人，無變動', time:'2026-07-15 03:00'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：組別成員 2 人，無變動', time:'2026-07-15 03:00'},
   {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見校管系統名冊）', time:'2026-05-10 03:00'},
 ];
 function renderAccounts(){
@@ -199,7 +199,7 @@ function renderAccounts(){
       <td><b>${a.name}</b></td>
       <td>${a.cls}</td>
       <td>${a.mapped}</td>
-      <td>${a.status==='active' ? '<span class="chip ok">✓ 使用中</span>' : '<span class="chip masked">已移除</span>'}</td>
+      <td>${a.status==='active' ? '<span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 使用中</span>' : '<span class="chip masked">已移除</span>'}</td>
     </tr>`).join('');
 }
 function renderSync(){
@@ -209,7 +209,7 @@ function renderSync(){
 }
 function runSync(){
   const now = '2026-07-21 ' + new Date().toISOString().slice(11,16);
-  syncLog.unshift({ic:'✓', text:'同步完成：組別成員 2 人，無變動', time:now});
+  syncLog.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：組別成員 2 人，無變動', time:now});
   renderSync();
   toast('已從教學分組（groups.html）同步最新組別成員');
 }

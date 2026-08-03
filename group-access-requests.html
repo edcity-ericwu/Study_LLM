@@ -43,7 +43,7 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .class-dd{position:relative;}
   .class-btn{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);}
@@ -379,7 +379,7 @@ function renderSubmittedCard(groupId, vendorName, scopeLabel, overlap){
   card.classList.add('submitted');
   const overlapHtml = overlap ? `<div class="overlap-note">⚠ ${overlap}</div>` : '';
   card.innerHTML = `
-    <div class="sc-head"><b>✓ ${scopeLabel}</b><span class="submit-chip">⏳ 待審批</span></div>
+    <div class="sc-head"><b><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> ${scopeLabel}</b><span class="submit-chip">⏳ 待審批</span></div>
     <div class="goal" style="color:#0c6b48;">已送出「${vendorName}」的資料存取申請。</div>
     ${overlapHtml}
     <div class="submit-next">資訊科技統籌（馮 Sir）會在<a href="eddata-console.html">供應商資料存取控制台</a>審批這個請求——核准後，工具才會出現在相關學生的介面。這頁不會自動偵測審批結果，請到下方「我的請求與狀態」查看最新進度，或直接前往控制台查看審批隊列。</div>
@@ -420,7 +420,7 @@ function myStudyGroupTrials(){
 
 const TRIAL_STATUS_CHIP = {
   pending_it:'<span class="rchip pending">⏳ 試用待確認</span>',
-  active:'<span class="rchip approved">✓ 試用中</span>',
+  active:'<span class="rchip approved"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 試用中</span>',
   declined:'<span class="rchip denied">✕ 試用被拒</span>',
   graduated:'<span class="rchip approved">🎓 已轉為正式申請</span>',
 };
@@ -430,9 +430,9 @@ function renderGrantCard(v, entry, kind, driftCounter){
   // to accumulate across two separate lists (class-scoped + study-group-scoped)
   const drift = membershipDrift(entry);
   if(drift) driftCounter.n++;
-  const statusChip = kind==='grant' ? `<span class="rchip approved">✓ 已核准 · ${entry.tier}</span>`
+  const statusChip = kind==='grant' ? `<span class="rchip approved"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核准 · ${entry.tier}</span>`
     : entry.status==='pending' ? `<span class="rchip pending">⏳ 待審批</span>`
-    : entry.status==='approved' ? `<span class="rchip approved">✓ 已核准 · ${entry.tier}</span>`
+    : entry.status==='approved' ? `<span class="rchip approved"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核准 · ${entry.tier}</span>`
     : `<span class="rchip denied">✕ 已拒絕</span>`;
   const entryTeacherLabel = entry.teacherId ? teacherName(entry.teacherId)+' · ' : '';
   let driftHtml = '';

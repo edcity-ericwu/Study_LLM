@@ -38,7 +38,7 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-maroon);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-maroon);}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .off-system-note{font-size:.72rem;color:var(--ink-3);margin:6px 0 20px;max-width:52em;line-height:1.6;}
@@ -129,10 +129,10 @@ function renderTrials(){
     } else if(t.status==='progress'){
       stateChip = `<span class="state-chip progress">🧪 實測評估中 · 第 3/7 天</span>`;
       body = `<p>正以真實學生作文檢驗回饋質素。完成一週後，請在下方記錄評估結果：通過會交資訊科技統籌批出全科訂閱，不通過須說明原因，並進入冷靜期。</p>`;
-      btns = `<button class="btn" onclick="passEval('${t.id}')">✓ 通過，建議全科採用</button>
+      btns = `<button class="btn" onclick="passEval('${t.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 通過，建議全科採用</button>
               <button class="btn ghost" onclick="declineEval('${t.id}')">✕ 不通過</button>`;
     } else if(t.status==='passed'){
-      stateChip = `<span class="state-chip passed">✓ 已建議全科採用</span>`;
+      stateChip = `<span class="state-chip passed"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已建議全科採用</span>`;
       body = `<p>評估通過，建議已交資訊科技統籌（訂閱管理），全科訂閱能否批出由他決定名額與方案。</p>`;
       btns = `<button class="btn ghost" onclick="toast('原型示範：前往訂閱管理查看批出進度')">查看訂閱管理 →</button>`;
     } else if(t.status==='declined'){

@@ -57,7 +57,7 @@
   .wrap{max-width:960px;margin:0 auto;padding:44px 20px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:#0f3347;}
+  h1{font-size:1.8rem;font-weight:800;color:#0f3347;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -284,7 +284,7 @@
   <section class="hero">
     <div class="ribbon">🔴 待決策 · 此畫面示意供應商資料存取審批成為存取層級系統紀錄後的審批流程——屬架構方向，尚未承諾建置</div>
     <h1>資料存取審批</h1>
-    <div class="sub">你管理的是<b>供應商關係</b>，不是一張張孤立的申請單。每個供應商有自己已核准的層級與組別；新請求要對照這個關係來看，而不是每次由零判斷。</div>
+    <div class="sub">你管理的是<b>整體的供應商關係</b>，而非一張張孤立的申請單。每個供應商都有已核准的層級與組別；審批新請求時要對照這個關係，而不是每次由零開始判斷。</div>
   </section>
 
   <div class="tabs">
@@ -341,8 +341,8 @@ function showTab(name){
 }
 
 const AUDIT = [
-  {ic:'✓', text:'馮 Sir 批准黃穎詩老師使用點讀教育（中一甲班全班），釋放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
-  {ic:'✓', text:'馮 Sir 批准陳凱怡老師使用智寫科技（增潤組），釋放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准黃穎詩老師使用點讀教育（中一甲班全班），釋放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准陳凱怡老師使用智寫科技（增潤組），釋放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
   {ic:'✕', text:'馮 Sir 拒絕釋放表現數據予校外研究機構（Tier 3 尚未開放）', time:'2026-06-02'},
 ];
 
@@ -466,7 +466,7 @@ function renderVendors(){
             ${blocked ? `<div class="block-note">🚫 此供應商尚未通過供應商審核，按管治規則不能核准任何資料層級，請先完成合規閘，或拒絕此請求。</div>` : ''}
             ${!blocked ? tierPickHtml(v.id, r, v.name) : ''}
             <div class="btns">
-              <button class="act" id="approve-${v.id}-${r.id}" ${blocked?'disabled':''} onclick="approve('${v.id}','${r.id}')">✓ 核准</button>
+              <button class="act" id="approve-${v.id}-${r.id}" ${blocked?'disabled':''} onclick="approve('${v.id}','${r.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 核准</button>
               <button class="act deny" onclick="deny('${v.id}','${r.id}')">拒絕</button>
             </div>
           </div>`;
@@ -478,7 +478,7 @@ function renderVendors(){
         ${pendingHtml}
       </div>`;
     const approvedSection = `<div class="v-section sec-approved">
-        <h4>✓ 已核准的組別<span class="sec-count">${v.grants.length}</span></h4>
+        <h4><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核准的組別<span class="sec-count">${v.grants.length}</span></h4>
         ${grantsHtml}
       </div>`;
 
@@ -522,7 +522,7 @@ function renderTrials(){
       ? `<span class="tchip src">老師發起 · ${teacherName(t.teacherId)}</span>`
       : `<span class="tchip src">供應商發起 · ${teacherName(t.teacherId)}已確認</span>`;
     if(t.status==='pending_it') badges += `<span class="tchip pending">⏳ 待你確認</span>`;
-    if(t.status==='active') badges += `<span class="tchip active">✓ 試用中 · 至 ${t.expiresAt}</span>`;
+    if(t.status==='active') badges += `<span class="tchip active"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 試用中 · 至 ${t.expiresAt}</span>`;
     if(t.status==='declined') badges += `<span class="tchip declined">✕ 已拒絕${t.declinedBy==='teacher'?'（由老師拒絕）':''}</span>`;
     if(t.status==='graduated') badges += `<span class="tchip active">🎓 已轉為正式申請</span>`;
 
@@ -537,7 +537,7 @@ function renderTrials(){
     let foot = '';
     if(t.status==='pending_it'){
       foot = `<div class="t-foot">
-        <button class="act" onclick="confirmTrial('${t.id}')">✓ 確認試用（Tier 1 · 14 天）</button>
+        <button class="act" onclick="confirmTrial('${t.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 確認試用（Tier 1 · 14 天）</button>
         <button class="act deny" onclick="declineTrial('${t.id}')">拒絕</button>
       </div>`;
     } else if(t.status==='active'){
@@ -577,7 +577,7 @@ function confirmTrial(id){
   if(v && v.vetting.status!=='certified'){ toast('此供應商尚未通過供應商審核，不能確認試用'); return; }
   t.status='active';
   const originNote = t.origin==='teacher' ? '（老師發起）' : '';
-  AUDIT.unshift({ic:'✓', text:'馮 Sir 確認'+t.vendor+'對'+t.group+'的試用請求（Tier 1 · 至'+t.expiresAt+'）'+originNote, time:'2026-07-22'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 確認'+t.vendor+'對'+t.group+'的試用請求（Tier 1 · 至'+t.expiresAt+'）'+originNote, time:'2026-07-22'});
   renderTrials(); renderAudit();
   toast('已確認試用：'+t.vendor+' · 至 '+t.expiresAt);
 }
@@ -609,7 +609,7 @@ function reconfirmScope(vendorId, kind, id){
   const current = entry.groupId==='__whole_class__' ? wholeClassMembers(entry.classId).map(s=>s.n) : groupMembers(entry.classId, entry.groupId).map(s=>s.n);
   entry.memberSnapshot = current;
   entry.headcount = current.length;
-  AUDIT.unshift({ic:'✓', text:'馮 Sir 已知悉'+v.name+'（'+entry.group+'）的成員異動，並更新記錄範圍至 '+current.length+' 人', time:'2026-07-21'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 已知悉'+v.name+'（'+entry.group+'）的成員異動，並更新記錄範圍至 '+current.length+' 人', time:'2026-07-21'});
   renderVendors(); renderAudit();
   toast('已更新記錄範圍：'+current.length+' 人');
 }
@@ -665,7 +665,7 @@ function approve(vendorId, reqId){
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
   r.status='approved'; r.tier=r._pickedTier;
   v.grants.push({group:r.group, headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});
-  AUDIT.unshift({ic:'✓', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），釋放'+r.tier+'予'+v.name, time:'2026-07-21'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），釋放'+r.tier+'予'+v.name, time:'2026-07-21'});
   renderVendors(); renderAudit();
   toast('已核准：釋放'+r.tier+'予'+v.name);
 }

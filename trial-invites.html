@@ -43,7 +43,7 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .persona-note{font-size:.72rem;color:var(--ink-3);margin:8px 0 20px;max-width:52em;line-height:1.6;}
   .class-dd{position:relative;}
@@ -177,7 +177,7 @@ function renderInvites(){
       </div>
       <div class="i-body-text">試用固定為 Tier 1 · 基本資料（姓名、班別、組別身分），最長 14 天。確認後會交資訊科技統籌核實，才正式開始；你隨時可以婉拒，不會影響其他工具的使用。</div>
       <div class="i-foot">
-        <button class="btn" onclick="acceptInvite('${t.id}')">✓ 接受試用</button>
+        <button class="btn" onclick="acceptInvite('${t.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 接受試用</button>
         <button class="btn ghost" onclick="declineInvite('${t.id}')">婉拒</button>
       </div>
     </div>`).join('') : `<div class="empty-msg">目前沒有待回應的試用邀請</div>`;
@@ -188,7 +188,7 @@ function renderInvites(){
       chip = `<span class="ichip progress">已確認 · 待資訊科技統籌核實</span>`;
       text = `你已接受試用，現正等候資訊科技統籌核實時限與層級，核實後即可開始使用。`;
     } else if(t.status==='active'){
-      chip = `<span class="ichip active">✓ 試用中 · 至 ${t.expiresAt}</span>`;
+      chip = `<span class="ichip active"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 試用中 · 至 ${t.expiresAt}</span>`;
       text = `試用進行中，至 ${t.expiresAt}。覺得值得繼續的話，資訊科技統籌可以直接把它轉為正式申請，不必你重新填寫。`;
     } else if(t.status==='declined'){
       chip = `<span class="ichip declined">✕ 已婉拒</span>`;

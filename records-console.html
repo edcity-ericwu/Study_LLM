@@ -48,7 +48,7 @@
   .wrap{max-width:960px;margin:0 auto;padding:44px 20px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:#0f3347;}
+  h1{font-size:1.8rem;font-weight:800;color:#0f3347;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -173,7 +173,7 @@ function showTab(name){
 }
 
 const AUDIT = [
-  {ic:'✓', text:'曾主任核准建立新生黎曉盈（學生編號 s-legacy-01，尚未編班），由何主任提出請求', time:'2026-07-10'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'曾主任核准建立新生黎曉盈（學生編號 s-legacy-01，尚未編班），由何主任提出請求', time:'2026-07-10'},
 ];
 
 function renderIdentityTabCount(){
@@ -187,7 +187,7 @@ function renderIdentityTabCount(){
 function renderIntakeRequests(){
   document.getElementById('intakeReqList').innerHTML = STUDENT_INTAKE_REQUESTS.length ? STUDENT_INTAKE_REQUESTS.map(r=>{
     const cls = CLASSES[r.suggestedClassId];
-    const statusLabel = r.status==='pending' ? '⏳ 待審批' : r.status==='approved' ? '✓ 已核准（尚未編班）' : '✕ 已拒絕';
+    const statusLabel = r.status==='pending' ? '⏳ 待審批' : r.status==='approved' ? '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核准（尚未編班）' : '✕ 已拒絕';
     return `<div class="req" id="intake-${r.id}">
       <div class="r-head">
         <div class="req-context">
@@ -199,7 +199,7 @@ function renderIntakeRequests(){
         <span class="status ${r.status}">${statusLabel}</span>
       </div>
       ${r.status==='pending' ? `<div class="btns">
-        <button class="act" onclick="approveIntake('${r.id}')">✓ 核准並建立學生記錄</button>
+        <button class="act" onclick="approveIntake('${r.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 核准並建立學生記錄</button>
         <button class="act deny" onclick="denyIntake('${r.id}')">拒絕</button>
       </div>` : ''}
     </div>`;
@@ -217,7 +217,7 @@ function approveIntake(id){
   const entry = {n:r.name, sid: nextStudentId()};
   UNASSIGNED_STUDENTS.push(entry);
   r.status = 'approved';
-  AUDIT.unshift({ic:'✓', text:'曾主任核准建立新生 '+r.name+'（學生編號 '+entry.sid+'，尚未編班），由'+r.requestedBy+'提出請求', time:'2026-07-22'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'曾主任核准建立新生 '+r.name+'（學生編號 '+entry.sid+'，尚未編班），由'+r.requestedBy+'提出請求', time:'2026-07-22'});
   renderIntakeRequests(); renderAudit();
   toast('已建立學生記錄：'+r.name+'（'+entry.sid+'）— 尚未編班，須由校務處在 SMS 指派班別');
 }
@@ -233,7 +233,7 @@ const STATUS_LABEL_ED = {active:'在職', leave:'請假', departed:'已離職'};
 
 function renderStatusRequests(){
   document.getElementById('statusReqList').innerHTML = TEACHER_STATUS_REQUESTS.length ? TEACHER_STATUS_REQUESTS.map(r=>{
-    const statusLabel = r.status==='pending' ? '⏳ 待審批' : r.status==='approved' ? '✓ 已核准' : '✕ 已拒絕';
+    const statusLabel = r.status==='pending' ? '⏳ 待審批' : r.status==='approved' ? '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核准' : '✕ 已拒絕';
     return `<div class="req" id="statusreq-${r.id}">
       <div class="r-head">
         <div class="req-context">
@@ -245,7 +245,7 @@ function renderStatusRequests(){
         <span class="status ${r.status}">${statusLabel}</span>
       </div>
       ${r.status==='pending' ? `<div class="btns">
-        <button class="act" onclick="approveStatus('${r.id}')">✓ 核准並更新僱傭記錄</button>
+        <button class="act" onclick="approveStatus('${r.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 核准並更新僱傭記錄</button>
         <button class="act deny" onclick="denyStatus('${r.id}')">拒絕</button>
       </div>` : ''}
     </div>`;
@@ -257,7 +257,7 @@ function approveStatus(id){
   const t = TEACHERS.find(x=>x.name===r.teacherName);
   if (t) t.status = r.newStatus;
   r.status = 'approved';
-  AUDIT.unshift({ic:'✓', text:'曾主任核准將'+r.teacherName+'的僱傭狀態改為「'+STATUS_LABEL_ED[r.newStatus]+'」，由'+r.requestedBy+'提出請求', time:'2026-07-22'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'曾主任核准將'+r.teacherName+'的僱傭狀態改為「'+STATUS_LABEL_ED[r.newStatus]+'」，由'+r.requestedBy+'提出請求', time:'2026-07-22'});
   renderStatusRequests(); renderAudit();
   toast('已更新僱傭狀態：'+r.teacherName+' → '+STATUS_LABEL_ED[r.newStatus]);
 }

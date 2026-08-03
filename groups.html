@@ -43,7 +43,7 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .class-dd{position:relative;}
   .class-btn{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink);}
@@ -357,7 +357,7 @@ function render(){
     const matKey = activeClassId+'::'+grp.id;
     const assigned = GROUP_MATERIAL[matKey];
     const assignedHtml = assigned
-      ? `<div class="assigned-material">✓ 已指派：<b>${assigned.name}</b><span class="am-when">· ${assigned.at}</span><button class="am-x" onclick="removeMaterialAssignment('${activeClassId}','${grp.id}')">移除</button></div>`
+      ? `<div class="assigned-material"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已指派：<b>${assigned.name}</b><span class="am-when">· ${assigned.at}</span><button class="am-x" onclick="removeMaterialAssignment('${activeClassId}','${grp.id}')">移除</button></div>`
       : '';
     const menuOpen = assignMenuOpenFor === matKey;
     const menuHtml = menuOpen

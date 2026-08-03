@@ -100,6 +100,28 @@ function guardWholePage(flagKey, mainSelector){
   });
 }
 
+/* Site-wide checkmark glyph.
+ * The literal "✓" (U+2713) renders with soft, calligraphic strokes in most
+ * CJK families — and especially in Chiron GoRound TC, whose whole design is
+ * rounded — which read as hand-drawn next to the suite's geometric UI. This
+ * replaces it with a two-segment SVG using square caps and a mitre join, so
+ * the tick is built from straight lines at any size and inherits the
+ * surrounding text colour.
+ * CHECK_SVG is exposed globally because feature-flags.js loads before every
+ * page's own script, so pages that build markup in JS can use it too. */
+const CHECK_SVG = '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>';
+(function(){
+  const style = document.createElement('style');
+  style.textContent = `
+    .ck{
+      width:1em;height:1em;display:inline-block;vertical-align:-.115em;
+      fill:none;stroke:currentColor;stroke-width:2;
+      stroke-linecap:square;stroke-linejoin:miter;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
 /* Site-wide <select> standardization — an audit found several dropdowns
  * (e.g. roster.html's 批量轉班 select) with zero styling at all, rendering in
  * raw OS chrome next to custom-styled buttons/inputs right beside them. Most

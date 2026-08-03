@@ -472,7 +472,7 @@ function studyGroupIdFromScope(groupId){ return groupId.replace('__study_group__
 const VENDORS = [
   {
     id:'zhixie', name:'智寫科技', product:'寫作回饋工具',
-    vetting:{status:'certified', label:'✓ 已通過基準認證', note:'合規閘 5/5 通過（見供應商審核 vetting.html）'},
+    vetting:{status:'certified', label:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已通過基準認證', note:'合規閘 5/5 通過（見供應商審核 vetting.html）'},
     grants:[
       {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20'},
     ],
@@ -483,7 +483,7 @@ const VENDORS = [
   },
   {
     id:'diandu', name:'點讀教育', product:'中文分級閱讀庫',
-    vetting:{status:'certified', label:'✓ 已通過基準認證', note:'合規閘 5/5 通過'},
+    vetting:{status:'certified', label:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已通過基準認證', note:'合規閘 5/5 通過'},
     grants:[
       {group:'全班 · 中一甲班', classId:null, groupId:null, memberSnapshot:null, headcount:35, teacherId:'T1002', tier:'Tier 1 · 基本資料', since:'2026-07-15'},
     ],

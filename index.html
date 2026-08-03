@@ -76,15 +76,15 @@
   .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
 
   /* ─── Main ─── */
-  .main{flex:1;min-width:0;padding:44px 34px 60px;}
+  .main{flex:1;min-width:0;padding:50px 34px 60px;}
 
   .hero{
-    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);position:relative;
+    margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line);position:relative;
   }
   .hero .eyebrow{
     font-size:.7rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-bottom:12px;
   }
-  .hero h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  .hero h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
   .hero h1 em{font-style:normal;}
   .hero p{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .hero .guide-btn{
@@ -118,8 +118,8 @@
 
   /* ─── Category tabs ─── */
   .tabs-row{
-    display:flex;align-items:center;gap:8px;margin:16px 0 4px;flex-wrap:wrap;
-    padding-bottom:14px;border-bottom:1px dashed var(--line);
+    display:flex;align-items:center;gap:8px;margin:22px 0 4px;flex-wrap:wrap;
+    padding-bottom:16px;border-bottom:1px dashed var(--line);
   }
   /* Neutral, not an accent colour — these row labels ("你的工具箱", "科目")
    * only name the filter beside them; colouring them implied a category
@@ -145,7 +145,7 @@
   }
 
   /* ─── Subject row (inside hero) ─── */
-  .subject-row{display:flex;align-items:center;gap:8px;margin:18px 0 16px;flex-wrap:wrap;}
+  .subject-row{display:flex;align-items:center;gap:8px;margin:30px 0 12px;flex-wrap:wrap;}
   .subject-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
   .subj{
     display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
@@ -201,7 +201,23 @@
     .card:hover::after{animation:none;}
     .card:hover{border-color:var(--ec-blue);}
   }
+  /* The level badge used to be position:absolute in the card's top-right,
+   * which took it out of flow — a long title (or a title plus the 推薦 tag)
+   * had no idea it was there and ran underneath it. It now sits as the
+   * third flex child of .top, so the title column is measured against it
+   * and simply wraps earlier instead of colliding. min-width:0 on the
+   * title column is what actually lets it shrink; without it a flex item
+   * refuses to go below its content's intrinsic width. */
   .card .top{display:flex;align-items:flex-start;gap:12px;}
+  .card .top .ttl{flex:1;min-width:0;}
+  /* The tag cluster sits on the SAME ROW as the Chinese title, not beside
+   * the whole title column — otherwise it reserves width from every line
+   * under it too, and the English name wrapped early despite having plenty
+   * of room. Scoping it to .hd means only the title competes with the
+   * tags; .en below spans the full column. */
+  .card .top .hd{display:flex;align-items:flex-start;gap:8px;}
+  .card .top .hd h3{flex:1;min-width:0;}
+  .card .top .badges{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-top:1px;}
   .card .tile{
     width:42px;height:42px;border-radius:11px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
@@ -217,7 +233,7 @@
     padding:2px 7px;border-radius:99px;letter-spacing:.06em;
   }
   .badge-level{
-    position:absolute;top:14px;right:14px;font-size:.62rem;font-weight:600;
+    flex-shrink:0;margin-top:2px;font-size:.62rem;font-weight:600;white-space:nowrap;
     color:var(--ink-3);background:var(--bg);border:1px solid var(--line);
     padding:3px 8px;border-radius:99px;
   }
@@ -267,7 +283,7 @@
 
   <section class="hero">
     <h1><em>教學工具</em>示範原型</h1>
-    <p>為教師而設的備課、評估與教學小幫手。先選科目，再按學段挑選合適工具，日常教學準備幾分鐘內完成。</p>
+    <p>為教師而設的備課、評估及教學小幫手。你只需先選科目，再按學段挑選合適工具，就可以在數分鐘內完成日常教學準備。</p>
 
     <div class="subject-row" role="tablist" aria-label="科目">
       <span class="subject-label">科目</span>
@@ -305,7 +321,7 @@
   <div class="coming-soon" id="comingSoon">
     <div class="cs-icon">🚧</div>
     <h3 id="csTitle">即將推出</h3>
-    <p>此科目的教學工具正在籌備中。首階段以中文科作試點，其他主科將於後續階段陸續加入。</p>
+    <p id="csBody">現正籌備此科目的教學工具。</p>
   </div>
 </main>
 
@@ -338,61 +354,71 @@ const IC = {
  * and gives it a small "⭐ 推薦" tag — not a separate list, just an ordering
  * + label on the same catalog. */
 const TOOLS = [
+  /* STAR, EMM and OQB are real, existing EdCity/EDB services (not AI, not
+   * built in this prototype) — `link` points to their actual live sites
+   * with target:'_blank' so this prototype tab stays open. They lead the
+   * catalog, and are tagged recommended, because unlike everything below
+   * them they are available to teachers today rather than being concept
+   * previews. Facts checked 2026-07-30 / EMM 2026-08-03:
+   *   STAR — P1–S3 中文／英文／數學 (spans primary + junior secondary)
+   *   EMM  — EDB 教育多媒體, video library across all KLAs, free to use
+   *   OQB  — HKDSE past-paper based, secondary-only
+   * Order within the recommended block follows this array (applyFilters()
+   * uses a stable sort), so STAR → EMM → OQB is set here, not by score. */
+  {name:'STAR 學與教評估平台', en:'STAR Assessment Platform', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'star', isNew:true, recommended:true,
+   link:'https://star.hkedcity.net/zh-hant', target:'_blank',
+   desc:'超過 73,000 條評估題目，涵蓋小一至中三的中文、英文及數學，並設「學生自選評估」，讓學生可以自主挑選練習內容。'},
+  {name:'EMM 教育多媒體', en:'Educational Multimedia', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'slides', isNew:true, recommended:true,
+   link:'https://emm.edcity.hk/', target:'_blank',
+   desc:'教育局製作的教學影片資源庫，涵蓋各學習領域及幼稚園至高中。影片可直接在課堂播放，部分更附有教學資源供下載。'},
+  {name:'OQB 網上試題學習平台', en:'Online Question Bank', cat:'assessment', level:'secondary', color:'var(--ec-red)', icon:'bank', isNew:true, recommended:true,
+   link:'https://teacher.edcity.hk/zh-hant/oqb/introduction/', target:'_blank',
+   desc:'超過 10,000 條公開試題（涵蓋各科 DSE），供學校靈活組卷作練習，並提供作答數據分析。以全校、全科目模式訂購。'},
   /* Unlike the rest of this catalog (which drill into the tool-form.html
    * concept preview), AI 批改 is a real, already-built page — link straight
    * to it via `link`, no query-string placeholder. See applyFilters()'s
-   * onclick for the branch that checks this field. Kept first in this array
-   * (and tagged recommended) since it's the one tool here that actually
-   * works end-to-end today. */
+   * onclick for the branch that checks this field. */
   {name:'AI 批改', en:'AI Marking Assistant', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'pen', isNew:false, link:'marking.html', recommended:true,
-   desc:'批改學生作答，自動標示技能標籤並生成回饋重點，與班級學習面貌共用同一套分類。'},
-  /* OQB and STAR are real, existing EdCity products (not AI, not built in
-   * this prototype) — `link` points to their actual live sites with
-   * target:'_blank' so this prototype tab stays open. Facts checked
-   * 2026-07-30: OQB is HKDSE past-paper based (secondary-only); STAR
-   * covers P1–S3 中文／英文／數學 (spans primary + junior secondary). */
-  {name:'OQB 網上試題學習平台', en:'Online Question Bank', cat:'assessment', level:'secondary', color:'var(--ec-red)', icon:'bank', isNew:true,
-   link:'https://teacher.edcity.hk/zh-hant/oqb/introduction/', target:'_blank',
-   desc:'超過 10,000 條公開試題（DSE 各科)，供學校靈活組卷練習，並提供作答數據分析。以全校、全科目模式訂購。'},
-  {name:'STAR 學與教評估平台', en:'STAR Assessment Platform', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'star', isNew:true,
-   link:'https://star.hkedcity.net/zh-hant', target:'_blank',
-   desc:'超過 73,000 條評估題目，涵蓋小一至中三中文、英文、數學，並設「學生自選評估」，讓學生自主挑選練習內容。'},
+   desc:'協助批改學生作答，自動標示技能標籤並生成回饋重點，與班級學習面貌共用同一套分類。'},
   {name:'教案生成器', en:'Lesson Plan Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:false, recommended:true,
-   desc:'輸入課文或單元主題，生成含學習目標、教學流程及分層活動的中文科教案。'},
+   desc:'只需輸入課文或單元主題，即可生成包含學習目標、教學流程及分層活動的中文科教案。'},
   {name:'工作紙生成器', en:'Worksheet Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'pen', isNew:false,
-   desc:'按課文重點生成字詞、句式及理解練習工作紙，可調整深淺程度。'},
+   desc:'按課文重點生成字詞、句式及理解練習的工作紙，可按需要調整程度深淺。'},
   {name:'簡報生成器', en:'Presentation Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'slides', isNew:false,
-   desc:'將課文重點轉為課堂簡報大綱及頁面，支援下載為 PPTX。'},
+   desc:'將課文重點轉化為課堂簡報大綱及頁面，並支援下載為 PPTX 檔案。'},
   {name:'測驗題生成器', en:'Quiz Generator', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'quiz', isNew:true, recommended:true,
-   desc:'生成選擇、填充、短答等混合題型測驗，附答案及評分建議。'},
+   desc:'生成選擇、填充、短答等混合題型的測驗，並提供答案及評分建議。'},
   {name:'評分準則生成器', en:'Rubric Generator', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'rubric', isNew:false,
    desc:'為寫作及說話任務建立清晰評分準則，方便與學生和家長溝通。'},
   {name:'閱讀理解生成器', en:'Reading Comprehension', cat:'literacy', level:'both', color:'var(--ec-green)', icon:'read', isNew:false,
-   desc:'按主題及程度生成篇章與理解題目，涵蓋記敘、說明及議論文體。'},
+   desc:'按主題及程度生成篇章和理解題目，涵蓋記敘、說明及議論三類文體。'},
   {name:'詞語學習卡', en:'Vocabulary Flashcards', cat:'literacy', level:'both', color:'var(--ec-green)', icon:'cards', isNew:false,
-   desc:'生成詞語、成語學習卡，附例句、近義詞及常見誤用提示。'},
+   desc:'生成詞語及成語學習卡，附例句、近義詞以及常見誤用提示。'},
   {name:'成績表評語助手', en:'Report Card Comments', cat:'admin', level:'both', color:'var(--ec-amber)', icon:'comment', isNew:false,
-   desc:'按學生表現重點生成個人化評語，語氣正面而具體。'},
+   desc:'按學生表現重點生成個人化評語，語氣正面而具體，方便老師快速完成成績表。'},
   {name:'家校通訊生成器', en:'Class Newsletter', cat:'admin', level:'both', color:'var(--ec-amber)', icon:'mail', isNew:false,
-   desc:'快速撰寫班級通訊及家長信，涵蓋學習重點、活動及溫馨提示。'},
+   desc:'協助快速撰寫班級通訊及家長信，涵蓋學習重點、活動資訊及溫馨提示。'},
   /* Primary only */
   {name:'看圖寫話助手', en:'Picture Composition Helper', cat:'literacy', level:'primary', color:'var(--ec-green)', icon:'brush', isNew:true, recommended:true,
-   desc:'為看圖寫話課堂生成圖畫描述框架、提問階梯及範例句式。'},
+   desc:'為看圖寫話課堂生成圖畫描述框架、提問階梯以及範例句式。'},
   {name:'筆順練習生成器', en:'Stroke Order Practice', cat:'literacy', level:'primary', color:'var(--ec-green)', icon:'pen', isNew:false,
-   desc:'按課文生字生成筆順練習及田字格工作紙，支援分級字表。'},
+   desc:'按課文生字生成筆順練習和田字格工作紙，並支援分級字表設定。'},
   /* Secondary only */
   {name:'文言文解讀助手', en:'Classical Chinese Assistant', cat:'literacy', level:'secondary', color:'var(--ec-green)', icon:'scroll', isNew:true, recommended:true,
-   desc:'為文言篇章生成語譯對照、重點虛詞解說及課堂提問設計。'},
+   desc:'為文言篇章生成語譯對照、重點虛詞解說，以及課堂提問設計。'},
   {name:'議論文寫作教練', en:'Argumentative Writing Coach', cat:'literacy', level:'secondary', color:'var(--ec-green)', icon:'debate', isNew:false,
-   desc:'協助建立論點、論據與駁論結構，並生成寫作評改重點。'},
+   desc:'協助建立論點、論據及駁論結構，並生成寫作評改重點。'},
 
   /* ── 科學科 ──
-   * PLACEHOLDER — name/en/desc below are invented and MUST be replaced with
-   * the real tool's details before this page is shown to anyone. The subject
-   * row now presents 科學 as live (no 即將推出 tag), so leaving fabricated
-   * copy here would misrepresent what's actually shipped. */
-  {name:'科學探究活動設計', en:'Science Inquiry Activity Designer', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'sci',
-   desc:'（佔位內容，待填入真實工具資料）根據課題生成探究式實驗活動建議與課堂流程。'}
+   * Real product, confirmed 2026-08-03 from EdCity's own screenshot deck
+   * (sci_ed_ai_sc.pptx, last updated 2026-03-02). In-product it brands as
+   * "SciAi", under 教育局 科學教育組, subtitled 科學教育人工智能教學助理.
+   * Its home screen exposes eight tools: 教學進度安排／教案設計／科學知識樹／
+   * 課業或評估設計／評量表設計／紙筆評估設計／課堂提問模擬器／課程銜接工具,
+   * with primary and secondary levels selectable. No public URL captured, so
+   * this stays on the tool-form.html concept preview like the rest. */
+  {name:'SciAi 科學教育 AI 教學助理', en:'EDB Science Department AI', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'sci',
+   desc:'由教育局科學教育組開發的教學助理工具，涵蓋教學進度安排、教案設計、科學知識樹、課業及評估設計、評量表、紙筆評估、課堂提問模擬以及課程銜接。小學及中學均適用。'}
 ];
 
 let level = 'primary';
@@ -444,6 +470,17 @@ function applyFilters(){
     cs.style.display = 'block';
     document.getElementById('csTitle').textContent = SUBJ_NAME[subject] + '科 · 即將推出';
     document.getElementById('resultCount').textContent = SUBJ_NAME[subject] + '科工具籌備中';
+    /* Body copy names the subject you're looking at FIRST in the "陸續加入"
+     * list, so it reads as a direct answer to "when is mine coming?" rather
+     * than a generic notice. Derived from which subjects still have an empty
+     * catalog, so it stays correct without hand-editing if 數學 or 英文 later
+     * gains a tool (that subject simply stops reaching this branch). */
+    const pending = Object.keys(SUBJ_NAME)
+      .filter(k => TOOLS.every(t => (t.subject || 'chi') !== k));
+    const others = pending.filter(k => k !== subject).map(k => SUBJ_NAME[k] + '科');
+    const queue = [SUBJ_NAME[subject] + '科', ...others].join('及');
+    document.getElementById('csBody').textContent =
+      `現正籌備此科目的教學工具。首階段以科學及中文科作試點，其後會陸續加入${queue}。`;
     return;
   }
   cs.style.display = 'none';
@@ -460,11 +497,13 @@ function applyFilters(){
   shown.sort((a,b) => (b.recommended?1:0) - (a.recommended?1:0));
   grid.innerHTML = shown.map(t => `
     <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? (t.target==='_blank' ? `window.open('${t.link}','_blank')` : `location.href='${t.link}'`) : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')`}">
-      ${levelBadge(t)}
       <div class="top">
         <div class="tile">${IC[t.icon]}</div>
-        <div>
-          <h3>${t.name}${t.recommended ? '<span class="rec-tag">⭐ 推薦</span>' : ''}</h3>
+        <div class="ttl">
+          <div class="hd">
+            <h3>${t.name}</h3>
+            <div class="badges">${t.recommended ? '<span class="rec-tag">⭐ 推薦</span>' : ''}${levelBadge(t)}</div>
+          </div>
           <span class="en">${t.en}</span>
         </div>
       </div>

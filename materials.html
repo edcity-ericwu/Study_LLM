@@ -42,7 +42,7 @@
   .main{flex:1;min-width:0;padding:44px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-blue);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
   /* Use-case tabs — each with its own identity: icon tile + accent + flow glyph */
@@ -213,40 +213,40 @@
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 三個入口皆為設計方案，功能未建置</div>
     <h1>教材準備</h1>
-    <div class="sub">教材準備有三個主要情境：驗證手上已有的教材、從可信來源組合新教材，以及跨科合作創作。三者都以官方課程框架為依歸。</div>
+    <div class="sub">教材準備有三個主要情境：驗證手上已有的教材、從可信來源組合新教材，以及跨科合作創作。三種情境都以官方課程框架為依歸。</div>
   </section>
 
   <div class="uc-tabs">
     <button class="uc-tab on" data-p="p1" style="--uc:var(--ec-blue)" onclick="showUC(this)">
-      <span class="tab-head"><span class="tile">🛡️</span><span><span class="num">用例 1 · 把關</span><b>評估・驗證・充實現有教材</b></span></span>
+      <span class="tab-head"><span class="tile">🛡️</span><span><span class="num">用例 1 · 把關</span><b>評估、驗證並充實現有教材。</b></span></span>
       <div class="flow"><span>📄 你已有的教材</span><span class="arr">→</span><span class="out">✅ 驗證報告＋增潤版</span></div>
-      <small>由<b>一份現有教材</b>開始：平台按官方課程框架檢查，並提出增潤建議</small>
+      <small>由<b>一份現有教材</b>開始，平台會按官方課程框架逐項檢查，並提出增潤建議。</small>
     </button>
     <button class="uc-tab" data-p="p2" style="--uc:var(--ec-green)" onclick="showUC(this)">
-      <span class="tab-head"><span class="tile">🧺</span><span><span class="num">用例 2 · 組合</span><b>知識庫選材・混合組卷</b></span></span>
+      <span class="tab-head"><span class="tile">🧺</span><span><span class="num">用例 2 · 組合</span><b>從知識庫選材、混合組卷。</b></span></span>
       <div class="flow"><span>🏛＋🏫＋📚＋📖 四類來源</span><span class="arr">→</span><span class="out">📝 一份新工作紙</span></div>
-      <small>由<b>零</b>開始：在可信知識庫挑選材料，組合成新教材</small>
+      <small>由<b>零</b>開始，在可信的知識庫中挑選材料，組合成一份新教材。</small>
     </button>
     <button class="uc-tab" data-p="p3" style="--uc:var(--ec-purple)" onclick="showUC(this)">
-      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">用例 3 · 跨科</span><b>跨科教材創作</b></span></span>
-      <div class="flow"><span>中文＋科學兩科</span><span class="arr">→</span><span class="out">📘 一份共同教材</span></div>
-      <small>由<b>一個主題</b>開始：兩科分工編寫，各自審訂</small>
+      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">用例 3 · 跨科</span><b>跨科教材創作。</b></span></span>
+      <div class="flow"><span>中文科＋科學科</span><span class="arr">→</span><span class="out">📘 一份共同教材</span></div>
+      <small>由<b>一個主題</b>開始，兩科教師分工編寫，各自審訂所屬部分。</small>
     </button>
   </div>
 
   <!-- UC1 -->
   <div class="panel show" id="p1" style="--uc:var(--ec-blue)">
     <h2><span class="p-tile">🛡️</span>評估・驗證・充實現有教材</h2>
-    <div class="p-sub">無論教材是在教材庫內建立，還是多年來存放在電腦裏的 Word 檔，都可以交給平台逐項檢查，並獲得增潤建議。</div>
+    <div class="p-sub">無論教材是在教材庫內建立，還是多年來存放在電腦內的 Word 檔，都可以交給平台逐項檢查，並獲得增潤建議。</div>
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 你的教材在哪裏？</div>
     <div class="mode-row">
       <button class="mode-card" id="modePlat" onclick="pickSource('plat')">
         <span class="m-ic">🗂</span><b>從教材庫選取</b>
-        <small>平台內已有的教材，直接選取即可，毋須上載</small>
+        <small>對於平台內已有的教材，只需直接選取即可，毋須再上載。</small>
       </button>
       <button class="mode-card" id="modeUpload" onclick="pickSource('upload')">
         <span class="m-ic">⬆️</span><b>上載平台外檔案</b>
-        <small>多年累積的 Word、PDF 或簡報，上載後同樣逐項把關，內容不會被改寫</small>
+        <small>對於多年累積的 Word、PDF 或簡報，上載後同樣會逐項把關，內容不會被改寫。</small>
       </button>
     </div>
 
@@ -262,8 +262,8 @@
 
     <div id="reportStep" style="display:none;">
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin:18px 0 10px;">第三步 · 檢查結果與增潤建議</div>
-    <div class="check"><span class="st p">✓</span><span>課程對應<small>內容對應中國語文課程「閱讀範疇 3.1／3.2」，與現行課程框架一致</small></span></div>
-    <div class="check"><span class="st p">✓</span><span>事實與文本核對<small>引文與《背影》原文一致，無錯引</small></span></div>
+    <div class="check"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>課程對應<small>內容對應中國語文課程「閱讀範疇 3.1／3.2」，與現行課程框架一致</small></span></div>
+    <div class="check"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>事實與文本核對<small>引文與《背影》原文一致，無錯引</small></span></div>
     <div class="check"><span class="st w">⚠</span><span>年期提示<small>第 4 題引用的課外例子（2018 年新聞）已過時，學生未必有共鳴，建議更換</small></span></div>
     <div class="check"><span class="st i">✦</span><span>增潤建議<small>如下，全部僅供你選用，不會自動修改你的檔案</small>
       <span class="enrich">・按三個教學分組各加一條分層提問（增潤／核心／支援）<br>・加入一條開放式問題，讓學生先寫作、後看評語（配合「先讓學生想」的發還設定）<br>・可連結教育城《朱自清散文選讀》配套音頻</span>
@@ -279,7 +279,7 @@
   <!-- UC2 -->
   <div class="panel" id="p2" style="--uc:var(--ec-green)">
     <h2><span class="p-tile">🧺</span>知識庫選材・混合組卷</h2>
-    <div class="p-sub">從四類可信來源挑選材料，混合組成一份工作紙或單元教材。每一項都標明出處與使用權限。</div>
+    <div class="p-sub">從四類可信來源挑選材料，混合組成一份工作紙或單元教材。每一項材料都會標明出處及使用權限。</div>
 
     <div class="src-chips">
       <button class="schip on" data-s="all" onclick="setSrc(this)">全部來源</button>
@@ -304,7 +304,7 @@
   <!-- UC3 -->
   <div class="panel" id="p3" style="--uc:var(--ec-purple)">
     <h2><span class="p-tile">🔗</span>跨科教材創作</h2>
-    <div class="p-sub">兩科圍繞同一主題共同製作一份教材。每個環節都標明所屬科目，由該科教師自行審訂。</div>
+    <div class="p-sub">兩科圍繞同一主題共同製作一份教材。每個環節都會標明所屬科目，由該科教師自行審訂。</div>
 
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 選擇合作科目</div>
     <div class="xs-row" style="margin-bottom:6px;">
@@ -357,7 +357,7 @@ function genOutline(){
   const g=document.getElementById('xsGen');
   g.textContent='生成中…'; g.disabled=true;
   setTimeout(()=>{
-    g.textContent='✓ 已生成';
+    g.innerHTML=CHECK_SVG+' 已生成';
     const o=document.getElementById('xsOutline');
     o.style.display='';
     o.scrollIntoView?.({behavior:'smooth',block:'nearest'});
@@ -392,7 +392,7 @@ function runCheck(){
   const cb = document.getElementById('checkBtn');
   cb.textContent = '檢查中…'; cb.disabled = true;
   setTimeout(()=>{
-    cb.textContent = '✓ 檢查完成';
+    cb.innerHTML = CHECK_SVG+' 檢查完成';
     document.getElementById('reportStep').style.display = '';
     document.getElementById('saveFlowP1').classList.remove('show');
     document.getElementById('reportStep').scrollIntoView?.({behavior:'smooth', block:'nearest'});
@@ -432,7 +432,7 @@ function renderRes(){
       return `<div class="res"><span class="r-ic">${r.ic}</span>
         <span><b>${r.n}</b><small>${r.d}</small></span>
         <span class="tag ${SRC_TAG[r.s][0]}">${SRC_TAG[r.s][1]}</span>
-        <button class="add" ${inB?'disabled':''} onclick="addRes('${r.n}')">${inB?'已加入 ✓':'＋加入'}</button>
+        <button class="add" ${inB?'disabled':''} onclick="addRes('${r.n}')">${inB?'已加入 <svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>':'＋加入'}</button>
       </div>`;
     }).join('');
 }
@@ -469,7 +469,7 @@ function runSaveFlow(elId, item){
         justSaved:'1', name:item.name, type:item.type, t:item.t,
         usage:item.usage||'未連結課室', state:item.state||'none',
       });
-      el.innerHTML = `<div class="sf-step">✓ 已儲存至教材庫：<b>${item.name}</b>（${SAVE_TYPE_LABEL[item.type]||'工作紙'}）</div>
+      el.innerHTML = `<div class="sf-step"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已儲存至教材庫：<b>${item.name}</b>（${SAVE_TYPE_LABEL[item.type]||'工作紙'}）</div>
         <a class="lbtn" href="material-library.html?${params.toString()}">📚 前往教材庫查看 →</a>`;
       return;
     }
@@ -492,7 +492,7 @@ function saveUC2(){
 }
 function inviteCoReview(){
   const btn = document.getElementById('inviteBtn');
-  btn.textContent = '已邀請 · 待對方審訂 ✓'; btn.disabled = true;
+  btn.innerHTML = '已邀請 · 待對方審訂 '+CHECK_SVG; btn.disabled = true;
   toast('已向科學科同事發出共同審訂邀請');
   const name = document.getElementById('xsTheme').value;
   runSaveFlow('saveFlowP3', {name, type:'xs', t:'p3', usage:'待科學科同事審訂', state:'pending'});

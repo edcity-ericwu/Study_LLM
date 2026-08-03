@@ -53,7 +53,7 @@
     color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:8px;}
   .no-story{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#5b6773;background:#eef2f5;border:1px solid #d8e0e6;border-radius:99px;padding:5px 14px;margin:0 0 16px 8px;}
-  h1{font-size:1.5rem;font-weight:800;color:#5a2731;}
+  h1{font-size:1.8rem;font-weight:800;color:#5a2731;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -194,7 +194,7 @@
 
   <section class="tab-pane active" data-pane="cert">
     <div class="stepper">
-      <div class="step done"><span class="dot">✓</span><b>提交申請</b><small>6 月 28 日</small></div>
+      <div class="step done"><span class="dot"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><b>提交申請</b><small>6 月 28 日</small></div>
       <div class="step now"><span class="dot">2</span><b>合規閘審核</b><small>4/5 通過 · 待補交</small></div>
       <div class="step"><span class="dot">3</span><b>基準認證</b><small>待共用分類法輸出完成</small></div>
       <div class="step"><span class="dot">4</span><b>上架 EdMarket</b><small>合規閘通過即可有條件上架</small></div>
@@ -206,10 +206,10 @@
 
     <div class="card">
       <h3>合規閘進度 — 準則公開，非過即不過</h3>
-      <div class="gate-row"><span class="st p">✓</span><span>個人資料（PDPO）與數據治理<small>你提交的數據流程圖及儲存方案已獲核實</small></span></div>
-      <div class="gate-row"><span class="st p">✓</span><span>內容安全（含國家安全內容過濾）<small>過濾機制測試通過</small></span></div>
-      <div class="gate-row"><span class="st p">✓</span><span>中英雙語無障礙<small>兩種語言介面均達標</small></span></div>
-      <div class="gate-row"><span class="st p">✓</span><span>學生身份處理方案<small>已核實</small></span></div>
+      <div class="gate-row"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>個人資料（PDPO）與數據治理<small>你提交的數據流程圖及儲存方案已獲核實</small></span></div>
+      <div class="gate-row"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>內容安全（含國家安全內容過濾）<small>過濾機制測試通過</small></span></div>
+      <div class="gate-row"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>中英雙語無障礙<small>兩種語言介面均達標</small></span></div>
+      <div class="gate-row"><span class="st p"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span><span>學生身份處理方案<small>已核實</small></span></div>
       <div class="gate-row fail"><span class="st f">✗</span><span>課程對應證據 — <b>需補交</b><small>審核備註如下</small>
         <span class="fix-note">「課程對齊」不能只是宣傳語句。請提交內容與官方課程框架的<b>實際對應文件</b>（例如練習類型對應學習重點編碼），並準備在覆核會議上即場示範。</span>
       </span></div>
@@ -221,7 +221,7 @@
 
     <div class="card">
       <h3>技術對接 — 讓你的工具說平台的語言</h3>
-      <div class="conform"><span class="ic">🔗</span><span>單一登入（SSO）對接<small>學校授權後，教師在教育城介面內直接開啟你的工具，無需另行登入</small></span><span class="chip ok">✓ 測試通過</span></div>
+      <div class="conform"><span class="ic">🔗</span><span>單一登入（SSO）對接<small>學校授權後，教師在教育城介面內直接開啟你的工具，無需另行登入</small></span><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 測試通過</span></div>
     </div>
 
     <div class="card tagmap-card">
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pane) pane.style.display = 'none';
   }
 });
-function resubmit(btn){btn.textContent='已上傳 · 待覆核 ✓';btn.disabled=true;toast('對應文件已提交 · EdMarket 將安排覆核會議');}
+function resubmit(btn){btn.innerHTML='已上傳 · 待覆核 '+CHECK_SVG;btn.disabled=true;toast('對應文件已提交 · EdMarket 將安排覆核會議');}
 
 /* This vendor persona is 智寫科技 (zhixie). Trials created here are pushed into the
  * SHARED TRIALS array from vendor-data.js — the same array trial-invites.html (teacher
@@ -318,7 +318,7 @@ function renderTagMap(){
   if (!listEl || !chipEl) return;
   listEl.innerHTML = VENDOR_TAG_MAP.map(m=>{
     const domain = m.edcity && typeof skillDomain === 'function' ? skillDomain(m.edcity) : '';
-    const statusLabel = {ok:'✓ 已對應', review:'⏳ 待人手覆核', none:'✕ 未能對應'}[m.status];
+    const statusLabel = {ok:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已對應', review:'⏳ 待人手覆核', none:'✕ 未能對應'}[m.status];
     const row = `<div class="tagmap-row ${m.status==='none'?'unmapped':''}">
       <span class="tm-vendor">${m.vendorTag}<small>智寫科技的分類</small></span>
       <span class="tm-arrow">→</span>
@@ -331,7 +331,7 @@ function renderTagMap(){
   const okCount = VENDOR_TAG_MAP.filter(m=>m.status==='ok').length;
   const reviewCount = VENDOR_TAG_MAP.filter(m=>m.status==='review').length;
   const totalTarget = VENDOR_TAG_MAP.filter(m=>m.status!=='none').length;
-  chipEl.textContent = reviewCount>0 ? `⏳ ${okCount}/${totalTarget} 已對應 · ${reviewCount} 項待覆核` : `✓ ${okCount}/${totalTarget} 已對應`;
+  chipEl.innerHTML = reviewCount>0 ? `⏳ ${okCount}/${totalTarget} 已對應 · ${reviewCount} 項待覆核` : `${CHECK_SVG} ${okCount}/${totalTarget} 已對應`;
   chipEl.className = 'chip tagmap-head-chip ' + (reviewCount>0 ? 'review' : 'ok');
   // Table is prominent-by-default (expanded), so lock in an explicit 'block' state
   // up front — otherwise the first toggle click would be a no-op (empty inline
@@ -364,7 +364,7 @@ function populateGroupSelect(){
 }
 
 function inviteStatusLabel(s){
-  return {awaiting_teacher:'⏳ 待老師確認', pending_it:'🔎 待資訊科技統籌核實', active:'✓ 試用中',
+  return {awaiting_teacher:'⏳ 待老師確認', pending_it:'🔎 待資訊科技統籌核實', active:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 試用中',
     graduated:'🎓 已轉為正式申請', declined:'✕ 已被拒絕'}[s] || s;
 }
 

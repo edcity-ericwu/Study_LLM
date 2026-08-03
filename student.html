@@ -30,7 +30,7 @@
 
   .wrap{max-width:760px;margin:0 auto;padding:26px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;}
+  h1{font-size:1.8rem;font-weight:800;}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 4px;line-height:1.6;}
   .privacy{
     margin:14px 0 22px;background:#effaf5;border:1px solid #bfe8d7;border-radius:12px;
@@ -129,7 +129,7 @@
   .view-toggle{display:inline-flex;background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:3px;margin-left:12px;}
   .view-toggle button{border:none;background:transparent;border-radius:99px;padding:6px 14px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:600;}
   .view-toggle button.on{background:var(--ec-green);color:#fff;}
-  .greet{font-size:1.5rem;font-weight:800;}
+  .greet{font-size:1.8rem;font-weight:800;}
   .mood-row{display:flex;gap:9px;margin:14px 0 4px;flex-wrap:wrap;}
   .mood{
     flex:1;min-width:150px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:13px;
@@ -441,7 +441,7 @@ function startRec(btn){
   if(btn.classList.contains('done')||btn.classList.contains('doing')) return;
   btn.classList.add('doing'); btn.textContent='進行中…';
   setTimeout(()=>{
-    btn.classList.remove('doing'); btn.classList.add('done'); btn.textContent='完成 ✓';
+    btn.classList.remove('doing'); btn.classList.add('done'); btn.innerHTML='完成 '+CHECK_SVG;
     const g=document.getElementById('garden');
     const leaf=document.createElement('span'); leaf.className='week'; leaf.textContent='🌱';
     g.insertBefore(leaf, g.querySelector('.lbl'));
@@ -456,7 +456,7 @@ const ALT_TOPICS=[
 ];
 let altIdx=0;
 function topicDone(btn){
-  btn.textContent='試過了 ✓'; btn.classList.add('done'); btn.disabled=true;
+  btn.innerHTML='試過了 '+CHECK_SVG; btn.classList.add('done'); btn.disabled=true;
   sToast('好——陪伴本身就是重點，不用急着看效果');
 }
 function swapTopic(btn){
@@ -468,7 +468,7 @@ function swapTopic(btn){
 }
 function addJoint(){
   const b=document.getElementById('jointBtn');
-  b.textContent='已加入 Karen 的清單 ✓'; b.disabled=true;
+  b.innerHTML='已加入 Karen 的清單 '+CHECK_SVG; b.disabled=true;
   const list=document.querySelector('#stuView .mood-result');
   list.insertAdjacentHTML('beforeend',
     `<div class="rec family" data-m="light focus review"><div class="ic">👨‍👩‍👧</div><div><b>和爸媽一起讀〈背影〉第 4 段</b><small>約 10 分鐘 · 讀完互相說一件小事</small><span class="fam-badge">👨‍👩‍👧 爸媽加入</span></div><button class="go" onclick="startRec(this)">開始</button></div>`);

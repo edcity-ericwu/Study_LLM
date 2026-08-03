@@ -38,7 +38,7 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:10px;}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-purple);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-purple);}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   h2{font-size:1rem;font-weight:700;margin:26px 0 12px;}
@@ -133,7 +133,7 @@
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
     <h1>使用報告</h1>
-    <div class="sub">訂閱管理只回答「有沒有批出授權」；這一頁回答下一個問題——<b>批出之後，這件工具有沒有人在用</b>。續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
+    <div class="sub">「訂閱管理」只回答「有沒有批出授權」；這一頁回答下一個問題——<b>批出之後，這件工具有沒有人在用</b>。續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
   </section>
 
   <div class="data-note">
@@ -145,7 +145,7 @@
 
   <div class="cmp-zone">
     <h2>跨供應商比較 · 本週學生活躍率</h2>
-    <div class="sub" style="margin:0 0 4px;">活躍率 = 本週實際使用人數 ÷ 已核准人數。用來快速判斷「批出的名額，有多少真的在用」。</div>
+    <div class="sub" style="margin:0 0 4px;">活躍率 = 本週實際使用人數 ÷ 已核准人數。<br>用來快速判斷「批出的名額，有多少真的在用」。</div>
     <div id="cmpRows" style="margin-top:14px;"></div>
   </div>
 
@@ -154,7 +154,7 @@
     <thead><tr><th>工具</th><th>組別</th><th>負責老師</th><th>已核准人數</th><th>本週活躍人數</th><th>最後使用日期</th></tr></thead>
     <tbody id="detailTbody"></tbody>
   </table>
-  <div class="note-row">🔐 本頁只看「有沒有人用」；名額是否快滿、要不要再加人，記錄在 <a href="subscriptions.html" style="color:var(--ec-blue-dark);font-weight:700;">訂閱管理 · 供應商方案名額</a>。</div>
+  <div class="note-row">🔐 本頁只看「有沒有人用」；名額是否快滿、要不要再加人，相關資料記錄在<a href="subscriptions.html" style="color:var(--ec-blue-dark);font-weight:700;">「訂閱管理」的「供應商方案名額」</a>。</div>
 </div>
 </main>
 
@@ -220,7 +220,7 @@ function renderSummaryCards(){
     const teacherActiveLastWeek = u.weeklyActiveTeachers[u.weeklyActiveTeachers.length-1];
     const teacherFlag = teacherActiveLastWeek < usage.teachers
       ? `<span class="sc-teacher-flag warn">⚠ 負責老師本週未登入使用</span>`
-      : `<span class="sc-teacher-flag ok">✓ 負責老師本週仍在使用</span>`;
+      : `<span class="sc-teacher-flag ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 負責老師本週仍在使用</span>`;
     return `
     <div class="sum-card">
       <div class="sc-head">

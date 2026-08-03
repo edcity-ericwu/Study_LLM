@@ -38,7 +38,7 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:var(--ec-purple);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-purple);}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
 
@@ -160,7 +160,7 @@
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
     <h1>訂閱管理</h1>
-    <div class="sub">全校訂閱的教育城審核工具集中在同一畫面，續期日期與適用範圍一目了然。<b>批出授權後，工具會自動出現在教師介面</b>，毋須另建帳號或派發密碼。</div>
+    <div class="sub">全校訂閱的教育城審核工具集中顯示在同一畫面，續期日期與適用範圍一目了然。<b>批出授權後，工具會自動出現在教師介面</b>，毋須另建帳號或派發密碼。</div>
   </section>
 
   <div class="tabs">
@@ -173,9 +173,9 @@
     <div class="req direct" id="directTrialCard">
       <div class="ic">🧑‍🏫</div>
       <div class="body">
-        <b>兩位中文科教師申請試用「智寫」寫作回饋工具</b>
-        <p>陳凱怡老師、黃穎詩老師 · 個人試用性質，非科組承諾。按管治規則，小規模試用<b>可直接批出</b>，毋須科主任評估。</p>
-        <span class="scope">✓ 小規模試用 · 可直接批出</span>
+        <b>兩位中文科教師申請試用「智寫」寫作回饋工具。</b>
+        <p>陳凱怡老師、黃穎詩老師 · 屬個人試用性質，並非科組承諾。按管治規則，小規模試用<b>可直接批出</b>，毋須科主任評估。</p>
+        <span class="scope"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 小規模試用 · 可直接批出</span>
         <div class="detail-block" id="directTrialDetail" style="display:none;">
           <div class="detail-row"><span>申請人</span><span>陳凱怡老師、黃穎詩老師（中文科）</span></div>
           <div class="detail-row"><span>工具</span><span>智寫科技 · 寫作回饋工具</span></div>
@@ -193,8 +193,8 @@
     <div class="req gated" id="deptTrialCard">
       <div class="ic">🏫</div>
       <div class="body">
-        <b>中文科申請全科採用「智寫」寫作回饋工具</b>
-        <p>科主任提出全科訂閱。按管治規則，<b>須待科主任完成實測評估並提交建議</b>（見科組視圖之工具試用評估）方可批出。全科採用與小規模試用，把關程度自然不同。</p>
+        <b>中文科申請全科採用「智寫」寫作回饋工具。</b>
+        <p>科主任提出全科訂閱申請。按管治規則，<b>須待科主任完成實測評估並提交建議</b>（可參考科組視圖中的工具試用評估）方可批出。全科採用與小規模試用，在把關程度上自然有所不同。</p>
         <span class="scope">⏳ 待科主任評估建議 · 暫不能批出</span>
       </div>
       <div class="btns">
@@ -219,13 +219,13 @@
           <td><span class="tool">AI 中文作文批改</span><span class="vend">墨言科技 · 教育城已審核</span></td>
           <td>2027-08-31</td>
           <td><span class="chip dept">中文科 · 全科</span></td>
-          <td><span class="chip ok">✓ 使用中</span></td>
+          <td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 使用中</span></td>
         </tr>
         <tr>
           <td><span class="tool">普通話朗讀評測</span><span class="vend">智語科技 · 教育城已審核</span></td>
           <td>2026-12-31</td>
           <td><span class="chip dept">中文科 · 全科</span></td>
-          <td><span class="chip ok">✓ 使用中</span></td>
+          <td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 使用中</span></td>
         </tr>
         <tr>
           <td><span class="tool">中文分級閱讀庫</span><span class="vend">點讀教育 · 教育城已審核</span></td>
@@ -261,7 +261,7 @@ function pctClass(pct){ return pct>=100 ? 'danger' : pct>=80 ? 'warn' : 'ok'; }
 function pctStateChip(pct){
   if(pct>=100) return `<span class="plan-state danger">✕ 已達上限</span>`;
   if(pct>=80) return `<span class="plan-state warn">⚠ 接近上限</span>`;
-  return `<span class="plan-state ok">✓ 名額充裕</span>`;
+  return `<span class="plan-state ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 名額充裕</span>`;
 }
 
 function renderPlanGrid(){
@@ -289,7 +289,7 @@ function renderPlanGrid(){
   const unlimitedCards = UNLIMITED_PLANS.map(p=>`<div class="plan-card">
     <b>${p.vendorName}</b><span class="pv">${p.product} · ${p.plan}</span>
     <div class="cap-row unlimited-row">${p.note}</div>
-    <span class="plan-state ok">✓ 不受名額限制</span>
+    <span class="plan-state ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 不受名額限制</span>
     <div class="renew">續期日：${p.renewal}</div>
   </div>`);
   document.getElementById('planGrid').innerHTML = cards.concat(unlimitedCards).join('');

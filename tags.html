@@ -42,7 +42,7 @@
   .pad{padding-top:44px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.5rem;font-weight:800;color:#b07c10;}
+  h1{font-size:1.8rem;font-weight:800;color:#b07c10;}
   .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
   .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
   .rule{
@@ -159,8 +159,8 @@
   <table>
     <thead><tr><th>技能維度</th><th>官方課程框架對應</th><th>狀態</th></tr></thead>
     <tbody>
-      <tr><td>閱讀理解 · 推論</td><td><span class="code">中國語文 · 閱讀範疇 3.2</span></td><td><span class="chip ok">✓ 對應已核實</span></td></tr>
-      <tr><td>閱讀理解 · 主旨理解</td><td><span class="code">中國語文 · 閱讀範疇 3.1</span></td><td><span class="chip ok">✓ 對應已核實</span></td></tr>
+      <tr><td>閱讀理解 · 推論</td><td><span class="code">中國語文 · 閱讀範疇 3.2</span></td><td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 對應已核實</span></td></tr>
+      <tr><td>閱讀理解 · 主旨理解</td><td><span class="code">中國語文 · 閱讀範疇 3.1</span></td><td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 對應已核實</span></td></tr>
       <tr><td>寫作 · 段落結構</td><td><span class="code">中國語文 · 寫作範疇 2.3</span></td><td><span class="chip pending">待工作小組定案</span></td></tr>
       <tr><td>語文基礎 · 詞彙運用</td><td><span class="code">中國語文 · 詞彙運用範疇 1.4</span></td><td><span class="chip pending">待工作小組定案</span></td></tr>
     </tbody>
@@ -173,11 +173,11 @@
 <script src="feature-flags.js"></script>
 <script>
 guardWholePage('contentModeration', '.main');
-function approve(btn){btn.textContent='已核准 ✓';btn.disabled=true;btn.nextElementSibling.disabled=true;toast('已核准 · 標籤現可計入下游統計');}
+function approve(btn){btn.innerHTML='已核准 '+CHECK_SVG;btn.disabled=true;btn.nextElementSibling.disabled=true;toast('已核准 · 標籤現可計入下游統計');}
 function fixTag(btn){
   const tag=btn.closest('.item').querySelector('.ptag');
   tag.textContent='推論 · 穩固';tag.className='ptag sec';
-  btn.textContent='已修正 ✓';btn.disabled=true;btn.previousElementSibling.disabled=true;
+  btn.innerHTML='已修正 '+CHECK_SVG;btn.disabled=true;btn.previousElementSibling.disabled=true;
   toast('已修正 · AI 誤判已被人手接住');
 }
 let tt;

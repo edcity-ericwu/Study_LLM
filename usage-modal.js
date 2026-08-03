@@ -185,7 +185,7 @@ window.umRequest = function(){
   if(requested) return;
   requested = true;
   const b = document.getElementById('umReqBtn');
-  b.textContent = '已送出申請 ✓';
+  b.innerHTML = '已送出申請 '+CHECK_SVG;
   b.disabled = true;
   umToast('增配申請已送交學校管理員');
 };

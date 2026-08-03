@@ -141,7 +141,7 @@
     .msg,.typing{animation:none;}
     .nav .nav-marker{transition:none;}
   }
-  .chat-scroll{flex:1;overflow-y:auto;padding:26px 34px 10px;}
+  .chat-scroll{flex:1;overflow-y:auto;padding:10px 34px 10px;}
   .chat-inner{max-width:1120px;margin:0 auto;}
 
   /* What's new */
@@ -247,6 +247,18 @@
   }
   .sugg .s-card .hr{width:26px;height:1px;background:var(--line);margin:10px auto;}
   .sugg .s-card h4{font-size:.85rem;font-weight:600;line-height:1.5;text-align:center;}
+  /* Action chip — says what the reply will DO, not where the tool lives.
+   * A suggestion is a prompt, so the destination isn't known until the
+   * assistant answers, and some prompts fan out to both catalogues
+   * (教學工具 on index.html and Apps／智能代理 on agents.html). Naming one
+   * catalogue up front would over-promise; the reply's .tool-card names
+   * the actual tool once it IS known. This just tells the teacher whether
+   * they're getting an answer or a hand-off. */
+  .sugg .s-card .src{
+    display:inline-block;margin-top:9px;font-size:.6rem;font-weight:600;
+    color:var(--ink-3);background:#f5f8fa;border:1px solid var(--line);
+    border-radius:99px;padding:2px 9px;white-space:nowrap;
+  }
   .sugg .s-card:nth-child(1) .cat{color:var(--ec-blue);}
   .sugg .s-card:nth-child(2) .cat{color:var(--ec-green);}
   .sugg .s-card:nth-child(3) .cat{color:var(--ec-amber);}
@@ -474,45 +486,48 @@
 
       <div class="hero-chat" id="hero" style="margin-top:64px;">
         <h1>EdCity.ai</h1>
-        <p>隨時提問 — 備課支援、教學設計、創意靈感</p>
+        <p>隨時發問，支援備課、設計教學、啟發創意。</p>
         <div class="role-pill">
-          <span>👩‍🏫 教師</span>
-          <button class="soon" disabled>🎒 學生<em>即將推出</em></button>
-          <button class="soon" disabled>👨‍👩‍👧 家長<em>即將推出</em></button>
+          <span>👩‍🏫 教師版</span>
+          <button class="soon" disabled>🎒 學生版<em>即將推出</em></button>
+          <button class="soon" disabled>👨‍👩‍👧 家長版<em>即將推出</em></button>
         </div>
 
         <div class="sugg">
           <div class="s-card" onclick="askToolFit()">
             <div class="cat" style="color:var(--ec-red)">🧭 AI 教學工具</div>
             <div class="hr"></div>
-            <h4>哪個寫作回饋工具最適合我班？</h4>
+            <h4>想知道哪個寫作回饋工具最適合你班？</h4>
+            <span class="src">為你推薦工具</span>
           </div>
           <div class="s-card" onclick="useSuggestion('製作一份唐詩三百首的課堂簡報初稿')">
             <div class="cat" style="color:var(--ec-green)">📊 生成教材</div>
             <div class="hr"></div>
-            <h4>唐詩三百首 — 課堂簡報初稿生成</h4>
+            <h4>自動生成〈唐詩三百首〉課堂簡報初稿</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略與教案')">
             <div class="cat" style="color:#8a5a09">🔍 搜尋教城資源</div>
             <div class="hr"></div>
-            <h4>最新讀寫教學策略與教案搜尋</h4>
+            <h4>搜尋最新讀寫教學策略和教案</h4>
           </div>
         </div>
         <div class="sugg sugg-row2">
           <div class="s-card" onclick="useSuggestion('製作中文科重點概念與文本關係的視覺化知識圖譜')">
             <div class="cat" style="color:var(--ec-purple)">📈 製作知識圖譜</div>
             <div class="hr"></div>
-            <h4>中文科重點概念與文本關係視覺化圖譜</h4>
+            <h4>把中文科重點概念和文本關係整理成視覺化圖譜</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('幫我把《背影》一課設計成互動課堂問答遊戲')">
             <div class="cat" style="color:var(--ec-maroon)">🧩 AI 教學小應用</div>
             <div class="hr"></div>
-            <h4>課堂問答遊戲 —《背影》搶答挑戰設計</h4>
+            <h4>為〈背影〉設計課堂搶答遊戲</h4>
+            <span class="src">為你推薦工具</span>
           </div>
           <div class="s-card" onclick="useSuggestion('生成一份 AI 中文作文批改與回饋建議')">
             <div class="cat" style="color:var(--ec-blue-dark)">🤖 AI 智能代理</div>
             <div class="hr"></div>
-            <h4>AI 中文作文批改與回饋建議生成</h4>
+            <h4>由 AI 協助批改中文作文，提供回饋建議</h4>
+            <span class="src">為你推薦工具</span>
           </div>
         </div>
       </div>
@@ -537,12 +552,12 @@
           <div class="m-item" data-mode="ask" onclick="setMode('ask')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>
             <span><b>提問模式</b><small>只提供答案 — 不使用工具或建立檔案</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item" data-mode="plan" onclick="setMode('plan')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
             <span><b>規劃模式</b><small>先草擬計劃，確認後才執行</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <hr>
           <div class="m-item" onclick="newChat()">
@@ -604,29 +619,29 @@
           <div class="m-item" data-model="自動" onclick="setModel(this,'自動')">
             <span><b>自動</b><small>按任務自動挑選最合適的模型</small></span>
             <span class="m-caps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item" data-model="快速模型" onclick="setModel(this,'快速模型')">
             <span><b>快速模型</b><small>回應快速，適合簡單提問</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item selected" data-model="智能模型" onclick="setModel(this,'智能模型')">
             <span><b>智能模型</b><small>處理較複雜的教學設計任務</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <hr>
           <div class="m-sect">更多模型</div>
           <div class="m-item" data-model="英華智能教學模型" onclick="setModel(this,'英華智能教學模型')">
             <span><b>英華智能教學模型</b><small>按香港課程框架調校，本地化教學用語</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
-          <div class="m-item" data-model="DeepSeek V4" onclick="setModel(this,'DeepSeek V4')"><span><b>DeepSeek V4</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="豆包 Pro" onclick="setModel(this,'豆包 Pro')"><span><b>豆包 Pro</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="GLM-5.2" onclick="setModel(this,'GLM-5.2')"><span><b>GLM-5.2</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="Gemini 3 Flash" onclick="setModel(this,'Gemini 3 Flash')"><span><b>Gemini 3 Flash</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="Gemini 3.1 Pro" onclick="setModel(this,'Gemini 3.1 Pro')"><span><b>Gemini 3.1 Pro</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="GPT-5.4" onclick="setModel(this,'GPT-5.4')"><span><b>GPT-5.4</b></span><span class="check">✓</span></div>
-          <div class="m-item" data-model="GPT-5.4 Mini" onclick="setModel(this,'GPT-5.4 Mini')"><span><b>GPT-5.4 Mini</b></span><span class="check">✓</span></div>
+          <div class="m-item" data-model="DeepSeek V4" onclick="setModel(this,'DeepSeek V4')"><span><b>DeepSeek V4</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="豆包 Pro" onclick="setModel(this,'豆包 Pro')"><span><b>豆包 Pro</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="GLM-5.2" onclick="setModel(this,'GLM-5.2')"><span><b>GLM-5.2</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="Gemini 3 Flash" onclick="setModel(this,'Gemini 3 Flash')"><span><b>Gemini 3 Flash</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="Gemini 3.1 Pro" onclick="setModel(this,'Gemini 3.1 Pro')"><span><b>Gemini 3.1 Pro</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="GPT-5.4" onclick="setModel(this,'GPT-5.4')"><span><b>GPT-5.4</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="GPT-5.4 Mini" onclick="setModel(this,'GPT-5.4 Mini')"><span><b>GPT-5.4 Mini</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
         </div>
 
         <!-- Knowledge base menu -->
@@ -638,21 +653,21 @@
           <div class="m-sect">知識庫來源</div>
           <div class="m-item selected" data-kb="教育城資源庫" onclick="setKB(this,'教育城資源庫')">
             <span><b>教育城資源庫</b><small>官方公用教學資源，預設來源</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <hr>
           <div class="m-sect">內容供應商</div>
           <div class="m-item" data-kb="晴川文創" onclick="setKB(this,'晴川文創')">
             <span><b>晴川文創</b><small>已授權課本與教材內容</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item" data-kb="拾光教育科技" onclick="setKB(this,'拾光教育科技')">
             <span><b>拾光教育科技</b><small>已授權課本與教材內容</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item" data-kb="硯青文化" onclick="setKB(this,'硯青文化')">
             <span><b>硯青文化</b><small>已授權課本與教材內容</small></span>
-            <span class="check">✓</span>
+            <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
         </div>
 
@@ -809,8 +824,8 @@ function sendMsg(){
     const tag = mode==='plan' ? '規劃模式 · '+model : mode==='ask' ? '提問模式 · '+model : model;
     thread.insertAdjacentHTML('beforeend', `
       <div class="msg ai"><span class="tag">${tag}</span><br>
-      這是原型的預設示例回覆。正式版本會根據你的要求${mode==='plan'?'先草擬教學計劃供你確認，再':''}生成完整內容，例如教案大綱、活動建議或評估設計。<br><br>
-      你可以試試：切換<b>提問／規劃模式</b>（＋按鈕）、開關<b>工具</b>，或轉用其他<b>模型</b>，感受不同的互動方式。</div>`);
+      這只是原型的示例回覆；正式版本會按你的要求${mode==='plan'?'先草擬教學計劃供你確認，再':''}生成完整內容，例如教案大綱、課堂活動建議或評估設計。<br><br>
+      你可以試試切換「<b>提問／規劃</b>」模式、開關<b>工具</b>，或轉用其他<b>模型</b>，看看不同的互動效果。</div>`);
     scrollBottom();
   }, 900);
 }
@@ -824,14 +839,14 @@ const TOOL_DETAILS = {
     tag:'小學及中學 · 中文', lic:'school',
     desc:'供應商提供的作文批改引擎：支援手寫辨識掃描、錯別字與病句偵測，並按香港評分框架生成分項回饋。此工具由第三方供應商營運，使用時將於供應商平台開啟。',
     caps:['手寫辨識','批量批改','校本準則對應'],
-    fit:[['✓','混合程度分層回饋：已核實'],['✓','AI 出錯時的處理流程：已提供'],['✓','教師覆核：預設開啟']],
+    fit:[['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','混合程度分層回饋：已核實'],['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','AI 出錯時的處理流程：已提供'],['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','教師覆核：預設開啟']],
   },
   other: {
     face:'📝', color:'var(--ec-amber)', name:'另一款已認證工具', vendor:'供應商暫不具名',
     tag:'中學 · 中文', lic:'sub',
     desc:'第二個通過教育城合規審核的寫作回饋工具，具體供應商資料尚待正式版本決定是否可具名顯示（見下方採購中立說明）。',
     caps:['弱勢學生適用性證據已核實'],
-    fit:[['✓','弱勢學生適用性證據：已核實'],['—','分層回饋：供應商未提交證據']],
+    fit:[['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','弱勢學生適用性證據：已核實'],['—','分層回饋：供應商未提交證據']],
   },
 };
 function openToolModal(key){
@@ -862,22 +877,23 @@ function askToolFit(){
   document.getElementById('hero').style.display='none';
   const thread = document.getElementById('thread');
   const u=document.createElement('div'); u.className='msg user';
-  u.textContent='我班（中二乙）程度參差，想找一個寫作回饋工具。哪個比較適合？';
+  u.textContent='我班（中二乙）程度參差，想選用寫作回饋工具，哪一款較為合適？';
   thread.appendChild(u);
   const typing=document.createElement('div'); typing.className='typing'; typing.textContent='EdCity AI 正在對照已審核工具的適配資料…';
   thread.appendChild(typing); scrollBottom();
   setTimeout(()=>{
     typing.remove();
     thread.insertAdjacentHTML('beforeend', `
-      <div class="msg ai"><span class="tag">工具指引 · 只列核實事實</span><br>
-      按你班的情況（中二・混合程度・對照官方課程框架），目錄中有兩個<b>已通過教育城合規審核</b>的寫作回饋工具。以下是供應商提交、教育城核實的適配資料——不是評分，也不是排名：
+      <div class="msg ai"><span class="tag">工具指引 · 只列出經核實的事實</span><br>
+      按你班的情況（中二、混合程度，並對照官方課程框架），目錄中現時有兩款<b>已通過教育城合規審核</b>的寫作回饋工具。<br><br>
+      以下資料由供應商提交，並經教育城核實，只供參考適配情況，並非評分或排名。
 
       <div class="tool-card">
         <div class="tc-face">🖋️</div>
         <div class="tc-body">
           <div class="tc-name">AI 中文作文批改<span style="font-weight:400;color:var(--ink-3);"> · 墨言科技</span></div>
-          <div class="tc-meta">校方已採購 · 可直接開啟</div>
-          <div style="margin-top:6px;"><span class="fitchip"><i>✓</i>混合程度分層回饋：已核實</span><span class="fitchip"><i>✓</i>AI 出錯時的處理流程：已提供</span><span class="fitchip"><i>✓</i>教師覆核：預設開啟</span></div>
+          <div class="tc-meta">校方已採購，可直接開啟使用。</div>
+          <div style="margin-top:6px;"><span class="fitchip"><i><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></i>就混合程度提供分層回饋：相關做法已獲核實</span><span class="fitchip"><i><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></i>AI 出錯時的處理流程：供應商已提供</span><span class="fitchip"><i><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></i>教師覆核功能：預設為開啟</span></div>
         </div>
         <button class="tc-go" onclick="openToolModal('zhixie')">開啟 →</button>
       </div>
@@ -885,9 +901,9 @@ function askToolFit(){
       <div class="tool-card dim">
         <div class="tc-face">📝</div>
         <div class="tc-body">
-          <div class="tc-name">另一款已認證工具<span style="font-weight:400;color:var(--ink-3);"> · 供應商暫不具名</span></div>
-          <div class="tc-meta">需向學校申請訂閱</div>
-          <div style="margin-top:6px;"><span class="fitchip"><i>✓</i>弱勢學生適用性證據：已核實</span><span class="fitchip"><i>—</i>分層回饋：供應商未提交證據</span></div>
+          <div class="tc-name">另一款已認證工具<span style="font-weight:400;color:var(--ink-3);"> · 供應商暫未具名</span></div>
+          <div class="tc-meta">需透過學校申請訂閱方可使用。</div>
+          <div style="margin-top:6px;"><span class="fitchip"><i><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></i>弱勢學生適用性的相關證據：已獲核實</span><span class="fitchip"><i>—</i>分層回饋做法：供應商暫未提交相關證據</span></div>
         </div>
         <button class="tc-go" onclick="openToolModal('other')">查看詳情 →</button>
       </div>

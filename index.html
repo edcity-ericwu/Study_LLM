@@ -536,7 +536,7 @@ function applyFilters(){
     </div>`).join('');
   document.getElementById('empty').style.display = shown.length ? 'none' : 'block';
   document.getElementById('resultCount').textContent =
-    `顯示 ${shown.length} 個工具 · ${level==='primary'?'小學':'中學'}學段`;
+    `顯示 ${shown.length} 個工具 · ${level==='primary'?'小學':'中學'}適用`;
 }
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 applyFilters();

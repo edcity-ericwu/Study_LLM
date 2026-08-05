@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 供應商審核 — 故事 3：EdMarket 供應商關係（示意）</title>
+<title>EdCity 供應商審核 — EdMarket 供應商關係</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -21,24 +21,35 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
-  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
-  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
-  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
-  .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
-  .nav{padding:14px 10px;flex:1;}
-  .nav-group h6{font-size:.66rem;font-weight:600;color:#b07c10;letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
-  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
-  .nav a:hover{background:#f2f6f9;}
-  .nav a.active{background:#fdf6ec;color:#b07c10;font-weight:600;}
-  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;}
-  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-amber);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
-  .sidebar .user .meta b{font-size:.8rem;display:block;}
-  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+  /* Administrative shell — same dark sidebar + role-banner + topbar chrome as
+   * the other operational consoles, so this reads immediately as back-office
+   * rather than a teacher screen. Bronze rather than the school-admin purple:
+   * this is 平台營運層級 (EdCity's own staff vetting vendors), a different
+   * organisation from the school-side IT coordinator. */
+  .sys-sidebar{width:248px;flex-shrink:0;background:#3a2c12;color:#efe6d4;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid #b07c10;}
+  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#e2c07a;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#efe6d4;white-space:nowrap;}
+  .sys-nav{padding:12px 10px;flex:1;}
+  .sys-nav h6{font-size:.62rem;font-weight:700;color:#cfae74;letter-spacing:normal;padding:10px 10px 6px;text-transform:uppercase;}
+  .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#d8cbb2;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
+  .sys-nav a:hover{background:rgba(255,255,255,.06);}
+  .sys-nav a.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;}
+  .sys-sidebar-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar-foot a{font-size:.74rem;color:#b3a184;text-decoration:none;}
+  .sys-sidebar-foot a:hover{color:#fff;}
+  .sys-main{flex:1;min-width:0;}
+
+  .topbar{background:#fff;border-bottom:3px solid #b07c10;padding:12px 26px;display:flex;align-items:center;gap:14px;}
+  .topbar img{height:28px;width:auto;}
+  .topbar .sys{font-size:.85rem;font-weight:700;color:#b07c10;}
+  .topbar .sys small{display:block;font-size:.64rem;color:var(--ink-3);font-weight:500;}
+  .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.78rem;color:var(--ink-2);text-align:right;}
+  .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:#b07c10;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
+  .topbar .who small{display:block;font-size:.66rem;color:var(--ink-3);}
 
   .main{flex:1;min-width:0;padding:0 34px 80px;}
-  .role-banner{background:#fdf6ec;border-bottom:1px solid #f3e3c3;color:#b07c10;
-    font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 34px;margin:0 -34px;position:sticky;top:0;z-index:50;}
+  .role-banner{display:none;background:#5c4415;color:#efe6d4;
+    font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .pad{padding-top:44px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
@@ -92,26 +103,26 @@
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="logo-wrap">
-    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-    <div class="logo-sub">AI 教學工具平台 · POC v0.1</div>
-    <div class="role-tag">🤝 平台營運層級 · 供應商關係視圖</div>
-  </div>
-  <nav class="nav">
-    <div class="nav-group">
-      <h6>供應商關係</h6>
-      <a href="vetting.html" class="active">🛡 供應商審核</a>
-    </div>
+<aside class="sys-sidebar">
+  <div class="sh-label">EdMarket 供應商關係（方小姐）</div>
+  <div class="role-tag">🤝 平台營運層級 · 供應商關係視圖</div>
+  <nav class="sys-nav">
+    <h6>供應商關係</h6>
+    <a href="vetting.html" class="active">🛡 供應商審核</a>
   </nav>
-  <div class="user">
-    <div class="avatar">方</div>
-    <div class="meta"><b>方小姐</b><span>EdMarket 供應商關係主任</span></div>
+  <div class="sys-sidebar-foot">
+    <a href="index.html">← 返回 EdCity.ai（教師視圖）</a>
   </div>
 </aside>
 
+<div class="sys-main">
+<div class="role-banner">平台營運層級 — 供應商關係視圖（教育城內部）</div>
+<div class="topbar">
+  <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+  <span class="sys">供應商審核<small>EdMarket 平台營運 · 教育城內部，與學校端及供應商端分屬不同系統</small></span>
+  <span class="who"><span>方小姐<small>EdMarket 供應商關係主任</small></span><span class="avatar">方</span></span>
+</div>
 <main class="main">
-  <div class="role-banner">平台營運層級 — 供應商關係視圖（教育城內部）</div>
   <div class="pad">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 審核流程為設計方案；beta 目錄已上線但未有審核機制</div>
@@ -144,8 +155,8 @@
       <span class="fit-chip"><span class="v"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>教師覆核步驟：預設開啟</span>
     </div>
     <div class="btns">
-      <button class="btn" onclick="toast('原型示範：向供應商發出補交要求')">要求補交證據</button>
-      <button class="btn ghost" onclick="toast('原型示範：查看完整申請')">完整申請</button>
+      <button class="btn" onclick="toast('向供應商發出補交要求')">要求補交證據</button>
+      <button class="btn ghost" onclick="toast('查看完整申請')">完整申請</button>
     </div>
   </div>
 
@@ -173,7 +184,7 @@
   <div class="vendor-card">
     <div class="vc-head">
       <div class="vl" style="background:var(--ink-3)">習</div>
-      <div><b>習題王 — 操練題庫</b><small>申請日期 2026-07-02 · 跨科 · 小學</small></div>
+      <div><b>習題王 — 操練題庫</b><small>申請日期 2026-07-02 · 跨學科 · 小學</small></div>
       <span class="status fail">✗ 未通過 · 可補正後重新申請</span>
     </div>
     <div class="gates">
@@ -193,6 +204,7 @@
   </div>
 </div>
 </main>
+</div>
 
 <div class="toast" id="toast"></div>
 <script>

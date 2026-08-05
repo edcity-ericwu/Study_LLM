@@ -148,7 +148,7 @@ const HTML = `
         </div>
       </div>
     </div>
-    <div id="um-pane-stub" style="display:none"><div class="um-stub">此分頁僅為原型示意，未有內容。</div></div>
+    <div id="um-pane-stub" style="display:none"><div class="um-stub">此分頁暫未有內容。</div></div>
   </div>
 </div>`;
 

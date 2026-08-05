@@ -57,6 +57,28 @@
     display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;
     color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;
   }
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas h6{color:#8a5a09;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
+   * with light text. The earlier pale-on-pale version had too little contrast
+   * against the page background to register beside a 1.8rem headline.
+   * #0072ab on #fff measures ~5.3:1, clearing AA. */
+  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
+    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
+    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -265,11 +287,14 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
-      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
     </div>
   </nav>
   <div class="user">
@@ -282,8 +307,8 @@
 <main class="main">
 
   <section class="hero">
-    <h1><em>教學工具</em>示範原型</h1>
-    <p>為教師而設的備課、評估及教學小幫手。你只需先選科目，再按學段挑選合適工具，就可以在數分鐘內完成日常教學準備。</p>
+    <h1><em>教學工具</em></h1>
+    <p>為你而設的備課、評估和教學小幫手。<br>只需先選科目，再按學段挑選合適工具，就可以在數分鐘內完成日常教學準備。</p>
 
     <div class="subject-row" role="tablist" aria-label="科目">
       <span class="subject-label">科目</span>
@@ -379,7 +404,7 @@ const TOOLS = [
    * to it via `link`, no query-string placeholder. See applyFilters()'s
    * onclick for the branch that checks this field. */
   {name:'AI 批改', en:'AI Marking Assistant', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'pen', isNew:false, link:'marking.html', recommended:true,
-   desc:'協助批改學生作答，自動標示技能標籤並生成回饋重點，與班級學習面貌共用同一套分類。'},
+   desc:'協助批改學生作答，自動標示能力標籤並生成回饋重點，與班級學習表現總覽共用同一套分類。'},
   {name:'教案生成器', en:'Lesson Plan Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:false, recommended:true,
    desc:'只需輸入課文或單元主題，即可生成包含學習目標、教學流程及分層活動的中文科教案。'},
   {name:'工作紙生成器', en:'Worksheet Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'pen', isNew:false,
@@ -399,8 +424,8 @@ const TOOLS = [
   {name:'家校通訊生成器', en:'Class Newsletter', cat:'admin', level:'both', color:'var(--ec-amber)', icon:'mail', isNew:false,
    desc:'協助快速撰寫班級通訊及家長信，涵蓋學習重點、活動資訊及溫馨提示。'},
   /* Primary only */
-  {name:'看圖寫話助手', en:'Picture Composition Helper', cat:'literacy', level:'primary', color:'var(--ec-green)', icon:'brush', isNew:true, recommended:true,
-   desc:'為看圖寫話課堂生成圖畫描述框架、提問階梯以及範例句式。'},
+  {name:'看圖寫作助手', en:'Picture Composition Helper', cat:'literacy', level:'primary', color:'var(--ec-green)', icon:'brush', isNew:true, recommended:true,
+   desc:'為看圖寫作課堂生成圖畫描述框架、提問階梯以及範例句式。'},
   {name:'筆順練習生成器', en:'Stroke Order Practice', cat:'literacy', level:'primary', color:'var(--ec-green)', icon:'pen', isNew:false,
    desc:'按課文生字生成筆順練習和田字格工作紙，並支援分級字表設定。'},
   /* Secondary only */

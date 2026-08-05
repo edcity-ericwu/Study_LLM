@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 教材準備 — 課堂層級三大用例（示意）</title>
+<title>EdCity 核實教材 — 課堂層級三大用例</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -31,6 +31,28 @@
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
   .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas h6{color:#8a5a09;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
+   * with light text. The earlier pale-on-pale version had too little contrast
+   * against the page background to register beside a 1.8rem headline.
+   * #0072ab on #fff measures ~5.3:1, clearing AA. */
+  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
+    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
+    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -196,11 +218,14 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
-      <a href="materials.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
-      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6>Ideas Lab</h6>
+      <a href="materials.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
     </div>
   </nav>
   <div class="user">
@@ -212,8 +237,8 @@
 <main class="main">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 三個入口皆為設計方案，功能未建置</div>
-    <h1>教材準備</h1>
-    <div class="sub">教材準備有三個主要情境：驗證手上已有的教材、從可信來源組合新教材，以及跨科合作創作。三種情境都以官方課程框架為依歸。</div>
+    <h1>核實教材<span class="idea-pill">Ideas Lab</span></h1>
+    <div class="sub">幫助你檢查、組合及創作教材，同時確保內容與官方課程框架保持一致。<br>支援三個常見備課情境：驗證現有教材、從可信來源組合新教材，以及跨學科協作備課。</div>
   </section>
 
   <div class="uc-tabs">
@@ -228,7 +253,7 @@
       <small>由<b>零</b>開始，在可信的知識庫中挑選材料，組合成一份新教材。</small>
     </button>
     <button class="uc-tab" data-p="p3" style="--uc:var(--ec-purple)" onclick="showUC(this)">
-      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">用例 3 · 跨科</span><b>跨科教材創作。</b></span></span>
+      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">用例 3 · 跨學科</span><b>跨學科教材創作。</b></span></span>
       <div class="flow"><span>中文科＋科學科</span><span class="arr">→</span><span class="out">📘 一份共同教材</span></div>
       <small>由<b>一個主題</b>開始，兩科教師分工編寫，各自審訂所屬部分。</small>
     </button>
@@ -303,7 +328,7 @@
 
   <!-- UC3 -->
   <div class="panel" id="p3" style="--uc:var(--ec-purple)">
-    <h2><span class="p-tile">🔗</span>跨科教材創作</h2>
+    <h2><span class="p-tile">🔗</span>跨學科教材創作</h2>
     <div class="p-sub">兩科圍繞同一主題共同製作一份教材。每個環節都會標明所屬科目，由該科教師自行審訂。</div>
 
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 選擇合作科目</div>
@@ -324,11 +349,11 @@
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin:18px 0 10px;">第三步 · 大綱草稿（每個環節標明所屬科目）</div>
     <div class="block"><span class="b-tag chi">中文</span><span><b>導入 · 節氣詩詞選讀</b><small>〈清明〉〈立秋〉選段，分析意象：古人如何以文字記錄物候</small></span></div>
     <div class="block"><span class="b-tag sci">科學</span><span><b>原理 · 地球公轉與太陽直射點</b><small>節氣背後的天文機制，配軌道示意圖與角度計算活動</small></span></div>
-    <div class="block"><span class="b-tag both">跨科</span><span><b>探究 · 詩中物候 vs 今日觀測</b><small>對照詩句描述與香港天文台的當代數據。氣候變遷之下，「清明時節雨紛紛」還準嗎？學生先提出假設，再查證</small></span></div>
+    <div class="block"><span class="b-tag both">跨學科</span><span><b>探究 · 詩中物候 vs 今日觀測</b><small>對照詩句描述與香港天文台的當代數據。氣候變遷之下，「清明時節雨紛紛」還準嗎？學生先提出假設，再查證</small></span></div>
     <div class="block"><span class="b-tag chi">中文</span><span><b>輸出 · 寫一段你的節氣觀察</b><small>以科學觀測作素材、文學筆法作表達；兩科評分準則並列</small></span></div>
 
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin:18px 0 10px;">第四步 · 兩科共同審訂</div>
-    <div class="collab">🤝 <b>審訂責任：</b>中文環節由你審訂，科學環節則邀請科學科同事負責。跨科教材必須兩科教師都核准，才會發佈。</div>
+    <div class="collab">🤝 <b>審訂責任：</b>中文環節由你審訂，科學環節則邀請科學科同事負責。跨學科教材必須兩科教師都核准，才會發佈。</div>
     <div style="margin-top:14px;">
       <button class="btn" id="inviteBtn" onclick="inviteCoReview()">邀請科學科同事共同審訂 →</button>
     </div>
@@ -457,7 +482,7 @@ function renderBasket(){
  * with a real link into material-library.html carrying the new item's
  * details in the query string (name/type/tag/usage state), since this suite
  * has no cross-page persistence to actually push the row there directly. */
-const SAVE_TYPE_LABEL = {report:'驗證報告', sheet:'工作紙', xs:'跨科教材'};
+const SAVE_TYPE_LABEL = {report:'驗證報告', sheet:'工作紙', xs:'跨學科教材'};
 function runSaveFlow(elId, item){
   const el = document.getElementById(elId);
   el.classList.add('show');

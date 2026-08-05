@@ -28,15 +28,22 @@ const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['chat.html','EdCity.ai（科目助理）',''],
     ['index.html','教學工具首頁',''],
-    ['agents.html','Apps／智能代理',''],
-    ['materials.html','教材準備（三大用例）','y'],
-    ['material-library.html','教材庫（我的教材）','y'],
-    ['insights.html','班級學習面貌（核心價值，含多班切換）','r'],
+    ['agents.html','Apps／智能助手',''],
+    ['material-library.html','校本教材庫','y'],
     ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
+  ]},
+  /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
+   * features, so they sit apart from the teacher's working tools here too. */
+  {group:'💡 Ideas Lab（構思階段）', items:[
+    ['materials.html','核實教材（三大用例）','y'],
+    ['insights.html','班級學習表現總覽（核心價值，含多班切換）','r'],
   ]},
   {group:'📈 科主任（李天佑主任）', items:[
     ['dept.html','科組統計視圖','y','subjectPanelView'],
     ['dept-trial-evaluations.html','工具試用評估','y','toolTrial'],
+  ]},
+  {group:'🎒 學生／家長（Karen）', items:[
+    ['student.html','學生／家長入口','r'],
   ]},
   {group:'🔧 資訊科技統籌（馮 Sir）', items:[
     ['subscriptions.html','訂閱管理','y'],
@@ -48,9 +55,6 @@ const PAGES = [
   ]},
   {group:'🗂 校務紀錄組（曾主任）', items:[
     ['records-console.html','身分紀錄審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）','r','recordsApproval'],
-  ]},
-  {group:'🎒 學生／家長（Karen）', items:[
-    ['student.html','學生／家長入口','r'],
   ]},
   {group:'🏷 內容審核員（平台營運）', items:[
     ['tags.html','標籤審核與管理','r','contentModeration'],

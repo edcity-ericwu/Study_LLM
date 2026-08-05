@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 科組視圖 — 故事 7：科主任統計（示意）</title>
+<title>EdCity 科組視圖 — 科主任統計</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -102,7 +102,7 @@
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
 
-  .role-banner{background:#faf1f3;border-bottom:1px solid #e5cdd4;color:var(--ec-maroon);
+  .role-banner{display:none;background:#faf1f3;border-bottom:1px solid #e5cdd4;color:var(--ec-maroon);
     font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 34px;position:sticky;top:0;z-index:50;}
   .nav-group h6{color:var(--ec-maroon) !important;}
   .nav a.active{background:#faf1f3 !important;color:var(--ec-maroon) !important;}
@@ -135,7 +135,7 @@
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
     <h1>中文科 · 科組統計</h1>
-    <div class="sub">滙總全科五位教師的數據，只顯示<b>趨勢方向</b>（進步／持平／回落），並按年級及技能維度呈現。</div>
+    <div class="sub">滙總全科五位教師的數據，只顯示<b>趨勢方向</b>（進步／持平／回落），並按年級及能力範疇呈現。</div>
   </section>
 
   <div class="cards">
@@ -159,15 +159,15 @@
 
   <div class="trend-overview" id="deptOverview"></div>
 
-  <h2>技能維度趨勢（全科）</h2>
+  <h2>能力範疇趨勢（全科）</h2>
   <table>
-    <thead><tr><th>技能維度</th><th>學期趨勢</th><th>備註</th></tr></thead>
+    <thead><tr><th>能力範疇</th><th>學期趨勢</th><th>備註</th></tr></thead>
     <tbody>
       <tr><td>閱讀理解 · 推論</td><td><div class="trend-cell"><span class="spark-slot" data-series="50,54,58,62,66,70" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>新閱讀計劃重點範疇</td></tr>
       <tr><td>閱讀理解 · 主旨理解</td><td><div class="trend-cell"><span class="spark-slot" data-series="52,55,58,61,64,67" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>—</td></tr>
       <tr><td>寫作 · 段落結構</td><td><div class="trend-cell"><span class="spark-slot" data-series="56,58,55,57,56,58" data-dir="flat"></span><span class="trend flat">▶ 大致持平</span></div></td><td>—</td></tr>
       <tr><td>語文基礎 · 詞彙運用</td><td><div class="trend-cell"><span class="spark-slot" data-series="60,56,52,48,44,40" data-dir="down"></span><span class="trend down">▼ 需要關注</span></div></td><td>中三級回落較明顯</td></tr>
-      <tr class="dim-split"><td colspan="3">學習持續性 — 與成績並列的成效維度，非附註</td></tr>
+      <tr class="dim-split"><td colspan="3">學習持續性 — 與成績並列的成效向度，非附註</td></tr>
       <tr><td>課外自主閱讀（自願借閱／平台自選篇章）</td><td><div class="trend-cell"><span class="spark-slot" data-series="40,44,48,53,57,61" data-dir="up"></span><span class="trend up">▲ 進步中</span></div></td><td>非考核指標</td></tr>
       <tr><td>自願重寫／訂正率（沒有分數誘因下）</td><td><div class="trend-cell"><span class="spark-slot" data-series="45,47,44,46,45,47" data-dir="flat"></span><span class="trend flat">▶ 大致持平</span></div></td><td>非考核指標</td></tr>
     </tbody>

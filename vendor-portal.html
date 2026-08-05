@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 供應商入口 — 供應商側視圖（示意 · 未經故事驗證）</title>
+<title>EdCity 供應商入口 — 供應商側視圖</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -36,7 +36,7 @@
   .sys-sidebar-foot a:hover{color:#fff;}
   .sys-main{flex:1;min-width:0;}
 
-  .role-banner{background:#5a2731;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;
+  .role-banner{display:none;background:#5a2731;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;
     padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-maroon);padding:14px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:30px;width:auto;}
@@ -159,7 +159,7 @@
 <body>
 
 <aside class="sys-sidebar">
-  <div class="sh-label">供應商側系統</div>
+  <div class="sh-label">供應商系統</div>
   <div class="role-tag">🏢 供應商層級 · 智寫科技視圖</div>
   <nav class="sys-nav">
     <a href="vendor-portal.html" class="active">📈 EdMarket 認證進度</a>
@@ -215,7 +215,7 @@
       </span></div>
       <div style="margin-top:14px;display:flex;gap:9px;">
         <button class="btn" id="submitBtn" onclick="resubmit(this)">上傳對應文件</button>
-        <button class="btn ghost" onclick="toast('原型示範：查看公開審核準則全文')">查看公開準則</button>
+        <button class="btn ghost" onclick="toast('查看公開審核準則全文')">查看公開準則</button>
       </div>
     </div>
 
@@ -229,7 +229,7 @@
         <div><span class="tagmap-ic">🏷</span><h3>共用分類法輸出 — 你的標籤如何對應教育城分類</h3></div>
         <span class="chip tagmap-head-chip" id="tagMapChip"></span>
       </div>
-      <div class="sub" style="margin:0 0 8px;">你的工具回報的技能數據，須先對應到平台共用分類（科目 × 技能維度 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
+      <div class="sub" style="margin:0 0 8px;">你的工具回報的能力數據，須先對應到平台共用分類（科目 × 能力範疇 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
       <div class="deadline-note">🗓 基準認證徽章截止日：<b>2026-09-26</b>（合規閘通過起計 90 天）· 逾期未完成，有條件上架資格將被暫停</div>
       <div id="tagMapPanel">
         <div class="tagmap-note" style="margin-bottom:10px;">對應由系統比對你提交的分類名稱與教育城共用分類產生——<b>只是建議，不會自動生效</b>：信心不足的對應與完全對應不到的分類，都要教育城人手覆核或確認排除後，才會（或不會）計入平台統計。與 tags.html 對 AI 建議標籤的把關，是同一個原則，只是這裏把關的是你整批分類對應，不是單一學生作答。</div>
@@ -293,8 +293,8 @@ function resubmit(btn){btn.innerHTML='已上傳 · 待覆核 '+CHECK_SVG;btn.dis
 const MY_VENDOR_ID = 'zhixie';
 const MY_VENDOR_NAME = '智寫科技';
 
-/* 供應商送來的技能標籤，用他們自己的分類命名——這正是「共用分類法輸出」要解決
- * 的問題：智寫科技回報的技能，必須先對應到 EdCity 的共用分類（SKILL_TAGS，見
+/* 供應商送來的能力標籤，用他們自己的分類命名——這正是「共用分類法輸出」要解決
+ * 的問題：智寫科技回報的能力，必須先對應到 EdCity 的共用分類（SKILL_TAGS，見
  * vendor-data.js）才能匯入教師與科組視圖。對應本身也需要人手覆核，不是系統比對
  * 完就自動生效——同一個「AI 只建議，不直接套用」的原則（見 tags.html），這裏用
  * 在供應商整批標籤對應的把關上，不只是單一學生作答的標籤。 */
@@ -309,7 +309,7 @@ const VENDOR_TAG_MAP = [
   {vendorTag:'篇章邏輯', edcity:'論證組織', status:'review',
     note:'系統比對信心不足——「篇章邏輯」可能對應「論證組織」，也可能是另一種寫作能力，需教育城人手確認後才會生效，目前不計入平台統計。'},
   {vendorTag:'情感態度', edcity:null, status:'none',
-    note:'目前共用分類法沒有對應維度，不會匯入教師或科組視圖；智寫科技仍可在自己的系統內保留這項數據，只是不會出現在平台統計中。'},
+    note:'目前共用分類法沒有對應向度，不會匯入教師或科組視圖；智寫科技仍可在自己的系統內保留這項數據，只是不會出現在平台統計中。'},
 ];
 
 function renderTagMap(){

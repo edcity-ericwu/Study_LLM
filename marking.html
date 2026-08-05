@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity AI 批改 — 故事 1：批改與教學分組（教師版）</title>
+<title>EdCity AI 批改 — 批改與教學分組（教師版）</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -32,6 +32,28 @@
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
   .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas h6{color:#8a5a09;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
+   * with light text. The earlier pale-on-pale version had too little contrast
+   * against the page background to register beside a 1.8rem headline.
+   * #0072ab on #fff measures ~5.3:1, clearing AA. */
+  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
+    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
+    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -189,11 +211,14 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
-      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
     </div>
   </nav>
   <div class="user">
@@ -209,7 +234,7 @@
     <div class="page-head">
       <div>
         <h1>AI 批改 — 閱讀理解短答</h1>
-        <div class="sub">批改時可同步標記技能標籤；完成後，成績會<b>自動存入校管系統</b>，毋須匯出試算表，也毋須重複輸入名單。</div>
+        <div class="sub">批改時可同步標記能力標籤；完成後，成績會<b>自動存入校管系統</b>，毋須匯出試算表，也毋須重複輸入名單。</div>
       </div>
       <div class="class-pick">📋 中二乙班 · 中文 · <b>《背影》閱讀理解</b> <span class="chev">▼</span></div>
     </div>
@@ -230,8 +255,8 @@
           <small>支援 PDF、Word、相片掃描（自動辨識手寫）· 名單自動對應校管系統</small>
         </div>
         <div class="drop-row">
-          <div class="drop-opt" onclick="toast('原型示範：上載試題卷')"><b>上載試題卷（選填）</b><small>供 AI 對照題目批改</small></div>
-          <div class="drop-opt" onclick="toast('原型示範：上載評分準則')"><b>上載評分準則（選填）</b><small>校本準則優先於預設準則</small></div>
+          <div class="drop-opt" onclick="toast('上載試題卷')"><b>上載試題卷（選填）</b><small>供 AI 對照題目批改</small></div>
+          <div class="drop-opt" onclick="toast('上載評分準則')"><b>上載評分準則（選填）</b><small>校本準則優先於預設準則</small></div>
         </div>
       </div>
       <aside class="setup-rail">
@@ -239,7 +264,7 @@
         <div class="rail-sect">回饋詳細程度</div>
         <label class="radio-opt"><input type="radio" name="fb"><span>僅分數<small>只評分，不寫評語</small></span></label>
         <label class="radio-opt"><input type="radio" name="fb"><span>簡短<small>每題一句重點</small></span></label>
-        <label class="radio-opt"><input type="radio" name="fb" checked><span>預設<small>分數＋評語＋技能標籤建議</small></span></label>
+        <label class="radio-opt"><input type="radio" name="fb" checked><span>預設<small>分數＋評語＋能力標籤建議</small></span></label>
         <label class="radio-opt"><input type="radio" name="fb"><span>自訂<small>按你的評改說明生成</small></span></label>
         <div class="rail-sect">評語發還方式 <span style="font-weight:700;color:var(--ec-green);">教學法選項</span></div>
         <label class="radio-opt"><input type="radio" name="rel2" onclick="toast('評語將即時發還學生')"><span>即時發還<small>批改後學生立即看到評語</small></span></label>
@@ -270,7 +295,7 @@
       <h3>批改進度</h3>
       <div class="prog"><div class="bar"><i id="progBar"></i></div><span id="progText">13 / 32</span></div>
       <ul>
-        <li>技能標籤採用平台共用分類（推論、主旨理解、文意理解⋯），供日後個人及科組統計使用。</li>
+        <li>能力標籤採用平台共用分類（推論、主旨理解、文意理解⋯），供日後個人及科組統計使用。</li>
         <li>AI 建議的標籤須經內容審核後方會計入任何統計（故事 6）。</li>
       </ul>
       <div class="release" style="border-top:1px dashed var(--line);padding-top:12px;margin-top:14px;font-size:.72rem;color:var(--ink-2);">
@@ -306,7 +331,7 @@ function setGroup(btn){
   toast(btn.textContent.trim().split(' ')[0] + '：顯示該組學生作答');
 }
 /* A teacher can only ATTACH a tag from SKILL_TAGS (vendor-data.js) — never
- * type a new one. That's the whole point: 技能標籤 feeding any cross-teacher
+ * type a new one. That's the whole point: 能力標籤 feeding any cross-teacher
  * or cross-class statistic (insights.html, tags.html) have to come from one
  * shared vocabulary, or "推論" from one teacher and "推理能力" from another
  * would silently be two different tags to any downstream aggregation. */
@@ -315,7 +340,7 @@ function toggleAddMenu(i){
   render();
 }
 /* 標籤名稱（來自 SKILL_TAGS）與熟練程度（穩固／發展中）是兩個獨立判斷，不是
- * 綁在一起的單一選項——技能名稱是共用分類決定的固定事實，程度是老師對這位
+ * 綁在一起的單一選項——能力名稱是共用分類決定的固定事實，程度是老師對這位
  * 學生當下表現的判斷，每次都要分開選，不能替老師預設。 */
 function addSkillTag(i, tagName, level){
   const shown = RESP.filter(r=>group==='all'||r.grp===group);
@@ -359,7 +384,7 @@ function render(){
       </div>
       <div class="ans">${r.ans}</div>
       <div class="tags">
-        <span class="t-label">技能標籤：</span>
+        <span class="t-label">能力標籤：</span>
         ${r.skills.map(([s,lv])=>`<button class="skill on ${lv==='dev'?'dev':''}" onclick="this.classList.toggle('on');event.stopPropagation()">${s} · ${lv==='dev'?'發展中':'穩固'}</button>`).join('')}
         <span style="position:relative;">
           <button class="skill" onclick="toggleAddMenu(${i});event.stopPropagation()">＋</button>

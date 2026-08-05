@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 標籤審核與管理 — 故事 6：內容審核（示意）</title>
+<title>EdCity 標籤審核與管理 — 內容審核</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -37,7 +37,7 @@
   .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
 
   .main{flex:1;min-width:0;padding:0 34px 80px;}
-  .role-banner{background:#fdf6ec;border-bottom:1px solid #f3e3c3;color:#b07c10;
+  .role-banner{display:none;background:#fdf6ec;border-bottom:1px solid #f3e3c3;color:#b07c10;
     font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 34px;margin:0 -34px;position:sticky;top:0;z-index:50;}
   .pad{padding-top:44px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
@@ -115,7 +115,7 @@
   <section class="hero">
     <div class="ribbon">🔴 待決策 · 共用分類法尚未存在；此畫面示意分類法建成後的運作方式</div>
     <h1>標籤審核與管理</h1>
-    <div class="sub">AI 就學生作答<b>建議</b>技能標籤；每個標籤須經人手審核，方會計入教師儀表板、科組統計或學生視圖。AI 只建議，不直接套用。</div>
+    <div class="sub">AI 就學生作答<b>建議</b>能力標籤；每個標籤須經人手審核，方會計入教師儀表板、科組統計或學生視圖。AI 只建議，不直接套用。</div>
   </section>
   <div class="rule">📌 規則：<b>未經審核的標籤，平台上任何人都看不到</b>，教師、科組統計、學生入口一律不例外。</div>
 
@@ -133,7 +133,7 @@
       <div class="ans">「作者寫父親的背影，係想講佢對兒子嘅愛，雖然佢冇講出口。」</div>
       <div class="prop">
         <span class="lbl">AI 建議：</span><span class="ptag sec">推論 · 穩固</span>
-        <div class="btns"><button class="btn" onclick="approve(this)">核准</button><button class="btn fix" onclick="toast('原型示範：修正標籤')">修正</button></div>
+        <div class="btns"><button class="btn" onclick="approve(this)">核准</button><button class="btn fix" onclick="toast('修正標籤')">修正</button></div>
       </div>
     </div>
     <div class="item flagged">
@@ -150,14 +150,14 @@
       <div class="ans">「『蹣跚』意思係行路好穩陣。」</div>
       <div class="prop">
         <span class="lbl">AI 建議：</span><span class="ptag dev">詞彙運用 · 發展中</span>
-        <div class="btns"><button class="btn" onclick="approve(this)">核准</button><button class="btn fix" onclick="toast('原型示範：修正標籤')">修正</button></div>
+        <div class="btns"><button class="btn" onclick="approve(this)">核准</button><button class="btn fix" onclick="toast('修正標籤')">修正</button></div>
       </div>
     </div>
   </div>
 
   <h2>分類法管理 — 與官方課程對應</h2>
   <table>
-    <thead><tr><th>技能維度</th><th>官方課程框架對應</th><th>狀態</th></tr></thead>
+    <thead><tr><th>能力範疇</th><th>官方課程框架對應</th><th>狀態</th></tr></thead>
     <tbody>
       <tr><td>閱讀理解 · 推論</td><td><span class="code">中國語文 · 閱讀範疇 3.2</span></td><td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 對應已核實</span></td></tr>
       <tr><td>閱讀理解 · 主旨理解</td><td><span class="code">中國語文 · 閱讀範疇 3.1</span></td><td><span class="chip ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 對應已核實</span></td></tr>
@@ -165,7 +165,7 @@
       <tr><td>語文基礎 · 詞彙運用</td><td><span class="code">中國語文 · 詞彙運用範疇 1.4</span></td><td><span class="chip pending">待工作小組定案</span></td></tr>
     </tbody>
   </table>
-  <div class="tax-note">分類法（科目 × 技能維度 × 掌握程度）由跨職能工作小組負責，<b>內容尚未定案</b>，上表僅為示意。所謂「與政府對齊」，實質就是對應官方課程框架：供應商工具、AI 批改與科組統計使用同一套語言，而這套語言以官方課程為本，並非平台自創。</div>
+  <div class="tax-note">分類法（科目 × 能力範疇 × 掌握程度）由跨職能工作小組負責，<b>內容尚未定案</b>，上表僅為示意。所謂「與政府對齊」，實質就是對應官方課程框架：供應商工具、AI 批改與科組統計使用同一套語言，而這套語言以官方課程為本，並非平台自創。</div>
 </div>
 </main>
 

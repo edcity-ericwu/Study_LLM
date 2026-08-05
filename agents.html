@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity Apps／智能代理 — 中文科（教師版）</title>
+<title>EdCity Apps／智能助手 — 中文科（教師版）</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -48,6 +48,28 @@
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
   .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas h6{color:#8a5a09;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
+   * with light text. The earlier pale-on-pale version had too little contrast
+   * against the page background to register beside a 1.8rem headline.
+   * #0072ab on #fff measures ~5.3:1, clearing AA. */
+  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
+    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
+    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -157,6 +179,12 @@
     font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;
   }
   .acard .vis.private{color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
+  .acard .vis.school{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  /* eLAFP scheme marker — deliberately quiet: a funding-scheme provenance note,
+   * not a quality badge, so it must not out-shout 校方已採購／需另行訂閱. */
+  .acard .scheme{position:absolute;left:12px;bottom:10px;font-size:.58rem;font-weight:700;
+    color:var(--ink-2);background:rgba(255,255,255,.86);border:1px solid var(--line);
+    border-radius:6px;padding:2px 7px;letter-spacing:.02em;backdrop-filter:blur(2px);}
   .acard .vis.public{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);margin-top:9px;flex-wrap:wrap;}
   .acard .meta .who{display:flex;align-items:center;gap:5px;}
@@ -247,11 +275,14 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
-      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="agents.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
     </div>
   </nav>
   <div class="user">
@@ -264,8 +295,8 @@
 <main class="main">
 
   <section class="hero">
-    <h1>Apps／<u>智能代理</u></h1>
-    <p>Ed Market 提供的現成教學工具，加上同事建立和分享的小應用及對話代理，都集中在這裡讓你按教學任務挑選使用。</p>
+    <h1>Apps／<u>智能助手</u></h1>
+    <p>你可在這裏按教學任務，挑選 EdMarket 提供的現成教學工具，或老師建立並分享的小應用／互動助手來使用。</p>
   </section>
 
   <div class="type-tabs">
@@ -276,7 +307,7 @@
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20M7 4v5"/></svg>AI 小應用
     </button>
     <button class="type-tab" data-type="agent" onclick="setType(this)">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>互動代理
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>互動助手
     </button>
     <button class="type-tab" data-type="doc" onclick="setType(this)">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8"/></svg>文件
@@ -289,15 +320,15 @@
   <div class="filterbar">
     <div class="lib-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ink-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input id="libSearch" type="text" placeholder="搜尋 Apps 與代理，例如「作文批改」…">
+      <input id="libSearch" type="text" placeholder="搜尋 Apps 與助手，例如「作文批改」…">
     </div>
-    <button class="create-btn" onclick="toastMini('原型示範：建立新項目')">＋ 建立新項目</button>
+    <button class="create-btn" onclick="toastMini('建立新項目')">＋ 建立新項目</button>
   </div>
 
   <section class="vendor-sect" id="vendorSect" style="margin-top:40px;">
     <div class="vendor-head">
       <h2>EdMarket 工具</h2>
-      <span class="sub">由第三方供應商提供，並經教育城平台接入為代理或小應用。</span>
+      <span class="sub">由第三方供應商提供，並經教育城平台接入為助手或小應用。</span>
     </div>
     <div class="vendor-disclaimer">⚠️ 以下工具由第三方供應商營運，數據處理及私隱政策以供應商條款為準。「校方已採購」工具可直接使用；其餘需經學校另行訂閱。</div>
     <div class="grid" id="vendorGrid" style="margin-top:24px;"></div>
@@ -305,8 +336,9 @@
 
   <div class="vendor-head" style="margin-top:44px;">
     <h2>EdHub</h2>
-    <span class="sub">你和其他老師建立的 Apps 與代理</span>
+    <span class="sub">你和其他老師建立的 Apps 與助手</span>
     <div style="margin-left:auto;display:flex;gap:8px;align-self:center;">
+      <button class="vis-btn" id="visSchool" onclick="setVis('school')">🏫 校本</button>
       <button class="vis-btn" id="visPublic" onclick="setVis('public')">🌐 公開</button>
       <button class="vis-btn on" id="visPrivate" onclick="setVis('private')">🔒 私人</button>
     </div>
@@ -331,7 +363,7 @@
     <div class="caps" id="mCaps"></div>
     <div class="actions">
       <button class="primary" id="mUse">開始使用</button>
-      <button class="secondary" onclick="toastMini('原型示範：預覽代理')">預覽</button>
+      <button class="secondary" onclick="toastMini('預覽助手')">預覽</button>
     </div>
   </div>
 </div>
@@ -341,36 +373,36 @@
 <script>
 /* type: agent | app | doc | slides ; vis: private | public */
 const ITEMS = [
-  {name:'中文作文批改代理', type:'agent', vis:'private', face:'✍️', color:'var(--ec-red)',
-   who:'陳凱怡老師', tag:'中學 · 中文', views:32, likes:8, age:'1 天前',
+  {name:'中文作文批改助手', type:'agent', vis:'private', face:'✍️', color:'var(--ec-red)',
+   who:'陳凱怡老師', tag:'中學 · 中文', views:32, likes:8, follows:3, age:'1 天前',
    desc:'按你校評分準則批改記敘文及議論文：標示錯別字與病句、評估內容結構與立意，並生成分項評分及具體改進建議。',
    caps:['錯別字偵測','病句標示','分項評分','評語生成','支援校本準則']},
-  {name:'文言文答問代理', type:'agent', vis:'private', face:'📜', color:'var(--ec-maroon)',
-   who:'陳凱怡老師', tag:'中學 · 中文', views:17, likes:5, age:'3 天前',
-   desc:'學生就文言篇章提問，代理以引導式提示回應，提供語譯對照及虛詞解說，避免直接給出完整答案。',
+  {name:'文言文答問助手', type:'agent', vis:'private', face:'📜', color:'var(--ec-maroon)',
+   who:'陳凱怡老師', tag:'中學 · 中文', views:17, likes:5, follows:2, age:'3 天前',
+   desc:'學生就文言篇章提問，助手以引導式提示回應，提供語譯對照及虛詞解說，避免直接給出完整答案。',
    caps:['引導式提問','語譯對照','虛詞解說']},
-  {name:'說話訓練考官', type:'agent', vis:'public', face:'🎤', color:'var(--ec-purple)',
-   who:'王老師', tag:'中學 · 中文', views:126, likes:31, age:'1 週前',
-   desc:'模擬口語溝通考核情境，就時事議題與學生對答，並按表達、組織及應對三個維度給予回饋。',
+  {name:'說話訓練考官', type:'agent', vis:'school', face:'🎤', color:'var(--ec-purple)',
+   who:'王老師', tag:'中學 · 中文', views:126, likes:31, follows:12, age:'1 週前',
+   desc:'模擬口語溝通考核情境，就時事議題與學生對答，並按表達、組織及應對三個向度給予回饋。',
    caps:['情境模擬','三維評分','即時回饋']},
-  {name:'錯別字小偵探', type:'agent', vis:'public', face:'🔍', color:'var(--ec-blue)',
-   who:'陳凱怡老師', tag:'小學 · 中文', views:210, likes:64, age:'2 週前',
-   desc:'學生貼上句子或短文，代理以遊戲化方式引導找出錯別字，附常見形近字、音近字對照表。',
+  {name:'錯別字小偵探', type:'agent', vis:'school', face:'🔍', color:'var(--ec-blue)',
+   who:'陳凱怡老師', tag:'小學 · 中文', views:210, likes:64, follows:24, age:'2 週前',
+   desc:'學生貼上句子或短文，助手以遊戲化方式引導找出錯別字，附常見形近字、音近字對照表。',
    caps:['遊戲化','形近字對照','分級難度']},
   {name:'詞語配對遊戲', type:'app', vis:'private', face:'🧩', color:'var(--ec-green)',
-   who:'陳凱怡老師', tag:'小學 · 中文', views:45, likes:12, age:'5 天前',
+   who:'陳凱怡老師', tag:'小學 · 中文', views:45, likes:12, follows:5, age:'5 天前',
    desc:'課堂互動小應用：詞語與釋義配對限時挑戰，支援自訂詞表及全班排行榜。',
    caps:['自訂詞表','限時挑戰','排行榜']},
   {name:'唐詩搶答挑戰', type:'app', vis:'public', face:'🏆', color:'var(--ec-amber)',
-   who:'李慧敏老師', tag:'小學 · 中文', views:340, likes:95, age:'3 週前',
+   who:'李慧敏老師', tag:'小學 · 中文', views:340, likes:95, follows:36, age:'3 週前',
    desc:'Jeopardy 式唐詩問答遊戲，涵蓋詩句接龍、作者配對及意象理解三個回合。',
    caps:['小組對戰','三回合','即場計分']},
   {name:'中文週家長通告', type:'doc', vis:'private', face:'📄', color:'var(--ec-blue)',
-   who:'陳凱怡老師', tag:'全校 · 中文', views:12, likes:2, age:'2 天前',
+   who:'陳凱怡老師', tag:'全校 · 中文', views:12, likes:2, follows:1, age:'2 天前',
    desc:'中文週活動安排家長通告範本，含活動時間表及回條，可直接修改後派發。',
    caps:['可編輯','附回條']},
   {name:'唐詩三首簡報', type:'slides', vis:'private', face:'📊', color:'var(--ec-amber)',
-   who:'陳凱怡老師', tag:'中學 · 中文', views:28, likes:6, age:'1 週前',
+   who:'陳凱怡老師', tag:'中學 · 中文', views:28, likes:6, follows:2, age:'1 週前',
    desc:'《靜夜思》《登鸛雀樓》《春曉》課堂簡報，含朗讀提示、意象分析及延伸提問。',
    caps:['16 頁','可下載 PPTX']}
 ];
@@ -378,7 +410,7 @@ const ITEMS = [
  * line and the modal subtitle. Kept identical to the .type-tab labels above
  * so a card never says 「小應用」 while the tab that filters to it says
  * 「AI 小應用」. */
-const TYPE_LABEL = {agent:'互動代理', app:'AI 小應用', doc:'文件', slides:'簡報'};
+const TYPE_LABEL = {agent:'互動助手', app:'AI 小應用', doc:'文件', slides:'簡報'};
 
 /* Third-party vendor tools */
 const VENDOR_ITEMS = [
@@ -397,7 +429,35 @@ const VENDOR_ITEMS = [
   {name:'古典詩詞互動課件', vendor:'文淵智學', vinitial:'文', face:'🏮', color:'var(--ec-maroon)',
    lic:'sub', tag:'中學 · 中文', type:'app',
    desc:'唐宋詩詞互動課件庫，含吟誦音頻、意象動畫及隨堂測驗，支援投影課堂使用。',
-   caps:['吟誦音頻','意象動畫','隨堂測驗']}
+   caps:['吟誦音頻','意象動畫','隨堂測驗']},
+
+  /* `scheme:'eLAFP'` marks tools offered under the eLAFP scheme. It's shown as a
+   * small corner flag on the card and a line in the modal — provenance, not a
+   * quality rating, so it stays visually quieter than the licensing chip. */
+  {name:'寫作歷程分析', vendor:'墨言科技', vinitial:'墨', face:'📈', color:'var(--ec-green)',
+   lic:'school', tag:'中學 · 中文', type:'agent', scheme:'eLAFP',
+   desc:'追蹤學生由初稿到定稿的修改歷程，標示常見修改模式，供教師了解學生的寫作思路。',
+   caps:['修改歷程','模式標示','班本比較']},
+  {name:'閱讀理解出題助手', vendor:'點讀教育', vinitial:'點', face:'📑', color:'var(--ec-purple)',
+   lic:'sub', tag:'小學及中學 · 中文', type:'agent', scheme:'eLAFP',
+   desc:'按指定篇章生成分層理解題目，涵蓋直接檢索、推論及評鑑三個層次，附參考答案。',
+   caps:['分層出題','三層次覆蓋','參考答案']},
+  {name:'跨學科專題探究平台', vendor:'啟研科技', vinitial:'啟', face:'🔬', color:'var(--ec-blue)',
+   lic:'sub', tag:'中學 · 跨學科', type:'app', scheme:'eLAFP',
+   desc:'支援學生分組進行跨學科專題研習，內建資料蒐集、分工協作及成果匯報工具。',
+   caps:['分組協作','資料蒐集','成果匯報']},
+  {name:'中文語音轉文字', vendor:'智語科技', vinitial:'智', face:'🎙️', color:'var(--ec-blue)',
+   lic:'school', tag:'小學及中學 · 中文', type:'agent',
+   desc:'將課堂錄音或學生口述轉為文字稿，支援粵語及普通話，方便整理課堂筆記及口語評估。',
+   caps:['粵語辨識','普通話辨識','逐字稿匯出']},
+  {name:'數位繪本創作', vendor:'繪心工房', vinitial:'繪', face:'🎨', color:'var(--ec-amber)',
+   lic:'sub', tag:'小學 · 中文', type:'app',
+   desc:'學生以文字描述生成插圖並排版成繪本，適合看圖寫作及創意寫作延伸活動。',
+   caps:['插圖生成','繪本排版','班級展示']},
+  {name:'課堂互動答題器', vendor:'即答科技', vinitial:'即', face:'📱', color:'var(--ec-red)',
+   lic:'school', tag:'小學及中學 · 跨學科', type:'app',
+   desc:'學生以手機或平板即時作答，教師即時看到全班答題分布，適合課堂前測及即時檢查。',
+   caps:['即時作答','答題分布','匿名模式']}
 ];
 
 let type='all', vis='private', currentItem=null;
@@ -408,10 +468,14 @@ function setType(btn){
   btn.classList.add('on');
   render();
 }
+/* Three visibility tiers, narrowest → widest: 私人（只有自己）→ 校本（同校教師）
+ * → 公開（全教育城）. Looped rather than toggled by id so adding a tier later
+ * only means adding a button + a VIS_LABEL entry. */
+const VIS_LABEL = {school:'校本', public:'公開', private:'私人'};
 function setVis(v){
   vis = v;
-  document.getElementById('visPublic').classList.toggle('on', v==='public');
-  document.getElementById('visPrivate').classList.toggle('on', v==='private');
+  document.querySelectorAll('.vis-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById({school:'visSchool',public:'visPublic',private:'visPrivate'}[v]).classList.add('on');
   render();
 }
 function render(){
@@ -431,20 +495,21 @@ function render(){
       <div class="body">
         <div class="t-row">
           <h3>${i.name}</h3>
-          <span class="vis ${i.vis}">${i.vis==='private'?'🔒 私人':'🌐 公開'}</span>
+          <span class="vis ${i.vis}">${({private:'🔒 私人',school:'🏫 校本',public:'🌐 公開'})[i.vis]}</span>
         </div>
         <div class="meta">
           <span class="who"><i>${i.who[0]}</i>${i.who}</span>
           <span>${i.tag}</span>
           <span>👁 ${i.views}</span>
           <span>♡ ${i.likes}</span>
+          <span>👥 ${i.follows}</span>
           <span>${i.age}</span>
         </div>
       </div>
     </div>`).join('');
   document.getElementById('empty').style.display = shown.length ? 'none' : 'block';
   document.getElementById('resultCount').textContent =
-    `顯示 ${shown.length} 個項目 · ${vis==='private'?'私人':'公開'}${type==='all'?'':' · '+TYPE_LABEL[type]}`;
+    `顯示 ${shown.length} 個項目 · ${VIS_LABEL[vis]}${type==='all'?'':' · '+TYPE_LABEL[type]}`;
   renderVendors(q);
 }
 function renderVendors(q){
@@ -459,6 +524,7 @@ function renderVendors(q){
       <div class="cover">
         <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
         <span class="vendor-chip"><i class="vlogo">${i.vinitial}</i>${i.vendor}</span>
+        ${i.scheme ? `<span class="scheme">${i.scheme}</span>` : ''}
         <div class="face">${i.face}</div>
       </div>
       <div class="body">
@@ -479,16 +545,16 @@ function openVendorModal(idx){
   m.style.setProperty('--accent', i.color);
   document.getElementById('mFace').textContent = i.face;
   document.getElementById('mName').textContent = i.name;
-  document.getElementById('mSub').textContent = `${TYPE_LABEL[i.type]} · ${i.tag} · 由 ${i.vendor} 提供 · ${i.lic==='school'?'校方已採購':'需另行訂閱'}`;
+  document.getElementById('mSub').textContent = `${TYPE_LABEL[i.type]} · ${i.tag} · 由 ${i.vendor} 提供 · ${i.lic==='school'?'校方已採購':'需另行訂閱'}${i.scheme?' · '+i.scheme+' 計劃工具':''}`;
   document.getElementById('mDesc').textContent = i.desc + ' 此工具由第三方供應商營運，使用時將於供應商平台開啟。';
   document.getElementById('mCaps').innerHTML = i.caps.map(c=>`<span class="cap">${c}</span>`).join('');
   const use = document.getElementById('mUse');
   if(i.lic==='school'){
     use.textContent = '↗ 前往使用';
-    use.onclick = () => toastMini('原型示範：於 '+i.vendor+' 平台開啟（單一登入）');
+    use.onclick = () => toastMini('於 '+i.vendor+' 平台開啟（單一登入）');
   } else {
     use.textContent = '向學校申請訂閱';
-    use.onclick = () => toastMini('原型示範：訂閱申請已送交學校管理員');
+    use.onclick = () => toastMini('訂閱申請已送交學校管理員');
   }
   document.getElementById('overlay').classList.add('show');
 }
@@ -505,7 +571,7 @@ function openModal(idx){
   use.textContent = i.type==='agent' ? '開始對話' : i.type==='app' ? '開啟小應用' : '開啟';
   use.onclick = () => {
     if(i.type==='agent'){ location.href='chat.html'; }
-    else { toastMini('原型示範：開啟「'+i.name+'」'); }
+    else { toastMini('開啟「'+i.name+'」'); }
   };
   document.getElementById('overlay').classList.add('show');
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>供應商資料存取審批（EdData）— 校管系統（示意）</title>
+<title>供應商資料存取審批（EdData）— 校管系統</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -41,7 +41,7 @@
   .sys-main{flex:1;min-width:0;}
 
   /* deliberately the same plain SMS-family shell as roster.html — this is EdData, not the Resources Platform */
-  .role-banner{background:#0f3347;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
+  .role-banner{display:none;background:#0f3347;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
   .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-blue-dark);}
@@ -284,7 +284,7 @@
   <section class="hero">
     <div class="ribbon">🔴 待決策 · 此畫面示意供應商資料存取審批成為存取層級系統紀錄後的審批流程——屬架構方向，尚未承諾建置</div>
     <h1>資料存取審批</h1>
-    <div class="sub">你管理的是<b>整體的供應商關係</b>，而非一張張孤立的申請單。每個供應商都有已核准的層級與組別；審批新請求時要對照這個關係，而不是每次由零開始判斷。</div>
+    <div class="sub">你管理的是<b>整體的供應商關係</b>，而非一張張獨立的申請單。由於每個供應商都有已核准的層級與組別，在審批新請求時請記得對照這個關係，不要由零開始判斷。</div>
   </section>
 
   <div class="tabs">
@@ -341,9 +341,9 @@ function showTab(name){
 }
 
 const AUDIT = [
-  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准黃穎詩老師使用點讀教育（中一甲班全班），釋放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
-  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准陳凱怡老師使用智寫科技（增潤組），釋放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
-  {ic:'✕', text:'馮 Sir 拒絕釋放表現數據予校外研究機構（Tier 3 尚未開放）', time:'2026-06-02'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准黃穎詩老師使用點讀教育（中一甲班全班），發放 Tier 1 · 基本資料予點讀教育', time:'2026-07-15'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准陳凱怡老師使用智寫科技（增潤組），發放 Tier 1 · 基本資料予智寫科技', time:'2026-06-20'},
+  {ic:'✕', text:'馮 Sir 拒絕發放表現數據予校外研究機構（Tier 3 尚未開放）', time:'2026-06-02'},
 ];
 
 function vetChipClass(status){ return status==='certified' ? 'certified' : status==='pending-vet' ? 'pending-vet' : 'none'; }
@@ -372,17 +372,17 @@ function toggleTierInfo(id){
 function tierPickHtml(vendorId, req, vendorName){
   const infoId = vendorId+'-'+req.id;
   return `<div class="release-zone">
-    <div class="rz-label">⚠ 資料釋放決定</div>
+    <div class="rz-label">⚠ 資料發放決定</div>
     <div class="rz-chain">
       <div class="rz-step"><div class="scope-chip"><span class="sc-ic">👥</span>${req.group} 的學生資料</div></div>
-      <div class="rz-arrow">↓ 選擇釋放層級<button class="tier-info-btn" type="button" onclick="toggleTierInfo('${infoId}')" title="各層級說明">ⓘ</button></div>
+      <div class="rz-arrow">↓ 選擇發放層級<button class="tier-info-btn" type="button" onclick="toggleTierInfo('${infoId}')" title="各層級說明">ⓘ</button></div>
       <div class="tier-info-pop" id="tierinfo-${infoId}"></div>
       <div class="tier-pick">
         <button class="tpick" data-t="Tier 1 · 基本資料" onclick="pickTier('${vendorId}','${req.id}',this)"><b>Tier 1</b><small>基本資料</small></button>
         <button class="tpick" data-t="Tier 2 · 敏感個人資料" onclick="pickTier('${vendorId}','${req.id}',this)"><b>Tier 2</b><small>敏感個人資料</small></button>
         <button class="tpick disabled" onclick="toast('Tier 3 尚在建立中，暫不能核實開放')"><b>Tier 3</b><small>表現數據 · 暫不開放</small></button>
       </div>
-      <div class="rz-arrow">↓ 釋放至</div>
+      <div class="rz-arrow">↓ 發放至</div>
       <div class="rz-step"><div class="vendor-target"><span class="vt-mini">${vendorName[0]}</span>${vendorName}</div></div>
     </div>
   </div>`;
@@ -665,9 +665,9 @@ function approve(vendorId, reqId){
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
   r.status='approved'; r.tier=r._pickedTier;
   v.grants.push({group:r.group, headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});
-  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），釋放'+r.tier+'予'+v.name, time:'2026-07-21'});
+  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），發放'+r.tier+'予'+v.name, time:'2026-07-21'});
   renderVendors(); renderAudit();
-  toast('已核准：釋放'+r.tier+'予'+v.name);
+  toast('已核准：發放'+r.tier+'予'+v.name);
 }
 function deny(vendorId, reqId){
   const {v, r} = findReq(vendorId, reqId);

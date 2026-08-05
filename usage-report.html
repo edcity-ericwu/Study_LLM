@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 使用報告 — 故事 4：資訊科技統籌（示意）</title>
+<title>EdCity 使用報告 — 資訊科技統籌</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -21,20 +21,31 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
     background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
-  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
-  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
-  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
-  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
-  .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
-  .nav{padding:14px 10px;flex:1;}
-  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
-  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
-  .nav a:hover{background:#f2f6f9;}
-  .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
-  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;}
-  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
-  .sidebar .user .meta b{font-size:.8rem;display:block;}
-  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+  /* Administrative shell — same dark sidebar + role-banner + topbar chrome as
+   * eddata-console.html / roster.html, so 訂閱管理 and 使用報告 read at a glance
+   * as the operational side of the platform rather than another teacher screen.
+   * 馮 Sir is the same person across both, hence the shared purple accent; only
+   * the SYSTEM differs (EdCity.ai admin here, EdData there). */
+  .sys-sidebar{width:248px;flex-shrink:0;background:#2b2450;color:#e4e0f2;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-purple);}
+  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#c3b6ee;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e4e0f2;white-space:nowrap;}
+  .sys-nav{padding:12px 10px;flex:1;}
+  .sys-nav h6{font-size:.62rem;font-weight:700;color:#a99ddb;letter-spacing:normal;padding:10px 10px 6px;text-transform:uppercase;}
+  .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c9c2e4;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
+  .sys-nav a:hover{background:rgba(255,255,255,.06);}
+  .sys-nav a.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;}
+  .sys-sidebar-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar-foot a{font-size:.74rem;color:#9d93c4;text-decoration:none;}
+  .sys-sidebar-foot a:hover{color:#fff;}
+  .sys-main{flex:1;min-width:0;}
+
+  .topbar{background:#fff;border-bottom:3px solid var(--ec-purple);padding:12px 26px;display:flex;align-items:center;gap:14px;}
+  .topbar img{height:28px;width:auto;}
+  .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-purple);}
+  .topbar .sys small{display:block;font-size:.64rem;color:var(--ink-3);font-weight:500;}
+  .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.78rem;color:var(--ink-2);text-align:right;}
+  .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
+  .topbar .who small{display:block;font-size:.66rem;color:var(--ink-3);}
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:10px;}
@@ -96,7 +107,7 @@
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
 
-  .role-banner{background:#f1edfb;border-bottom:1px solid #ddd3f5;color:var(--ec-purple);
+  .role-banner{display:none;background:#f1edfb;border-bottom:1px solid #ddd3f5;color:var(--ec-purple);
     font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 34px;position:sticky;top:0;z-index:50;}
   .nav-group h6{color:var(--ec-purple) !important;}
   .nav a.active{background:#f1edfb !important;color:var(--ec-purple) !important;}
@@ -104,36 +115,34 @@
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="logo-wrap">
-    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-    <div class="logo-sub">AI 教學工具平台 · POC v0.1</div>
-    <div class="role-tag">🔧 學校行政層級 · 資訊科技統籌視圖</div>
-  </div>
-  <nav class="nav">
-    <div class="nav-group">
-      <h6>學校管理</h6>
-      <a href="subscriptions.html">🗂 訂閱管理</a>
-      <a href="usage-report.html" class="active">📊 使用報告</a>
-    </div>
-    <div class="nav-group" style="margin-top:18px;">
-      <h6>其他系統（同一人，不同帳戶）</h6>
-      <a href="eddata-console.html">🔐 供應商資料存取審批 →</a>
-    </div>
+<aside class="sys-sidebar">
+  <div class="sh-label">資訊科技統籌（馮 Sir）</div>
+  <div class="role-tag">🔧 學校行政層級 · 資訊科技統籌視圖</div>
+  <nav class="sys-nav">
+    <h6>學校管理</h6>
+    <a href="subscriptions.html">🗂 訂閱管理</a>
+    <a href="usage-report.html" class="active">📊 使用報告</a>
+    <h6>其他系統（同一人，不同帳戶）</h6>
+    <a href="eddata-console.html">🔐 供應商資料存取審批 →</a>
   </nav>
-  <div class="user">
-    <div class="avatar">馮</div>
-    <div class="meta"><b>馮 Sir</b><span>資訊科技統籌</span></div>
+  <div class="sys-sidebar-foot">
+    <a href="index.html">← 返回 EdCity.ai（教師視圖）</a>
   </div>
 </aside>
 
-<main class="main" style="padding-top:0;">
+<div class="sys-main">
 <div class="role-banner">學校行政層級 — 資訊科技統籌視圖</div>
+<div class="topbar">
+  <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+  <span class="sys">使用報告<small>EdCity.ai 學校行政 · 與供應商資料存取審批（EdData）分屬不同系統</small></span>
+  <span class="who"><span>馮 Sir<small>資訊科技統籌 · 續期與使用情況</small></span><span class="avatar">馮</span></span>
+</div>
+<main class="main" style="padding-top:0;">
 <div style="padding:44px 0 0;">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
     <h1>使用報告</h1>
-    <div class="sub">續期前先看這裡，比只看名額用量更能判斷一件工具值不值得續約。</div>
+    <div class="sub">續期前先看這裏，比只看名額用量更能判斷一件工具值不值得續約。</div>
   </section>
 
   <div class="data-note">
@@ -149,14 +158,15 @@
     <div id="cmpRows" style="margin-top:14px;"></div>
   </div>
 
-  <h2>各組別明細</h2>
+  <h2>各組別項目</h2>
   <table>
     <thead><tr><th>工具</th><th>組別</th><th>負責老師</th><th>已核准人數</th><th>本週活躍人數</th><th>最後使用日期</th></tr></thead>
     <tbody id="detailTbody"></tbody>
   </table>
-  <div class="note-row">🔐 本頁只看「有沒有人用」；名額是否快滿、要不要再加人，相關資料記錄在<a href="subscriptions.html" style="color:var(--ec-blue-dark);font-weight:700;">「訂閱管理」的「供應商方案名額」</a>。</div>
+  <div class="note-row">🔐 本頁只看「有沒有人用」；名額是否接近額滿、要不要再增加，相關資料記錄在<a href="subscriptions.html" style="color:var(--ec-blue-dark);font-weight:700;">「訂閱管理」的「供應商方案名額」</a>。</div>
 </div>
 </main>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="feature-flags.js"></script>

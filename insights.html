@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 班級學習面貌 — 教師本班視圖（示意）</title>
+<title>EdCity 班級學習表現總覽 — 教師本班視圖</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -31,6 +31,28 @@
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
   .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas h6{color:#8a5a09;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
+   * with light text. The earlier pale-on-pale version had too little contrast
+   * against the page background to register beside a 1.8rem headline.
+   * #0072ab on #fff measures ~5.3:1, clearing AA. */
+  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
+    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
+    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -122,11 +144,14 @@
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能代理</a>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材準備</a>
-      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>教材庫</a>
-      <a href="insights.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習面貌</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
+      <a href="insights.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
     </div>
   </nav>
   <div class="user">
@@ -141,8 +166,8 @@
 
     <div class="page-head">
       <div>
-        <h1>班級學習面貌</h1>
-        <div class="sub">無論是校內，或是任何已對接並完成標籤對應的供應商工具，只要學生使用過，留下的技能標籤都會計入<b>你班</b>的學習面貌。每一次的批改和使用工具產生的結果，都會變成看得見的教學依據。</div>
+        <h1>班級學習表現總覽<span class="idea-pill">Ideas Lab</span></h1>
+        <div class="sub">學生使用校內工具或已對接並完成標籤對應的供應商工具後，所留下的能力標籤會計入你班別的學習數據。<br>所有批改及工具使用紀錄，都會轉為看得見的教學依據。</div>
       </div>
       <div class="class-dd">
         <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel">中二乙班</b><span id="classMeta">· 中文 · 35 人</span><span class="car">▾</span></button>
@@ -154,7 +179,7 @@
     </div>
   </section>
 
-  <div class="source-note">ℹ️ 數據來源：AI 批改，以及已完成標籤對應、通過教育城核實的供應商工具——所有標籤須先對應到共用分類法（科目 × 技能維度 × 掌握程度），<b>再經內容審核</b>，才會計入。未完成對應或未經審核的標籤不會出現在這裏。只有你看到本班的完整面貌；科組只見趨勢方向，學生只見自己。</div>
+  <div class="source-note">ℹ️ 數據來源：AI 批改，以及已完成標籤對應、通過教育城核實的供應商工具——所有標籤須先對應到共用分類法（科目 × 能力範疇 × 掌握程度），<b>再經內容審核</b>，才會計入。未完成對應或未經審核的標籤不會出現在這裏。只有你看到本班的完整概覽；科組只見趨勢方向，學生只見自己。</div>
 
 
   <div class="gchips">
@@ -167,15 +192,15 @@
 
   <div class="trend-overview" id="trendOverview"></div>
 
-  <h2 id="tblTitle">技能面貌 · 全班</h2>
+  <h2 id="tblTitle">能力總覽 · 全班</h2>
   <table>
-    <thead><tr><th>技能維度</th><th>近六週趨勢</th><th>樣本</th><th>你可能想知道</th></tr></thead>
+    <thead><tr><th>能力範疇</th><th>近六週掌握程度走勢</th><th>評估次數</th><th>教學建議</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 
   <div class="impact" id="impactCard">
-    <h3>🔎 一個看得見的因果：工作紙 v2 之後</h3>
-    <p>你在 5 月底用「教材準備」為支援組加了分層提問版工作紙。之後四次練習，支援組在「推論」的穩固比率由 3/10 升至 6/10——樣本仍較少，暫未足以下結論，但值得繼續觀察。</p>
+    <h3>🔎 教學成效追蹤：工作紙 v2 評估</h3>
+    <p>自 5 月底為支援組加入分層提問工作紙後，經過四次練習，該組在「推論」技巧的達標率由 3/10 提升至 6/10。目前數據量尚淺，暫未能作定論，但進展值得繼續觀察。</p>
     <div class="link-row">
       <a class="lbtn" href="materials.html">📚 再生成分層教材 →</a>
       <a class="lbtn" href="groups.html">👥 調整教學分組 →</a>
@@ -183,7 +208,7 @@
     </div>
   </div>
 
-  <div class="caution" id="cautionBox" style="display:none;">🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。</div>
+  <div class="caution" id="cautionBox" style="display:none;">🌱 <b>提醒自己：</b>這個概覽用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -194,31 +219,31 @@ const CLASS_DATA = {
     stats:[
       {n:'96',l:'已核實樣本數（近六週）'},
       {n:'92%',l:'標籤已審核比率'},
-      {n:'1',l:'覆蓋不足的技能維度', warn:true},
+      {n:'1',l:'覆蓋不足的能力範疇', warn:true},
     ],
     hasImpact:true,
-    caution:'🌱 <b>提醒自己：</b>這個面貌用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。',
+    caution:'🌱 <b>提醒自己：</b>這個概覽用來安排下一步教學，不是用來評判學生。詞彙運用落後的五位同學，需要的是不同的路徑，不是同一條路走快些。',
     groups:{
-      all:{title:'技能面貌 · 全班（35 人）', rows:[
-        {name:'閱讀理解 · 推論', series:[48,52,58,63,68,74], sample:'28 份樣本', insight:'新閱讀策略似乎見效——增潤組已可挑戰更深層提問'},
-        {name:'閱讀理解 · 主旨理解', series:[50,54,57,62,66,70], sample:'26 份樣本', insight:'—'},
-        {name:'寫作 · 段落結構', series:[55,57,54,56,55,57], sample:'19 份樣本', insight:'三個分組差異不大，可全班同步處理'},
-        {name:'語文基礎 · 詞彙運用', series:[60,57,53,50,46,42], sample:'22 份樣本', insight:'困難集中在支援組及部分核心組同學'},
+      all:{title:'能力總覽 · 全班（35 人）', rows:[
+        {name:'閱讀理解 · 推論', series:[48,52,58,63,68,74], sample:'28 份課業', insight:'新閱讀策略似乎見效——增潤組已可挑戰更深層提問'},
+        {name:'閱讀理解 · 主旨理解', series:[50,54,57,62,66,70], sample:'26 份課業', insight:'—'},
+        {name:'寫作 · 段落結構', series:[55,57,54,56,55,57], sample:'19 份課業', insight:'三個分組差異不大，可全班同步處理'},
+        {name:'語文基礎 · 詞彙運用', series:[60,57,53,50,46,42], sample:'22 份課業', insight:'困難集中在支援組及部分核心組同學'},
       ]},
-      stretch:{title:'技能面貌 · 增潤組（3 人）', rows:[
-        {name:'閱讀理解 · 推論', series:[70,74,78,82,85,88], sample:'9 份樣本', insight:'可加開放式提問——先寫再看評語'},
-        {name:'寫作 · 段落結構', series:[60,64,68,71,75,79], sample:'7 份樣本', insight:'適合嘗試議論文結構'},
-        {name:'語文基礎 · 詞彙運用', series:[66,68,65,67,66,68], sample:'8 份樣本', insight:'—'},
+      stretch:{title:'能力總覽 · 增潤組（3 人）', rows:[
+        {name:'閱讀理解 · 推論', series:[70,74,78,82,85,88], sample:'9 份課業', insight:'可加開放式提問——先寫再看評語'},
+        {name:'寫作 · 段落結構', series:[60,64,68,71,75,79], sample:'7 份課業', insight:'適合嘗試議論文結構'},
+        {name:'語文基礎 · 詞彙運用', series:[66,68,65,67,66,68], sample:'8 份課業', insight:'—'},
       ]},
-      core:{title:'技能面貌 · 核心組（5 人）', rows:[
-        {name:'閱讀理解 · 推論', series:[50,54,58,62,65,69], sample:'15 份樣本', insight:'—'},
-        {name:'寫作 · 段落結構', series:[52,54,51,53,52,54], sample:'10 份樣本', insight:'開頭段落是共同弱項'},
-        {name:'語文基礎 · 詞彙運用', series:[58,54,50,47,44,40], sample:'12 份樣本', insight:'三位同學連續兩次未達穩固'},
+      core:{title:'能力總覽 · 核心組（5 人）', rows:[
+        {name:'閱讀理解 · 推論', series:[50,54,58,62,65,69], sample:'15 份課業', insight:'—'},
+        {name:'寫作 · 段落結構', series:[52,54,51,53,52,54], sample:'10 份課業', insight:'開頭段落是共同弱項'},
+        {name:'語文基礎 · 詞彙運用', series:[58,54,50,47,44,40], sample:'12 份課業', insight:'三位同學連續兩次未達穩固'},
       ]},
-      support:{title:'技能面貌 · 支援組（2 人）', rows:[
-        {name:'閱讀理解 · 推論', series:[30,35,40,46,52,58], sample:'4 份樣本', insight:'工作紙 v2 之後有起色（見下方）'},
-        {name:'寫作 · 段落結構', series:[40,42,39,41,40,42], sample:'2 份樣本', insight:'樣本太少，暫不作判斷'},
-        {name:'語文基礎 · 詞彙運用', series:[45,41,37,33,30,27], sample:'6 份樣本', insight:'建議配合筆順與詞語卡，從字入手'},
+      support:{title:'能力總覽 · 支援組（2 人）', rows:[
+        {name:'閱讀理解 · 推論', series:[30,35,40,46,52,58], sample:'4 份課業', insight:'工作紙 v2 之後有起色（見下方）'},
+        {name:'寫作 · 段落結構', series:[40,42,39,41,40,42], sample:'2 份課業', insight:'樣本太少，暫不作判斷'},
+        {name:'語文基礎 · 詞彙運用', series:[45,41,37,33,30,27], sample:'6 份課業', insight:'建議配合筆順與詞語卡，從字入手'},
       ]},
     },
   },
@@ -227,15 +252,15 @@ const CLASS_DATA = {
     stats:[
       {n:'6',l:'已核實樣本數（本學期）'},
       {n:'100%',l:'標籤已審核比率'},
-      {n:'4',l:'覆蓋不足的技能維度', warn:true},
+      {n:'4',l:'覆蓋不足的能力範疇', warn:true},
     ],
     hasImpact:false,
-    caution:'🌱 <b>剛接手這班：</b>面貌會隨批改與已對接工具的使用逐步累積建立，不會用「未夠分」提早下判斷。',
+    caution:'🌱 <b>剛接手這班：</b>概覽會隨批改與已對接工具的使用逐步累積建立，不會用「未夠分」提早下判斷。',
     groups:{
-      all:{title:'技能面貌 · 全班（35 人）', rows:[]},
-      stretch:{title:'技能面貌 · 增潤組', rows:[]},
-      core:{title:'技能面貌 · 核心組', rows:[]},
-      support:{title:'技能面貌 · 支援組', rows:[]},
+      all:{title:'能力總覽 · 全班（35 人）', rows:[]},
+      stretch:{title:'能力總覽 · 增潤組', rows:[]},
+      core:{title:'能力總覽 · 核心組', rows:[]},
+      support:{title:'能力總覽 · 支援組', rows:[]},
     },
   },
 };
@@ -293,7 +318,7 @@ function renderTrendOverview(g){
   }
   const chart = multiSparklineSVG(d.rows.map(r=>r.series), OVERVIEW_COLORS);
   const legend = d.rows.map((r,i)=>`<span><span class="dot" style="background:${OVERVIEW_COLORS[i%OVERVIEW_COLORS.length]}"></span>${r.name}</span>`).join('');
-  wrap.innerHTML = `<h3>近六週穩固比率走勢 · ${d.title.replace('技能面貌 · ','')}</h3>${chart}<div class="ov-legend">${legend}</div>`;
+  wrap.innerHTML = `<h3>近六週學習表現趨勢 · ${d.title.replace('能力總覽 · ','')}</h3>${chart}<div class="ov-legend">${legend}</div>`;
 }
 let currentClass='2b';
 function toggleClassMenu(){document.getElementById('classMenu').classList.toggle('show');}
@@ -326,7 +351,7 @@ function render(g){
   document.getElementById('tblTitle').textContent = d.title;
   if(d.rows.length===0){
     document.getElementById('tbody').innerHTML =
-      `<tr class="empty-row"><td colspan="4">尚未累積足夠樣本，這裏會顯示技能面貌<br>
+      `<tr class="empty-row"><td colspan="4">尚未累積足夠樣本，這裏會顯示能力總覽<br>
        <a class="lbtn" href="marking.html">✍️ 用 AI 批改開始累積 →</a></td></tr>`;
     return;
   }

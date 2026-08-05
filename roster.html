@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>學校管理系統（SMS）— 校務處控制台（示意）</title>
+<title>學校管理系統（SMS）— 校務處控制台</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -39,7 +39,7 @@
   .sys-main{flex:1;min-width:0;}
 
   /* deliberately plainer shell — this is SMS, not the Resources Platform */
-  .role-banner{background:#1a4763;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
+  .role-banner{display:none;background:#1a4763;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
   .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-blue-dark);}
@@ -244,7 +244,7 @@
   <section class="tab-pane active" data-pane="teachers">
     <div class="hero">
       <h1>教師名冊</h1>
-      <div class="sub">教師的在職狀態、所屬科組與聯絡方式由校務處在此維護——任教編配、供應商邀請等畫面應信任這裡的紀錄，而不是各自假設「這個名字仍然在職」。</div>
+      <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等功能應以這裏的紀錄為準，不應自行假設教師是否仍在職。</div>
     </div>
 
     <div class="table-toolbar">
@@ -293,7 +293,7 @@
   <section class="tab-pane" data-pane="assign">
     <div class="hero">
       <h1>任教編配</h1>
-      <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，源頭都在這裡，而不是各自另外設定。</div>
+      <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，均以此為準，而非由教師自行設定。</div>
     </div>
 
     <table>
@@ -323,7 +323,7 @@
   <section class="tab-pane" data-pane="students">
     <div class="hero">
       <h1>學生編班</h1>
-      <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班則是正式的班別歸屬，教學分組、批改入檔和學生入口都跟著它走。</div>
+      <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班則是正式的班別歸屬，教學分組、批改入檔和學生入口都以此為準。</div>
     </div>
 
     <div class="table-toolbar">

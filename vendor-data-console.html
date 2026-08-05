@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>資料存取控制台 — 供應商側視圖（示意）</title>
+<title>資料存取控制台 — 供應商側視圖</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -38,7 +38,7 @@
   .sys-main{flex:1;min-width:0;}
 
   /* same "external actor" shell as vendor-portal.html — this is outside EdCity.ai, on the vendor's own system */
-  .role-banner{background:#5a2731;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;
+  .role-banner{display:none;background:#5a2731;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;
     padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-maroon);padding:14px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:30px;width:auto;}
@@ -118,7 +118,7 @@
 <body>
 
 <aside class="sys-sidebar">
-  <div class="sh-label">供應商側系統</div>
+  <div class="sh-label">供應商系統</div>
   <div class="role-tag">🏢 供應商層級 · 智寫科技視圖</div>
   <nav class="sys-nav">
     <a href="vendor-portal.html">📈 EdMarket 認證進度</a>
@@ -175,10 +175,10 @@
       <div id="syncList"></div>
       <div class="sync-actions">
         <button class="btn" onclick="runSync()">🔄 立即同步名冊</button>
-        <button class="btn ghost" onclick="toast('原型示範：查看完整同步紀錄')">查看完整記錄</button>
+        <button class="btn ghost" onclick="toast('查看完整同步紀錄')">查看完整記錄</button>
       </div>
     </div>
-    <div class="revoke-note">⚠️ <b>自動失效：</b>如學生轉組或轉班，下次同步時本系統會自動移除其帳戶對應——供應商不會保留已失效的存取，也毋須手動清理。這與校管系統（roster.html）的轉班同步是同一條自動鏈的延伸。</div>
+    <div class="revoke-note">⚠️ <b>自動失效：</b>如學生轉組或轉班，下次同步時本系統會自動移除其帳戶關聯——供應商不會保留已失效的存取，也毋須手動清理。這與校管系統（roster.html）的轉班同步同屬自動化流程。</div>
   </section>
 </div>
 </div>

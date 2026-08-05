@@ -364,7 +364,7 @@ const ROLE_DEFS = [
   {id:'school_admin', label:'校務行政', color:'var(--ec-blue-dark)',
    scope:'管理教師名冊、任教編配、批量編班、學生編班等全校組織性事務。現實系統目前只有此一個角色，正是這次角色拆分想解決的權限過度集中問題。'},
   {id:'principal', label:'校長', color:'#8a5a00',
-   scope:'可查閱全校（跨科）層面的統計與趨勢視圖，不涉及個別學生的日常課堂操作。'},
+   scope:'可查閱全校（跨學科）層面的統計與趨勢視圖，不涉及個別學生的日常課堂操作。'},
 ];
 function roleLabel(roleId){ const r = ROLE_DEFS.find(x=>x.id===roleId); return r ? r.label : roleId; }
 function roleColor(roleId){ const r = ROLE_DEFS.find(x=>x.id===roleId); return r ? r.color : 'var(--ink-3)'; }

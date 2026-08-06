@@ -9,9 +9,12 @@
      replacing the plain system-font stack. Falls back to the previous
      stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
      the network font fails to load. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
@@ -26,7 +29,12 @@
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
   .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
   .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
-  .nav{padding:14px 10px;flex:1;}
+  .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  /* Spacing between nav groups. This rule was missing on most pages, so the
+   * Ideas Lab box sat 14px below the last link (its own margin-top) instead of
+   * the 18px the two margins collapse to when it's present — the box visibly
+   * hugged 校本教材庫 on those pages and not on chat/index/agents. */
+  .nav-group{margin-bottom:18px;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:#b07c10;letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
   .nav a:hover{background:#f2f6f9;}
@@ -96,6 +104,10 @@
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){.sidebar{display:none;}.main{padding:0 18px 60px;}.role-banner{margin:0 -18px;padding:9px 18px;}}
 </style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
 </head>
 <body>
 
@@ -182,7 +194,6 @@
 </main>
 
 <div class="toast" id="toast"></div>
-<script src="feature-flags.js"></script>
 <script>
 guardWholePage('contentModeration', '.main');
 function approve(btn){btn.innerHTML='已核准 '+CHECK_SVG;btn.disabled=true;btn.nextElementSibling.disabled=true;toast('已核准 · 標籤現可計入下游統計');}

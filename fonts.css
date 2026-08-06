@@ -1,0 +1,28 @@
+/* Self-hosted Chiron GoRound TC — replaces the Google Fonts link.
+ *
+ * Why: the Google link used font-display:swap, so every page load painted in
+ * the fallback system stack and then swapped. Chiron has different metrics, so
+ * every nav row changed height on swap and the Ideas Lab box (the only nav
+ * element with a background and border) visibly jumped into position. Serving
+ * the files locally and preloading them means the font is ready before first
+ * paint, so there is nothing to swap.
+ *
+ * How these were built: Google ships this family as 118 unicode-range subsets
+ * (~17 MB). These five files are the 38 subsets this prototype's text actually
+ * touches, merged per weight and then subsetted with pyftsubset to the 1,289
+ * codepoints the suite uses — 1.37 MB total, no unicode-range splitting, so
+ * each file is a single preloadable request.
+ *
+ * Only the five weights the CSS actually declares are here: 400, 500, 600,
+ * 700, 800. Adding a new weight means rebuilding, so prefer these five.
+ *
+ * font-display:block, not swap — with local files the load is instant, so the
+ * block period is imperceptible and it rules out a fallback-then-swap reflow.
+ * Emoji are deliberately absent (this is a text font); they fall back to the
+ * system emoji font exactly as they did before.
+ */
+@font-face{font-family:'Chiron GoRound TC';font-style:normal;font-weight:400;font-display:block;src:url(fonts/chiron-goround-tc-400.woff2) format('woff2');}
+@font-face{font-family:'Chiron GoRound TC';font-style:normal;font-weight:500;font-display:block;src:url(fonts/chiron-goround-tc-500.woff2) format('woff2');}
+@font-face{font-family:'Chiron GoRound TC';font-style:normal;font-weight:600;font-display:block;src:url(fonts/chiron-goround-tc-600.woff2) format('woff2');}
+@font-face{font-family:'Chiron GoRound TC';font-style:normal;font-weight:700;font-display:block;src:url(fonts/chiron-goround-tc-700.woff2) format('woff2');}
+@font-face{font-family:'Chiron GoRound TC';font-style:normal;font-weight:800;font-display:block;src:url(fonts/chiron-goround-tc-800.woff2) format('woff2');}

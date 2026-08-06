@@ -9,9 +9,12 @@
      replacing the plain system-font stack. Falls back to the previous
      stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
      the network font fails to load. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
@@ -27,15 +30,17 @@
   .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
   .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  /* Spacing between nav groups. This rule was missing on most pages, so the
+   * Ideas Lab box sat 14px below the last link (its own margin-top) instead of
+   * the 18px the two margins collapse to when it's present — the box visibly
+   * hugged 校本教材庫 on those pages and not on chat/index/agents. */
+  .nav-group{margin-bottom:18px;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
-  .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
-  .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
   /* Ideas Lab — screens that are proposals, not built features. Grouped and
    * pill-tagged so the status is visible from the nav and from the page
    * headline, without having to open the page and read its ribbon. */
   .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
-  .nav-group.ideas h6{color:#8a5a09;}
   /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
    * above already says it, so the pill was pure repetition, and it was the pill
    * rather than the label that made the 248px sidebar tight. nowrap is kept so
@@ -46,19 +51,11 @@
    * container. (The bronze nav pill this once had to coexist with is gone.) */
   .nav-group.ideas a:hover{background:#f4e9d6;}
   .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
-  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
-   * with light text. The earlier pale-on-pale version had too little contrast
-   * against the page background to register beside a 1.8rem headline.
-   * #0072ab on #fff measures ~5.3:1, clearing AA. */
-  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
-    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
-    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   /* Flask marks the Ideas Lab section: these pages are experiments, not built
    * features. Sized to the text it sits beside rather than to the nav icons —
    * it labels the group, it isn't a nav item of its own. */
-  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;}
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;color:#8a5a09;}
   .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
-  .idea-pill .lab-ic{width:.95em;height:.95em;vertical-align:-.12em;margin-right:5px;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -163,6 +160,10 @@
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
 </style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
 </head>
 <body>
 
@@ -413,7 +414,6 @@ insertJustSaved();
 render();
 </script>
 <script src="usage-modal.js"></script>
-<script src="feature-flags.js"></script>
 <script src="demo-nav.js"></script>
 </body>
 </html>

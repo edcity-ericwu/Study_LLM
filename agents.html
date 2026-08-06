@@ -9,9 +9,12 @@
      replacing the plain system-font stack. Falls back to the previous
      stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
      the network font fails to load. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
 <style>
   :root{
     --ec-blue:#008BD1;
@@ -45,14 +48,11 @@
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group{margin-bottom:18px;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
-  .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
-  .nav-group.governance h6{color:var(--ec-purple,#7C5CDB);}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
   /* Ideas Lab — screens that are proposals, not built features. Grouped and
    * pill-tagged so the status is visible from the nav and from the page
    * headline, without having to open the page and read its ribbon. */
   .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
-  .nav-group.ideas h6{color:#8a5a09;}
   /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
    * above already says it, so the pill was pure repetition, and it was the pill
    * rather than the label that made the 248px sidebar tight. nowrap is kept so
@@ -63,23 +63,14 @@
    * container. (The bronze nav pill this once had to coexist with is gone.) */
   .nav-group.ideas a:hover{background:#f4e9d6;}
   .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
-  /* Headline pill is inverted relative to the nav pill: a solid dark-blue fill
-   * with light text. The earlier pale-on-pale version had too little contrast
-   * against the page background to register beside a 1.8rem headline.
-   * #0072ab on #fff measures ~5.3:1, clearing AA. */
-  .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
-    color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
-    padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
   /* Flask marks the Ideas Lab section: these pages are experiments, not built
    * features. Sized to the text it sits beside rather than to the nav icons —
    * it labels the group, it isn't a nav item of its own. */
-  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;}
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;color:#8a5a09;}
   .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
-  .idea-pill .lab-ic{width:.95em;height:.95em;vertical-align:-.12em;margin-right:5px;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
-  .nav .pill-new{margin-left:auto;font-size:.58rem;font-weight:700;color:#fff;background:var(--ec-red);padding:2px 6px;border-radius:99px;letter-spacing:.05em;}
   .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;}
   .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
   .sidebar .user .meta b{font-size:.8rem;display:block;}
@@ -169,7 +160,7 @@
    * 150px cover + ~60px body on .acard, so min-height matches a real card. */
   .create-tile{
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
-    min-height:212px;background:transparent;border:2px dashed #cfdae3;border-radius:16px;
+    min-height:260px;background:transparent;border:2px dashed #cfdae3;border-radius:16px;
     color:var(--ink-2);cursor:pointer;font-family:inherit;text-align:center;padding:20px;
     transition:border-color .15s ease, background .15s ease, color .15s ease;
   }
@@ -180,10 +171,21 @@
 
   /* ─── Cards ─── */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+  /* Grid rows already stretch every card to the tallest one's height. Making the
+   * card a flex column lets .body take that leftover space, so .meta can sit on
+   * the card's bottom edge instead of floating wherever the title happened to
+   * end — titles that wrap to two lines no longer knock a card's meta line out
+   * of alignment with its neighbours. */
   .acard{
     background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;
     transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-    position:relative;
+    position:relative;display:flex;flex-direction:column;
+    /* Floor, not a fixed height. Grid rows already equalise cards to the tallest
+     * in the row; this stops a row of all-short cards collapsing tight and keeps
+     * the airier proportion — 150px cover + ~110px body, with the bottom-aligned
+     * .meta sitting on the lower edge and the slack falling between title and
+     * meta. Raise or lower this one value to retune every card. */
+    min-height:260px;
   }
   /* Travelling border highlight on hover. --angle must be registered via
    * @property or the browser can't interpolate it and the conic gradient
@@ -212,12 +214,13 @@
     .acard:hover{border-color:var(--ec-blue);}
   }
   .acard .cover{
-    height:150px;position:relative;display:flex;align-items:center;justify-content:center;
+    height:150px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 14%,white),color-mix(in srgb,var(--accent) 4%,white));
   }
   .acard .cover .face{
     width:76px;height:76px;border-radius:50%;background:#fff;border:2px solid color-mix(in srgb,var(--accent) 30%,white);
     display:flex;align-items:center;justify-content:center;font-size:2.1rem;
+    margin-top:10px;
   }
   .acard .type-badge{
     position:absolute;top:12px;left:12px;background:#fff;border:1px solid var(--line);
@@ -225,9 +228,17 @@
     border-radius:99px;padding:4px 10px;display:flex;align-items:center;gap:5px;
   }
   .acard .type-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
-  .acard .body{padding:14px 16px 15px;}
-  .acard .t-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .acard h3{font-size:.92rem;font-weight:700;}
+  .acard .body{padding:14px 16px 15px;flex:1;display:flex;flex-direction:column;}
+  /* Top-aligned, not centre-aligned. CJK has a min-content width of one
+   * character, so a long title shrinks and wraps rather than overflowing —
+   * and with align-items:center the licence badge then floated to the vertical
+   * middle of the taller h3, reading as though it sat above the title. Aligning
+   * to flex-start keeps the badge on the first line of the title whether the
+   * title runs to one line or two, so every card's text block starts at the
+   * same height. min-width:0 makes the h3's shrinking explicit rather than
+   * relying on CJK's min-content behaviour. */
+  .acard .t-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .acard h3{font-size:.92rem;font-weight:700;min-width:0;line-height:1.45;}
   .acard .vis{
     font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;
   }
@@ -239,7 +250,7 @@
     color:var(--ink-2);background:rgba(255,255,255,.86);border:1px solid var(--line);
     border-radius:6px;padding:2px 7px;letter-spacing:.02em;backdrop-filter:blur(2px);}
   .acard .vis.public{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
-  .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);margin-top:9px;flex-wrap:wrap;}
+  .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);margin-top:auto;padding-top:9px;flex-wrap:wrap;}
   .acard .meta .who{display:flex;align-items:center;gap:5px;}
   .acard .meta .who i{
     width:17px;height:17px;border-radius:50%;background:var(--ec-blue);color:#fff;font-style:normal;
@@ -269,7 +280,7 @@
     width:14px;height:14px;border-radius:4px;background:var(--accent);color:#fff;
     display:inline-flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:800;font-style:normal;
   }
-  .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;}
+  .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;margin-top:1px;}
   .acard .lic.school{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .acard .lic.sub{color:var(--ec-amber);background:#fdf6ec;border:1px solid #f3e3c3;}
   .acard .ext{font-size:.66rem;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px;}
@@ -318,6 +329,10 @@
 
   .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
 </style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
 </head>
 <body>
 
@@ -485,7 +500,7 @@ const TYPE_LABEL = {agent:'智能助手', app:'AI 教學應用程式', doc:'文�
 /* Third-party vendor tools */
 const VENDOR_ITEMS = [
   {name:'AI 中文作文批改', vendor:'墨言科技', vinitial:'墨', face:'🖋️', color:'var(--ec-green)',
-   lic:'school', tag:'小學及中學 · 中文', type:'agent',
+   lic:'school', tag:'中小學 · 中文', type:'agent',
    desc:'供應商提供的作文批改引擎：支援手寫辨識掃描、錯別字與病句偵測，並按香港評分框架生成分項回饋。',
    caps:['手寫辨識','批量批改','校本準則對應']},
   {name:'普通話朗讀評測', vendor:'智語科技', vinitial:'智', face:'🗣️', color:'var(--ec-blue)',
@@ -493,7 +508,7 @@ const VENDOR_ITEMS = [
    desc:'學生朗讀課文後即時評測聲調、發音及流暢度，生成個人化練習清單。',
    caps:['語音評測','聲調分析','練習建議']},
   {name:'中文分級閱讀庫', vendor:'點讀教育', vinitial:'點', face:'📚', color:'var(--ec-purple)',
-   lic:'sub', tag:'小學及中學 · 中文', type:'app',
+   lic:'sub', tag:'中小學 · 中文', type:'app',
    desc:'按能力分級的中文讀物庫，附 AI 導讀問題及閱讀進度追蹤，可對接班級名單。',
    caps:['12 級分級','進度追蹤','班級對接']},
   {name:'古典詩詞互動課件', vendor:'文淵智學', vinitial:'文', face:'🏮', color:'var(--ec-maroon)',
@@ -509,7 +524,7 @@ const VENDOR_ITEMS = [
    desc:'追蹤學生由初稿到定稿的修改歷程，標示常見修改模式，供教師了解學生的寫作思路。',
    caps:['修改歷程','模式標示','班本比較']},
   {name:'閱讀理解出題助手', vendor:'點讀教育', vinitial:'點', face:'📑', color:'var(--ec-purple)',
-   lic:'sub', tag:'小學及中學 · 中文', type:'agent', scheme:'eLAFP',
+   lic:'sub', tag:'中小學 · 中文', type:'agent', scheme:'eLAFP',
    desc:'按指定篇章生成分層理解題目，涵蓋直接檢索、推論及評鑑三個層次，附參考答案。',
    caps:['分層出題','三層次覆蓋','參考答案']},
   {name:'跨學科專題探究平台', vendor:'啟研科技', vinitial:'啟', face:'🔬', color:'var(--ec-blue)',
@@ -517,7 +532,7 @@ const VENDOR_ITEMS = [
    desc:'支援學生分組進行跨學科專題研習，內建資料蒐集、分工協作及成果匯報工具。',
    caps:['分組協作','資料蒐集','成果匯報']},
   {name:'中文語音轉文字', vendor:'智語科技', vinitial:'智', face:'🎙️', color:'var(--ec-blue)',
-   lic:'school', tag:'小學及中學 · 中文', type:'agent',
+   lic:'school', tag:'中小學 · 中文', type:'agent',
    desc:'將課堂錄音或學生口述轉為文字稿，支援粵語及普通話，方便整理課堂筆記及口語評估。',
    caps:['粵語辨識','普通話辨識','逐字稿匯出']},
   {name:'數位繪本創作', vendor:'繪心工房', vinitial:'繪', face:'🎨', color:'var(--ec-amber)',
@@ -525,7 +540,7 @@ const VENDOR_ITEMS = [
    desc:'學生以文字描述生成插圖並排版成繪本，適合看圖寫作及創意寫作延伸活動。',
    caps:['插圖生成','繪本排版','班級展示']},
   {name:'課堂互動答題器', vendor:'即答科技', vinitial:'即', face:'📱', color:'var(--ec-red)',
-   lic:'school', tag:'小學及中學 · 跨學科', type:'app',
+   lic:'school', tag:'中小學 · 跨學科', type:'app',
    desc:'學生以手機或平板即時作答，教師即時看到全班答題分布，適合課堂前測及即時檢查。',
    caps:['即時作答','答題分布','匿名模式']}
 ];
@@ -709,7 +724,6 @@ syncTypeTabs();
 render();
 </script>
 <script src="usage-modal.js"></script>
-<script src="feature-flags.js"></script>
 <script src="demo-nav.js"></script>
 </body>
 </html>

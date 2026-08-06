@@ -9,9 +9,12 @@
      replacing the plain system-font stack. Falls back to the previous
      stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
      the network font fails to load. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
@@ -108,6 +111,10 @@
   footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){.sidebar{display:none;}.main{padding:0 18px 60px;}.role-banner{margin:0 -18px;padding:9px 18px;}}
 </style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
 </head>
 <body>
 
@@ -149,7 +156,7 @@
   <div class="vendor-card">
     <div class="vc-head">
       <div class="vl" style="background:var(--ec-green)">智</div>
-      <div><b>智寫科技 — 寫作回饋工具</b><small>申請日期 2026-06-28 · 中文寫作 · 小學及中學</small></div>
+      <div><b>智寫科技 — 寫作回饋工具</b><small>申請日期 2026-06-28 · 中文寫作 · 中小學</small></div>
       <span class="status prog">審核中 · 4/5 閘通過</span>
     </div>
     <div class="gates">
@@ -223,7 +230,6 @@
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
 </script>
-<script src="feature-flags.js"></script>
 <script src="demo-nav.js"></script>
 </body>
 </html>

@@ -70,6 +70,22 @@ function featureOn(key){
  * sidebar nav links (each page's own left-hand .nav, not the floating
  * 🧭示範導覽 panel, which demo-nav.js already filters separately). Safe to
  * apply the same data-feature attribute to any other static link/section later. */
+/* Injected synchronously, NOT on DOMContentLoaded. The old version waited for
+ * the DOM to finish parsing and then set el.style.display='none' — by which
+ * point the browser had usually already painted, so a flagged nav row (試用邀請)
+ * appeared and then vanished on every single page load. That was the nav
+ * "flash". A stylesheet rule applies to elements as they're parsed, so the row
+ * is never painted at all. Requires this file to load in <head>. */
+(function hideFlaggedBeforePaint(){
+  const off = Object.keys(FEATURE_FLAGS).filter(k => !featureOn(k));
+  if (!off.length) return;
+  const style = document.createElement('style');
+  style.textContent = off.map(k => `[data-feature="${k}"]{display:none !important;}`).join('');
+  document.head.appendChild(style);
+})();
+
+/* Belt and braces for anything a page writes into the DOM after load — the
+ * stylesheet above already covers static markup. */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-feature]').forEach(el => {
     if (!featureOn(el.dataset.feature)) el.style.display = 'none';

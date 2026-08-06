@@ -28,7 +28,7 @@ const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['chat.html','EdCity.ai（科目助理）',''],
     ['index.html','教學工具箱',''],
-    ['agents.html','教學應用程式／智能助手',''],
+    ['agents.html','教學應用程式',''],
     ['material-library.html','校本教材庫','y'],
     ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
   ]},

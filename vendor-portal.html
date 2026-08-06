@@ -26,7 +26,7 @@
    * so it's unmistakably different from SMS (blue) and EdData (purple) at a glance. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#f0abb8;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -53,9 +53,22 @@
     color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:8px;}
   .no-story{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#5b6773;background:#eef2f5;border:1px solid #d8e0e6;border-radius:99px;padding:5px 14px;margin:0 0 16px 8px;}
-  h1{font-size:1.8rem;font-weight:800;color:#5a2731;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:#5a2731;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  /* Section subtitles sit under an h2/h3 inside a page, so they must stay
+   * a step below the page description (.sub, .9rem) rather than matching it.
+   * Previously both shared .sub; when .sub grew to .9rem these came with it
+   * and the two levels flattened. */
+  .sect-sub{font-size:.8rem;color:var(--ink-2);line-height:1.6;}
 
   /* stepper */
   .stepper{display:flex;gap:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin-bottom:18px;flex-wrap:wrap;}
@@ -143,7 +156,7 @@
   .invite-chip.active{color:var(--ec-green);background:#effaf5;}
   .invite-chip.graduated{color:#0c6b48;background:#e6f7ef;}
   .invite-chip.declined{color:#b91c1c;background:#fee2e2;}
-  .empty-note{font-size:.76rem;color:var(--ink-3);padding:6px 0;}
+  .empty{font-size:.76rem;color:var(--ink-3);padding:6px 0;}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap;}
   .tab-btn{border:none;background:none;font-family:inherit;font-size:.82rem;font-weight:600;color:var(--ink-3);
     padding:10px 4px;margin-right:22px;cursor:pointer;border-bottom:2px solid transparent;}
@@ -160,7 +173,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">供應商系統</div>
-  <div class="role-tag">🏢 供應商層級 · 智寫科技視圖</div>
+  <div class="viewer-chip">🏢 供應商層級 · 智寫科技視圖</div>
   <nav class="sys-nav">
     <a href="vendor-portal.html" class="active">📈 EdMarket 認證進度</a>
     <a href="vendor-data-console.html">🔓 資料存取控制台</a>
@@ -182,8 +195,12 @@
 <div class="wrap">
   <section class="hero">
     <span class="ribbon">🟡 提案中 · 設計方案，未建置</span><span class="no-story">📝 此畫面未經用戶故事驗證 — 假設待與真實供應商求證</span>
-    <h1>你的申請 — 寫作回饋工具</h1>
-    <div class="sub">申請編號 EM-2026-0147 · 提交於 2026-06-28 · 目標：獲認證後上架 EdMarket，經學校訂閱進入教師介面</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>你的申請 — 寫作回饋工具</h1>
+        <div class="sub">申請編號 EM-2026-0147 · 提交於 2026-06-28 · 目標：獲認證後上架 EdMarket，經學校訂閱進入教師介面</div>
+      </div>
+    </div>
   </section>
 
   <div class="tabs">
@@ -229,7 +246,7 @@
         <div><span class="tagmap-ic">🏷</span><h3>共用分類法輸出 — 你的標籤如何對應教育城分類</h3></div>
         <span class="chip tagmap-head-chip" id="tagMapChip"></span>
       </div>
-      <div class="sub" style="margin:0 0 8px;">你的工具回報的能力數據，須先對應到平台共用分類（科目 × 能力範疇 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
+      <div class="sect-sub" style="margin:0 0 8px;">你的工具回報的能力數據，須先對應到平台共用分類（科目 × 能力範疇 × 掌握程度），才能匯入教師與科組視圖——這是你自己的分類名稱對應教育城標準名稱的<b>實際結果</b>，不是空泛的「已對接」宣稱。</div>
       <div class="deadline-note">🗓 基準認證徽章截止日：<b>2026-09-26</b>（合規閘通過起計 90 天）· 逾期未完成，有條件上架資格將被暫停</div>
       <div id="tagMapPanel">
         <div class="tagmap-note" style="margin-bottom:10px;">對應由系統比對你提交的分類名稱與教育城共用分類產生——<b>只是建議，不會自動生效</b>：信心不足的對應與完全對應不到的分類，都要教育城人手覆核或確認排除後，才會（或不會）計入平台統計。與 tags.html 對 AI 建議標籤的把關，是同一個原則，只是這裏把關的是你整批分類對應，不是單一學生作答。</div>
@@ -244,7 +261,7 @@
   <section class="tab-pane" data-pane="invite">
     <div class="card">
       <h3>邀請老師試用工具</h3>
-      <div class="sub" style="margin:0 0 14px;">你必須已經和該老師接觸過（如電郵、電話、學校活動）才能發出邀請——這不是繞過學校的資料查詢，而是為既有接洽補一個正式起點。老師確認後，邀請會交由資訊科技統籌核實試用時限與資料層級，才會正式開始；試用固定為 Tier 1 · 基本資料，最長 14 天。</div>
+      <div class="sect-sub" style="margin:0 0 14px;">你必須已經和該老師接觸過（如電郵、電話、學校活動）才能發出邀請——這不是繞過學校的資料查詢，而是為既有接洽補一個正式起點。老師確認後，邀請會交由資訊科技統籌核實試用時限與資料層級，才會正式開始；試用固定為 Tier 1 · 基本資料，最長 14 天。</div>
       <div class="invite-form">
         <label>老師<select id="inv-teacher"></select></label>
         <label>班別<select id="inv-class" onchange="populateGroupSelect()"></select></label>
@@ -377,7 +394,7 @@ function renderInvites(){
         <small>${t.tool}${t.status==='declined' ? ' · '+t.declineReason : ''}${t.cooldownUntil ? '（冷靜期至 '+t.cooldownUntil+'，此組別在此之前不能再次邀請）' : ''}</small>
       </div>
       <span class="invite-chip ${t.status}">${inviteStatusLabel(t.status)}</span>
-    </div>`).join('') : '<div class="empty-note">尚未發出任何邀請</div>';
+    </div>`).join('') : '<div class="empty">尚未發出任何邀請</div>';
   const openCount = mine.filter(t=>['awaiting_teacher','pending_it'].includes(t.status)).length;
   document.getElementById('inviteCount').textContent = openCount ? openCount : '';
 }

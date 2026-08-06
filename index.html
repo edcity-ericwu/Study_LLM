@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 教學工具 — 中文科（教師版）</title>
+<title>EdCity 教學工具箱 — 中文科（教師版）</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -101,14 +101,22 @@
   .main{flex:1;min-width:0;padding:50px 34px 60px;}
 
   .hero{
-    margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line);position:relative;
+    margin-bottom:28px;border-bottom:1px solid var(--line);position:relative;
   }
   .hero .eyebrow{
     font-size:.7rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-bottom:12px;
   }
-  .hero h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
-  .hero h1 em{font-style:normal;}
-  .hero p{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  h1 em{font-style:normal;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
   .hero .guide-btn{
     position:absolute;top:28px;right:30px;background:#fff;border:1px solid var(--line);
     border-radius:99px;padding:8px 16px;font-size:.8rem;color:var(--ink-2);cursor:pointer;
@@ -129,14 +137,21 @@
     background:var(--ec-blue);color:#fff;border:none;border-radius:99px;
     padding:9px 22px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s ease;}
   .search button:hover{background:var(--ec-blue-dark);}
-  .level-toggle{
+  /* Segmented toggle — two views of the same thing, not a filter row, so it
+   * keeps its enclosing track and stays distinct from .pill / .pill-sm.
+   * Hover tints the inactive segment only; a border on hover would break
+   * the seamless track, which is why this control had no hover until now.
+   * Active fill stays page-specific (blue here, green on student.html). */
+  .seg-toggle{
     display:flex;background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px;
   }
-  .level-toggle button{
+  .seg-toggle button{
     border:none;background:transparent;border-radius:99px;padding:8px 20px;
     font-size:.82rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:500;
+    transition:background .15s ease, color .15s ease;
   }
-  .level-toggle button.on{background:var(--ec-blue);color:#fff;font-weight:600;}
+  .seg-toggle button:not(.on):hover{background:#f2f6f9;color:var(--ec-blue-dark);}
+  .seg-toggle button.on{background:var(--ec-blue);color:#fff;font-weight:600;}
 
   /* ─── Category tabs ─── */
   .tabs-row{
@@ -146,15 +161,20 @@
   /* Neutral, not an accent colour — these row labels ("你的工具箱", "科目")
    * only name the filter beside them; colouring them implied a category
    * meaning that doesn't exist. */
-  .tabs-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
-  .tab{
-    background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 16px;
-    font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
-  .tab:not(.on):hover{border-color:var(--ec-blue);}
-  /* Same selected-pill treatment as .subj.on below — both rows are
-   * single-select filters doing the same job, so they shouldn't read as
-   * two different kinds of control. */
-  .tab.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+  .row-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
+  /* Filter pills, two sizes only.
+   *   .pill    — the page's primary axis (科目 on index, 來源 on agents)
+   *   .pill-sm — anything that filters within it (category, visibility, source)
+   * Same white → blue-fill-when-active treatment for both; the size difference
+   * is what makes the hierarchy readable. Replaces .tab/.subj/.src/.vis-btn/.fchip,
+   * which were five names for two things at five slightly different sizes. */
+  .pill-sm{
+    display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
+    border-radius:99px;padding:7px 15px;font-size:.78rem;color:var(--ink-2);cursor:pointer;
+    font-family:inherit;transition:border-color .15s ease;
+  }
+  .pill-sm:not(.on):hover{border-color:var(--ec-blue);}
+  .pill-sm.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
 
   .result-count{font-size:.75rem;color:var(--ink-3);margin:14px 2px 12px;}
 
@@ -167,18 +187,23 @@
   }
 
   /* ─── Subject row (inside hero) ─── */
-  .subject-row{display:flex;align-items:center;gap:8px;margin:30px 0 12px;flex-wrap:wrap;}
-  .subject-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
-  .subj{
+  /* Primary filter row — the page's top-level axis (科目 here, 來源 on agents).
+   * margin-top is 0 on purpose: the description above sits inside .page-head,
+   * and because .ph-text is a flex item its 32px bottom margin cannot collapse
+   * out — so that 32px already sets the gap. Any margin here would stack on it. */
+  .pill-row{display:flex;align-items:center;gap:8px;margin:0 0 32px;flex-wrap:wrap;}
+  .pill{
     display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
-    border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:500;transition:border-color .15s ease;}
-  .subj:not(.on):hover{border-color:var(--ec-blue);}
-  .subj.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
-  .subj .soon{
+    border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;
+    font-family:inherit;font-weight:500;transition:border-color .15s ease;
+  }
+  .pill:not(.on):hover{border-color:var(--ec-blue);}
+  .pill.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+  .pill .soon{
     font-size:.58rem;font-weight:700;color:var(--ec-amber);background:#fdf6ec;
     border:1px solid #f3e3c3;border-radius:99px;padding:2px 7px;letter-spacing:normal;
   }
-  .subj.on .soon{color:#fff;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);}
+  .pill.on .soon{color:#fff;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);}
   .coming-soon{
     display:none;padding:70px 0;text-align:center;
   }
@@ -262,6 +287,11 @@
   .badge-level.p-only{color:var(--ec-green);border-color:#bfe8d7;background:#effaf5;}
   .badge-level.s-only{color:var(--ec-maroon);border-color:#e5cdd4;background:#faf1f3;}
 
+  /* Empty states use three names, by container rather than by page:
+   *   .empty        — standalone (a block in a grid, or a bordered card)
+   *   .empty-row td — inside a table, where it has to be a <tr>
+   *   .empty-note   — a small inline note beside other content
+   * Values stay page-appropriate; only the vocabulary is shared. */
   .empty{padding:60px 0;text-align:center;color:var(--ink-3);font-size:.85rem;display:none;}
 
   footer.note{
@@ -270,7 +300,7 @@
 
   @media (max-width:900px){ .sidebar{display:none;} .main{padding:18px;} }
 
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
 </style>
 </head>
 <body>
@@ -280,21 +310,21 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">教學工具平台 · POC v0.1</div>
-    <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
-      <a href="index.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="index.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>教學應用程式／智能助手</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
   <div class="user">
@@ -307,15 +337,19 @@
 <main class="main">
 
   <section class="hero">
-    <h1><em>教學工具</em></h1>
-    <p>為你而設的備課、評估和教學小幫手。<br>只需先選科目，再按學段挑選合適工具，就可以在數分鐘內完成日常教學準備。</p>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1><em>教學工具箱</em></h1>
+        <p class="sub">為你而設的備課、評估和教學小幫手。<br>只需先選科目，再按學段挑選合適工具，就可以在數分鐘內完成日常教學準備。</p>
+      </div>
+    </div>
 
-    <div class="subject-row" role="tablist" aria-label="科目">
-      <span class="subject-label">科目</span>
-      <button class="subj" data-subj="sci" onclick="setSubject(this)">科學</button>
-      <button class="subj on" data-subj="chi" onclick="setSubject(this)">中文</button>
-      <button class="subj" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
-      <button class="subj" data-subj="eng" onclick="setSubject(this)">英文<span class="soon">即將推出</span></button>
+    <div class="pill-row" role="tablist" aria-label="科目">
+      <span class="row-label">科目</span>
+      <button class="pill" data-subj="sci" onclick="setSubject(this)">科學</button>
+      <button class="pill on" data-subj="chi" onclick="setSubject(this)">中文</button>
+      <button class="pill" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
+      <button class="pill" data-subj="eng" onclick="setSubject(this)">英文<span class="soon">即將推出</span></button>
     </div>
 
   </section>
@@ -325,19 +359,19 @@
       <input id="searchInput" type="text" placeholder="搜尋工具，例如「工作紙」、「文言文」…">
       <button onclick="applyFilters()">搜尋</button>
     </div>
-    <div class="level-toggle" role="tablist" aria-label="學段">
+    <div class="seg-toggle" role="tablist" aria-label="學段">
       <button id="btn-primary" class="on" onclick="setLevel('primary')">🎒 小學</button>
       <button id="btn-secondary" onclick="setLevel('secondary')">🎓 中學</button>
     </div>
   </div>
 
   <div class="tabs-row">
-    <span class="tabs-label">你的工具箱</span>
-    <button class="tab on" data-cat="all" onclick="setCat(this)">全部工具</button>
-    <button class="tab" data-cat="planning" onclick="setCat(this)">課堂準備</button>
-    <button class="tab" data-cat="assessment" onclick="setCat(this)">評估</button>
-    <button class="tab" data-cat="literacy" onclick="setCat(this)">讀寫教學</button>
-    <button class="tab" data-cat="admin" onclick="setCat(this)">行政與家校</button>
+    <span class="row-label">你的工具箱</span>
+    <button class="pill-sm on" data-cat="all" onclick="setCat(this)">全部工具</button>
+    <button class="pill-sm" data-cat="planning" onclick="setCat(this)">課堂準備</button>
+    <button class="pill-sm" data-cat="assessment" onclick="setCat(this)">評估</button>
+    <button class="pill-sm" data-cat="literacy" onclick="setCat(this)">讀寫教學</button>
+    <button class="pill-sm" data-cat="admin" onclick="setCat(this)">行政與家校</button>
   </div>
 
   <div class="result-count" id="resultCount"></div>
@@ -404,7 +438,7 @@ const TOOLS = [
    * to it via `link`, no query-string placeholder. See applyFilters()'s
    * onclick for the branch that checks this field. */
   {name:'AI 批改', en:'AI Marking Assistant', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'pen', isNew:false, link:'marking.html', recommended:true,
-   desc:'協助批改學生作答，自動標示能力標籤並生成回饋重點，與班級學習表現總覽共用同一套分類。'},
+   desc:'協助批改學生作答，自動標示能力標籤並生成回饋重點，與學習紀錄庫共用同一套分類。'},
   {name:'教案生成器', en:'Lesson Plan Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:false, recommended:true,
    desc:'只需輸入課文或單元主題，即可生成包含學習目標、教學流程及分層活動的中文科教案。'},
   {name:'工作紙生成器', en:'Worksheet Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'pen', isNew:false,
@@ -453,7 +487,7 @@ const SUBJ_NAME = {chi:'中文', maths:'數學', eng:'英文', sci:'科學'};
 
 function setSubject(btn){
   subject = btn.dataset.subj;
-  document.querySelectorAll('.subj').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   applyFilters();
 }
@@ -466,7 +500,7 @@ function setLevel(l){
 }
 function setCat(btn){
   cat = btn.dataset.cat;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pill-sm').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   applyFilters();
 }

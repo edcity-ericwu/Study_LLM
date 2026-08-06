@@ -27,7 +27,7 @@
    * blue/purple pair. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#f0abb8;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -51,9 +51,17 @@
   .wrap{max-width:840px;margin:0 auto;padding:26px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;color:#5a2731;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:#5a2731;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
 
   .foundation{
     background:#fff;border-left:4px solid var(--ec-maroon);border-radius:8px;padding:12px 16px;
@@ -119,7 +127,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">供應商系統</div>
-  <div class="role-tag">🏢 供應商層級 · 智寫科技視圖</div>
+  <div class="viewer-chip">🏢 供應商層級 · 智寫科技視圖</div>
   <nav class="sys-nav">
     <a href="vendor-portal.html">📈 EdMarket 認證進度</a>
     <a href="vendor-data-console.html" class="active">🔓 資料存取控制台</a>
@@ -141,8 +149,12 @@
 <div class="wrap">
   <section class="hero">
     <div class="ribbon">🔴 待決策 · 此畫面示意學校批出存取權後，供應商系統實際接收與使用資料的方式——架構方向，尚未承諾建置</div>
-    <h1>資料存取控制台</h1>
-    <div class="sub">這裏顯示的一切都<b>由學校的供應商資料存取審批（現稱 EdData）批出</b>，你不能在此申請更多存取範圍或層級——要擴大範圍，須回到學校重新審批。</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>資料存取控制台</h1>
+        <div class="sub">這裏顯示的一切都<b>由學校的供應商資料存取審批（現稱 EdData）批出</b>，你不能在此申請更多存取範圍或層級——要擴大範圍，須回到學校重新審批。</div>
+      </div>
+    </div>
   </section>
 
   <div class="tabs">

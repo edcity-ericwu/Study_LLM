@@ -360,7 +360,7 @@ const ROLE_DEFS = [
   {id:'sen_coordinator', label:'SEN 統籌', color:'var(--ec-teal)',
    scope:'可查閱全校學生的 SEN 標籤與支援計劃狀態。此類資料比一般學術資料敏感，範圍獨立於科主任之外，亦不等同於校務行政權限。'},
   {id:'ict_coordinator', label:'資訊科技統籌', color:'#7C5CDB',
-   scope:'管理 EdMarket 訂閱與供應商資料存取審批。不涉及學生／教師身分紀錄（該職能由校務紀錄組獨立負責）。'},
+   scope:'管理 EdMarket 訂閱與供應商資料存取審批。不涉及學生／教師身份紀錄（該職能由校務紀錄組獨立負責）。'},
   {id:'school_admin', label:'校務行政', color:'var(--ec-blue-dark)',
    scope:'管理教師名冊、任教編配、批量編班、學生編班等全校組織性事務。現實系統目前只有此一個角色，正是這次角色拆分想解決的權限過度集中問題。'},
   {id:'principal', label:'校長', color:'#8a5a00',

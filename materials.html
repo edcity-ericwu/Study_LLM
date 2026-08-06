@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity 核實教材 — 課堂層級三大用例</title>
+<title>EdCity 教材核實 — 課堂層級三大用例</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -25,7 +25,7 @@
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
   .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
@@ -63,9 +63,17 @@
 
   .main{flex:1;min-width:0;padding:44px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
 
   /* Use-case tabs — each with its own identity: icon tile + accent + flow glyph */
   .uc-tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
@@ -102,7 +110,7 @@
     display:inline-flex;align-items:center;justify-content:center;
     background:color-mix(in srgb,var(--uc) 13%,white);
   }
-  .panel .p-sub{font-size:.76rem;color:var(--ink-2);margin-bottom:16px;line-height:1.6;max-width:46em;}
+  .panel .sect-sub{font-size:.76rem;color:var(--ink-2);margin-bottom:16px;line-height:1.6;max-width:46em;}
 
   .official{
     background:#e6f4fb;border:1px solid #c4e5f5;border-radius:11px;padding:10px 14px;
@@ -155,7 +163,7 @@
   .basket h4{font-size:.82rem;font-weight:700;margin-bottom:10px;}
   .basket .b-item{font-size:.72rem;color:var(--ink-2);padding:6px 0;border-top:1px solid #eef3f6;display:flex;gap:7px;align-items:center;}
   .basket .b-item .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-  .basket .empty-b{font-size:.72rem;color:var(--ink-3);padding:8px 0;}
+  .basket .empty{font-size:.72rem;color:var(--ink-3);padding:8px 0;}
   .basket .btn{width:100%;margin-top:12px;}
   .basket .cp{font-size:.64rem;color:var(--ink-3);margin-top:9px;line-height:1.55;}
   .btn{border:none;border-radius:10px;padding:10px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
@@ -211,21 +219,21 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">教學工具平台 · POC v0.1</div>
-    <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>教學應用程式／智能助手</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6>Ideas Lab</h6>
-      <a href="materials.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
+      <a href="materials.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
   <div class="user">
@@ -237,8 +245,12 @@
 <main class="main">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 三個入口皆為設計方案，功能未建置</div>
-    <h1>核實教材<span class="idea-pill">Ideas Lab</span></h1>
-    <div class="sub">幫助你檢查、組合及創作教材，同時確保內容與官方課程框架保持一致。<br>支援三個常見備課情境：驗證現有教材、從可信來源組合新教材，以及跨學科協作備課。</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>教材核實<span class="idea-pill">Ideas Lab</span></h1>
+        <div class="sub">幫助你檢查、組合及創作教材，同時確保內容與官方課程框架保持一致。<br>支援三個常見備課情境：驗證現有教材、從可信來源組合新教材，以及跨學科協作備課。</div>
+      </div>
+    </div>
   </section>
 
   <div class="uc-tabs">
@@ -262,7 +274,7 @@
   <!-- UC1 -->
   <div class="panel show" id="p1" style="--uc:var(--ec-blue)">
     <h2><span class="p-tile">🛡️</span>評估・驗證・充實現有教材</h2>
-    <div class="p-sub">無論教材是在教材庫內建立，還是多年來存放在電腦內的 Word 檔，都可以交給平台逐項檢查，並獲得增潤建議。</div>
+    <div class="sect-sub">無論教材是在教材庫內建立，還是多年來存放在電腦內的 Word 檔，都可以交給平台逐項檢查，並獲得增潤建議。</div>
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 你的教材在哪裏？</div>
     <div class="mode-row">
       <button class="mode-card" id="modePlat" onclick="pickSource('plat')">
@@ -304,7 +316,7 @@
   <!-- UC2 -->
   <div class="panel" id="p2" style="--uc:var(--ec-green)">
     <h2><span class="p-tile">🧺</span>知識庫選材・混合組卷</h2>
-    <div class="p-sub">從四類可信來源挑選材料，混合組成一份工作紙或單元教材。每一項材料都會標明出處及使用權限。</div>
+    <div class="sect-sub">從四類可信來源挑選材料，混合組成一份工作紙或單元教材。每一項材料都會標明出處及使用權限。</div>
 
     <div class="src-chips">
       <button class="schip on" data-s="all" onclick="setSrc(this)">全部來源</button>
@@ -318,7 +330,7 @@
       <div id="resList"></div>
       <aside class="basket">
         <h4>已選材料（<span id="bCount">0</span>）</h4>
-        <div id="bList"><div class="empty-b">尚未選取，按「＋加入」開始組合</div></div>
+        <div id="bList"><div class="empty">尚未選取，按「＋加入」開始組合</div></div>
         <button class="btn" id="composeBtn" disabled onclick="saveUC2()">組合成工作紙 →</button>
         <div class="cp">📎 出處自動標註於成品；<b>校本授權課本</b>內容僅限校內使用，不可發佈至公開資源庫。</div>
         <div class="save-flow" id="saveFlowP2"></div>
@@ -329,7 +341,7 @@
   <!-- UC3 -->
   <div class="panel" id="p3" style="--uc:var(--ec-purple)">
     <h2><span class="p-tile">🔗</span>跨學科教材創作</h2>
-    <div class="p-sub">兩科圍繞同一主題共同製作一份教材。每個環節都會標明所屬科目，由該科教師自行審訂。</div>
+    <div class="sect-sub">兩科圍繞同一主題共同製作一份教材。每個環節都會標明所屬科目，由該科教師自行審訂。</div>
 
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 選擇合作科目</div>
     <div class="xs-row" style="margin-bottom:6px;">
@@ -473,7 +485,7 @@ function renderBasket(){
         const r = RES.find(x=>x.n===n);
         return `<div class="b-item"><span class="dot" style="background:var(--ec-${r.s==='edb'?'blue':r.s==='ec'?'green':r.s==='tb'?'maroon':'amber'})"></span>${n}</div>`;
       }).join('')
-    : '<div class="empty-b">尚未選取，按「＋加入」開始組合</div>';
+    : '<div class="empty">尚未選取，按「＋加入」開始組合</div>';
   document.getElementById('composeBtn').disabled = basket.length===0;
 }
 /* Mock save-to-library flow, shared by all three use cases. Runs a short

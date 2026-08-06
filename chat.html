@@ -194,7 +194,16 @@
   .hero-chat h1{line-height:0;}
   .hero-chat h1 img{width:auto;height:64px;display:inline-block;}
   @media (max-width:600px){ .hero-chat h1 img{height:48px;} }
-  .hero-chat p{font-size:.92rem;color:var(--ink-2);margin-top:14px;}
+  .hero-chat p{font-size:1rem;color:var(--ink-2);margin-top:14px;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * Centred headers override .page-head back to block: they share the
+   * vocabulary so future edits are one pattern, but a space-between flex row
+   * would break their centring. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  .hero-chat .page-head{display:block;}
+  .hero-chat .ph-text{min-width:0;}
   .role-pill{
     display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:99px;
     padding:3px;margin-top:56px;gap:2px;
@@ -257,14 +266,14 @@
   }
   @keyframes border-trace{to{--angle:360deg;}}
   .sugg .s-card .cat{
-    font-size:.62rem;letter-spacing:normal;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:.7rem;letter-spacing:normal;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .sugg .s-card .hr{width:26px;height:1px;background:var(--line);margin:10px auto;}
   .sugg .s-card h4{font-size:.85rem;font-weight:600;line-height:1.5;text-align:center;}
   /* Action chip — says what the reply will DO, not where the tool lives.
    * A suggestion is a prompt, so the destination isn't known until the
    * assistant answers, and some prompts fan out to both catalogues
-   * (教學工具 on index.html and Apps／智能助手 on agents.html). Naming one
+   * (教學工具箱 on index.html and 教學應用程式／智能助手 on agents.html). Naming one
    * catalogue up front would over-promise; the reply's .tool-card names
    * the actual tool once it IS known. This just tells the teacher whether
    * they're getting an answer or a hand-off. */
@@ -285,7 +294,7 @@
   .msg.ai .gatebox{display:block;font-size:.7rem;color:#991b1b;background:#fff5f5;border:1px solid #f5c6c6;border-radius:9px;padding:8px 11px;margin-top:10px;line-height:1.6;}
   .msg.ai a{color:var(--ec-blue-dark);font-weight:700;}
 
-  /* Product card inside a chat reply — 工具指引 used to just link to Apps／智能助手 at
+  /* Product card inside a chat reply — 工具指引 used to just link to 教學應用程式／智能助手 at
    * the end of a wall of text; this surfaces each recommended tool as its own
    * card with a direct 開啟 action, so going to the product is one click, not
    * read-then-search. */
@@ -462,7 +471,7 @@
 
   @media (max-width:900px){ .sidebar{display:none;} .sugg{grid-template-columns:1fr;} .sugg-row2{max-width:100%;grid-template-columns:1fr;} }
 
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
 </style>
 </head>
 <body>
@@ -472,22 +481,22 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">教學工具平台 · POC v0.1</div>
-    <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <span class="nav-marker" id="navMarker"></span>
     <div class="nav-group">
       <h6>教學工具</h6>
       <a href="chat.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>教學應用程式／智能助手</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
   <div class="user">
@@ -502,8 +511,12 @@
     <div class="chat-inner">
 
       <div class="hero-chat" id="hero" style="margin-top:64px;">
-        <h1><img src="HKedcity.svg" alt="香港教育城 HKedCity"></h1>
-        <p>育人為本、素養為先、應用導向、智能向善</p>
+        <div class="page-head">
+          <div class="ph-text">
+            <h1><img src="HKedcity.svg" alt="香港教育城 HKedCity"></h1>
+            <p>育人為本、素養為先、應用導向、智能向善</p>
+          </div>
+        </div>
         <div class="role-pill">
           <span>👩‍🏫 教師版</span>
           <button class="soon" disabled>🎒 學生版<em>即將推出</em></button>
@@ -535,7 +548,7 @@
             <h4>把中文科重點概念和文本關係整理成視覺化圖譜</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('幫我把《背影》一課設計成互動課堂問答遊戲')">
-            <div class="cat" style="color:var(--ec-maroon)">🧩 AI 教學小應用</div>
+            <div class="cat" style="color:var(--ec-maroon)">🧩 AI 教學應用程式</div>
             <div class="hr"></div>
             <h4>為《背影》設計課堂搶答遊戲</h4>
             <span class="src">為你推薦工具</span>
@@ -619,9 +632,9 @@
             <span><b>視覺化</b><small>圖表、時間線及概念圖</small></span>
             <span class="switch"></span>
           </div>
-          <div class="m-item" data-tool="互動助手" onclick="toggleTool(this,'互動助手')">
+          <div class="m-item" data-tool="智能助手" onclick="toggleTool(this,'智能助手')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
-            <span><b>互動助手</b><small>建立課堂互動小應用</small></span>
+            <span><b>智能助手</b><small>建立課堂互動教學應用程式</small></span>
             <span class="switch"></span>
           </div>
         </div>
@@ -632,7 +645,7 @@
           <span id="modelLabel">智能模型</span> <span class="chev">▼</span>
         </button>
         <div class="menu" id="menuModel" style="min-width:320px;max-height:380px;overflow-y:auto;">
-          <div class="m-sect">對話模型</div>
+          <div class="m-sect">語言模型</div>
           <div class="m-item" data-model="自動" onclick="setModel(this,'自動')">
             <span><b>自動</b><small>按任務自動挑選最合適的模型</small></span>
             <span class="m-caps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></span>
@@ -647,7 +660,7 @@
             <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <hr>
-          <div class="m-sect">更多模型</div>
+          <div class="m-sect">更多語言模型</div>
           <div class="m-item" data-model="校本智能教學模型" onclick="setModel(this,'校本智能教學模型')">
             <span><b>校本智能教學模型</b><small>按學校教材及評分準則調校</small></span>
             <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
@@ -802,7 +815,7 @@ function setModel(el, name){
   el.classList.add('selected');
   document.getElementById('modelLabel').textContent = name;
   closeMenus();
-  toast('對話模型：' + name);
+  toast('語言模型：' + name);
 }
 function setKB(el, name){
   kb = name;

@@ -28,7 +28,7 @@
    * EdCity.ai" shell shape, just a different hue per system. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#123a52;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:10px 8px;flex:1;}
   .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -65,9 +65,21 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;border-radius:99px;padding:5px 14px;}
   .ribbon.live{color:#0c6b48;background:#e6f7ef;border:1px solid #b3e2cc;}
   .ribbon.prop{color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;}
-  h1{font-size:1.8rem;font-weight:800;color:#1a4763;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:#1a4763;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * Centred headers below override .page-head back to block: they share the
+   * vocabulary so future edits are one pattern, but a space-between flex row
+   * would break their centring. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  /* Section subtitles sit under an h2/h3 inside a page, so they must stay
+   * a step below the page description (.sub, .9rem) rather than matching it.
+   * Previously both shared .sub; when .sub grew to .9rem these came with it
+   * and the two levels flattened. */
+  .sect-sub{font-size:.8rem;color:var(--ink-2);line-height:1.6;}
 
   .foundation{
     background:#fff;border-left:4px solid var(--ec-blue);border-radius:8px;padding:12px 16px;
@@ -210,7 +222,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">校務處（何主任）</div>
-  <div class="role-tag">📋 校務行政層級 · 校務處視圖</div>
+  <div class="viewer-chip">📋 校務行政層級 · 校務處視圖</div>
   <nav class="sys-nav">
     <a href="roster.html" class="active">📋 校務處控制台</a>
   </nav>
@@ -243,8 +255,12 @@
 
   <section class="tab-pane active" data-pane="teachers">
     <div class="hero">
-      <h1>教師名冊</h1>
-      <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等功能應以這裏的紀錄為準，不應自行假設教師是否仍在職。</div>
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>教師名冊</h1>
+          <div class="sub">教師的在職狀態、所屬科組與聯絡方式，由校務處在此維護——任教編配、供應商邀請等功能應以這裏的紀錄為準，不應自行假設教師是否仍在職。</div>
+        </div>
+      </div>
     </div>
 
     <div class="table-toolbar">
@@ -283,7 +299,7 @@
     </table>
 
     <h2 style="margin-top:26px;">其他職員（非教學）</h2>
-    <div class="sub" style="margin-bottom:12px;">圖書館、資訊科技組、總務處等非教學同工——只作名冊記錄，不涉及任教編配、角色與權限等課堂層級功能。</div>
+    <div class="sect-sub" style="margin-bottom:12px;">圖書館、資訊科技組、總務處等非教學同工——只作名冊記錄，不涉及任教編配、角色與權限等課堂層級功能。</div>
     <table>
       <thead><tr><th>姓名</th><th>職員編號</th><th>所屬部門</th><th>狀態</th></tr></thead>
       <tbody id="supportStaffTbody"></tbody>
@@ -292,8 +308,12 @@
 
   <section class="tab-pane" data-pane="assign">
     <div class="hero">
-      <h1>任教編配</h1>
-      <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，均以此為準，而非由教師自行設定。</div>
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>任教編配</h1>
+          <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，均以此為準，而非由教師自行設定。</div>
+        </div>
+      </div>
     </div>
 
     <table>
@@ -304,8 +324,12 @@
 
   <section class="tab-pane" data-pane="bulk">
     <div class="hero">
-      <h1>批量編班</h1>
-      <div class="sub">貼上或上載 CSV，一次處理多位學生的班別——用於<b>學期中的例外情況</b>，例如個別插班生、學期中改組等。<br>系統會逐行判斷：這個名字是新生，還是已存在、需要轉班。</div>
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>批量編班</h1>
+          <div class="sub">貼上或上載 CSV，一次處理多位學生的班別——用於<b>學期中的例外情況</b>，例如個別插班生、學期中改組等。<br>系統會逐行判斷：這個名字是新生，還是已存在、需要轉班。</div>
+        </div>
+      </div>
     </div>
     <div class="bulk-input">
       <textarea id="bulkCsvInput" rows="6" placeholder="姓名,學生編號(選填),目標班別代碼,HKID尾4碼(選填),家長聯絡電話(選填),SEN備註(選填)"></textarea>
@@ -322,8 +346,12 @@
 
   <section class="tab-pane" data-pane="students">
     <div class="hero">
-      <h1>學生編班</h1>
-      <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班則是正式的班別歸屬，教學分組、批改入檔和學生入口都以此為準。</div>
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>學生編班</h1>
+          <div class="sub">哪位學生屬於哪一班，同樣由校務處在此編配——這與「教學分組」不同：教學分組是老師按教學需要自行劃分的小組，只有老師自己看到；學生編班則是正式的班別歸屬，教學分組、批改入檔和學生入口都以此為準。</div>
+        </div>
+      </div>
     </div>
 
     <div class="table-toolbar">
@@ -373,8 +401,12 @@
 
   <section class="tab-pane" data-pane="roles">
     <div class="hero">
-      <h1>角色與權限</h1>
-      <div class="sub">現時系統只有「校務行政」一個角色，何主任要逐個帳戶手動賦予或收回權限。<br>此處示範角色可以拆細：每位老師可同時持有多於一個角色，各自對應較窄的可見範圍，而非人人都看到全校資料。</div>
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>角色與權限</h1>
+          <div class="sub">現時系統只有「校務行政」一個角色，何主任要逐個帳戶手動賦予或收回權限。<br>此處示範角色可以拆細：每位老師可同時持有多於一個角色，各自對應較窄的可見範圍，而非人人都看到全校資料。</div>
+        </div>
+      </div>
     </div>
 
     <div id="roleLegend" class="role-legend"></div>

@@ -30,8 +30,15 @@
 
   .wrap{max-width:760px;margin:0 auto;padding:26px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 4px;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;line-height:1.6;max-width:52em;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * Centred headers override .page-head back to block: they share the
+   * vocabulary so future edits are one pattern, but a space-between flex row
+   * would break their centring. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
   .privacy{
     margin:14px 0 22px;background:#effaf5;border:1px solid #bfe8d7;border-radius:12px;
     padding:11px 15px;font-size:.76rem;color:#0c6b48;line-height:1.6;
@@ -126,9 +133,15 @@
   footer.note{margin-top:36px;font-size:.68rem;color:var(--ink-3);text-align:center;line-height:1.7;}
 
   /* engagement layer */
-  .view-toggle{display:inline-flex;background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:3px;margin-left:12px;}
-  .view-toggle button{border:none;background:transparent;border-radius:99px;padding:6px 14px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:600;}
-  .view-toggle button.on{background:var(--ec-green);color:#fff;}
+  /* Segmented toggle — two views of the same thing, not a filter row, so it
+   * keeps its enclosing track and stays distinct from .pill / .pill-sm.
+   * Hover tints the inactive segment only; a border on hover would break
+   * the seamless track, which is why this control had no hover until now.
+   * Active fill stays page-specific (blue here, green on student.html). */
+  .seg-toggle{display:inline-flex;background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:3px;margin-left:12px;}
+  .seg-toggle button{border:none;background:transparent;border-radius:99px;padding:6px 14px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s ease, color .15s ease;}
+  .seg-toggle button:not(.on):hover{background:#e8eef2;color:var(--ink);}
+  .seg-toggle button.on{background:var(--ec-green);color:#fff;}
   .greet{font-size:1.8rem;font-weight:800;}
   .mood-row{display:flex;gap:9px;margin:14px 0 4px;flex-wrap:wrap;}
   .mood{
@@ -209,7 +222,7 @@
   <img src="edcity_logo.svg" alt="香港教育城 EdCity">
   <span class="tag">學生／家長入口 · 與教師系統分離</span>
   <div class="who"><div class="avatar">K</div>Karen · 中二
-    <span class="view-toggle">
+    <span class="seg-toggle">
       <button class="on" id="vStu" onclick="setView('stu')">學生</button>
       <button id="vPar" onclick="setView('par')">家長視角</button>
     </span>
@@ -220,8 +233,12 @@
   <div class="ribbon">🟡 提案中 · 入口為設計方案，未建置（AI 導師部分另設 🔴 決策門檻）</div>
 
   <div id="stuView">
-  <h1 class="greet">Karen 👋 今晚想做甚麼？</h1>
-  <div class="sub">2025/26 下學期 · 中文科</div>
+  <div class="page-head">
+    <div class="ph-text">
+      <h1 class="greet">Karen 👋 今晚想做甚麼？</h1>
+      <div class="sub">2025/26 下學期 · 中文科</div>
+    </div>
+  </div>
 
   <!-- 老師指派的功課 — deliberately its OWN card, not mixed into the
    * mood-filtered list below: an assignment isn't optional or mood-dependent
@@ -256,7 +273,7 @@
     <span class="kicker progress">🔵 長期進度 · 不是今天的任務</span>
     <h3>能力進展</h3>
     <div class="skill-dep">🔴 待決策 · 依賴共用分類法（尚未存在）</div>
-    <div class="skill-source">📊 這裏每一條，都是你各科老師批改時標記、經內容審核通過後的能力標籤累積而成——標籤來自全平台共用的同一套分類，未經審核的標籤不會計入，你自己也一樣看不到未審核的（與教師的「班級學習表現總覽」用同一套規則）。</div>
+    <div class="skill-source">📊 這裏每一條，都是你各科老師批改時標記、經內容審核通過後的能力標籤累積而成——標籤來自全平台共用的同一套分類，未經審核的標籤不會計入，你自己也一樣看不到未審核的（與教師的「學習紀錄庫」用同一套規則）。</div>
     <div id="skillProgressRows"></div>
     <div class="persist">
       <span class="p-ic">🌱</span>
@@ -269,8 +286,12 @@
   </div><!-- /stuView -->
 
   <div class="parent-panel" id="parView">
-    <h1 class="greet">Karen 這星期的學習</h1>
-    <div class="sub">家長視角 · 2025/26 下學期 · 中文科</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1 class="greet">Karen 這星期的學習</h1>
+        <div class="sub">家長視角 · 2025/26 下學期 · 中文科</div>
+      </div>
+    </div>
     <div class="parent-note">🤝 這一頁的目的是幫你<b>陪伴 Karen</b>，而不是給你一張成績單。你看到的資料與她看到的相同：只有她自己的進度，沒有名次，也不會跟其他孩子比較。</div>
 
     <div class="snap-row-wrap">

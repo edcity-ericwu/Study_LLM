@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity Apps／智能助手 — 中文科（教師版）</title>
+<title>EdCity 教學應用程式／智能助手 — 中文科（教師版）</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -83,12 +83,20 @@
   .main{flex:1;min-width:0;padding:44px 34px 60px;}
 
   .hero{
-    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);position:relative;
+    margin-bottom:24px;border-bottom:1px solid var(--line);position:relative;
   }
   .hero .eyebrow{font-size:.7rem;letter-spacing:normal;color:var(--ec-green);font-weight:600;margin-bottom:12px;}
-  .hero h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
-  .hero h1 u{text-decoration:none;}
-  .hero p{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  h1 u{text-decoration:none;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
   .hero .guide-btn{position:absolute;top:28px;right:30px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 16px;font-size:.8rem;color:var(--ink-2);cursor:pointer;}
   .hero .guide-btn:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
 
@@ -107,23 +115,63 @@
     background:#fff;border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;
     padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   }
-  .vis-btn{
-    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;
-    border-radius:99px;padding:8px 16px;font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
-  .vis-btn:not(.on):hover{border-color:var(--ec-blue);}
-  .vis-btn.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+  /* Filter pills, two sizes only.
+   *   .pill    — the page's primary axis (科目 on index, 來源 on agents)
+   *   .pill-sm — anything that filters within it (category, visibility, source)
+   * Same white → blue-fill-when-active treatment for both; the size difference
+   * is what makes the hierarchy readable. Replaces .tab/.subj/.src/.vis-btn/.fchip,
+   * which were five names for two things at five slightly different sizes. */
+  .pill-sm{
+    display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
+    border-radius:99px;padding:7px 15px;font-size:.78rem;color:var(--ink-2);cursor:pointer;
+    font-family:inherit;transition:border-color .15s ease;
+  }
+  .pill-sm:not(.on):hover{border-color:var(--ec-blue);}
+  .pill-sm.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
   .lib-search{
     flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--bg);
     border:1px solid var(--line);border-radius:12px;padding:9px 14px;
   }
   .lib-search input{flex:1;border:none;outline:none;background:transparent;font-size:.85rem;font-family:inherit;color:var(--ink);}
-  .create-btn{
-    display:inline-flex;align-items:center;gap:7px;background:var(--ec-blue);color:#fff;border:none;
-    border-radius:99px;padding:10px 20px;font-size:.83rem;font-weight:600;cursor:pointer;font-family:inherit;
-  }
-  .create-btn:hover{background:var(--ec-blue-dark);}
 
   .result-count{font-size:.75rem;color:var(--ink-3);margin:18px 2px 12px;}
+
+  /* ─── Source row (primary axis) ───
+   * EdMarket vs EdHub is the decision a teacher actually makes: vendor-supplied
+   * and possibly paid, versus a colleague's. It is mutually exclusive per item,
+   * so this is a switch with no 全部 — one catalogue on screen at a time.
+   * Consequence, accepted deliberately: search no longer spans both catalogues.
+   * Upside: the type tabs below now visibly filter only what you're looking at,
+   * where before they silently filtered both sections at once. */
+  /* Primary filter row — the page's top-level axis (科目 here, 來源 on agents).
+   * margin-top is 0 on purpose: the description above sits inside .page-head,
+   * and because .ph-text is a flex item its 32px bottom margin cannot collapse
+   * out — so that 32px already sets the gap. Any margin here would stack on it. */
+  .pill-row{display:flex;align-items:center;gap:8px;margin:0 0 32px;flex-wrap:wrap;}
+  .row-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:6px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+    border-radius:99px;padding:8px 18px;font-size:.83rem;color:var(--ink-2);cursor:pointer;
+    font-family:inherit;font-weight:500;transition:border-color .15s ease;
+  }
+  .pill:not(.on):hover{border-color:var(--ec-blue);}
+  .pill.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+
+  /* Trailing ghost card, last cell of the EdHub grid. Inside #grid rather than
+   * below it so it reads as "add one of these" rather than page furniture, and
+   * it is rendered even when the grid is otherwise empty — that is precisely
+   * when a teacher has nothing yet and most needs the way in.
+   * 150px cover + ~60px body on .acard, so min-height matches a real card. */
+  .create-tile{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+    min-height:212px;background:transparent;border:2px dashed #cfdae3;border-radius:16px;
+    color:var(--ink-2);cursor:pointer;font-family:inherit;text-align:center;padding:20px;
+    transition:border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .create-tile:hover{border-color:var(--ec-blue);background:#f7fbfe;color:var(--ec-blue-dark);}
+  .create-tile .ct-plus{font-size:1.6rem;line-height:1;font-weight:400;}
+  .create-tile b{font-size:.85rem;font-weight:600;}
+  .create-tile small{font-size:.7rem;color:var(--ink-3);line-height:1.5;}
 
   /* ─── Cards ─── */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
@@ -192,13 +240,18 @@
     width:17px;height:17px;border-radius:50%;background:var(--ec-blue);color:#fff;font-style:normal;
     display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;
   }
+  /* Empty states use three names, by container rather than by page:
+   *   .empty        — standalone (a block in a grid, or a bordered card)
+   *   .empty-row td — inside a table, where it has to be a <tr>
+   *   .empty-note   — a small inline note beside other content
+   * Values stay page-appropriate; only the vocabulary is shared. */
   .empty{padding:60px 0;text-align:center;color:var(--ink-3);font-size:.85rem;display:none;}
 
   /* ─── Vendor section ─── */
   .vendor-sect{margin-top:44px;}
   .vendor-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
   .vendor-head h2{font-size:1rem;font-weight:800;}
-  .vendor-head .sub{font-size:.75rem;color:var(--ink-3);}
+  .vendor-head .sect-sub{font-size:.75rem;color:var(--ink-3);}
   /* Hidden per Eric's request (2026-07-30) to keep the layout clean — the
    * markup/content is untouched below, just not shown. */
   .vendor-disclaimer{display:none;}
@@ -258,7 +311,7 @@
   footer.note{margin-top:44px;font-size:.68rem;color:var(--ink-3);text-align:center;}
   @media (max-width:900px){ .sidebar{display:none;} .main{padding:18px;} }
 
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
 </style>
 </head>
 <body>
@@ -268,21 +321,21 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">教學工具平台 · POC v0.1</div>
-    <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>教學應用程式／智能助手</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
   <div class="user">
@@ -295,8 +348,18 @@
 <main class="main">
 
   <section class="hero">
-    <h1>Apps／<u>智能助手</u></h1>
-    <p>你可在這裏按教學任務，挑選 EdMarket 提供的現成教學工具，或老師建立並分享的小應用／互動助手來使用。</p>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>教學應用程式／<u>智能助手</u></h1>
+        <p class="sub">你可在這裏按教學任務，挑選 EdMarket 提供的現成教學工具，或老師建立並分享的教學應用程式／智能助手來使用。</p>
+      </div>
+    </div>
+
+    <div class="pill-row" role="tablist" aria-label="來源">
+      <span class="row-label">來源</span>
+      <button class="pill on" data-src="edmarket" onclick="setSource(this)">🛍 EdMarket</button>
+      <button class="pill" data-src="edhub" onclick="setSource(this)">🧑‍🏫 EdHub</button>
+    </div>
   </section>
 
   <div class="type-tabs">
@@ -304,10 +367,10 @@
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>全部
     </button>
     <button class="type-tab" data-type="app" onclick="setType(this)">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20M7 4v5"/></svg>AI 小應用
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20M7 4v5"/></svg>AI 教學應用程式
     </button>
     <button class="type-tab" data-type="agent" onclick="setType(this)">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>互動助手
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>智能助手
     </button>
     <button class="type-tab" data-type="doc" onclick="setType(this)">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8"/></svg>文件
@@ -320,32 +383,34 @@
   <div class="filterbar">
     <div class="lib-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ink-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input id="libSearch" type="text" placeholder="搜尋 Apps 與助手，例如「作文批改」…">
+      <input id="libSearch" type="text" placeholder="搜尋教學應用程式與助手，例如「作文批改」…">
     </div>
-    <button class="create-btn" onclick="toastMini('建立新項目')">＋ 建立新項目</button>
   </div>
 
   <section class="vendor-sect" id="vendorSect" style="margin-top:40px;">
     <div class="vendor-head">
       <h2>EdMarket 工具</h2>
-      <span class="sub">由第三方供應商提供，並經教育城平台接入為助手或小應用。</span>
+      <span class="sect-sub">由第三方供應商提供，並經教育城平台接入為助手或教學應用程式。</span>
     </div>
     <div class="vendor-disclaimer">⚠️ 以下工具由第三方供應商營運，數據處理及私隱政策以供應商條款為準。「校方已採購」工具可直接使用；其餘需經學校另行訂閱。</div>
     <div class="grid" id="vendorGrid" style="margin-top:24px;"></div>
+    <div class="empty" id="vendorEmpty">EdMarket 目前沒有符合的工具，試試其他關鍵字或切換類別。</div>
   </section>
 
-  <div class="vendor-head" style="margin-top:44px;">
+  <section id="hubSect" style="display:none;margin-top:40px;">
+  <div class="vendor-head">
     <h2>EdHub</h2>
-    <span class="sub">你和其他老師建立的 Apps 與助手</span>
+    <span class="sect-sub">你和其他老師建立的教學應用程式與助手</span>
     <div style="margin-left:auto;display:flex;gap:8px;align-self:center;">
-      <button class="vis-btn" id="visSchool" onclick="setVis('school')">🏫 校本</button>
-      <button class="vis-btn" id="visPublic" onclick="setVis('public')">🌐 公開</button>
-      <button class="vis-btn on" id="visPrivate" onclick="setVis('private')">🔒 私人</button>
+      <button class="pill-sm" id="visSchool" onclick="setVis('school')">🏫 校本</button>
+      <button class="pill-sm" id="visPublic" onclick="setVis('public')">🌐 公開</button>
+      <button class="pill-sm on" id="visPrivate" onclick="setVis('private')">🔒 私人</button>
     </div>
   </div>
   <div class="result-count" id="resultCount" style="margin-top:6px;"></div>
   <div class="grid" id="grid"></div>
-  <div class="empty" id="empty">找不到符合的項目，試試其他關鍵字或切換公開／私人。</div>
+  <div class="empty" id="empty">找不到符合的項目，試試其他關鍵字或切換校本／公開／私人。</div>
+  </section>
 </main>
 
 <!-- ───────── Modal ───────── -->
@@ -391,7 +456,7 @@ const ITEMS = [
    caps:['遊戲化','形近字對照','分級難度']},
   {name:'詞語配對遊戲', type:'app', vis:'private', face:'🧩', color:'var(--ec-green)',
    who:'陳凱怡老師', tag:'小學 · 中文', views:45, likes:12, follows:5, age:'5 天前',
-   desc:'課堂互動小應用：詞語與釋義配對限時挑戰，支援自訂詞表及全班排行榜。',
+   desc:'課堂互動教學應用程式：詞語與釋義配對限時挑戰，支援自訂詞表及全班排行榜。',
    caps:['自訂詞表','限時挑戰','排行榜']},
   {name:'唐詩搶答挑戰', type:'app', vis:'public', face:'🏆', color:'var(--ec-amber)',
    who:'李慧敏老師', tag:'小學 · 中文', views:340, likes:95, follows:36, age:'3 週前',
@@ -408,9 +473,9 @@ const ITEMS = [
 ];
 /* Single source for the type names shown on card badges, the result-count
  * line and the modal subtitle. Kept identical to the .type-tab labels above
- * so a card never says 「小應用」 while the tab that filters to it says
- * 「AI 小應用」. */
-const TYPE_LABEL = {agent:'互動助手', app:'AI 小應用', doc:'文件', slides:'簡報'};
+ * so a card never says 「教學應用程式」 while the tab that filters to it says
+ * 「AI 教學應用程式」. */
+const TYPE_LABEL = {agent:'智能助手', app:'AI 教學應用程式', doc:'文件', slides:'簡報'};
 
 /* Third-party vendor tools */
 const VENDOR_ITEMS = [
@@ -460,8 +525,40 @@ const VENDOR_ITEMS = [
    caps:['即時作答','答題分布','匿名模式']}
 ];
 
-let type='all', vis='private', currentItem=null;
+let type='all', vis='school', source='edmarket', currentItem=null;
+/* vis default moved 私人 → 校本: now that EdHub is somewhere you navigate to
+ * on purpose rather than something you scroll into, opening on the
+ * school-shared view matches 「你和其他老師建立的教學應用程式與助手」. */
 
+function setSource(btn){
+  source = btn.dataset.src;
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  syncTypeTabs();
+  render();
+}
+
+/* Only show type tabs the active catalogue can actually satisfy. EdMarket holds
+ * no 文件 or 簡報, so before this those two tabs were guaranteed dead ends there
+ * — and a teacher could hit an empty result twice in a row. Derived from the
+ * data rather than hard-coded, so adding a vendor doc later re-enables its tab
+ * on its own. If the current selection disappears with the tab, fall back to
+ * 全部 instead of leaving an invisible filter applied. */
+function syncTypeTabs(){
+  const pool = source === 'edhub' ? ITEMS : VENDOR_ITEMS;
+  const available = new Set(pool.map(i => i.type));
+  let selectionGone = false;
+  document.querySelectorAll('.type-tab').forEach(t => {
+    const ok = t.dataset.type === 'all' || available.has(t.dataset.type);
+    t.style.display = ok ? '' : 'none';
+    if(!ok && t.classList.contains('on')) selectionGone = true;
+  });
+  if(selectionGone){
+    type = 'all';
+    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('on'));
+    document.querySelector('.type-tab[data-type="all"]').classList.add('on');
+  }
+}
 function setType(btn){
   type = btn.dataset.type;
   document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('on'));
@@ -474,12 +571,18 @@ function setType(btn){
 const VIS_LABEL = {school:'校本', public:'公開', private:'私人'};
 function setVis(v){
   vis = v;
-  document.querySelectorAll('.vis-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pill-sm').forEach(b=>b.classList.remove('on'));
   document.getElementById({school:'visSchool',public:'visPublic',private:'visPrivate'}[v]).classList.add('on');
   render();
 }
 function render(){
   const q = document.getElementById('libSearch').value.trim().toLowerCase();
+  const isHub = source === 'edhub';
+  document.getElementById('vendorSect').style.display = isHub ? 'none' : '';
+  document.getElementById('hubSect').style.display    = isHub ? '' : 'none';
+  if(isHub) renderHub(q); else renderVendors(q);
+}
+function renderHub(q){
   const shown = ITEMS.filter(i =>
     (type==='all' || i.type===type) &&
     i.vis===vis &&
@@ -506,19 +609,22 @@ function render(){
           <span>${i.age}</span>
         </div>
       </div>
-    </div>`).join('');
+    </div>`).join('')
+    + `<button class="create-tile" onclick="event.stopPropagation();toastMini('建立新項目')">
+         <span class="ct-plus">＋</span>
+         <b>建立新項目</b>
+         <small>由空白開始，或複製現有項目</small>
+       </button>`;
   document.getElementById('empty').style.display = shown.length ? 'none' : 'block';
   document.getElementById('resultCount').textContent =
     `顯示 ${shown.length} 個項目 · ${VIS_LABEL[vis]}${type==='all'?'':' · '+TYPE_LABEL[type]}`;
-  renderVendors(q);
 }
 function renderVendors(q){
-  const sect = document.getElementById('vendorSect');
   const vShown = VENDOR_ITEMS.filter(i =>
     (type==='all' || i.type===type) &&
     (!q || i.name.toLowerCase().includes(q) || i.vendor.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q) || i.caps.join('').toLowerCase().includes(q))
   );
-  sect.style.display = vShown.length ? '' : 'none';
+  document.getElementById('vendorEmpty').style.display = vShown.length ? 'none' : 'block';
   document.getElementById('vendorGrid').innerHTML = vShown.map(i => `
     <div class="acard" style="--accent:${i.color}" onclick="openVendorModal(${VENDOR_ITEMS.indexOf(i)})" tabindex="0" role="button" aria-label="${i.name}">
       <div class="cover">
@@ -568,7 +674,7 @@ function openModal(idx){
   document.getElementById('mDesc').textContent = i.desc;
   document.getElementById('mCaps').innerHTML = i.caps.map(c=>`<span class="cap">${c}</span>`).join('');
   const use = document.getElementById('mUse');
-  use.textContent = i.type==='agent' ? '開始對話' : i.type==='app' ? '開啟小應用' : '開啟';
+  use.textContent = i.type==='agent' ? '開始對話' : i.type==='app' ? '開啟教學應用程式' : '開啟';
   use.onclick = () => {
     if(i.type==='agent'){ location.href='chat.html'; }
     else { toastMini('開啟「'+i.name+'」'); }
@@ -586,6 +692,7 @@ function toastMini(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.style.opacity=0, 1600);
 }
+syncTypeTabs();
 render();
 </script>
 <script src="usage-modal.js"></script>

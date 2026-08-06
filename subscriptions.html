@@ -28,7 +28,7 @@
    * the SYSTEM differs (EdCity.ai admin here, EdData there). */
   .sys-sidebar{width:248px;flex-shrink:0;background:#2b2450;color:#e4e0f2;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-purple);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#c3b6ee;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e4e0f2;white-space:nowrap;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e4e0f2;white-space:nowrap;}
   .sys-nav{padding:12px 10px;flex:1;}
   .sys-nav h6{font-size:.62rem;font-weight:700;color:#a99ddb;letter-spacing:normal;padding:10px 10px 6px;text-transform:uppercase;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c9c2e4;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
@@ -49,9 +49,22 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;color:var(--ec-purple);}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-purple);margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  /* Section subtitles sit under an h2/h3 inside a page, so they must stay
+   * a step below the page description (.sub, .9rem) rather than matching it.
+   * Previously both shared .sub; when .sub grew to .9rem these came with it
+   * and the two levels flattened. */
+  .sect-sub{font-size:.8rem;color:var(--ink-2);line-height:1.6;}
 
   h2{font-size:1rem;font-weight:700;margin:24px 0 12px;}
 
@@ -144,7 +157,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">資訊科技統籌（馮 Sir）</div>
-  <div class="role-tag">🔧 學校行政層級 · 資訊科技統籌視圖</div>
+  <div class="viewer-chip">🔧 學校行政層級 · 資訊科技統籌視圖</div>
   <nav class="sys-nav">
     <h6>學校管理</h6>
     <a href="subscriptions.html" class="active">🗂 訂閱管理</a>
@@ -168,8 +181,12 @@
 <div style="padding:44px 0 0;">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
-    <h1>訂閱管理</h1>
-    <div class="sub">全校訂閱的教育城審核工具集中顯示在同一畫面，續期日期與適用範圍一目了然。<b>批出授權後，工具會自動出現在教師介面</b>，毋須另建帳號或派發密碼。</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>訂閱管理</h1>
+        <div class="sub">全校訂閱的教育城審核工具集中顯示在同一畫面，續期日期與適用範圍一目了然。<b>批出授權後，工具會自動出現在教師介面</b>，毋須另建帳號或派發密碼。</div>
+      </div>
+    </div>
   </section>
 
   <div class="tabs">
@@ -215,7 +232,7 @@
   </section>
 
   <section class="tab-pane" data-pane="plans">
-    <div class="sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
+    <div class="sect-sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
     <div class="plan-grid" id="planGrid"></div>
     <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動匯總，不會出現兩邊數字不一致的情況。</div>
   </section>
@@ -250,7 +267,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="note-row">訂閱屆滿後，工具會從教師介面移除，但<b>已收集的標籤數據會保留為歷史紀錄</b>，不會因不續期而消失。教師介面（Apps／智能助手）中「校方已採購」的標示，正是由此處的授權驅動。</div>
+    <div class="note-row">訂閱屆滿後，工具會從教師介面移除，但<b>已收集的標籤數據會保留為歷史紀錄</b>，不會因不續期而消失。教師介面（教學應用程式／智能助手）中「校方已採購」的標示，正是由此處的授權驅動。</div>
     <div class="note-row">🔐 本頁只決定「用不用這件工具」；教師組別的<b>資料存取層級</b>是另一個決定，記錄在 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a>（校管系統，另一系統）。</div>
   </section>
 </div>

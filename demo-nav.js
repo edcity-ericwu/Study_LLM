@@ -27,19 +27,19 @@ const CSS = `
 const PAGES = [
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['chat.html','EdCity.ai（科目助理）',''],
-    ['index.html','教學工具首頁',''],
-    ['agents.html','Apps／智能助手',''],
+    ['index.html','教學工具箱',''],
+    ['agents.html','教學應用程式／智能助手',''],
     ['material-library.html','校本教材庫','y'],
     ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
   ]},
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
    * features, so they sit apart from the teacher's working tools here too. */
   {group:'💡 Ideas Lab（構思階段）', items:[
-    ['materials.html','核實教材（三大用例）','y'],
-    ['insights.html','班級學習表現總覽（核心價值，含多班切換）','r'],
+    ['materials.html','教材核實（三大用例）','y'],
+    ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
   ]},
   {group:'📈 科主任（李天佑主任）', items:[
-    ['dept.html','科組統計視圖','y','subjectPanelView'],
+    ['dept.html','科組統計','y','subjectPanelView'],
     ['dept-trial-evaluations.html','工具試用評估','y','toolTrial'],
   ]},
   {group:'🎒 學生／家長（Karen）', items:[
@@ -54,7 +54,7 @@ const PAGES = [
     ['roster.html','校務處控制台（教師名冊／任教編配／批量編班／學生編班）','y'],
   ]},
   {group:'🗂 校務紀錄組（曾主任）', items:[
-    ['records-console.html','身分紀錄審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）','r','recordsApproval'],
+    ['records-console.html','身份紀錄審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）','r','recordsApproval'],
   ]},
   {group:'🏷 內容審核員（平台營運）', items:[
     ['tags.html','標籤審核與管理','r','contentModeration'],
@@ -63,7 +63,7 @@ const PAGES = [
     ['vetting.html','供應商審核','y'],
   ]},
   {group:'🏢 供應商（智寫科技）', items:[
-    ['vendor-portal.html','供應商入口','y'],
+    ['vendor-portal.html','EdMarket 認證進度','y'],
     ['vendor-data-console.html','資料存取控制台（接收學校核准後的供應商資料）','r'],
   ]},
 ];

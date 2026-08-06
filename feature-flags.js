@@ -32,7 +32,7 @@ const FEATURE_FLAGS = {
   // 涉及頁面：roster.html 的「角色與權限」分頁。
   rolesPermissions: true,
 
-  // 校務紀錄組身分審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）。
+  // 校務紀錄組身份審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）。
   // 涉及頁面：records-console.html（整頁）。
   recordsApproval: false,
 

@@ -53,9 +53,16 @@
     border:1px solid #ddeef7;margin-bottom:30px;
   }
   .hero .eyebrow{font-size:.7rem;letter-spacing:normal;color:var(--ec-blue-dark);font-weight:600;margin-bottom:10px;}
-  .hero h1{font-size:1.9rem;font-weight:700;margin-bottom:10px;}
-  .hero h1 em{font-style:normal;border-bottom:3px solid var(--ec-blue);padding-bottom:2px;}
-  .hero p{font-size:.9rem;color:var(--ink-2);max-width:38em;line-height:1.7;}
+  h1{font-size:1.9rem;font-weight:700;margin-bottom:16px;}
+  h1 em{font-style:normal;border-bottom:3px solid var(--ec-blue);padding-bottom:2px;}
+  .sub{font-size:.9rem;color:var(--ink-2);max-width:52em;line-height:1.7;margin-bottom:32px;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * Centred headers below override .page-head back to block: they share the
+   * vocabulary so future edits are one pattern, but a space-between flex row
+   * would break their centring. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
   .poc-card{
@@ -124,8 +131,12 @@
 
   <div class="hero">
     <div class="eyebrow">PROOF OF CONCEPT · 導覽頁</div>
-    <h1>選擇一個<em>科目</em>，前往對應的 POC</h1>
-    <p>這裏是各科 AI 教學工具 POC 的共同入口。點擊任一科目前往對應的示範環境；完成後，隨時可以回到這一頁，再前往其他科目。</p>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>選擇一個<em>科目</em>，前往對應的 POC</h1>
+        <p class="sub">這裏是各科 AI 教學工具 POC 的共同入口。點擊任一科目前往對應的示範環境；完成後，隨時可以回到這一頁，再前往其他科目。</p>
+      </div>
+    </div>
   </div>
 
   <div class="grid" id="pocGrid"></div>

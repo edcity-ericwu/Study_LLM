@@ -30,7 +30,7 @@
      originally given. The actor distinction (何主任 vs 馮 Sir) is carried by the topbar avatar. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:12px 10px;flex:1;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c7d2da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -57,9 +57,22 @@
   .wrap{max-width:960px;margin:0 auto;padding:44px 20px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;color:#0f3347;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:#0f3347;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  /* Section subtitles sit under an h2/h3 inside a page, so they must stay
+   * a step below the page description (.sub, .9rem) rather than matching it.
+   * Previously both shared .sub; when .sub grew to .9rem these came with it
+   * and the two levels flattened. */
+  .sect-sub{font-size:.8rem;color:var(--ink-2);line-height:1.6;}
 
   .foundation{
     background:#fff;border-left:4px solid var(--ec-maroon);border-radius:8px;padding:12px 16px;
@@ -207,7 +220,12 @@
   .act.deny:hover{border-color:#f5c6c6;}
   .req .btns{display:flex;gap:8px;}
 
-  .empty-msg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
+  /* Empty states use three names, by container rather than by page:
+   *   .empty        — standalone (a block in a grid, or a bordered card)
+   *   .empty-row td — inside a table, where it has to be a <tr>
+   *   .empty-note   — a small inline note beside other content
+   * Values stay page-appropriate; only the vocabulary is shared. */
+  .empty{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
 
   /* tabs — split what used to be one long scroll into focused views */
   .tabs{display:flex;gap:22px;margin:16px 0 22px;border-bottom:1px solid var(--line);}
@@ -263,7 +281,7 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">資訊科技統籌（馮 Sir）</div>
-  <div class="role-tag">🔧 校務行政層級 · 資訊科技統籌視圖</div>
+  <div class="viewer-chip">🔧 校務行政層級 · 資訊科技統籌視圖</div>
   <nav class="sys-nav">
     <a href="eddata-console.html" class="active">🔐 供應商資料存取審批</a>
   </nav>
@@ -283,8 +301,12 @@
 <div class="wrap">
   <section class="hero">
     <div class="ribbon">🔴 待決策 · 此畫面示意供應商資料存取審批成為存取層級系統紀錄後的審批流程——屬架構方向，尚未承諾建置</div>
-    <h1>資料存取審批</h1>
-    <div class="sub">你管理的是<b>整體的供應商關係</b>，而非一張張獨立的申請單。由於每個供應商都有已核准的層級與組別，在審批新請求時請記得對照這個關係，不要由零開始判斷。</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>資料存取審批</h1>
+        <div class="sub">你管理的是<b>整體的供應商關係</b>，而非一張張獨立的申請單。由於每個供應商都有已核准的層級與組別，在審批新請求時請記得對照這個關係，不要由零開始判斷。</div>
+      </div>
+    </div>
   </section>
 
   <div class="tabs">
@@ -302,7 +324,7 @@
 
   <section class="tab-pane" data-pane="trials">
     <h2>試用請求</h2>
-    <div class="sub" style="margin:0 0 12px;max-width:56em;">試用有兩個來源：<b>供應商發起</b>——必須綁定一位已確認的老師與組別，不能繞過老師直接向校方要求存取，老師確認後才會交到你手上；<b>老師發起</b>（2026-07-22 新增）——老師針對一個已通過供應商審核的供應商，直接為自己的一個班別或分組申請試用，不必等供應商先發起，也不必走整個正式申請流程。兩者的試用條件相同：固定 Tier 1 · 基本資料、單一班別或分組（不可整校）、最長 14 天。屆滿後如值得繼續使用，可直接「轉為正式申請」，不必重新填寫。</div>
+    <div class="sect-sub" style="margin:0 0 12px;max-width:56em;">試用有兩個來源：<b>供應商發起</b>——必須綁定一位已確認的老師與組別，不能繞過老師直接向校方要求存取，老師確認後才會交到你手上；<b>老師發起</b>（2026-07-22 新增）——老師針對一個已通過供應商審核的供應商，直接為自己的一個班別或分組申請試用，不必等供應商先發起，也不必走整個正式申請流程。兩者的試用條件相同：固定 Tier 1 · 基本資料、單一班別或分組（不可整校）、最長 14 天。屆滿後如值得繼續使用，可直接「轉為正式申請」，不必重新填寫。</div>
     <div id="trialList"></div>
   </section>
 
@@ -356,7 +378,7 @@ function entitlementChip(vendor){
 
 function tierInfoPopHtml(){
   return `<div class="tier-row">
-      <div class="tier-card t1"><b>Tier 1 · 基本資料</b><small>姓名、班別、組別身分。現時已存在，敏感度最低。</small></div>
+      <div class="tier-card t1"><b>Tier 1 · 基本資料</b><small>姓名、班別、組別身份。現時已存在，敏感度最低。</small></div>
       <div class="tier-card t2"><b>Tier 2 · 敏感個人資料</b><small>SEN 標籤、支援計劃狀態等 PDPO 敏感資料。現時已存在，是目前主要把關對象。</small></div>
       <div class="tier-card t3"><b>Tier 3 · 表現數據</b><small class="flag">⚠ 尚在建立中，暫不開放</small><small>評估與學習表現數據。架構已預留此層級，但累積樣本仍太少，暫不能核實開放。</small></div>
     </div>`;

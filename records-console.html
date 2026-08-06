@@ -26,7 +26,7 @@
      馮 Sir (purple) on the other two consoles. */
   .sys-sidebar{width:200px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-  .sys-sidebar .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;}
   .sys-nav{padding:12px 10px;flex:1;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c7d2da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
@@ -48,9 +48,22 @@
   .wrap{max-width:960px;margin:0 auto;padding:44px 20px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;color:#0f3347;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:#0f3347;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  /* Section subtitles sit under an h2/h3 inside a page, so they must stay
+   * a step below the page description (.sub, .9rem) rather than matching it.
+   * Previously both shared .sub; when .sub grew to .9rem these came with it
+   * and the two levels flattened. */
+  .sect-sub{font-size:.8rem;color:var(--ink-2);line-height:1.6;}
 
   .foundation{
     background:#fff;border-left:4px solid var(--ec-teal);border-radius:8px;padding:12px 16px;
@@ -82,7 +95,12 @@
   .act.deny{color:#b91c1c;}
   .act.deny:hover{border-color:#f5c6c6;}
   .req .btns{display:flex;gap:8px;}
-  .empty-msg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
+  /* Empty states use three names, by container rather than by page:
+   *   .empty        — standalone (a block in a grid, or a bordered card)
+   *   .empty-row td — inside a table, where it has to be a <tr>
+   *   .empty-note   — a small inline note beside other content
+   * Values stay page-appropriate; only the vocabulary is shared. */
+  .empty{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
 
   .audit{margin-top:6px;}
   .a-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:.76rem;color:var(--ink-2);line-height:1.6;}
@@ -115,9 +133,9 @@
 
 <aside class="sys-sidebar">
   <div class="sh-label">校務紀錄組（曾主任）</div>
-  <div class="role-tag">🗂 校務行政層級 · 校務紀錄組視圖</div>
+  <div class="viewer-chip">🗂 校務行政層級 · 校務紀錄組視圖</div>
   <nav class="sys-nav">
-    <a href="records-console.html" class="active">🗂 校務紀錄審批</a>
+    <a href="records-console.html" class="active">🗂 身份紀錄審批</a>
   </nav>
   <div class="sys-sidebar-foot">
     <a href="roster.html">← 返回校管系統（校務處）</a>
@@ -125,32 +143,36 @@
 </aside>
 
 <div class="sys-main">
-<div class="role-banner">校務行政層級 — 學生／教師身分紀錄審批（校管系統）</div>
+<div class="role-banner">校務行政層級 — 學生／教師身份紀錄審批（校管系統）</div>
 <div class="topbar">
   <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-  <span class="sys">校務紀錄審批<small>校管系統（SMS）的身分紀錄層 · 與供應商資料存取審批（EdData）分屬不同職能</small></span>
-  <span class="who"><span>曾主任<small>校務紀錄組 · 身分紀錄審批人</small></span><span class="avatar">曾</span></span>
+  <span class="sys">校務紀錄審批<small>校管系統（SMS）的身份紀錄層 · 與供應商資料存取審批（EdData）分屬不同職能</small></span>
+  <span class="who"><span>曾主任<small>校務紀錄組 · 身份紀錄審批人</small></span><span class="avatar">曾</span></span>
 </div>
 
 <div class="wrap">
   <section class="hero">
-    <div class="ribbon">🔴 待決策 · 此畫面示意校管系統（SMS）身分紀錄層的審批流程——屬架構方向，尚未承諾建置</div>
-    <h1>身分紀錄審批</h1>
-    <div class="sub">你負責的是 SMS 裏最不可逆的一類事實：一位新生的身分正式成立，或一位教師的僱傭關係正式終結。校務處（何主任）可以提出請求，但不能自行執行——這裏是唯一能把這些事實寫進正式紀錄的地方。</div>
+    <div class="ribbon">🔴 待決策 · 此畫面示意校管系統（SMS）身份紀錄層的審批流程——屬架構方向，尚未承諾建置</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>身份紀錄審批</h1>
+        <div class="sub">你負責的是 SMS 裏最不可逆的一類事實：一位新生的身份正式成立，或一位教師的僱傭關係正式終結。校務處（何主任）可以提出請求，但不能自行執行——這裏是唯一能把這些事實寫進正式紀錄的地方。</div>
+      </div>
+    </div>
   </section>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="identity" onclick="showTab('identity')">身分紀錄請求<span class="tab-count" id="identityCount" style="display:none;"></span></button>
+    <button class="tab-btn active" data-tab="identity" onclick="showTab('identity')">身份紀錄請求<span class="tab-count" id="identityCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="audit" onclick="showTab('audit')">稽核記錄</button>
   </div>
 
   <section class="tab-pane active" data-pane="identity">
     <h2>新生建立請求</h2>
-    <div class="sub" style="margin:0 0 12px;max-width:56em;">校務處在「批量編班」遇到一個從未存在於系統的姓名時，在此提出建立請求，而不是由校方直接建立學生身分記錄——正式的學生身分記錄由你保存，校務處只負責組織「這位學生在哪一班」。</div>
+    <div class="sect-sub" style="margin:0 0 12px;max-width:56em;">校務處在「批量編班」遇到一個從未存在於系統的姓名時，在此提出建立請求，而不是由校方直接建立學生身份記錄——正式的學生身份記錄由你保存，校務處只負責組織「這位學生在哪一班」。</div>
     <div id="intakeReqList"></div>
 
     <h2 style="margin-top:26px;">教師狀態變更請求</h2>
-    <div class="sub" style="margin:0 0 12px;max-width:56em;">教師的在職狀態屬於正式僱傭記錄，同樣由你保存；校務處在「教師名冊」只能提出變更請求，須經你核准後才會實際生效。</div>
+    <div class="sect-sub" style="margin:0 0 12px;max-width:56em;">教師的在職狀態屬於正式僱傭記錄，同樣由你保存；校務處在「教師名冊」只能提出變更請求，須經你核准後才會實際生效。</div>
     <div id="statusReqList"></div>
 
   </section>
@@ -203,7 +225,7 @@ function renderIntakeRequests(){
         <button class="act deny" onclick="denyIntake('${r.id}')">拒絕</button>
       </div>` : ''}
     </div>`;
-  }).join('') : `<div class="empty-msg">目前沒有待處理的新生建立請求</div>`;
+  }).join('') : `<div class="empty">目前沒有待處理的新生建立請求</div>`;
   renderIdentityTabCount();
 }
 /* Approval creates the student's identity — that's SMS's identity layer, owned
@@ -249,7 +271,7 @@ function renderStatusRequests(){
         <button class="act deny" onclick="denyStatus('${r.id}')">拒絕</button>
       </div>` : ''}
     </div>`;
-  }).join('') : `<div class="empty-msg">目前沒有待處理的教師狀態變更請求</div>`;
+  }).join('') : `<div class="empty">目前沒有待處理的教師狀態變更請求</div>`;
   renderIdentityTabCount();
 }
 function approveStatus(id){

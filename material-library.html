@@ -25,7 +25,7 @@
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
   .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
-  .role-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
   .nav{padding:14px 10px;flex:1;overflow-y:auto;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
   .nav-group.governance{background:#f5f3fb;border:1px solid #e8e3f7;border-radius:12px;padding:10px 6px 8px;}
@@ -63,9 +63,9 @@
 
   .main{flex:1;min-width:0;padding:44px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
 
   /* Three bands, each answering a different question, so the upload action
    * is never mistaken for a search or filter control:
@@ -77,7 +77,7 @@
    * two positions away. */
   .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
   .page-head .ph-text{flex:1;min-width:280px;}
-  .filter-label{font-size:.68rem;font-weight:600;color:var(--ink-2);margin-right:2px;white-space:nowrap;}
+  .row-label{font-size:.68rem;font-weight:600;color:var(--ink-2);margin-right:2px;white-space:nowrap;}
   .stat-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
   .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:140px;cursor:pointer;font-family:inherit;text-align:left;transition:box-shadow .12s;}
   .stat:hover{box-shadow:0 0 0 2px rgba(0,0,0,.05);}
@@ -119,9 +119,9 @@
   .up-actions{display:flex;gap:9px;align-items:center;margin-top:14px;flex-wrap:wrap;}
   .up-note{font-size:.7rem;color:var(--ink-3);line-height:1.6;margin-top:10px;}
   .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .fchip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 15px;font-size:.78rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
-  .fchip:not(.on):hover{border-color:var(--ec-blue);}
-  .fchip.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+  .pill-sm{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 15px;font-size:.78rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .pill-sm:not(.on):hover{border-color:var(--ec-blue);}
+  .pill-sm.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
   .search{flex:1;min-width:180px;max-width:280px;border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:.8rem;font-family:inherit;outline:none;background:#fff;}
   .search:focus{border-color:var(--ec-blue);}
 
@@ -142,10 +142,10 @@
   .usage{font-size:.74rem;color:var(--ink-2);line-height:1.6;}
   .usage .none{color:var(--ink-3);}
   .usage .pending{color:#b07c10;}
-  .lbtn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 12px;font-size:.72rem;color:var(--ec-blue-dark);font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;}
+  .lbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 15px;font-size:.78rem;color:var(--ec-blue-dark);font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;}
   .lbtn:hover{border-color:var(--ec-blue);}
   .date{font-size:.76rem;color:var(--ink-3);white-space:nowrap;}
-  .empty-msg{padding:34px 16px;text-align:center;color:var(--ink-3);font-size:.8rem;}
+  .empty-row td{padding:34px 16px;text-align:center;color:var(--ink-3);font-size:.8rem;}
 
   .link-note{
     margin-top:18px;background:#effaf5;border:1px solid #bfe8d7;border-radius:12px;
@@ -164,21 +164,21 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">教學工具平台 · POC v0.1</div>
-    <div class="role-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
       <h6>教學工具</h6>
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
-      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具</a>
-      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>Apps／智能助手</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>教學應用程式／智能助手</a>
       <a href="material-library.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>核實教材</a>
-      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>班級學習表現總覽</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
   <div class="user">
@@ -189,11 +189,11 @@
 
 <main class="main">
   <section class="hero">
-    <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「核實教材」三大用例產出後應存放在哪裏</div>
+    <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「教材核實」三大用例產出後應存放在哪裏</div>
     <div class="page-head">
       <div class="ph-text">
         <h1>校本教材庫</h1>
-        <div class="sub">你上載的教材，以及經「核實教材」製成的教材都會儲存在這裏。你可以看見哪些教材仍在課堂中使用。</div>
+        <div class="sub">你上載的教材，以及經「教材核實」製成的教材都會儲存在這裏。你可以看見哪些教材仍在課堂中使用。</div>
       </div>
       <button class="up-btn" onclick="toggleUpload()">⬆ 上載教材</button>
     </div>
@@ -202,12 +202,12 @@
   <div class="stat-row" id="statRow"></div>
 
   <div class="toolbar">
-    <span class="filter-label">來源</span>
-    <button class="fchip on" data-t="all" onclick="setFilter(this)">全部</button>
-    <button class="fchip" data-t="p1" onclick="setFilter(this)">🛡️ 把關與充實</button>
-    <button class="fchip" data-t="p2" onclick="setFilter(this)">🧺 組合教材</button>
-    <button class="fchip" data-t="p3" onclick="setFilter(this)">🔗 跨學科教材</button>
-    <button class="fchip" data-t="up" onclick="setFilter(this)">📄 我上載的</button>
+    <span class="row-label">來源</span>
+    <button class="pill-sm on" data-t="all" onclick="setFilter(this)">全部</button>
+    <button class="pill-sm" data-t="p1" onclick="setFilter(this)">🛡️ 把關與充實</button>
+    <button class="pill-sm" data-t="p2" onclick="setFilter(this)">🧺 組合教材</button>
+    <button class="pill-sm" data-t="p3" onclick="setFilter(this)">🔗 跨學科教材</button>
+    <button class="pill-sm" data-t="up" onclick="setFilter(this)">📄 我上載的</button>
     <input class="search" id="searchBox" placeholder="🔍 搜尋教材…" oninput="render()">
   </div>
 
@@ -224,7 +224,7 @@
       <button class="up-btn" id="upConfirm" onclick="doUpload()" disabled style="opacity:.5">上載到教材庫</button>
       <button class="lbtn" onclick="toggleUpload()">取消</button>
     </div>
-    <div class="up-note">上載後的教材會標示為「我上載的」，可交給「核實教材」檢查，或直接在課堂使用。</div>
+    <div class="up-note">上載後的教材會標示為「我上載的」，可交給「教材核實」檢查，或直接在課堂使用。</div>
   </section>
 
   <table>
@@ -232,7 +232,7 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <div class="link-note" style="display:none;">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">班級學習表現總覽</a>因果卡片中提到的那一份；按「重新開啟」會回到核實教材對應的用例，帶著同一份教材繼續編輯。</div>
+  <div class="link-note" style="display:none;">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">學習紀錄庫</a>因果卡片中提到的那一份；按「重新開啟」會回到教材核實對應的用例，帶著同一份教材繼續編輯。</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -259,10 +259,10 @@ let filter='all';
  * live item platform-wide. 教材總數 doubles as the "view all" / cancel
  * button for this dimension specifically (the toolbar below already has
  * its own 全部 for the type dimension) — same single-select, no-toggle-off
- * pattern as the .fchip row, so the two rows behave consistently. */
+ * pattern as the .pill-sm row, so the two rows behave consistently. */
 let usageFilter='all';
 function setFilter(btn){
-  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.pill-sm').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');
   filter=btn.dataset.t;
   render();
@@ -291,7 +291,7 @@ function render(){
       <td class="usage">${usageHtml(it)}</td>
       <td class="date">${it.date}</td>
       <td><a class="lbtn" href="${it.open}">重新開啟 →</a></td>
-    </tr>`).join('') : `<tr><td colspan="5" class="empty-msg">沒有符合條件的教材</td></tr>`;
+    </tr>`).join('') : `<tr class="empty-row"><td colspan="5">沒有符合條件的教材</td></tr>`;
   document.getElementById('statRow').innerHTML = `
     <button class="stat${usageFilter==='all'?' on':''}" onclick="setUsageFilter('all')"><b>${scoped.length}</b>教材總數 · 顯示全部</button>
     <button class="stat${usageFilter==='live'?' on':''}" onclick="setUsageFilter('live')"><b>${scoped.filter(i=>i.usageState==='live').length}</b>正在課室使用中</button>
@@ -386,7 +386,7 @@ function insertJustSaved(){
   const type = params.get('type') || 'sheet';
   ITEMS.unshift({
     n: params.get('name') || '未命名教材',
-    d: '剛從「核實教材」儲存',
+    d: '剛從「教材核實」儲存',
     t: params.get('t') || 'p1',
     type,
     typeLabel: {report:'驗證報告', sheet:'工作紙', xs:'跨學科教材'}[type] || '工作紙',

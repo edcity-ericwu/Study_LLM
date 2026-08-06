@@ -25,7 +25,7 @@
   .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
   .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
   .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
-  .role-tag{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:var(--ec-maroon);background:#faf1f3;border:1px solid #e5cdd4;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;border-radius:99px;padding:4px 10px;margin-top:14px;color:var(--ec-maroon);background:#faf1f3;border:1px solid #e5cdd4;}
   .nav{padding:14px 10px;flex:1;}
   .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
   .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
@@ -38,9 +38,17 @@
 
   .main{flex:1;min-width:0;padding:26px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
-  h1{font-size:1.8rem;font-weight:800;color:var(--ec-maroon);}
-  .hero{margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-  .sub{font-size:.82rem;color:var(--ink-2);margin:6px 0 0;max-width:48em;line-height:1.6;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-maroon);margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  /* Standard page header — one shape suite-wide:
+   *   .hero > .ribbon? + .page-head > .ph-text > (h1 + .sub) + action? + pill-row?
+   * .page-head is the flex row that lets a page action (upload button, class
+   * picker) sit opposite the title; .ph-text is the text column, so an action
+   * can never squeeze the description. Adding a header element later is the
+   * same edit on every page. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
   .off-system-note{font-size:.72rem;color:var(--ink-3);margin:6px 0 20px;max-width:52em;line-height:1.6;}
 
   .trial{
@@ -81,7 +89,7 @@
   <div class="logo-wrap">
     <img src="edcity_logo.svg" alt="香港教育城 EdCity">
     <div class="logo-sub">AI 教學工具平台 · POC v0.1</div>
-    <div class="role-tag">📈 科組領導層級 · 科主任視圖</div>
+    <div class="viewer-chip">📈 科組領導層級 · 科主任視圖</div>
   </div>
   <nav class="nav">
     <div class="nav-group">
@@ -101,8 +109,12 @@
 <div style="padding:44px 0 0;">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
-    <h1>工具試用評估</h1>
-    <div class="sub">全科訂閱須先由你實測評估，才能交資訊科技統籌批出；個別教師自行試用毋須經過此步。若評估不通過，會記錄原因，供應商在冷靜期內不能就同一工具再次申請全科評估。</div>
+    <div class="page-head">
+      <div class="ph-text">
+        <h1>工具試用評估</h1>
+        <div class="sub">全科訂閱須先由你實測評估，才能交資訊科技統籌批出；個別教師自行試用毋須經過此步。若評估不通過，會記錄原因，供應商在冷靜期內不能就同一工具再次申請全科評估。</div>
+      </div>
+    </div>
   </section>
   <div id="trialList"></div>
 </div>

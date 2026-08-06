@@ -53,6 +53,12 @@
   .idea-pill{display:inline-block;vertical-align:.3em;margin-left:12px;font-size:.72rem;font-weight:700;
     color:#eaf6fd;background:var(--ec-blue-dark);border:1px solid var(--ec-blue-dark);
     padding:5px 14px;border-radius:99px;letter-spacing:.03em;}
+  /* Flask marks the Ideas Lab section: these pages are experiments, not built
+   * features. Sized to the text it sits beside rather than to the nav icons —
+   * it labels the group, it isn't a nav item of its own. */
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;}
+  .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
+  .idea-pill .lab-ic{width:.95em;height:.95em;vertical-align:-.12em;margin-right:5px;}
   .nav a:hover{background:#f2f6f9;}
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
@@ -209,7 +215,7 @@
       <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6L4 20a2 2 0 002 2h12a2 2 0 002-2l-5-12V2M9 2h6"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
-      <h6>Ideas Lab</h6>
+      <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
       <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
       <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>

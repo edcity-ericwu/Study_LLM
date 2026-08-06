@@ -570,7 +570,7 @@ function renderTrials(){
     } else if(t.status==='declined'){
       foot = `<div class="t-foot">
         <span class="tchip cooldown">🔒 冷靜期至 ${t.cooldownUntil}</span>
-        <span class="cd-note">在此日期前，${t.vendor}不能就同一組別再次發起試用請求。</span>
+        <span class="cd-note">在此日期前，${cjkPad(t.vendor)}不能就同一組別再次發起試用請求。</span>
         <button class="act" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新提交')">供應商嘗試重新提交（示範）</button>
       </div>`;
     } else if(t.status==='graduated'){

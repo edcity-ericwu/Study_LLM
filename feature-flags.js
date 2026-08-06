@@ -208,3 +208,15 @@ if (!featureOn('protoAnnotations')) {
   style.textContent = '.ribbon, .no-story, .source-note, .skill-dep, .skill-source, .gate-tag, .gatebox, .reality, .data-note { display: none !important; }';
   document.head.appendChild(style);
 }
+
+
+/* Latin/digit-ending names run straight into the Chinese that follows when
+ * interpolated into a template — 「語音通 AI」 + 「不能就…」 rendered as
+ * 「語音通 AI不能就…」. Only 語音通 AI ends in Latin today, but any future
+ * vendor, tool or plan name could, so the padding is derived rather than
+ * hardcoded into the two strings that happen to trip on it now. Returns the
+ * value unchanged when it already ends in a CJK character. */
+function cjkPad(v){
+  const s = String(v == null ? '' : v);
+  return /[A-Za-z0-9)\]]$/.test(s) ? s + ' ' : s;
+}

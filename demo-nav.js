@@ -34,7 +34,7 @@ const PAGES = [
   ]},
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
    * features, so they sit apart from the teacher's working tools here too. */
-  {group:'💡 Ideas Lab（構思階段）', items:[
+  {group:'⚗ Ideas Lab（構思階段）', items:[
     ['materials.html','教材核實（三大用例）','y'],
     ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
   ]},

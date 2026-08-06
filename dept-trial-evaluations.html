@@ -150,7 +150,7 @@ function renderTrials(){
     } else if(t.status==='declined'){
       stateChip = `<span class="state-chip declined">✕ 評估不通過</span>`;
       body = `<div class="reason-box">評估不通過原因：${t.declineReason}</div>
-              <div class="cooldown-note">🔒 冷靜期至 ${t.cooldownUntil}，在此日期前，${t.vendor}不能就「${t.product}」再次申請全科評估。</div>`;
+              <div class="cooldown-note">🔒 冷靜期至 ${t.cooldownUntil}，在此日期前，${cjkPad(t.vendor)}不能就「${t.product}」再次申請全科評估。</div>`;
       btns = `<button class="btn ghost" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新申請全科評估')">供應商嘗試重新申請（示範）</button>`;
     }
     return `<div class="trial ${t.status==='pending'?'':t.status}" id="trial-${t.id}">

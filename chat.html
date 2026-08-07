@@ -140,6 +140,85 @@
      * only the movement is removed. */
     .msg,.typing{animation:none;}
   }
+
+  /* ─── Worksheet panel ───────────────────────────────────────────────
+   * A flex sibling of .main, not an overlay: body is already display:flex,
+   * and .main is flex:1;min-width:0, so opening the panel compresses the
+   * conversation rather than covering it. Keeping both on screen is the
+   * point — you can talk to the chat while pointing at what it produced.
+   * Width animates from 0 so there's nothing to hide when closed. */
+  .ws-panel{
+    width:0;flex-shrink:0;height:100vh;overflow:hidden;background:#fff;
+    border-left:1px solid var(--line);display:flex;flex-direction:column;
+    transition:width .38s cubic-bezier(.4,0,.2,1);
+  }
+  .ws-panel.open{width:min(560px,46vw);}
+  @media (prefers-reduced-motion:reduce){ .ws-panel{transition:none;} }
+  /* Below ~1100px the split leaves the chat unusable, so the panel takes over. */
+  @media (max-width:1100px){ .ws-panel.open{width:100%;position:fixed;right:0;top:0;z-index:60;} }
+
+  .ws-head{
+    display:flex;align-items:flex-start;gap:12px;padding:20px 22px 14px;
+    border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .ws-head .ws-t{flex:1;min-width:0;}
+  .ws-head h3{font-size:.95rem;font-weight:800;line-height:1.4;}
+  .ws-head .ws-meta{font-size:.7rem;color:var(--ink-3);margin-top:5px;}
+  .ws-close{
+    background:none;border:1px solid var(--line);border-radius:8px;width:28px;height:28px;
+    flex-shrink:0;cursor:pointer;font-family:inherit;color:var(--ink-2);font-size:.85rem;line-height:1;
+    transition:border-color .15s ease,color .15s ease;
+  }
+  .ws-close:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+
+  .ws-body{flex:1;overflow-y:auto;padding:20px 22px 26px;}
+  .ws-sect{margin-bottom:20px;}
+  .ws-sect h4{
+    font-size:.8rem;font-weight:800;color:var(--ec-blue-dark);margin-bottom:8px;
+    padding-bottom:6px;border-bottom:1px dashed var(--line);
+  }
+  .ws-sect p, .ws-sect li{font-size:.78rem;line-height:1.75;color:var(--ink);}
+  .ws-sect ol, .ws-sect ul{padding-left:1.3em;}
+  .ws-sect li{margin-bottom:5px;}
+  .ws-sect .hint{color:var(--ink-3);font-size:.72rem;}
+  .ws-blank{display:inline-block;min-width:88px;border-bottom:1px solid var(--ink-3);margin:0 3px;}
+
+  .ws-foot{
+    flex-shrink:0;border-top:1px solid var(--line);padding:14px 22px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fbfcfd;
+  }
+  .lbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 15px;font-size:.78rem;color:var(--ec-blue-dark);font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;}
+  .lbtn:hover{border-color:var(--ec-blue);}
+  .ws-foot .ws-note{font-size:.68rem;color:var(--ink-3);flex:1;min-width:150px;line-height:1.55;}
+
+  /* ─── Thinking steps ───
+   * Replaces the generic typing indicator for this flow. Each step resolves to
+   * a tick in turn, so the wait shows what the model checked against rather
+   * than just that it was busy. */
+  .think{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:13px 16px;margin:10px 0 4px;max-width:520px;
+  }
+  .think .th-h{font-size:.72rem;font-weight:700;color:var(--ink-2);margin-bottom:9px;}
+  .think .step{
+    display:flex;align-items:flex-start;gap:9px;font-size:.76rem;color:var(--ink-3);
+    padding:3px 0;transition:color .2s ease;
+  }
+  .think .step .dot{
+    width:14px;height:14px;flex-shrink:0;border-radius:50%;border:2px solid var(--line);
+    margin-top:2px;transition:border-color .2s ease,background .2s ease;
+  }
+  .think .step.doing{color:var(--ink);}
+  .think .step.doing .dot{border-color:var(--ec-blue);border-right-color:transparent;animation:th-spin .7s linear infinite;}
+  .think .step.done{color:var(--ink-2);}
+  .think .step.done .dot{
+    border-color:var(--ec-green);background:var(--ec-green);
+    -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path d='M2 7.4 5.4 10.8 12 3.2' fill='none' stroke='black' stroke-width='2.4'/></svg>") center/10px no-repeat, linear-gradient(#000,#000);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+  }
+  @keyframes th-spin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion:reduce){ .think .step.doing .dot{animation:none;} }
+
   .chat-scroll{flex:1;overflow-y:auto;padding:10px 34px 10px;}
   .chat-inner{max-width:1120px;margin:0 auto;}
 
@@ -359,11 +438,22 @@
     font-size:.92rem;color:var(--ink);min-height:44px;background:transparent;
   }
   .composer textarea::placeholder{color:var(--ink-3);}
+  /* The composer is a query container so the toolbar responds to its OWN width,
+   * not the viewport's — it narrows both when the worksheet panel opens and on
+   * a small window, and both should behave the same. Labels collapse to
+   * icon-only below 560px; the count badge and chevrons stay, since those carry
+   * state rather than naming. */
+  .composer{container-type:inline-size;}
   .composer .bar{display:flex;align-items:center;gap:8px;margin-top:10px;}
   .cbtn{
     display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;
     color:var(--ink-2);font-size:.8rem;font-family:inherit;cursor:pointer;
     padding:9px 13px;border-radius:12px;position:relative;
+    white-space:nowrap;flex-shrink:0;
+  }
+  @container (max-width:560px){
+    .cbtn-lbl{display:none;}
+    .cbtn{padding:9px 11px;}
   }
   .cbtn:hover{border-color:#d3dde3;background:#f8fafb;}
   .cbtn.open{background:#e6f4fb;color:var(--ec-blue-dark);border-color:#c4e5f5;}
@@ -476,7 +566,7 @@
     </div>
     <div class="nav-group ideas">
       <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材檢視</a>
       <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
@@ -511,22 +601,22 @@
             <h4>想知道哪個寫作回饋工具最適合你的班別？</h4>
             <span class="src">為你推薦工具</span>
           </div>
-          <div class="s-card" onclick="useSuggestion('製作一份唐詩三百首的課堂簡報初稿')">
+          <div class="s-card" onclick="useSuggestion('為中一年級學生製作一份促進了解《木蘭詩》的工作紙', '生成教材')">
             <div class="cat" style="color:var(--ec-green)">📊 生成教材</div>
             <div class="hr"></div>
-            <h4>自動生成《唐詩三百首》課堂簡報初稿</h4>
+            <h4>為中一年級學生製作一份促進了解《木蘭詩》的工作紙</h4>
           </div>
-          <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略與教案')">
-            <div class="cat" style="color:#8a5a09">🔍 搜尋教城資源</div>
-            <div class="hr"></div>
-            <h4>搜尋最新讀寫教學策略和教案</h4>
-          </div>
-        </div>
-        <div class="sugg sugg-row2">
           <div class="s-card" onclick="useSuggestion('製作中文科重點概念與文本關係的視覺化知識圖譜')">
             <div class="cat" style="color:var(--ec-purple)">📈 製作知識圖譜</div>
             <div class="hr"></div>
             <h4>把中文科重點概念和文本關係整理成視覺化圖譜</h4>
+          </div>
+        </div>
+        <div class="sugg sugg-row2">
+          <div class="s-card" onclick="useSuggestion('搜尋最新的中文科讀寫教學策略與教案')">
+            <div class="cat" style="color:#8a5a09">🔍 搜尋教城資源</div>
+            <div class="hr"></div>
+            <h4>搜尋最新讀寫教學策略和教案</h4>
           </div>
           <div class="s-card" onclick="useSuggestion('幫我把《背影》一課設計成互動課堂問答遊戲')">
             <div class="cat" style="color:var(--ec-maroon)">🧩 AI 教學應用程式</div>
@@ -587,43 +677,43 @@
         </div>
 
         <!-- Tools menu -->
-        <button class="cbtn" id="btnTools" onclick="toggleMenu('menuTools',this)" aria-haspopup="true">
+        <button class="cbtn" id="btnTools" title="工具" onclick="toggleMenu('menuTools',this)" aria-haspopup="true">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
-          工具 <span class="tcount" id="toolCount" style="display:none">0</span> <span class="chev">▼</span>
+          <span class="cbtn-lbl">工具</span> <span class="tcount" id="toolCount" style="display:none">0</span> <span class="chev">▼</span>
         </button>
         <div class="menu" id="menuTools">
-          <div class="m-sect">啟用工具</div>
-          <div class="m-item on" data-tool="網上搜尋" onclick="toggleTool(this,'網上搜尋')">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <span><b>網上搜尋</b><small>搜尋最新教學資源與資料</small></span>
-            <span class="switch"></span>
-          </div>
-          <div class="m-item on" data-tool="建立文件" onclick="toggleTool(this,'建立文件')">
+          <div class="m-sect">工具</div>
+          <div class="m-item" data-tool="生成教材" onclick="toggleTool(this,'生成教材')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6"/></svg>
-            <span><b>建立文件</b><small>生成工作紙、通告及教學文件</small></span>
+            <span><b>生成教材</b><small>工作紙、練習、通告等課堂文件</small></span>
             <span class="switch"></span>
           </div>
-          <div class="m-item" data-tool="製作簡報" onclick="toggleTool(this,'製作簡報')">
+          <div class="m-item" data-tool="製作教學簡報" onclick="toggleTool(this,'製作教學簡報')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            <span><b>製作簡報</b><small>生成可下載的 PPTX 課堂簡報</small></span>
+            <span><b>製作教學簡報</b><small>可下載的 PPTX 課堂簡報</small></span>
             <span class="switch"></span>
           </div>
-          <div class="m-item" data-tool="視覺化" onclick="toggleTool(this,'視覺化')">
+          <div class="m-item" data-tool="製作圖表" onclick="toggleTool(this,'製作圖表')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>
-            <span><b>視覺化</b><small>圖表、時間線及概念圖</small></span>
+            <span><b>製作圖表</b><small>數據圖表、時間線及概念圖</small></span>
             <span class="switch"></span>
           </div>
-          <div class="m-item" data-tool="智能助手" onclick="toggleTool(this,'智能助手')">
+          <div class="m-item" data-tool="搜尋教城資源" onclick="toggleTool(this,'搜尋教城資源')">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span><b>搜尋教城資源</b><small>教育城資源庫及公開教學資料</small></span>
+            <span class="switch"></span>
+          </div>
+          <div class="m-item" data-tool="智能教學助手" onclick="toggleTool(this,'智能教學助手')">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
-            <span><b>智能助手</b><small>建立課堂互動教學應用程式</small></span>
+            <span><b>智能教學助手</b><small>課堂互動教學應用程式</small></span>
             <span class="switch"></span>
           </div>
         </div>
 
         <!-- Model menu -->
-        <button class="cbtn" id="btnModel" onclick="toggleMenu('menuModel',this)" aria-haspopup="true">
+        <button class="cbtn" id="btnModel" title="語言模型" onclick="toggleMenu('menuModel',this)" aria-haspopup="true">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
-          <span id="modelLabel">智能模型</span> <span class="chev">▼</span>
+          <span class="cbtn-lbl" id="modelLabel">智能模型</span> <span class="chev">▼</span>
         </button>
         <div class="menu" id="menuModel" style="min-width:320px;max-height:380px;overflow-y:auto;">
           <div class="m-sect">語言模型</div>
@@ -647,18 +737,18 @@
             <span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>
           </div>
           <div class="m-item" data-model="DeepSeek V4" onclick="setModel(this,'DeepSeek V4')"><span><b>DeepSeek V4</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
-          <div class="m-item" data-model="豆包 Pro" onclick="setModel(this,'豆包 Pro')"><span><b>豆包 Pro</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="Doubao-Seed-2.1-Pro" onclick="setModel(this,'Doubao-Seed-2.1-Pro')"><span><b>Doubao-Seed-2.1-Pro</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
           <div class="m-item" data-model="GLM-5.2" onclick="setModel(this,'GLM-5.2')"><span><b>GLM-5.2</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
-          <div class="m-item" data-model="Gemini 3 Flash" onclick="setModel(this,'Gemini 3 Flash')"><span><b>Gemini 3 Flash</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="Gemini 3.6 Flash" onclick="setModel(this,'Gemini 3.6 Flash')"><span><b>Gemini 3.6 Flash</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
           <div class="m-item" data-model="Gemini 3.1 Pro" onclick="setModel(this,'Gemini 3.1 Pro')"><span><b>Gemini 3.1 Pro</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
-          <div class="m-item" data-model="GPT-5.4" onclick="setModel(this,'GPT-5.4')"><span><b>GPT-5.4</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
-          <div class="m-item" data-model="GPT-5.4 Mini" onclick="setModel(this,'GPT-5.4 Mini')"><span><b>GPT-5.4 Mini</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="GPT-5.6 Sol" onclick="setModel(this,'GPT-5.6 Sol')"><span><b>GPT-5.6 Sol</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
+          <div class="m-item" data-model="GPT-5.6 Luna" onclick="setModel(this,'GPT-5.6 Luna')"><span><b>GPT-5.6 Luna</b></span><span class="check"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span></div>
         </div>
 
         <!-- Knowledge base menu -->
-        <button class="cbtn" id="btnKB" onclick="toggleMenu('menuKB',this)" aria-haspopup="true">
+        <button class="cbtn" id="btnKB" title="知識庫來源" onclick="toggleMenu('menuKB',this)" aria-haspopup="true">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z"/></svg>
-          <span id="kbLabel">教育城資源庫</span> <span class="chev">▼</span>
+          <span class="cbtn-lbl" id="kbLabel">教育城資源庫</span> <span class="chev">▼</span>
         </button>
         <div class="menu" id="menuKB" style="min-width:280px;">
           <div class="m-sect">知識庫來源</div>
@@ -694,6 +784,73 @@
     <div class="hint" style="display:none;">EdCity.ai · 內部示範原型，回覆為預設示例，僅供概念演示</div>
   </div>
 </main>
+
+<!-- ───────── Worksheet panel ─────────
+     Sibling of <main>, so opening it compresses the chat instead of covering
+     it. Content is written out rather than generated — this is a scripted
+     walkthrough of one request, not a working generator. -->
+<aside class="ws-panel" id="wsPanel" aria-label="工作紙">
+  <div class="ws-head">
+    <div class="ws-t">
+      <h3>《木蘭詩》閱讀理解工作紙</h3>
+      <div class="ws-meta">中一級 · 中國語文 · 草稿 · <span id="wsTime"></span></div>
+    </div>
+    <button class="ws-close" onclick="closeWorksheet()" aria-label="關閉工作紙">✕</button>
+  </div>
+
+  <div class="ws-body">
+    <div class="ws-sect">
+      <h4>一、課文背景</h4>
+      <p>《木蘭詩》又稱《木蘭辭》，是<b>北朝樂府民歌</b>，收錄於宋代郭茂倩編的《樂府詩集》。全詩敘述木蘭代父從軍、征戰十二年後辭官還鄉的故事。</p>
+    </div>
+
+    <div class="ws-sect">
+      <h4>二、字詞理解</h4>
+      <p class="hint">解釋下列句中畫線的字詞。</p>
+      <ol>
+        <li>願為<u>市</u>鞍馬<span class="ws-blank"></span></li>
+        <li>萬里赴<u>戎機</u><span class="ws-blank"></span></li>
+        <li>朔氣傳<u>金柝</u><span class="ws-blank"></span></li>
+        <li><u>著</u>我舊時裳<span class="ws-blank"></span></li>
+      </ol>
+    </div>
+
+    <div class="ws-sect">
+      <h4>三、內容理解</h4>
+      <ol>
+        <li>木蘭為甚麼決定代父從軍？請引用課文說明。</li>
+        <li>「東市買駿馬，西市買鞍韉，南市買轡頭，北市買長鞭」連用四句，寫出了甚麼？</li>
+        <li>木蘭立功後為何不願做官，只求「送兒還故鄉」？</li>
+      </ol>
+    </div>
+
+    <div class="ws-sect">
+      <h4>四、人物形象</h4>
+      <p>從課文中找出<b>三處</b>描寫，說明木蘭是一個怎樣的人。</p>
+      <p class="hint">提示：可從她的決定、行為和回鄉後的選擇三方面入手。</p>
+    </div>
+
+    <div class="ws-sect">
+      <h4>五、修辭手法</h4>
+      <p class="hint">指出下列句子運用的修辭手法，並說明其效果。</p>
+      <ul>
+        <li>將軍百戰死，壯士十年歸<span class="ws-blank"></span></li>
+        <li>朔氣傳金柝，寒光照鐵衣<span class="ws-blank"></span></li>
+        <li>東市買駿馬……北市買長鞭<span class="ws-blank"></span></li>
+      </ul>
+    </div>
+
+    <div class="ws-sect">
+      <h4>六、延伸思考</h4>
+      <p>「同行十二年，不知木蘭是女郎。」你認為木蘭最令人佩服的地方是甚麼？試結合課文和你的看法作答。</p>
+    </div>
+  </div>
+
+  <div class="ws-foot">
+    <span class="ws-note">AI 草擬，未經核實。建議先交「教材檢視」對照課程框架及校本準則。</span>
+    <a class="lbtn" href="materials.html?p=p1">🛡️ 交給「教材檢視」檢查 →</a>
+  </div>
+</aside>
 
 <div class="toast" id="toast"></div>
 
@@ -813,10 +970,71 @@ function newChat(){
   closeMenus();
   toast('已開始新對話');
 }
-function useSuggestion(text){
-  document.getElementById('input').value = text;
-  document.getElementById('input').focus();
+/* Optional second argument names a tool the suggestion depends on. Clicking the
+ * card switches it on rather than assuming its default state — the teacher may
+ * have toggled it off. Sets the same .on class the 工具 menu uses, then calls
+ * renderToolPills() so the menu tick, the composer pill row and the count all
+ * stay in sync instead of drifting apart. */
+function useSuggestion(text, requiresTool){
+  const inp = document.getElementById('input');
+  inp.value = text;
+  if(requiresTool){
+    const el = document.querySelector('#menuTools .m-item[data-tool="'+requiresTool+'"]');
+    if(el && !el.classList.contains('on')){
+      el.classList.add('on');
+      renderToolPills();
+      toast('已啟用：'+requiresTool);
+    }
+  }
+  inp.focus();
 }
+/* ── Worksheet walkthrough ──────────────────────────────────────────────
+ * Scoped deliberately to this one request rather than firing on any message
+ * while 生成教材 is on: a generic trigger means someone typing 「幫我改作文」
+ * mid-demo gets a 木蘭詩 worksheet, which fails worse than being narrow.
+ * The steps name what the model checked against — that's the part worth
+ * showing, and it's where the platform is actually differentiated. */
+const WS_TRIGGER = '為中一年級學生製作一份促進了解《木蘭詩》的工作紙';
+const WS_STEPS = [
+  '理解要求：中一級 ·《木蘭詩》· 促進了解',
+  '對照中國語文課程框架（閱讀範疇）',
+  '草擬題目，調整至中一程度',
+  '對照校本評分準則',
+  '整理工作紙版面',
+];
+function runWorksheetFlow(thread){
+  const box = document.createElement('div');
+  box.className = 'think';
+  box.innerHTML = '<div class="th-h">正在生成教材…</div>' +
+    WS_STEPS.map(t=>`<div class="step"><span class="dot"></span><span>${t}</span></div>`).join('');
+  thread.appendChild(box);
+  scrollBottom();
+  const rows = [...box.querySelectorAll('.step')];
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const gap = reduce ? 120 : 780;
+  rows.forEach((r,i)=>{
+    setTimeout(()=>{ r.classList.add('doing'); }, i*gap);
+    setTimeout(()=>{ r.classList.remove('doing'); r.classList.add('done'); }, i*gap + gap*0.82);
+  });
+  setTimeout(()=>{
+    box.querySelector('.th-h').textContent = '已完成';
+    openWorksheet();
+    thread.insertAdjacentHTML('beforeend', `
+      <div class="msg ai"><span class="tag">${model}</span><br>
+      已按中一程度草擬《木蘭詩》工作紙，分六部分：課文背景、字詞理解、內容理解、人物形象、修辭手法及延伸思考——見右方面板。<br><br>
+      這是<b>草稿</b>，未經核實。建議先交「教材檢視」對照課程框架及校本評分準則，再派發給學生。</div>`);
+    scrollBottom();
+  }, rows.length*gap + 260);
+}
+function openWorksheet(){
+  document.getElementById('wsTime').textContent =
+    new Date().toLocaleDateString('zh-HK',{year:'numeric',month:'2-digit',day:'2-digit'});
+  document.getElementById('wsPanel').classList.add('open');
+}
+function closeWorksheet(){
+  document.getElementById('wsPanel').classList.remove('open');
+}
+
 function sendMsg(){
   const inp = document.getElementById('input');
   const text = inp.value.trim();
@@ -826,6 +1044,7 @@ function sendMsg(){
   thread.insertAdjacentHTML('beforeend', `<div class="msg user"></div>`);
   thread.lastElementChild.textContent = text;
   inp.value='';
+  if(text === WS_TRIGGER){ runWorksheetFlow(thread); return; }
   const typing = document.createElement('div');
   typing.className='typing'; typing.textContent='EdCity AI 正在輸入…';
   thread.appendChild(typing);

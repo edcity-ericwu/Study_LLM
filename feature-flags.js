@@ -59,6 +59,13 @@ const FEATURE_FLAGS = {
   // file). Default OFF (2026-07-31): hidden per Eric's request. Flip back to
   // true to reinstate the always-visible "this isn't real" corner disclaimer.
   pocRibbon: false,
+
+  // 🧭 示範導覽 — the floating walkthrough pill, and the only route to the
+  // non-teacher pages (dept, roster, the consoles, vendor portal). It is fixed
+  // to the bottom-right, so it can sit on top of whatever a page puts in that
+  // corner — notably the worksheet panel's 交給「教材檢視」 button on chat.html.
+  // Set false to hide it suite-wide.
+  demoNav: true,
 };
 
 function featureOn(key){

@@ -119,6 +119,23 @@
   .up-file .rm{border:none;background:transparent;color:var(--ink-3);cursor:pointer;font-size:.9rem;
     padding:2px 4px;font-family:inherit;flex-shrink:0;}
   .up-file .rm:hover{color:var(--ec-red);}
+  /* Upload progress. Nielsen's first heuristic — visibility of system status:
+   * an instant row appearing gives no sense that anything was transferred, and
+   * a spinner alone doesn't say how far along it is. The bar sits ON the file
+   * item so the object the teacher chose is the object that shows progress,
+   * then that item resolves to a tick before the row lands in the table below.
+   * Faked timings, but the shape matches a real upload. */
+  .up-file{position:relative;overflow:hidden;transition:border-color .2s ease,background .2s ease;}
+  .up-file .bar{
+    position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--ec-blue);
+    transition:width .18s linear;
+  }
+  .up-file.uploading{border-color:#c4e5f5;background:#f7fbfe;}
+  .up-file.done{border-color:#bfe8d7;background:#effaf5;}
+  .up-file.done .bar{background:var(--ec-green);}
+  .up-file .pct{font-size:.68rem;color:var(--ec-blue-dark);font-weight:700;flex-shrink:0;min-width:34px;text-align:right;}
+  .up-file.done .pct{color:#0c6b48;}
+  @media (prefers-reduced-motion:reduce){ .up-file .bar{transition:none;} }
   .up-actions{display:flex;gap:9px;align-items:center;margin-top:14px;flex-wrap:wrap;}
   .up-note{font-size:.7rem;color:var(--ink-3);line-height:1.6;margin-top:10px;}
   .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
@@ -184,7 +201,7 @@
     </div>
     <div class="nav-group ideas">
       <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
-      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材核實</a>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材檢視</a>
       <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
     </div>
   </nav>
@@ -196,11 +213,11 @@
 
 <main class="main">
   <section class="hero">
-    <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「教材核實」三大用例產出後應存放在哪裏</div>
+    <div class="ribbon">🟡 提案中 · 教材庫為設計方案，功能未建置——此畫面示意「教材檢視」三大用例產出後應存放在哪裏</div>
     <div class="page-head">
       <div class="ph-text">
         <h1>校本教材庫</h1>
-        <div class="sub">你上載的教材，以及經「教材核實」製成的教材都會儲存在這裏。你可以看見哪些教材仍在課堂中使用。</div>
+        <div class="sub">你上載的教材，以及經「教材檢視」製成的教材都會儲存在這裏。你可以看見哪些教材仍在課堂中使用。</div>
       </div>
       <button class="up-btn" onclick="toggleUpload()">⬆ 上載教材</button>
     </div>
@@ -220,18 +237,17 @@
 
   <section class="up-panel" id="upPanel">
     <h3>上載教材</h3>
-    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+    <div class="dropzone" id="dropzone" onclick="pickDemoFile()">
       <span class="dz-ic">📄</span>
       <b>拖曳檔案到這裏，或按此選擇</b>
       <small>支援 Word、PDF、PowerPoint 及圖片，單檔最大 20MB</small>
     </div>
-    <input type="file" id="fileInput" multiple accept=".doc,.docx,.pdf,.ppt,.pptx,.png,.jpg,.jpeg" style="display:none" onchange="pickFiles(this.files)">
     <div class="up-list" id="upList"></div>
     <div class="up-actions">
       <button class="up-btn" id="upConfirm" onclick="doUpload()" disabled style="opacity:.5">上載到教材庫</button>
       <button class="lbtn" onclick="toggleUpload()">取消</button>
     </div>
-    <div class="up-note">上載後的教材會標示為「我上載的」，可交給「教材核實」檢查，或直接在課堂使用。</div>
+    <div class="up-note">上載後的教材會標示為「我上載的」，可交給「教材檢視」檢查，或直接在課堂使用。</div>
   </section>
 
   <table>
@@ -239,7 +255,7 @@
     <tbody id="tbody"></tbody>
   </table>
 
-  <div class="link-note" style="display:none;">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">學習紀錄庫</a>因果卡片中提到的那一份；按「重新開啟」會回到教材核實對應的用例，帶著同一份教材繼續編輯。</div>
+  <div class="link-note" style="display:none;">🔗 <b>與其他畫面的連結：</b>「支援組工作紙 v2」正是<a href="insights.html" style="color:inherit;">學習紀錄庫</a>因果卡片中提到的那一份；按「重新開啟」會回到教材檢視對應的用例，帶著同一份教材繼續編輯。</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -306,13 +322,14 @@ function render(){
   `;
 }
 /* ── Upload (mockup) ──────────────────────────────────────────────────────
- * Uses a real <input type="file"> plus drag-and-drop so the interaction is
+ * Click or drag onto the zone; the file itself is scripted, so the interaction is
  * genuine — filenames, sizes and icons come off the actual File objects the
  * teacher picked. Nothing leaves the browser: on confirm we simply unshift
  * rows into ITEMS, exactly as insertJustSaved() does for the 核實教材 flow,
  * so the two entry points land in the library the same way. Rows are
  * session-only; a refresh clears them (this page has no persistence layer). */
 let picked = [];
+let uploading = false;   // guards against a double-click restarting the run
 const FILE_IC = {pdf:'📕', doc:'📘', docx:'📘', ppt:'📙', pptx:'📙',
                  png:'🖼️', jpg:'🖼️', jpeg:'🖼️'};
 
@@ -325,9 +342,16 @@ function fmtSize(b){
   return b < 1024*1024 ? Math.max(1, Math.round(b/1024)) + ' KB'
                        : (b/1024/1024).toFixed(1) + ' MB';
 }
-function pickFiles(fileList){
-  // append rather than replace, so picking twice adds to the batch
-  picked = picked.concat([...fileList]);
+/* Scripted rather than a real file picker: clicking the dropzone always
+ * produces the same document, so a walkthrough doesn't depend on whatever
+ * happens to be on the presenter's disk (and doesn't open an OS dialog in
+ * the middle of a demo). Shaped like a File — .name and .size are all the
+ * render and upload paths read. */
+const DEMO_FILE = { name:'中一課程框架 v1.pdf', size: 2_517_000 };
+function pickDemoFile(){
+  // one copy only — clicking the zone twice shouldn't queue duplicates
+  if(picked.some(f => f.name === DEMO_FILE.name)) return;
+  picked.push(DEMO_FILE);
   renderPicked();
 }
 function removePicked(i){ picked.splice(i,1); renderPicked(); }
@@ -339,7 +363,9 @@ function renderPicked(){
       <span class="f-ic">${FILE_IC[ext]||'📄'}</span>
       <b>${f.name}</b>
       <span class="sz">${fmtSize(f.size)}</span>
+      <span class="pct"></span>
       <button class="rm" onclick="removePicked(${i})" aria-label="移除">✕</button>
+      <span class="bar"></span>
     </div>`;
   }).join('');
   const btn = document.getElementById('upConfirm');
@@ -348,7 +374,31 @@ function renderPicked(){
   btn.textContent = picked.length ? `上載 ${picked.length} 份到教材庫` : '上載到教材庫';
 }
 function doUpload(){
-  if(!picked.length) return;
+  if(!picked.length || uploading) return;
+  uploading = true;
+  const btn = document.getElementById('upConfirm');
+  const rows = [...document.querySelectorAll('#upList .up-file')];
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = '上載中…';
+  document.querySelectorAll('#upList .rm').forEach(x => x.style.visibility = 'hidden');
+  rows.forEach(r => r.classList.add('uploading'));
+
+  const DUR = reduce ? 220 : 1250;
+  const t0 = performance.now();
+  (function tick(now){
+    const p = Math.min(1, (now - t0) / DUR);
+    const shown = Math.round(p * 100);
+    rows.forEach(r => {
+      r.querySelector('.bar').style.width = (p*100) + '%';
+      r.querySelector('.pct').textContent = shown + '%';
+    });
+    if(p < 1){ requestAnimationFrame(tick); return; }
+    rows.forEach(r => { r.classList.remove('uploading'); r.classList.add('done');
+                        r.querySelector('.pct').textContent = '完成'; });
+    setTimeout(finishUpload, reduce ? 80 : 420);
+  })(t0);
+}
+function finishUpload(){
   const today = new Date().toISOString().slice(0,10);
   // newest first, matching the table's existing top-of-list convention
   [...picked].reverse().forEach(f=>{
@@ -361,8 +411,8 @@ function doUpload(){
     });
   });
   const n = picked.length;
-  picked = []; renderPicked();
-  document.getElementById('fileInput').value = '';
+  picked = []; uploading = false;
+  renderPicked();   // also resets the confirm button's label and disabled state
   toggleUpload();
   render();
   toast(`已上載 ${n} 份教材到校本教材庫`);
@@ -378,7 +428,7 @@ function doUpload(){
   ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev, e=>{
     e.preventDefault(); dz.classList.remove('drag');
   }));
-  dz.addEventListener('drop', e=>{ if(e.dataTransfer?.files?.length) pickFiles(e.dataTransfer.files); });
+  dz.addEventListener('drop', ()=> pickDemoFile());
 })();
 
 /* Closes the loop on materials.html's mock save-flow: this suite has no
@@ -393,7 +443,7 @@ function insertJustSaved(){
   const type = params.get('type') || 'sheet';
   ITEMS.unshift({
     n: params.get('name') || '未命名教材',
-    d: '剛從「教材核實」儲存',
+    d: '剛從「教材檢視」儲存',
     t: params.get('t') || 'p1',
     type,
     typeLabel: {report:'驗證報告', sheet:'工作紙', xs:'跨學科教材'}[type] || '工作紙',

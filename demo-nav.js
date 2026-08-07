@@ -35,7 +35,7 @@ const PAGES = [
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
    * features, so they sit apart from the teacher's working tools here too. */
   {group:'⚗ Ideas Lab（構思階段）', items:[
-    ['materials.html','教材核實（三大用例）','y'],
+    ['materials.html','教材檢視（三大用例）','y'],
     ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
   ]},
   {group:'📈 科主任（李天佑主任）', items:[
@@ -68,6 +68,11 @@ const PAGES = [
   ]},
 ];
 function init(){
+  /* Hidden by default: the fixed pill sits on whatever a page puts in its
+   * bottom-right corner. Flip demoNav to true in feature-flags.js to bring
+   * the walkthrough back — nothing else here changes. */
+  if(typeof featureOn === 'function' && !featureOn('demoNav')) return;
+
   const style=document.createElement('style');style.textContent=CSS;document.head.appendChild(style);
   const pill=document.createElement('button');pill.className='dn-pill';pill.textContent='🧭 示範導覽';
   const panel=document.createElement('div');panel.className='dn-panel';

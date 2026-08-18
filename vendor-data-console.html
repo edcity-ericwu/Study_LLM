@@ -129,6 +129,7 @@
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
+<script src="demo-state.js"></script>
 </head>
 <body>
 
@@ -173,7 +174,7 @@
   <section class="tab-pane active" data-pane="grant">
     <div class="grant-card">
       <div class="grant-row"><span class="lbl">學校</span><b>（示範）中學</b></div>
-      <div class="grant-row"><span class="lbl">組別範圍</span><b>支援組（2 人）· 中二乙班</b></div>
+      <div class="grant-row"><span class="lbl">存取範圍</span><b id="grantScope">中二乙班 · 9 人</b></div>
       <div class="grant-row"><span class="lbl">資料層級</span><span class="tier-badge">Tier 1 · 基本資料</span></div>
       <div class="grant-row"><span class="lbl">核准人</span><b>馮 Sir</b>（資訊科技統籌 · 供應商資料存取審批）</div>
       <div class="grant-row"><span class="lbl">生效日期</span><b>2026-07-21</b></div>
@@ -183,7 +184,7 @@
 
   <section class="tab-pane" data-pane="accounts">
     <table>
-      <thead><tr><th>學生</th><th>班別</th><th>對應組別（本系統）</th><th>狀態</th></tr></thead>
+      <thead><tr><th>學生</th><th>班別</th><th>程度（本系統）</th><th>狀態</th></tr></thead>
       <tbody id="acctTbody"></tbody>
     </table>
     <div class="readonly-note" style="margin-top:12px;">目前層級為 <b>Tier 1 · 基本資料</b>，只提供姓名與班別；學號、聯絡方式等進一步資料維持遮蔽狀態，除非學校日後批出更高層級。</div>
@@ -204,15 +205,40 @@
 
 <div class="toast" id="toast"></div>
 <script>
-let accounts = [
-  {name:'李俊希', cls:'中二乙班', mapped:'Level 2 · Support Track', status:'active'},
-  {name:'鄭家朗', cls:'中二乙班', mapped:'Level 2 · Support Track', status:'active'},
+/* Rendered from the payload the school released (see demo-state.js), not from
+ * the school's roster — this console has no access to CLASSES and shouldn't.
+ * Falls back to the seeded two when there is no shared state, which is the case
+ * on file:// and on a first visit. */
+/* Mirrors the one approved grant in vendor-data.js (增潤組, 9 students), so the
+ * two sides agree even without shared state. */
+const SEED_ACCOUNTS = [
+  {name:'王思穎', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'林一心', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'徐朗', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'邵浩霖', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'梁俊熙', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'邵嘉俐', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'柯子傲', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'楊子誠', cls:'中二乙班', mapped:'程度 4', status:'active'},
+  {name:'阮子健', cls:'中二乙班', mapped:'程度 4', status:'active'},
 ];
+function loadAccounts(){
+  const rel = (typeof DemoState !== 'undefined') ? DemoState.get('releases', null) : null;
+  const mine = rel && rel['zhixie'];
+  if(!mine || !mine.length) return SEED_ACCOUNTS.slice();
+  return mine.map(r => ({name:r.n, cls:r.cls, mapped:r.level, status:'active'}));
+}
+let accounts = loadAccounts();
 let syncLog = [
-  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：組別成員 2 人，無變動', time:'2026-07-15 03:00'},
+  {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：存取名單 9 人，無變動', time:'2026-07-15 03:00'},
   {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見校管系統名冊）', time:'2026-05-10 03:00'},
 ];
+function syncGrantScope(){
+  const el = document.getElementById('grantScope');
+  if(el) el.textContent = `中二乙班 · ${accounts.length} 人`;
+}
 function renderAccounts(){
+  syncGrantScope();
   document.getElementById('acctTbody').innerHTML = accounts.map(a=>`
     <tr>
       <td><b>${a.name}</b></td>
@@ -228,9 +254,9 @@ function renderSync(){
 }
 function runSync(){
   const now = '2026-07-21 ' + new Date().toISOString().slice(11,16);
-  syncLog.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：組別成員 2 人，無變動', time:now});
+  syncLog.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：存取名單 9 人，無變動', time:now});
   renderSync();
-  toast('已從教學分組（groups.html）同步最新組別成員');
+  toast('已同步最新存取名單');
 }
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}

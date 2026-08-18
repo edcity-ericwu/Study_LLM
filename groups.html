@@ -277,6 +277,7 @@
 </main>
 
 <div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
 document.body.classList.toggle('ff-hide-studygroups', typeof featureOn==='function' && !featureOn('studyGroups'));
@@ -434,6 +435,10 @@ function dropStu(ev,gid){
   const s=c.students.find(x=>x.n===name);
   if(!s||s.left||s.g===gid) return;
   s.g=gid;
+  // The group is the school's own state; the release is what follows from it.
+  // Recorded separately so a vendor never receives more than the grant allows.
+  recordGroupOverride(s.sid, gid);
+  publishReleases();
   render();
   const grp = c.groups.find(g=>g.id===gid);
   toast(name+' → '+grp.name);

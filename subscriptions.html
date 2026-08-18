@@ -280,12 +280,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
 /* unlimited/full-school plans aren't seat-capped, so they live outside vendor-data.js's
  * VENDOR_PLANS — they never need a capacity check, only a display entry here. */
 const UNLIMITED_PLANS = [
-  {vendorName:'智語科技', product:'普通話朗讀評測', plan:'全校方案', note:'不設教師／學生名額上限，按全校教師人數議定年費。', renewal:'2026-12-31'},
 ];
 
 function pctClass(pct){ return pct>=100 ? 'danger' : pct>=80 ? 'warn' : 'ok'; }

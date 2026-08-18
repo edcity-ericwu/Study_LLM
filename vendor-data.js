@@ -8,6 +8,17 @@
  * the same numbers.
  *
  * grants  = access already approved (counts toward seat consumption)
+ *
+ * eligible = the students a grant covers, frozen when it was approved. Stored as
+ * sids, not names, and stored ON the grant rather than derived from CLASSES at
+ * render time — the whole point is that it does NOT move when the teacher's
+ * assignment changes mid-year. memberSnapshot is the subset actually released
+ * right now; eligible is what she may draw from without going back for approval.
+ * Only memberSnapshot ever reaches a vendor.
+ *
+ * seatsUsed is separate from headcount because seats are named-annual: a student
+ * removed from a group frees the slot in memberSnapshot but not the seat, so the
+ * two numbers legitimately diverge as the year goes on.
  * pending = requests awaiting a decision (do NOT count toward consumption until approved)
  * headcount is a plain number on every grant/pending entry, kept alongside the
  * human-readable group label, so consumption can be summed exactly instead of
@@ -391,6 +402,80 @@ function groupLabel(classId, groupId){
  * the group's CURRENT live membership (same class). Returns null if nothing has
  * changed, otherwise {added, removed} name lists — surfaced as a "please reconfirm"
  * nudge, never used to silently change what's already been approved. */
+/* Seats are named-annual: seatsUsed does not fall when a student leaves a group,
+ * so this is plan capacity minus what has been spent this year, never a live
+ * headcount. */
+/* ── Cross-page hand-off (see demo-state.js) ───────────────────────────────
+ * A teacher moving a student between groups changes what a vendor holds, so
+ * the two have to stay in step. Two things are stored, and the split matters:
+ *
+ *   groupOverrides — {sid: groupId}. The school's own state. Applied to CLASSES
+ *     on load so the change survives navigation across the teacher/admin pages.
+ *   releases — {vendorId: [{n, cls, level}]}. The payload a vendor receives.
+ *     Derived, never the source. The vendor console reads only this, so it can
+ *     render what was released without ever touching the roster.
+ *
+ * Release = current group members ∩ the grant's frozen eligible list. A student
+ * the teacher adds who is outside the bound is deliberately absent here — she
+ * gets told to request them, and the vendor never sees them in the meantime. */
+function applyGroupOverrides(){
+  if(typeof DemoState === 'undefined') return;
+  const ov = DemoState.get('groupOverrides', null);
+  if(!ov) return;
+  Object.values(CLASSES).forEach(c =>
+    (c.students||[]).forEach(s => { if(ov[s.sid]) s.g = ov[s.sid]; }));
+}
+function recordGroupOverride(sid, groupId){
+  if(typeof DemoState === 'undefined') return;
+  const ov = DemoState.get('groupOverrides', {});
+  ov[sid] = groupId;
+  DemoState.set('groupOverrides', ov);
+}
+
+/* The neutral scale the school maps its groups onto. Vendors declare the
+ * vocabulary at vetting; the group's own name never travels. */
+const RELEASE_LEVEL = { stretch:'程度 4', core:'程度 3', support:'程度 2' };
+
+function releasedFor(vendorId){
+  const v = VENDORS.find(x => x.id === vendorId);
+  if(!v) return [];
+  const out = [];
+  (v.grants||[]).forEach(g => {
+    if(!g.classId || !g.groupId) return;
+    const members = g.groupId === '__whole_class__'
+      ? wholeClassMembers(g.classId)
+      : groupMembers(g.classId, g.groupId);
+    members.forEach(s => {
+      if(g.eligible && !g.eligible.includes(s.sid)) return;   // outside the bound
+      out.push({ n:s.n, cls:CLASSES[g.classId].className, level:RELEASE_LEVEL[s.g] || '程度 3' });
+    });
+  });
+  return out;
+}
+function publishReleases(){
+  if(typeof DemoState === 'undefined') return;
+  const map = {};
+  VENDORS.forEach(v => { map[v.id] = releasedFor(v.id); });
+  DemoState.set('releases', map);
+}
+
+function seatsLeft(vendorId){
+  const p = VENDOR_PLANS[vendorId];
+  return p ? Math.max(0, p.studentCap - p.seatsUsed) : null;
+}
+
+/* Students currently in the group who are NOT on the grant's frozen eligible
+ * list — the only membership change that needs a fresh approval. Everything
+ * inside the list the teacher may move freely, which is the point of approving
+ * a bound rather than a snapshot. Returns [] when a grant predates eligible[]. */
+function outsideBound(entry){
+  if(!entry.eligible || !entry.classId || !entry.groupId) return [];
+  const current = entry.groupId==='__whole_class__'
+    ? wholeClassMembers(entry.classId)
+    : groupMembers(entry.classId, entry.groupId);
+  return current.filter(s => !entry.eligible.includes(s.sid));
+}
+
 function membershipDrift(entry){
   if(!entry.classId || !entry.groupId || !entry.memberSnapshot) return null;
   const current = entry.groupId==='__whole_class__'
@@ -474,11 +559,11 @@ const VENDORS = [
     id:'zhixie', name:'智寫科技', product:'寫作回饋工具',
     vetting:{status:'certified', label:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已通過基準認證', note:'合規閘 5/5 通過（見供應商審核 vetting.html）'},
     grants:[
-      {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20'},
+      {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20', eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024']},
     ],
     pending:[
-      {id:'r1', teacherId:'T1001', group:'支援組（6 人）· 中二乙班', classId:'2b', groupId:'support', memberSnapshot:['李俊希','鄭家朗','何嘉睿','沈詩妍','施詠芝','范俊希'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
-      {id:'r2', teacherId:'T1002', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null},
+      {id:'r1', teacherId:'T1001', group:'支援組（6 人）· 中二乙班', classId:'2b', groupId:'support', memberSnapshot:['李俊希','鄭家朗','何嘉睿','沈詩妍','施詠芝','范俊希'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null, eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024']},
+      {id:'r2', teacherId:'T1002', group:'核心組（6 人）· 中二乙班', classId:'2b', groupId:'core', memberSnapshot:['陳嘉欣','何梓晴','黃俊傑','吳詠芝','周天恩','簡愛琳'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null, eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024']},
     ],
   },
   {
@@ -577,8 +662,8 @@ function scopeOverlapNote(vendorId, classId, groupId){
  * commercial contract with the school), not per-class, so usage sums grants
  * across ALL classes for that vendor — no classId parameter needed here. */
 const VENDOR_PLANS = {
-  zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  renewal:'2026-09-30'},
-  diandu:  {plan:'Standard 方案', teacherCap:8, studentCap:40,  renewal:'2026-08-15'},
+  zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  seatsUsed:9,  renewal:'2026-09-30'},
+  diandu:  {plan:'Standard 方案', teacherCap:8, studentCap:40,  seatsUsed:12, renewal:'2026-08-15'},
 };
 
 /* Sums approved grants only — pending requests are not consumption until approved. */
@@ -605,3 +690,5 @@ function capacityCheck(vendorId, addStudents){
     pctTeachers: Math.round((usage.teachers/plan.teacherCap)*100),
   };
 }
+
+applyGroupOverrides();

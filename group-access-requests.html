@@ -103,6 +103,8 @@
   .scope-card .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
   .scope-card b{font-size:.88rem;}
   .scope-card .n{margin-left:auto;font-size:.7rem;color:var(--ink-3);}
+  .seat-line{font-size:.7rem;color:var(--ink-3);margin-top:7px;}
+  .seat-line.short{color:#b45309;font-weight:600;}
   .scope-card .goal{font-size:.7rem;color:var(--ink-3);margin-bottom:12px;line-height:1.5;}
   .scope-card select{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 30px 8px 10px;font-size:.78rem;font-family:inherit;margin-bottom:8px;color:var(--ink);background-color:#fff;}
   .scope-card .go{width:100%;border:none;border-radius:8px;padding:9px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
@@ -124,6 +126,10 @@
   .rchip.pending{color:#8a5a00;background:#fdf1c7;}
   .rchip.approved{color:#0c6b48;background:#e6f7ef;}
   .rchip.denied{color:#b91c1c;background:#fee2e2;}
+  .bound-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-size:.72rem;color:var(--ink-2);background:#f7fbfe;border:1px solid #dceaf3;
+    border-radius:9px;padding:8px 12px;margin-top:10px;}
+  .bound-row .seats{color:var(--ink-3);}
   .drift-banner{background:#fee2e2;border-top:1px solid #f5c6c6;padding:11px 16px;font-size:.75rem;color:#991b1b;line-height:1.6;}
   .drift-banner b{display:block;margin-bottom:2px;}
   .overlap-flag{background:#fdf6ec;border-top:1px solid #f3e3c3;padding:9px 16px;font-size:.72rem;color:#8a5a00;line-height:1.6;}
@@ -220,6 +226,7 @@
 </main>
 
 <div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
 /* Feature-flag gating — trial-go buttons and the study-group section are both
@@ -266,6 +273,28 @@ function switchClass(classId){
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) document.getElementById('classMenu').classList.remove('show'); });
 
+/* Seats are named-annual — spending one is not reversible within the school
+ * year — so the teacher sees the remaining count before she commits, not only
+ * afterwards in the ICT coordinator's view. Shows how many students this scope
+ * would consume alongside what is left, since those are the two numbers the
+ * decision actually turns on. */
+function refreshSeats(scopeId){
+  const el = document.getElementById('seatLine-'+scopeId);
+  if(!el) return;
+  const vendorId = document.getElementById('vendorPick-'+scopeId).value;
+  const left = seatsLeft(vendorId);
+  if(left === null){ el.textContent = ''; return; }
+  const need = scopeId === '__whole_class__'
+    ? wholeClassMembers(activeClassId).length
+    : scopeId.startsWith('__study_group__')
+      ? studyGroupHeadcount(scopeId.replace('__study_group__',''))
+      : groupHeadcount(activeClassId, scopeId);
+  el.className = 'seat-line' + (need > left ? ' short' : '');
+  el.textContent = need > left
+    ? `本學年尚餘 ${left} 個學生名額，此範圍需 ${need} 個`
+    : `本學年尚餘 ${left} 個學生名額`;
+}
+
 function vendorOptionsHtml(){
   return VENDORS.filter(v=>REQUESTABLE_VENDORS.includes(v.id))
     .map(v=>`<option value="${v.id}">${v.name} · ${v.product}</option>`).join('');
@@ -287,7 +316,8 @@ function renderScopeCards(){
     return `<div class="scope-card" id="scopeCard-${g.id}">
       <div class="sc-head"><span class="dot" style="background:${g.color}"></span><b>${g.name}</b><span class="n">${n} 人</span></div>
       <div class="goal">${g.goal}</div>
-      <select id="vendorPick-${g.id}" onchange="refreshTrialButton('${g.id}')">${vendorOptionsHtml()}</select>
+      <select id="vendorPick-${g.id}" onchange="refreshSeats('${g.id}');refreshTrialButton('${g.id}')">${vendorOptionsHtml()}</select>
+      <div class="seat-line" id="seatLine-${g.id}"></div>
       <button class="go" onclick="submitRequest('${g.id}')">送出正式申請 →</button>
       <button class="go trial-go" id="trialBtn-${g.id}" onclick="submitTrialRequest('${g.id}')" style="margin-top:6px;background:#fff;border:1px solid var(--ec-purple);color:var(--ec-purple);">🧪 申請試用（14 天）</button>
       <div id="overlapNote-${g.id}"></div>
@@ -297,12 +327,14 @@ function renderScopeCards(){
   document.getElementById('wholeScopeGrid').innerHTML = `<div class="scope-card whole" id="scopeCard-__whole_class__">
     <div class="sc-head"><b>全班</b><span class="n">${wc} 人</span></div>
     <div class="goal">不分組別，整班學生的資料一併申請，適合全班統一使用的工具。</div>
-    <select id="vendorPick-__whole_class__" onchange="refreshTrialButton('__whole_class__')">${vendorOptionsHtml()}</select>
+    <select id="vendorPick-__whole_class__" onchange="refreshSeats('__whole_class__');refreshTrialButton('__whole_class__')">${vendorOptionsHtml()}</select>
+    <div class="seat-line" id="seatLine-__whole_class__"></div>
     <button class="go" onclick="submitRequest('__whole_class__')">送出正式申請 →</button>
     <button class="go trial-go" id="trialBtn-__whole_class__" onclick="submitTrialRequest('__whole_class__')" style="margin-top:6px;background:#fff;border:1px solid var(--ec-purple);color:var(--ec-purple);">🧪 申請試用（14 天）</button>
     <div id="overlapNote-__whole_class__"></div>
   </div>`;
-  classGroups(activeClassId).forEach(g=>refreshTrialButton(g.id));
+  classGroups(activeClassId).forEach(g=>{ refreshSeats(g.id); refreshTrialButton(g.id); });
+  refreshSeats('__whole_class__');
   refreshTrialButton('__whole_class__');
 }
 
@@ -323,13 +355,14 @@ function renderStudyGroupScopeCards(){
     return `<div class="scope-card" id="scopeCard-${scopeKey}" style="border-top:3px solid var(--ec-teal);">
       <div class="sc-head"><span class="dot" style="background:var(--ec-teal)"></span><b>${sg.name}</b><span class="n">${n} 人 · 跨班</span></div>
       <div class="goal">${sg.goal||'（未填寫目的）'}</div>
-      <select id="vendorPick-${scopeKey}" onchange="refreshTrialButton('${scopeKey}')">${vendorOptionsHtml()}</select>
+      <select id="vendorPick-${scopeKey}" onchange="refreshSeats('${scopeKey}');refreshTrialButton('${scopeKey}')">${vendorOptionsHtml()}</select>
+      <div class="seat-line" id="seatLine-${scopeKey}"></div>
       <button class="go" onclick="submitRequest('${scopeKey}')">送出正式申請 →</button>
       <button class="go trial-go" id="trialBtn-${scopeKey}" onclick="submitTrialRequest('${scopeKey}')" style="margin-top:6px;background:#fff;border:1px solid var(--ec-purple);color:var(--ec-purple);">🧪 申請試用（14 天）</button>
       <div id="overlapNote-${scopeKey}"></div>
     </div>`;
   }).join('');
-  STUDY_GROUPS.forEach(sg=>refreshTrialButton('__study_group__'+sg.id));
+  STUDY_GROUPS.forEach(sg=>{ refreshSeats('__study_group__'+sg.id); refreshTrialButton('__study_group__'+sg.id); });
 }
 
 function refreshTrialButton(groupId){
@@ -477,11 +510,20 @@ function renderGrantCard(v, entry, kind, driftCounter){
     : `<span class="rchip denied">✕ 已拒絕</span>`;
   const entryTeacherLabel = entry.teacherId ? teacherName(entry.teacherId)+' · ' : '';
   let driftHtml = '';
-  if(drift){
-    const parts = [];
-    if(drift.added.length) parts.push('新增：'+drift.added.join('、'));
-    if(drift.removed.length) parts.push('移除：'+drift.removed.join('、'));
-    driftHtml = `<div class="drift-banner"><b>⚠ 分組成員已改變</b>自${kind==='grant'?'核准':'申請'}後，${parts.join('；')}。存取範圍維持原狀，不會自動調整；如需涵蓋新成員或縮減範圍，請重新提出請求或聯絡資訊科技統籌。</div>`;
+  const outside = outsideBound(entry);
+  if(outside.length){
+    driftHtml = `<div class="drift-banner"><b>⚠ ${outside.length} 名學生不在核准名單內</b>${outside.map(s=>s.n).join('、')}已加入此分組，但不在此工具的核准名單內，未能使用。請為這些學生另行提出申請。</div>`;
+  }
+  let boundHtml = '';
+  if(entry.eligible && kind==='grant'){
+    const released = (entry.groupId==='__whole_class__'
+      ? wholeClassMembers(entry.classId) : groupMembers(entry.classId, entry.groupId))
+      .filter(s=>entry.eligible.includes(s.sid));
+    const left = seatsLeft(v.id);
+    boundHtml = `<div class="bound-row">
+      <span>已釋出 <b>${released.length}</b> 人 · 核准名單共 ${entry.eligible.length} 人</span>
+      ${left===null?'':`<span class="seats">本學年尚餘 ${left} 個學生名額</span>`}
+    </div>`;
   }
   const overlapHtml = entry.overlapNote ? `<div class="overlap-flag">⚠ ${entry.overlapNote}</div>` : '';
   return `<div class="req-card">
@@ -489,7 +531,7 @@ function renderGrantCard(v, entry, kind, driftCounter){
       <div><b>${entryTeacherLabel}${entry.group}</b><small>${v.name} · ${v.product}</small></div>
       <div class="rc-badges">${statusChip}</div>
     </div>
-    ${driftHtml}${overlapHtml}
+    ${boundHtml}${driftHtml}${overlapHtml}
   </div>`;
 }
 

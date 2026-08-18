@@ -348,14 +348,17 @@ function pctStateChip(pct){
  * freely without spending anything. */
 function releasedNotUsed(vendorId){
   const rel = (typeof releasedFor === 'function') ? releasedFor(vendorId).length : 0;
-  const used = VENDOR_PLANS[vendorId] ? VENDOR_PLANS[vendorId].seatsUsed : 0;
+  const p = planFor(vendorId);
+  const used = p ? p.seatsUsed : 0;
   return Math.max(0, rel - used);
 }
 
 function renderPlanGrid(){
-  const cards = Object.keys(VENDOR_PLANS).map(vendorId=>{
+  /* This console belongs to one school, so it only ever lists that school's
+   * plans — plansForSchool() defaults to MY_SCHOOL_ID. */
+  const cards = Object.keys(plansForSchool()).map(vendorId=>{
     const v = VENDORS.find(x=>x.id===vendorId);
-    const plan = VENDOR_PLANS[vendorId];
+    const plan = planFor(vendorId);
     const usage = vendorUsage(vendorId);
     const tPct = Math.round((usage.teachers/plan.teacherCap)*100);
     const sPct = Math.round((usage.students/plan.studentCap)*100);
@@ -389,7 +392,7 @@ function renderPlanGrid(){
 function renderCapacityAlerts(){
   const alerts = [];
   VENDORS.forEach(v=>{
-    if(!VENDOR_PLANS[v.id]) return;
+    if(!planFor(v.id)) return;
     v.pending.forEach(req=>{
       if(req.status!=='pending') return;
       const check = capacityCheck(v.id, req.headcount);
@@ -469,7 +472,7 @@ function budgetOutcome(id, outcome){
 function caseItems(){
   const items = [];
   BUDGET_PENDING.forEach(b=>{
-    const plan = VENDOR_PLANS[b.vendorId];
+    const plan = planFor(b.vendorId);
     const used = plan ? plan.seatsUsed : 0;
     items.push({
       kind:'待預算', vendorName:b.vendorName, product:b.product,
@@ -479,8 +482,8 @@ function caseItems(){
       why:`${teacherName(b.teacherId)}於試用期間持續使用；試用完結後範圍已凍結。若不作決定，${b.endsOn}起帳戶失效。`,
     });
   });
-  Object.keys(VENDOR_PLANS).forEach(vid=>{
-    const plan = VENDOR_PLANS[vid];
+  Object.keys(plansForSchool()).forEach(vid=>{
+    const plan = planFor(vid);
     const v = VENDORS.find(x=>x.id===vid);
     if(!v) return;
     const pct = Math.round((plan.seatsUsed/plan.studentCap)*100);

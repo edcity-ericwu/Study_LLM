@@ -476,8 +476,8 @@ function publishReleases(){
   DemoState.set('releases', map);
 }
 
-function seatsLeft(vendorId){
-  const p = VENDOR_PLANS[vendorId];
+function seatsLeft(vendorId, schoolId){
+  const p = planFor(vendorId, schoolId);
   return p ? Math.max(0, p.studentCap - p.seatsUsed) : null;
 }
 
@@ -669,10 +669,103 @@ function scopeOverlapNote(vendorId, classId, groupId){
  * can be joined against it from either page. Seat caps are school-wide (a
  * commercial contract with the school), not per-class, so usage sums grants
  * across ALL classes for that vendor — no classId parameter needed here. */
-const VENDOR_PLANS = {
-  zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  seatsUsed:9,  renewal:'2026-09-30'},
-  diandu:  {plan:'Standard 方案', teacherCap:8, studentCap:40,  seatsUsed:12, renewal:'2026-08-15'},
+/* Schools (added 2026-08-18).
+ *
+ * Everything school-side in this prototype is one school, and that is fine —
+ * 何主任 and 馮 Sir each work at exactly one. The vendor does not. A vendor
+ * holds relationships with many schools at once, and four models below were
+ * keyed by vendorId alone while actually describing a SCHOOL ↔ VENDOR
+ * relationship. The agreement gate was the sharpest case: a governance control
+ * that did not know which school it protected, so signing with one school would
+ * have unlocked releases at every school.
+ *
+ * TIER_DECLARATIONS is deliberately NOT re-keyed — what a tool needs is a
+ * property of the tool, identical at every school. */
+const SCHOOLS = {
+  'sch001': {name:'順德聯誼總會李兆基中學', shortName:'李兆基中學', district:'荃灣'},
+  'sch002': {name:'保良局陳守仁小學',       shortName:'陳守仁小學', district:'油尖旺'},
+  'sch003': {name:'香港真光書院',           shortName:'真光書院',   district:'南區'},
 };
+/* The school these school-side screens belong to. CLASSES, TEACHERS and the
+ * roster all belong to it implicitly — they are not re-keyed, because a school
+ * admin never sees another school's roster and pretending otherwise would add a
+ * dimension to every screen for no one's benefit. */
+const MY_SCHOOL_ID = 'sch001';
+function schoolName(id){ const s = SCHOOLS[id]; return s ? s.shortName : id; }
+
+/* Teacher-issued invite codes (decided 2026-08-18).
+ *
+ * The vendor portal used to offer a dropdown of every teacher in the table, so a
+ * vendor could browse a directory of named teachers. That contradicted the rule
+ * printed directly above the form — 「你必須已經和該老師接觸過」 — and adding a
+ * school selector in front of it would have made the browsing more structured,
+ * not less objectionable. It would also have made EdCity a teacher directory
+ * for vendors, which is a larger governance claim than anything else here.
+ *
+ * Instead the teacher issues a short code and hands it over herself, at the
+ * conference or in the email exchange where the contact actually happened. The
+ * code resolves to a school AND a teacher, so the multi-school problem is
+ * answered by the same mechanism rather than by a second picker.
+ *
+ * Deliberately NOT the Sayo room code this resembles: that let a *student*
+ * self-enrol into a teacher's room. This lets a *teacher* authorise a vendor to
+ * address her. No student data moves, and 馮 Sir still approves any release. */
+const INVITE_CODES = [
+  {code:'CHAN-7K2Q', teacherId:'T1001', schoolId:'sch001', issuedOn:'2026-08-12',
+   label:'教育科技展 · 智寫科技', uses:0, maxUses:1, revoked:false},
+  {code:'WONG-4M8P', teacherId:'T1002', schoolId:'sch001', issuedOn:'2026-08-15',
+   label:'電郵查詢後發出', uses:0, maxUses:1, revoked:false},
+];
+function resolveInviteCode(raw){
+  const code = String(raw||'').trim().toUpperCase();
+  const c = INVITE_CODES.find(x=>x.code===code);
+  if(!c) return {ok:false, reason:'unknown'};
+  if(c.revoked) return {ok:false, reason:'revoked'};
+  if(c.uses >= c.maxUses) return {ok:false, reason:'used'};
+  return {ok:true, code:c, teacherId:c.teacherId, schoolId:c.schoolId};
+}
+function spendInviteCode(code){
+  const c = INVITE_CODES.find(x=>x.code===code);
+  if(c) c.uses += 1;
+  return c;
+}
+function issueInviteCode(teacherId, schoolId, label){
+  /* Latin-only, and no characters that get misheard or misread when a teacher
+   * reads this out at a conference: no O/0, I/1, or CJK. */
+  const rnd = () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)];
+  const c = {code:('EC-'+rnd()+rnd()+rnd()+rnd()+rnd()).toUpperCase(),
+    teacherId, schoolId:schoolId||MY_SCHOOL_ID, issuedOn:'2026-08-18',
+    label:label||'（未註明用途）', uses:0, maxUses:1, revoked:false};
+  INVITE_CODES.unshift(c);
+  return c;
+}
+function codesForTeacher(teacherId){ return INVITE_CODES.filter(c=>c.teacherId===teacherId); }
+const svKey = (schoolId, vendorId) => schoolId + '::' + vendorId;
+
+/* Keyed school × vendor: each school buys its own seats, and one school's usage
+ * must not eat another's. */
+const VENDOR_PLANS = {
+  'sch001::zhixie':  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  seatsUsed:9,  renewal:'2026-09-30'},
+  'sch001::diandu':  {plan:'Standard 方案', teacherCap:8, studentCap:40,  seatsUsed:12, renewal:'2026-08-15'},
+  'sch002::zhixie':  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  seatsUsed:3,  renewal:'2027-01-31'},
+};
+/* Accessors default to MY_SCHOOL_ID so school-side screens read exactly as
+ * before; the vendor side passes a school explicitly. */
+function planFor(vendorId, schoolId){ return VENDOR_PLANS[svKey(schoolId||MY_SCHOOL_ID, vendorId)] || null; }
+function plansForSchool(schoolId){
+  const id = schoolId || MY_SCHOOL_ID, out = {};
+  Object.keys(VENDOR_PLANS).forEach(k=>{
+    const [s, v] = k.split('::');
+    if(s === id) out[v] = VENDOR_PLANS[k];
+  });
+  return out;
+}
+function schoolsForVendor(vendorId){
+  const ids = new Set();
+  Object.keys(VENDOR_PLANS).forEach(k=>{ const [s,v]=k.split('::'); if(v===vendorId) ids.add(s); });
+  Object.keys(AGREEMENTS).forEach(k=>{ const [s,v]=k.split('::'); if(v===vendorId) ids.add(s); });
+  return [...ids];
+}
 
 /* The agreement gate (decided 2026-08-18).
  *
@@ -686,13 +779,18 @@ const VENDOR_PLANS = {
  *       'service' — the paid subscription agreement
  *       null / absent — nothing signed; release is blocked. */
 const AGREEMENTS = {
-  zhixie:  {kind:'service', signedOn:'2026-06-18', expiresOn:'2027-08-31', ref:'AGR-2026-0118'},
-  diandu:  {kind:'trial',   signedOn:'2026-07-14', expiresOn:'2026-09-30', ref:'AGR-2026-0233'},
-  // 字詞通 AI: nothing signed — approval is blocked until it is.
+  'sch001::zhixie': {kind:'service', signedOn:'2026-06-18', expiresOn:'2027-08-31', ref:'AGR-2026-0118'},
+  'sch001::diandu': {kind:'trial',   signedOn:'2026-07-14', expiresOn:'2026-09-30', ref:'AGR-2026-0233'},
+  /* Same vendor, different school, different contract — the case the old
+   * vendor-only key could not express at all. */
+  'sch002::zhixie': {kind:'service', signedOn:'2026-05-02', expiresOn:'2027-08-31', ref:'AGR-2026-0077'},
+  // 字詞通 AI: nothing signed anywhere — approval is blocked until it is.
 };
-function agreementFor(vendorId){ return AGREEMENTS[vendorId] || null; }
-function agreementCovers(vendorId, isTrial){
-  const a = agreementFor(vendorId);
+function agreementFor(vendorId, schoolId){
+  return AGREEMENTS[svKey(schoolId||MY_SCHOOL_ID, vendorId)] || null;
+}
+function agreementCovers(vendorId, isTrial, schoolId){
+  const a = agreementFor(vendorId, schoolId);
   if(!a) return false;
   return a.kind === 'service' || (a.kind === 'trial' && isTrial);
 }
@@ -780,9 +878,13 @@ function budgetPendingCount(){ return BUDGET_PENDING.length; }
  * the school writes alone is a school asserting something about someone else's
  * systems. */
 const DELETION_RECEIPTS = [];
-function requestDeletion({vendorId, vendorName, group, tier, headcount, reason}){
+function requestDeletion({vendorId, vendorName, group, tier, headcount, reason, schoolId}){
+  const sch = schoolId || MY_SCHOOL_ID;
   const r = {
     id:'del'+(DELETION_RECEIPTS.length+1)+'-'+Date.now(),
+    /* A receipt has to name whose data was deleted — otherwise it proves
+     * nothing to the school that asked for it. */
+    schoolId:sch, schoolName:schoolName(sch),
     vendorId, vendorName, group, tier, headcount, reason,
     requestedOn:'2026-08-18', status:'awaiting_vendor', confirmedOn:null,
     /* What survives, stated explicitly so nobody has to infer it: aggregate,
@@ -799,8 +901,9 @@ function confirmDeletion(id, on){
   r.status='confirmed'; r.confirmedOn = on || '2026-08-19';
   return r;
 }
-function pendingDeletions(vendorId){
-  return DELETION_RECEIPTS.filter(r=>r.status==='awaiting_vendor' && (!vendorId || r.vendorId===vendorId));
+function pendingDeletions(vendorId, schoolId){
+  return DELETION_RECEIPTS.filter(r=>r.status==='awaiting_vendor'
+    && (!vendorId || r.vendorId===vendorId) && (!schoolId || r.schoolId===schoolId));
 }
 /* Published to the vendor console the same way releases are: a payload, not a
  * shared model. The vendor console must not gain access to CLASSES just to show
@@ -838,18 +941,21 @@ function trialsInFlight(){
 function trialPoolLeft(){ return Math.max(0, TRIAL_POOL.capacity - trialsInFlight().length); }
 function trialPoolFull(){ return trialPoolLeft() <= 0; }
 
-const SEAT_LEDGER = {};            // vendorId -> Set of sids that have signed in
-function hasSeat(vendorId, sid){
-  return !!(SEAT_LEDGER[vendorId] && SEAT_LEDGER[vendorId].has(sid));
+const SEAT_LEDGER = {};            // "schoolId::vendorId" -> Set of sids
+function hasSeat(vendorId, sid, schoolId){
+  const k = svKey(schoolId||MY_SCHOOL_ID, vendorId);
+  return !!(SEAT_LEDGER[k] && SEAT_LEDGER[k].has(sid));
 }
 /* Returns {consumed:true} the first time, {consumed:false, reason} thereafter or
  * when there is nothing left to consume. */
-function consumeSeat(vendorId, sid){
-  const plan = VENDOR_PLANS[vendorId];
+function consumeSeat(vendorId, sid, schoolId){
+  const sch = schoolId || MY_SCHOOL_ID;
+  const plan = planFor(vendorId, sch);
   if(!plan) return {consumed:false, reason:'no-plan'};
-  if(hasSeat(vendorId, sid)) return {consumed:false, reason:'already', seatsUsed:plan.seatsUsed};
+  if(hasSeat(vendorId, sid, sch)) return {consumed:false, reason:'already', seatsUsed:plan.seatsUsed};
   if(plan.seatsUsed >= plan.studentCap) return {consumed:false, reason:'exhausted', seatsUsed:plan.seatsUsed};
-  (SEAT_LEDGER[vendorId] = SEAT_LEDGER[vendorId] || new Set()).add(sid);
+  const k = svKey(sch, vendorId);
+  (SEAT_LEDGER[k] = SEAT_LEDGER[k] || new Set()).add(sid);
   plan.seatsUsed += 1;
   return {consumed:true, seatsUsed:plan.seatsUsed, cap:plan.studentCap};
 }
@@ -891,7 +997,7 @@ function vendorUsage(vendorId){
  * a pending request) going to exceed the student seat cap? Returns null if the
  * vendor has no seat-capped plan (e.g. unlimited full-school licences). */
 function capacityCheck(vendorId, addStudents){
-  const plan = VENDOR_PLANS[vendorId];
+  const plan = planFor(vendorId);
   if(!plan) return null;
   const usage = vendorUsage(vendorId);
   const projected = usage.students + addStudents;

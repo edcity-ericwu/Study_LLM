@@ -112,6 +112,19 @@
   .scope-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7fbfe;border:1px solid #c4e5f5;border-radius:10px;padding:10px 13px;}
   .scope-pick .sp-label{font-size:.76rem;font-weight:700;color:var(--ec-blue-dark);}
   .scope-pick select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:.78rem;font-family:inherit;background:#fff;}
+  .codes{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:16px;}
+  .codes-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+  .codes-head b{font-size:.86rem;display:block;}
+  .codes-head small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.6;max-width:44em;}
+  .codes-head .btn{margin-left:auto;flex-shrink:0;}
+  .code-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid #f2f5f8;flex-wrap:wrap;}
+  .code-row.dead{opacity:.5;}
+  .code-val{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.84rem;font-weight:700;letter-spacing:.04em;}
+  .code-meta{font-size:.72rem;color:var(--ink-3);}
+  .code-state{margin-left:auto;font-size:.7rem;color:var(--ink-3);}
+  .code-x{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 11px;font-size:.7rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .code-x:hover{border-color:var(--ec-red);color:var(--ec-red);}
+  .code-empty{font-size:.76rem;color:var(--ink-3);padding:8px 0;}
   .pool-note-t{background:#fdf6e3;border:1px solid #efdcb0;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:#8a5a09;line-height:1.6;}
   .empty{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
 
@@ -177,6 +190,7 @@
     </div>
   </section>
 
+  <div class="codes" id="codesBox"></div>
   <div id="poolNote"></div>
   <h2>待你回應</h2>
   <div id="waitingList"></div>
@@ -213,6 +227,45 @@ document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) docum
 
 /* She is told, not asked. A full pool is a school constraint she cannot resolve
  * — the same reason seat shortfalls never reach her. */
+/* Her side of the code. A vendor can only reach her if she handed one over, so
+ * issuing and revoking has to be hers — otherwise "you must already have
+ * contacted the teacher" is a rule with nobody enforcing it. */
+function renderCodes(){
+  const host = document.getElementById('codesBox');
+  if(!host || typeof codesForTeacher !== 'function') return;
+  const mine = codesForTeacher(MY_TEACHER_ID);
+  host.innerHTML = `
+    <div class="codes-head">
+      <div>
+        <b>你的邀請碼</b>
+        <small>供應商要聯絡你，必須先有你給的邀請碼。教育城不會把教師名單提供給供應商。</small>
+      </div>
+      <button class="btn" onclick="newCode()">＋ 產生新邀請碼</button>
+    </div>
+    ${mine.length ? mine.map(c=>{
+      const dead = c.revoked || c.uses>=c.maxUses;
+      return `<div class="code-row ${dead?'dead':''}">
+        <span class="code-val">${c.code}</span>
+        <span class="code-meta">${c.label} · ${c.issuedOn}</span>
+        <span class="code-state">${c.revoked ? '已撤回' : (c.uses>=c.maxUses ? '已使用' : '未使用 · 限用一次')}</span>
+        ${dead ? '' : `<button class="code-x" onclick="revokeCode('${c.code}')">撤回</button>`}
+      </div>`;
+    }).join('') : '<div class="code-empty">你目前沒有有效的邀請碼。</div>'}`;
+}
+function newCode(){
+  const label = prompt('這個邀請碼給誰／在甚麼場合發出？（方便你日後辨認）', '') || '（未註明用途）';
+  const c = issueInviteCode(MY_TEACHER_ID, MY_SCHOOL_ID, label);
+  renderCodes();
+  toast('已產生邀請碼：'+c.code+'，可交給供應商');
+}
+function revokeCode(code){
+  const c = INVITE_CODES.find(x=>x.code===code);
+  if(!c) return;
+  c.revoked = true;
+  renderCodes();
+  toast('已撤回 '+code+'，供應商不能再用它聯絡你');
+}
+
 function renderPoolNote(){
   const host = document.getElementById('poolNote');
   if(!host || typeof trialPoolFull !== 'function') return;
@@ -326,6 +379,7 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 renderClassSwitcher();
 renderInvites();
 renderPoolNote();
+renderCodes();
 </script>
 <script src="usage-modal.js"></script>
 <script src="demo-nav.js"></script>

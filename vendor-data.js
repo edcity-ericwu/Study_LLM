@@ -698,6 +698,39 @@ function agreementCovers(vendorId, isTrial){
 }
 const AGREEMENT_LABEL = {trial:'零費用試用協議', service:'服務協議'};
 
+/* Data-tier declaration — step 1.
+ *
+ * The vendor states what its tool needs, at vetting, before any school sees it.
+ * Previously the tier first appeared on 馮 Sir's approval screen already
+ * decided, by nobody, from nowhere — which made it look like his choice when it
+ * is really a property of the tool that he either accepts or declines.
+ *
+ * declaredTier is the CEILING, not the value: 馮 Sir may release less than the
+ * vendor asked for, never more. */
+const DATA_TIERS = {
+  1:{label:'Tier 1 · 基本資料',      fields:'姓名、班別'},
+  2:{label:'Tier 2 · 敏感個人資料',  fields:'加上聯絡方式、特殊教育需要標記'},
+  3:{label:'Tier 3 · 表現數據',      fields:'加上評估結果與學習紀錄'},
+};
+const TIER_DECLARATIONS = {
+  zhixie:       {tier:1, declaredOn:'2026-06-28', why:'只需辨識學生身分以配對其作文與回饋紀錄。', verified:true},
+  diandu:       {tier:1, declaredOn:'2026-07-02', why:'只需辨識學生身分以記錄閱讀進度。', verified:true},
+  unknownvendor:{tier:2, declaredOn:null, why:'聲稱需要特殊教育需要標記以調整題目難度，未提供說明文件。', verified:false},
+};
+function declaredTier(vendorId){
+  const d = TIER_DECLARATIONS[vendorId];
+  return d ? DATA_TIERS[d.tier] : null;
+}
+/* True when 馮 Sir is about to release more than the vendor declared it needs.
+ * Not blocked — a school may have its own reason — but it should never happen
+ * silently. */
+function exceedsDeclared(vendorId, tierLabel){
+  const d = TIER_DECLARATIONS[vendorId];
+  if(!d) return false;
+  const n = Number(String(tierLabel).match(/Tier\s*(\d)/)?.[1] || 0);
+  return n > d.tier;
+}
+
 /* 待預算 — steps 12–14 of the release flow.
  *
  * When a trial ends and the school has not decided, the release does not simply
@@ -734,6 +767,77 @@ function budgetPendingCount(){ return BUDGET_PENDING.length; }
  * later leaves the group. It is a seat for a named child, not a concurrent
  * licence, so releasing it on regrouping would let a school cycle one seat
  * through thirty children. */
+/* Deletion receipts — step 15.
+ *
+ * Revoking access used to end the story: the grant disappeared and an audit line
+ * said it had been revoked. But step 15 promises more than "we stopped sending
+ * data" — it promises the released data is DELETED, while tagged historical
+ * records are retained so longitudinal views survive. Nothing showed that ever
+ * happened, and proof of destruction is precisely the artefact a school or a
+ * regulator asks for. An audit line saying "revoked" is not that proof.
+ *
+ * Two-party by design: the school raises it, the vendor confirms it. A receipt
+ * the school writes alone is a school asserting something about someone else's
+ * systems. */
+const DELETION_RECEIPTS = [];
+function requestDeletion({vendorId, vendorName, group, tier, headcount, reason}){
+  const r = {
+    id:'del'+(DELETION_RECEIPTS.length+1)+'-'+Date.now(),
+    vendorId, vendorName, group, tier, headcount, reason,
+    requestedOn:'2026-08-18', status:'awaiting_vendor', confirmedOn:null,
+    /* What survives, stated explicitly so nobody has to infer it: aggregate,
+     * de-identified records stay, because a lapsed subscription should not
+     * silently erase a student's learning history from the school's own views. */
+    retained:'已去識別化的彙總紀錄（不含姓名、班別）',
+  };
+  DELETION_RECEIPTS.unshift(r);
+  return r;
+}
+function confirmDeletion(id, on){
+  const r = DELETION_RECEIPTS.find(x=>x.id===id);
+  if(!r || r.status==='confirmed') return null;
+  r.status='confirmed'; r.confirmedOn = on || '2026-08-19';
+  return r;
+}
+function pendingDeletions(vendorId){
+  return DELETION_RECEIPTS.filter(r=>r.status==='awaiting_vendor' && (!vendorId || r.vendorId===vendorId));
+}
+/* Published to the vendor console the same way releases are: a payload, not a
+ * shared model. The vendor console must not gain access to CLASSES just to show
+ * a deletion queue — that boundary is the point. */
+function publishDeletions(){
+  if(typeof DemoState === 'undefined') return;
+  DemoState.set('deletions', DELETION_RECEIPTS);
+}
+function loadPublishedDeletions(){
+  if(typeof DemoState === 'undefined') return [];
+  return DemoState.get('deletions', []);
+}
+
+/* The school's trial pool — step 8, outcome 2.
+ *
+ * "Trial from the school's pool" was in the flow from the start, but trials
+ * appeared from nowhere and were limited by nothing, which made the second
+ * outcome indistinguishable from a free-for-all. The pool is what makes a trial
+ * a decision: it is finite, it is the school's, and spending it on one tool
+ * means not spending it on another.
+ *
+ * Counted in CONCURRENT trials, not in students. A trial is a commitment of
+ * 馮 Sir's attention and of the school's willingness to have another vendor
+ * holding data — neither scales with cohort size, and counting students would
+ * push a teacher back toward trialling with fewer children than she needs. */
+const TRIAL_POOL = {
+  capacity: 4,
+  periodLabel: '2026／27 學年',
+  note: '同一時間最多可進行的試用數目。試用結束或轉為訂閱後名額即時釋出。',
+};
+function trialsInFlight(){
+  if(typeof TRIALS === 'undefined') return [];
+  return TRIALS.filter(t=>['pending_it','active'].includes(t.status));
+}
+function trialPoolLeft(){ return Math.max(0, TRIAL_POOL.capacity - trialsInFlight().length); }
+function trialPoolFull(){ return trialPoolLeft() <= 0; }
+
 const SEAT_LEDGER = {};            // vendorId -> Set of sids that have signed in
 function hasSeat(vendorId, sid){
   return !!(SEAT_LEDGER[vendorId] && SEAT_LEDGER[vendorId].has(sid));

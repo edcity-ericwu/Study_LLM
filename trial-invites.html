@@ -112,6 +112,7 @@
   .scope-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7fbfe;border:1px solid #c4e5f5;border-radius:10px;padding:10px 13px;}
   .scope-pick .sp-label{font-size:.76rem;font-weight:700;color:var(--ec-blue-dark);}
   .scope-pick select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:.78rem;font-family:inherit;background:#fff;}
+  .pool-note-t{background:#fdf6e3;border:1px solid #efdcb0;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:#8a5a09;line-height:1.6;}
   .empty{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
@@ -176,6 +177,7 @@
     </div>
   </section>
 
+  <div id="poolNote"></div>
   <h2>待你回應</h2>
   <div id="waitingList"></div>
 
@@ -208,6 +210,16 @@ function switchClass(classId){
   toast('已切換至 '+CLASSES[classId].className);
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) document.getElementById('classMenu').classList.remove('show'); });
+
+/* She is told, not asked. A full pool is a school constraint she cannot resolve
+ * — the same reason seat shortfalls never reach her. */
+function renderPoolNote(){
+  const host = document.getElementById('poolNote');
+  if(!host || typeof trialPoolFull !== 'function') return;
+  host.innerHTML = trialPoolFull()
+    ? `<div class="pool-note-t">學校目前的試用名額已滿（${TRIAL_POOL.capacity} 個同時進行）。你仍可接受邀請，資訊科技統籌會在名額釋出後處理。</div>`
+    : '';
+}
 
 function renderInvites(){
   /* An unscoped invite (classId null) has no class to be filtered by yet — it is
@@ -297,7 +309,7 @@ function acceptInvite(id){
   t.status = 'pending_it';
   activeClassId = t.classId;
   renderClassSwitcher();
-  renderInvites();
+  renderInvites(); renderPoolNote();
   toast('已接受試用，等候資訊科技統籌核實');
 }
 function declineInvite(id){
@@ -313,6 +325,7 @@ let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
 renderClassSwitcher();
 renderInvites();
+renderPoolNote();
 </script>
 <script src="usage-modal.js"></script>
 <script src="demo-nav.js"></script>

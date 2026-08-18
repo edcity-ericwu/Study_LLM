@@ -89,6 +89,16 @@
   .gate.fail{color:#991b1b;background:#fff5f5;border-color:#f5c6c6;}
   .gate.wait{color:var(--ink-3);background:#fafcfd;border-color:var(--line);}
   .fail-note{margin-top:11px;font-size:.73rem;color:#991b1b;background:#fff5f5;border:1px solid #f5c6c6;border-radius:9px;padding:8px 12px;line-height:1.6;}
+  .decl-box{background:#f7fbfe;border:1px solid #c4e5f5;border-radius:11px;padding:12px 15px;margin:12px 0;}
+  .decl-box.unverified{background:#fdf6e3;border-color:#efdcb0;}
+  .decl-lbl{font-size:.66rem;font-weight:700;color:var(--ec-blue-dark);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .decl-box.unverified .decl-lbl{color:#8a5a09;}
+  .decl-body{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px;}
+  .decl-body b{font-size:.84rem;}
+  .decl-fields{font-size:.72rem;color:var(--ink-3);}
+  .decl-state{margin-left:auto;font-size:.7rem;font-weight:700;}
+  .decl-why{font-size:.74rem;color:var(--ink-2);line-height:1.6;}
+  .decl-note{font-size:.7rem;color:var(--ink-3);margin-top:5px;}
   .fit{margin-top:12px;border-top:1px dashed var(--line);padding-top:11px;}
   .fit .f-lbl{font-size:.68rem;color:var(--ink-3);margin-bottom:7px;}
   .fit-chip{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--ink-2);background:#f5f8fa;border:1px solid var(--line);border-radius:99px;padding:4px 11px;margin:0 5px 5px 0;}
@@ -166,6 +176,7 @@
       <div class="gate pass"><b><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 學生身份處理</b>有真實方案</div>
       <div class="gate fail"><b>✗ 課程對應證據</b>未能提供</div>
     </div>
+    <div class="decl" id="decl-zhixie"></div>
     <div class="fail-note">供應商簡報聲稱「內容對齊課程」，但獲邀即場示範與官方課程框架的實際對應時，只能重複宣傳語句。此前已有兩家供應商過不了同一條問題。<b>現已要求補交證據</b>，補交前不予認證。</div>
     <div class="fit">
       <div class="f-lbl">第二層 · 已核實的適配資料（只陳列，不評分）：</div>
@@ -226,9 +237,33 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<script src="vendor-data.js"></script>
 <script>
+/* The declaration is captured here, at vetting, and nowhere else. A vendor
+ * states what its tool needs before any school sees the listing; every later
+ * screen reads that number rather than inventing one. */
+function renderDeclarations(){
+  Object.keys(TIER_DECLARATIONS).forEach(vid=>{
+    const host = document.getElementById('decl-'+vid);
+    if(!host) return;
+    const d = TIER_DECLARATIONS[vid];
+    const t = DATA_TIERS[d.tier];
+    host.innerHTML = `<div class="decl-box ${d.verified?'':'unverified'}">
+      <div class="decl-lbl">供應商申報的資料需求（發放上限）</div>
+      <div class="decl-body">
+        <b>${t.label}</b><span class="decl-fields">${t.fields}</span>
+        <span class="decl-state">${d.verified
+          ? '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已核實 · '+d.declaredOn
+          : '⚠ 未核實'}</span>
+      </div>
+      <div class="decl-why">申報理由：${d.why}</div>
+      <div class="decl-note">學校可以發放低於此上限的層級，但不能高於。</div>
+    </div>`;
+  });
+}
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
+renderDeclarations();
 </script>
 <script src="demo-nav.js"></script>
 </body>

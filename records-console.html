@@ -116,6 +116,17 @@
     cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;display:flex;align-items:center;gap:7px;}
   .tab-btn.active{color:var(--ink);border-bottom-color:var(--ec-teal);}
   .tab-btn .tab-count{font-size:.64rem;font-weight:700;color:#8a5a00;background:#fdf1c7;border-radius:99px;padding:1px 8px;}
+  .browse-bar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+  .browse-bar input{border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:.8rem;font-family:inherit;min-width:260px;}
+  .browse-hint{font-size:.72rem;color:var(--ink-3);}
+  .browse-count{font-size:.72rem;color:var(--ink-3);margin-bottom:8px;}
+  .browse-tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .browse-tbl th{text-align:left;font-size:.66rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--line);}
+  .browse-tbl td{padding:9px 12px;font-size:.78rem;border-bottom:1px solid #f2f5f8;}
+  .browse-tbl tr:last-child td{border-bottom:none;}
+  .browse-tbl tr.off td{color:var(--ink-3);}
+  .browse-tbl .mono{font-variant-numeric:tabular-nums;}
+  .browse-empty{color:var(--ink-3);font-size:.8rem;padding:26px;text-align:center;}
   .tab-pane{display:none;}
   .tab-pane.active{display:block;}
 
@@ -170,6 +181,7 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="identity" onclick="showTab('identity')">身份紀錄請求<span class="tab-count" id="identityCount" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="browse" onclick="showTab('browse')">身份紀錄查閱</button>
     <button class="tab-btn" data-tab="audit" onclick="showTab('audit')">稽核記錄</button>
   </div>
 
@@ -184,6 +196,14 @@
 
   </section>
 
+  <section class="tab-pane" data-pane="browse">
+    <div class="browse-bar">
+      <input type="text" id="recSearch" placeholder="搜尋姓名、學號或班別" oninput="renderBrowse()">
+      <span class="browse-hint">只供查閱。修改身份紀錄須經上方的請求流程，不能在此直接編輯。</span>
+    </div>
+    <div id="browseResult"></div>
+  </section>
+
   <section class="tab-pane" data-pane="audit">
     <h2>稽核記錄</h2>
     <div class="audit" id="auditList"></div>
@@ -196,6 +216,48 @@
 <script src="vendor-data.js"></script>
 <script>
 guardWholePage('recordsApproval', '.sys-main');
+/* Read-only, on purpose.
+ *
+ * 曾主任 could approve a change to a record she had no way of reading — she saw
+ * a request ("approve 黎曉盈") without being able to check the record it acted
+ * on. That is approval without inspection, which is a control in name only.
+ *
+ * It stays read-only because editing here would rebuild, one layer down, the
+ * exact conflation the request/execute split exists to remove: she approves
+ * identity facts, 何主任 requests and owns organizational placement. A field
+ * she could type into would let her do both. */
+function allRecords(){
+  const out = [];
+  Object.keys(CLASSES).forEach(cid=>{
+    (CLASSES[cid].students||[]).forEach(s=>out.push({
+      sid:s.sid, name:s.n, cls:CLASSES[cid].className, seat:s.no,
+      state: s.left ? '已轉出／離校' : '在讀',
+    }));
+  });
+  (typeof UNASSIGNED_STUDENTS !== 'undefined' ? UNASSIGNED_STUDENTS : []).forEach(s=>out.push({
+    sid:s.sid, name:s.n, cls:'—', seat:null, state:'已建立身份，待編班',
+  }));
+  return out;
+}
+function renderBrowse(){
+  const q = (document.getElementById('recSearch').value || '').trim();
+  let rows = allRecords();
+  if(q) rows = rows.filter(r =>
+    (r.name||'').includes(q) || (r.sid||'').toUpperCase().includes(q.toUpperCase()) || (r.cls||'').includes(q));
+  rows.sort((a,b)=> (a.cls||'').localeCompare(b.cls||'') || (a.seat||0)-(b.seat||0));
+  const host = document.getElementById('browseResult');
+  if(!rows.length){ host.innerHTML = '<div class="browse-empty">沒有符合的紀錄。</div>'; return; }
+  const shown = rows.slice(0, 40);
+  host.innerHTML = `<div class="browse-count">${rows.length} 筆紀錄${rows.length>40?'（顯示首 40 筆，請收窄搜尋）':''}</div>
+    <table class="browse-tbl">
+      <thead><tr><th>學號</th><th>姓名</th><th>班別</th><th>班號</th><th>狀態</th></tr></thead>
+      <tbody>${shown.map(r=>`<tr class="${r.state==='在讀'?'':'off'}">
+        <td class="mono">${r.sid||'—'}</td><td>${r.name}</td><td>${r.cls}</td>
+        <td class="mono">${r.seat!=null?String(r.seat).padStart(2,'0'):'—'}</td>
+        <td>${r.state}</td></tr>`).join('')}</tbody>
+    </table>`;
+}
+
 function showTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
@@ -309,6 +371,7 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 renderIntakeRequests();
 renderStatusRequests();
 renderAudit();
+renderBrowse();
 </script>
 <script src="demo-nav.js"></script>
 </body>

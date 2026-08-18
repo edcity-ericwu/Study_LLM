@@ -180,6 +180,21 @@
   .group-head .grp-count{float:right;color:var(--ink-3);font-weight:500;}
   .class-accent{border-left:4px solid var(--line);}
 
+  .ro-unknown{background:#fdf6e3;border:1px solid #efdcb0;border-radius:14px;padding:16px 20px;margin-bottom:16px;color:#8a5a09;}
+  .ro-unknown b{font-size:.86rem;display:block;margin-bottom:6px;}
+  .ro-unknown p{font-size:.78rem;line-height:1.7;margin-bottom:6px;}
+  .ro-unknown .ro-ask{background:#fff;border:1px solid #efdcb0;border-radius:9px;padding:9px 13px;margin-top:8px;margin-bottom:0;}
+  .ro-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
+  .ro-step{display:flex;gap:11px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;opacity:.55;}
+  .ro-step.done{opacity:1;}
+  .ro-step .n{width:22px;height:22px;border-radius:50%;background:#eef2f6;color:var(--ink-2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+  .ro-step b{font-size:.8rem;display:block;}
+  .ro-step small{font-size:.7rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.5;}
+  .ro-impact{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;}
+  .ro-impact b{font-size:.84rem;display:block;margin-bottom:8px;}
+  .ro-impact ul{margin:0 0 10px 18px;}
+  .ro-impact li{font-size:.78rem;color:var(--ink-2);line-height:1.75;}
+  .ro-note{font-size:.74rem;color:var(--ink-3);line-height:1.65;border-top:1px solid var(--line);padding-top:10px;}
   .bulk-input textarea{width:100%;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.76rem;border:1px solid var(--line);border-radius:8px;padding:10px 12px;resize:vertical;}
   .bulk-actions{display:flex;gap:10px;margin:10px 0 4px;flex-wrap:wrap;align-items:center;}
   .bulk-actions .file-act{position:relative;overflow:hidden;}
@@ -256,6 +271,7 @@
     <button class="tab-btn active" data-tab="teachers" onclick="showTab('teachers')">教師名冊 <span class="tab-count" id="countTeachers" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="assign" onclick="showTab('assign')">任教編配 <span class="tab-count" id="countAssign" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="bulk" onclick="showTab('bulk')">批量編班 <span class="tab-count" id="countBulk" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="rollover" onclick="showTab('rollover')">學年升班</button>
     <button class="tab-btn" data-tab="students" onclick="showTab('students')">學生編班 <span class="tab-count" id="countStudents" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="roles" onclick="showTab('roles')">角色與權限 <span class="tab-count" id="countRoles" style="display:none;"></span></button>
   </div>
@@ -327,6 +343,42 @@
       <thead><tr><th>老師</th><th>班別</th><th>科目</th><th>學年</th><th></th></tr></thead>
       <tbody id="assignTbody"></tbody>
     </table>
+  </section>
+
+  <section class="tab-pane" data-pane="rollover">
+    <div class="hero">
+      <div class="page-head">
+        <div class="ph-text">
+          <h1>學年升班</h1>
+          <div class="sub">每年九月一次，把全校學生由舊班別轉入新班別。這是「名單直接取自學校帳戶管理系統，毋須重新輸入」這句承諾的關鍵一步——如果每年八月要人手重打全校名單，那句話就不成立。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ro-unknown">
+      <b>⚠ 尚未確認：官方學年名冊由哪裏來</b>
+      <p>升班要有一份權威的新學年名冊作依據。這份名冊的來源目前<b>未確認</b>——可能是 WebSAMS 匯出、教育局的檔案、或由學校自行編定。不同來源會得出不同的介面與對接方式，因此下方的流程是<b>示意的骨架</b>，尚未接上任何真實來源。</p>
+      <p class="ro-ask">要落實這個功能，需要先回答：<b>學校每年的官方班別名冊，實際上從哪個系統產生？</b></p>
+    </div>
+
+    <div class="ro-steps">
+      <div class="ro-step done"><span class="n">1</span><div><b>匯入新學年名冊</b><small>來源待確認（見上）</small></div></div>
+      <div class="ro-step"><span class="n">2</span><div><b>比對現有紀錄</b><small>升班、留級、轉出、新生，逐項列出差異</small></div></div>
+      <div class="ro-step"><span class="n">3</span><div><b>校務處覆核</b><small>何主任確認差異，不能靜默套用</small></div></div>
+      <div class="ro-step"><span class="n">4</span><div><b>套用</b><small>任教編配、課室、教學分組隨之更新</small></div></div>
+    </div>
+
+    <div class="ro-impact">
+      <b>套用後會自動處理的事</b>
+      <ul>
+        <li>舊學年的<b>教學分組</b>失效——分組屬於某一年的某一班，不會跟著學生升班。</li>
+        <li>舊學年的<b>資料存取</b>到期：學生名額以學年計，8 月 31 日後不再授權。</li>
+        <li>已離校學生的<b>帳戶撤銷</b>與刪除要求，會一併產生（見供應商資料存取審批）。</li>
+      </ul>
+      <div class="ro-note">升班不會自動重建分組，也不會自動重新申請工具。新學年由老師按新班別重新分組、重新指派——這是刻意的：舊分組的教學理由未必仍然成立。</div>
+    </div>
+
+    <button class="btn" onclick="toast('未接上真實名冊來源，暫時不能執行升班')" style="margin-top:14px;">開始升班（需先確認名冊來源）</button>
   </section>
 
   <section class="tab-pane" data-pane="bulk">

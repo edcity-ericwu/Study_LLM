@@ -81,6 +81,14 @@
   .grant-row .lbl{width:130px;flex-shrink:0;font-size:.7rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:normal;}
   .grant-row b{font-size:.85rem;}
   .tier-badge{font-size:.68rem;font-weight:700;border-radius:99px;padding:4px 12px;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  .dq{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;flex-wrap:wrap;}
+  .dq.confirmed{background:#f9fbfa;}
+  .dq-main b{font-size:.84rem;display:block;}
+  .dq-main small{display:block;font-size:.7rem;color:var(--ink-3);margin-top:2px;}
+  .dq-chip{margin-left:auto;font-size:.68rem;font-weight:700;border-radius:99px;padding:5px 12px;background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;white-space:nowrap;}
+  .dq .btn{margin-left:auto;}
+  .dq-note{font-size:.72rem;color:var(--ink-3);line-height:1.6;margin-top:8px;}
+  .dq-empty{color:var(--ink-3);font-size:.8rem;padding:26px;text-align:center;}
   .readonly-note{
     margin-top:12px;background:#f5f8fa;border:1px solid var(--line);border-radius:9px;padding:9px 13px;
     font-size:.72rem;color:var(--ink-3);line-height:1.6;
@@ -168,6 +176,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-tab="grant" onclick="showTab('grant')">已核准的資料存取</button>
     <button class="tab-btn" data-tab="accounts" onclick="showTab('accounts')">已建立的帳戶</button>
+    <button class="tab-btn" data-tab="deletion" onclick="showTab('deletion')">刪除要求<span class="tab-count" id="delCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="sync" onclick="showTab('sync')">名冊同步記錄</button>
   </div>
 
@@ -188,6 +197,10 @@
       <tbody id="acctTbody"></tbody>
     </table>
     <div class="readonly-note" style="margin-top:12px;">目前層級為 <b>Tier 1 · 基本資料</b>，只提供姓名與班別。學校不會傳送能力分組或程度資料；如工具需要起始程度，請在工具內自行評估。學號、聯絡方式等進一步資料維持遮蔽狀態，除非學校日後批出更高層級。</div>
+  </section>
+
+  <section class="tab-pane" data-pane="deletion">
+    <div id="delList"></div>
   </section>
 
   <section class="tab-pane" data-pane="sync">
@@ -212,8 +225,45 @@
 /* Mirrors the one approved grant in vendor-data.js (9 students), so the two
  * sides agree even without shared state. The school-side group behind it is
  * deliberately not named here — this file has no business knowing it. */
+const MY_VENDOR_ID = 'zhixie';   // this console is 智寫科技's own view
 const SEED_ACCOUNTS = ['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健']
   .map(n => ({name:n, cls:'中二乙班', status:'active'}));
+/* Confirming deletion is the vendor's act, not the school's. A receipt the
+ * school writes on its own is a school asserting something about someone else's
+ * systems — worth nothing to a regulator. Two parties, two signatures. */
+function renderDeletionRequests(){
+  const wrap = document.getElementById('delList');
+  if(!wrap) return;
+  const all = (typeof DemoState !== 'undefined') ? DemoState.get('deletions', []) : [];
+  const mine = all.filter(r=>r.vendorId === MY_VENDOR_ID);
+  const open = mine.filter(r=>r.status==='awaiting_vendor').length;
+  const cnt = document.getElementById('delCount');
+  if(cnt){ cnt.textContent = open; cnt.style.display = open ? '' : 'none'; }
+  wrap.innerHTML = mine.length ? mine.map(r=>`
+    <div class="dq ${r.status}">
+      <div class="dq-main">
+        <b>${r.group}</b>
+        <small>${r.tier} · 學校撤銷原因：${r.reason}</small>
+        <small>要求日期：${r.requestedOn}</small>
+      </div>
+      ${r.status==='confirmed'
+        ? `<span class="dq-chip ok">已確認刪除 · ${r.confirmedOn}</span>`
+        : `<button class="btn" onclick="ackDeletion('${r.id}')">確認已刪除此範圍的資料</button>`}
+    </div>`).join('')
+    + `<div class="dq-note">確認即表示你已從自己的系統刪除該範圍的學生個人資料。已去識別化的彙總紀錄不在此列。學校會看到你的確認日期。</div>`
+    : '<div class="dq-empty">目前沒有來自學校的刪除要求。</div>';
+}
+function ackDeletion(id){
+  if(typeof DemoState === 'undefined'){ toast('示範環境未能保存確認'); return; }
+  const all = DemoState.get('deletions', []);
+  const r = all.find(x=>x.id===id);
+  if(!r || r.status==='confirmed') return;
+  r.status='confirmed'; r.confirmedOn='2026-08-19';
+  DemoState.set('deletions', all);
+  renderDeletionRequests();
+  toast('已確認刪除：'+r.group);
+}
+
 function loadAccounts(){
   const rel = (typeof DemoState !== 'undefined') ? DemoState.get('releases', null) : null;
   const mine = rel && rel['zhixie'];
@@ -221,6 +271,7 @@ function loadAccounts(){
   return mine.map(r => ({name:r.n, cls:r.cls, status:'active'}));
 }
 let accounts = loadAccounts();
+renderDeletionRequests();
 let syncLog = [
   {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：存取名單 9 人，無變動', time:'2026-07-15 03:00'},
   {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見學校帳戶管理系統名冊）', time:'2026-05-10 03:00'},

@@ -880,6 +880,8 @@
   </div>
 </div>
 
+<script src="demo-state.js"></script>
+<script src="vendor-data.js"></script>
 <script>
 let mode = null;           // null | 'ask' | 'plan'
 let model = '智能模型';
@@ -1078,7 +1080,7 @@ const TOOL_DETAILS = {
     fit:[['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','混合程度分層回饋：已核實'],['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','AI 出錯時的處理流程：已提供'],['<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>','教師覆核：預設開啟']],
   },
   other: {
-    face:'📝', color:'var(--ec-amber)', name:'另一款已認證工具', vendor:'供應商暫不具名',
+    face:'📝', color:'var(--ec-amber)', name:'中文分級閱讀庫', vendor:'點讀教育',
     tag:'中學 · 中文', lic:'sub',
     desc:'第二個通過教育城合規審核的寫作回饋工具，具體供應商資料尚待正式版本決定是否可具名顯示（見下方採購中立說明）。',
     caps:['弱勢學生適用性證據已核實'],
@@ -1101,11 +1103,42 @@ function openToolModal(key){
     use.onclick = () => toast('於 '+i.vendor+' 平台開啟（單一登入）');
   } else {
     use.textContent = '向學校申請訂閱';
-    use.onclick = () => toast('訂閱申請已送交學校管理員');
+    /* This used to toast 「訂閱申請已送交學校管理員」 and send nothing — a claimed
+ * state change that never happened, so 馮 Sir never saw it. Same class of
+ * defect as the agreement notice that linked to a page with no agreement
+ * surface: the screen asserts an outcome the system does not produce. */
+    use.onclick = () => requestSubscription(key, i);
   }
   document.getElementById('toolOverlay').classList.add('show');
 }
 function closeToolModal(){ document.getElementById('toolOverlay').classList.remove('show'); }
+/* A tool a teacher wants but the school does not hold: raised as a real pending
+ * request against her own class, so it lands in 馮 Sir's queue like any other.
+ * Scope is the whole class here, because this screen has no group context —
+ * she can narrow it later from the group page. */
+function requestSubscription(key, info){
+  /* The teacher-facing catalogue and the governance model were written at
+   * different times with different vendor casts (墨言科技 / 智語科技 here versus
+   * 智寫科技 / 點讀教育 in vendor-data.js). Where a tool's vendor is not one the
+   * platform governs, say so plainly — the alternative is claiming a request was
+   * sent to someone who does not exist. */
+  const vid = (typeof VENDORS !== 'undefined') && (VENDORS.find(v=>v.id===key) || VENDORS.find(v=>v.name===info.vendor));
+  if(!vid){ toast(`「${info.vendor}」尚未在 EdMarket 完成登記，未能經平台提出申請`); return; }
+  if(typeof CLASSES === 'undefined'){ toast('未能提出申請'); return; }
+  const c = CLASSES['2b'];
+  const ms = (c.students||[]).filter(s=>!s.left);
+  if((vid.pending||[]).some(p=>p.classId==='2b' && p.groupId==='__whole_class__' && (!p.status||p.status==='pending'))){
+    toast('已有一個未處理的申請'); closeToolModal(); return;
+  }
+  (vid.pending = vid.pending || []).push({
+    id:'r'+Date.now(), teacherId:'T1001', classId:'2b', groupId:'__whole_class__',
+    group:`全班（${ms.length} 人）· ${c.className}`, memberSnapshot:ms.map(s=>s.n),
+    headcount:ms.length, tier:'Tier 1 · 基本資料', src:'來自 EdCity.ai 工具介面', status:'pending',
+  });
+  if(typeof publishRequests === 'function') publishRequests();
+  closeToolModal();
+  toast('已提出申請，馮 Sir 會在資料存取審批處理');
+}
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeToolModal(); });
 
 /* 故事 5：EdCity.ai 工具指引 — 核實的適配資料，不作採購推薦 */

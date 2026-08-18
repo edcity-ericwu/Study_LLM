@@ -147,6 +147,19 @@
   .cr.ok{background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;}
   .cr.bad{background:#fff4f4;border:1px solid #f5d6d6;color:#9c2b2b;}
   .cr small{display:block;font-size:.7rem;color:#4a9b7c;margin-top:2px;}
+  .agr-asks{background:#fdf6e3;border:1px solid #efdcb0;border-radius:11px;padding:12px 15px;margin-bottom:12px;}
+  .agr-asks b{font-size:.8rem;display:block;margin-bottom:7px;color:#8a5a09;}
+  .agr-ask{display:flex;align-items:center;gap:12px;font-size:.78rem;color:#8a5a09;padding:5px 0;flex-wrap:wrap;}
+  .agr-ask .btn{margin-left:auto;}
+  .agr-row{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:12px;padding:13px 17px;margin-bottom:9px;flex-wrap:wrap;}
+  .agr-row.none{background:#fff4f4;border-color:#f5d6d6;}
+  .agr-row.trial{background:#fdf6e3;border-color:#efdcb0;}
+  .agr-row.service{background:#effaf5;border-color:#bfe8d7;}
+  .agr-main b{font-size:.84rem;display:block;}
+  .agr-main small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:2px;}
+  .agr-acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .agr-ok{font-size:.72rem;font-weight:700;color:#0c6b48;}
+  .agr-empty{font-size:.8rem;color:var(--ink-3);padding:20px;text-align:center;}
   .invite-form{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:6px;}
   .invite-form label{font-size:.72rem;color:var(--ink-3);display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px;}
   .invite-form input,.invite-form select{font-family:inherit;font-size:.82rem;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;background-color:#fff;}
@@ -218,6 +231,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-tab="cert" onclick="showTab('cert')">認證進度</button>
     <button class="tab-btn" data-tab="invite" onclick="showTab('invite')">邀請老師試用<span class="tab-count" id="inviteCount"></span></button>
+    <button class="tab-btn" data-tab="agreements" onclick="showTab('agreements')">學校協議<span class="tab-count" id="agrCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="access" onclick="showTab('access')">已獲學校批出的資料存取</button>
   </div>
 
@@ -244,7 +258,7 @@
       </span></div>
       <div style="margin-top:14px;display:flex;gap:9px;">
         <button class="btn" id="submitBtn" onclick="resubmit(this)">上傳對應文件</button>
-        <button class="btn ghost" onclick="toast('查看公開審核準則全文')">查看公開準則</button>
+        <a class="btn ghost" href="vetting.html" style="text-decoration:none;display:inline-block;">查看公開準則 →</a>
       </div>
     </div>
 
@@ -283,6 +297,15 @@
       <div id="inviteBlock"></div>
       <h4 style="font-size:.8rem;margin:16px 0 8px;color:var(--ink-2);">已發出的邀請</h4>
       <div id="inviteList"></div>
+    </div>
+  </section>
+
+  <section class="tab-pane" data-pane="agreements">
+    <div class="card">
+      <h3>學校協議</h3>
+      <div class="sect-sub" style="margin:0 0 14px;">學校不能自行宣稱與你簽了協議——<b>由你確認</b>，因為你才知道實際賣了甚麼。教育城只記錄「有沒有協議、屬哪一種」，<b>不會看到價格或條款</b>；那是你與學校之間的事。<br>沒有生效協議，學校不能發放任何學生資料；只有零費用試用協議，則只足以支援試用。</div>
+      <div id="agrRequests"></div>
+      <div id="agrList"></div>
     </div>
   </section>
 
@@ -399,6 +422,47 @@ function inviteStatusLabel(s){
     graduated:'🎓 已轉為正式申請', declined:'✕ 已被拒絕'}[s] || s;
 }
 
+/* One row per school this vendor has any relationship with. */
+function renderAgreements(){
+  const wrap = document.getElementById('agrList');
+  if(!wrap) return;
+  const asks = openAgreementRequests(MY_VENDOR_ID);
+  const cnt = document.getElementById('agrCount');
+  if(cnt){ cnt.textContent = asks.length; cnt.style.display = asks.length ? '' : 'none'; }
+
+  document.getElementById('agrRequests').innerHTML = asks.length
+    ? `<div class="agr-asks"><b>學校提出的請求</b>${asks.map(r=>`
+        <div class="agr-ask">
+          <span>${schoolName(r.schoolId)} 要求確認<b>${AGREEMENT_LABEL[r.kind]}</b>（${r.askedOn}）</span>
+          <button class="btn" onclick="ackAgreement('${r.schoolId}','${r.kind}')">確認已簽訂</button>
+        </div>`).join('')}</div>`
+    : '';
+
+  const ids = new Set([...schoolsForVendor(MY_VENDOR_ID), ...asks.map(r=>r.schoolId)]);
+  wrap.innerHTML = [...ids].map(sid=>{
+    const a = agreementFor(MY_VENDOR_ID, sid);
+    return `<div class="agr-row ${a?a.kind:'none'}">
+      <div class="agr-main">
+        <b>${schoolName(sid)}</b>
+        <small>${a ? `${AGREEMENT_LABEL[a.kind]} · ${a.ref} · 簽於 ${a.signedOn} · 有效至 ${a.expiresOn}` : '尚未有生效協議'}</small>
+      </div>
+      <div class="agr-acts">
+        ${a && a.kind==='service'
+          ? '<span class="agr-ok">服務協議生效中</span>'
+          : `<button class="btn" onclick="ackAgreement('${sid}','service')">確認服務協議</button>
+             ${a ? '' : `<button class="btn ghost" onclick="ackAgreement('${sid}','trial')">確認零費用試用協議</button>`}`}
+      </div>
+    </div>`;
+  }).join('') || '<div class="agr-empty">尚未與任何學校建立關係。</div>';
+}
+function ackAgreement(schoolId, kind){
+  const a = confirmAgreement(schoolId, MY_VENDOR_ID, kind);
+  closeAgreementRequest(schoolId+'::'+MY_VENDOR_ID, kind);
+  publishAgreements();
+  renderAgreements();
+  toast(`已確認${AGREEMENT_LABEL[kind]}：${schoolName(schoolId)} · ${a.ref}`);
+}
+
 function renderInvites(){
   const mine = TRIALS.filter(t=>t.vendorId===MY_VENDOR_ID);
   document.getElementById('inviteList').innerHTML = mine.length ? mine.map(t=>`
@@ -465,6 +529,7 @@ function sendInvite(){
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 renderInvites();
+renderAgreements();
 </script>
 <script src="demo-nav.js"></script>
 </body>

@@ -848,6 +848,61 @@ function agreementCovers(vendorId, isTrial, schoolId){
 }
 const AGREEMENT_LABEL = {trial:'零費用試用協議', service:'服務協議'};
 
+/* Who records an agreement — settled in §4.5 of the scoping document.
+ *
+ * Not the school: a school declaring it holds a service agreement is
+ * self-declaring an entitlement. The VENDOR confirms it, in their own portal —
+ * they know what they sold, and it makes the handshake two-party. No
+ * verification required, because confirming a sale that did not happen is
+ * against the vendor's own interest.
+ *
+ * EdCity records that an agreement exists and what kind. It never sees the
+ * price, the terms, or the document. That is between the school and the vendor,
+ * off-platform, and staying out of it is the whole neutrality position. */
+let AGREEMENT_SEQ = 300;
+function confirmAgreement(schoolId, vendorId, kind, expiresOn){
+  const k = svKey(schoolId, vendorId);
+  const existing = AGREEMENTS[k];
+  /* An upgrade replaces a trial agreement; it does not stack. */
+  AGREEMENTS[k] = {
+    kind, signedOn: TODAY(),
+    expiresOn: expiresOn || BUDGET_PENDING_END,
+    ref: existing && existing.kind === kind ? existing.ref : 'AGR-2026-0' + (AGREEMENT_SEQ++),
+  };
+  publishAgreements();
+  return AGREEMENTS[k];
+}
+/* A school cannot create an agreement, but it can ask for one. The request is
+ * the only agreement-shaped thing 馮 Sir can produce on his own. */
+const AGREEMENT_REQUESTS = [];
+function requestAgreement(schoolId, vendorId, kind){
+  const k = svKey(schoolId, vendorId);
+  if(AGREEMENT_REQUESTS.some(r=>r.key===k && r.kind===kind && r.status==='open')) return null;
+  const r = {key:k, schoolId, vendorId, kind, askedOn:TODAY(), status:'open'};
+  AGREEMENT_REQUESTS.push(r);
+  publishAgreements();
+  return r;
+}
+function openAgreementRequests(vendorId, schoolId){
+  return AGREEMENT_REQUESTS.filter(r=>r.status==='open'
+    && (!vendorId || r.vendorId===vendorId) && (!schoolId || r.schoolId===schoolId));
+}
+function closeAgreementRequest(key, kind){
+  AGREEMENT_REQUESTS.forEach(r=>{ if(r.key===key && r.kind===kind) r.status='closed'; });
+}
+function publishAgreements(){
+  if(typeof DemoState === 'undefined') return;
+  DemoState.set('agreements', AGREEMENTS);
+  DemoState.set('agreementRequests', AGREEMENT_REQUESTS);
+}
+function applyPublishedAgreements(){
+  if(typeof DemoState === 'undefined') return;
+  const a = DemoState.get('agreements', null);
+  if(a){ Object.keys(a).forEach(k=>{ AGREEMENTS[k] = a[k]; }); }
+  const r = DemoState.get('agreementRequests', null);
+  if(r){ AGREEMENT_REQUESTS.length = 0; r.forEach(x=>AGREEMENT_REQUESTS.push(x)); }
+}
+
 /* Data-tier declaration — step 1.
  *
  * The vendor states what its tool needs, at vetting, before any school sees it.
@@ -1158,4 +1213,5 @@ applyGroupOverrides();
 applyPublishedRequests();
 /* After state is restored, before anything renders: the clock is part of the
  * state, so a page opened after time was advanced starts already expired. */
+applyPublishedAgreements();
 applyExpiries();

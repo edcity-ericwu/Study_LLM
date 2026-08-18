@@ -233,9 +233,12 @@
       <li>能力標籤已預掛：推論、細節描寫 — 待批改後經審核計入</li>
     </ul>
     <div class="o-actions">
-      <button class="o-btn" onclick="toast('開啟編輯器審訂草稿')">審訂草稿</button>
-      <button class="o-btn ghost" onclick="toast('儲存到我的工作區')">儲存</button>
-      <button class="o-btn ghost" onclick="toast('再生成一版（5 代幣）')">再生成</button>
+      <!-- These three name what actually happens rather than a viewer that does
+           not exist here. 審訂 and 儲存 both land in the material library, which
+           is a real page; 再生成 states its cost before it is clicked. -->
+      <a class="o-btn" href="material-library.html" style="text-decoration:none;display:inline-block;">在教材庫審訂 →</a>
+      <a class="o-btn ghost" href="material-library.html" style="text-decoration:none;display:inline-block;">儲存至教材庫 →</a>
+      <button class="o-btn ghost" onclick="toast('再生成一版，將扣 5 代幣')">再生成（5 代幣）</button>
     </div>
   </div>
 </main>

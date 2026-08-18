@@ -331,7 +331,7 @@ function render(){
 
   const wrap = document.getElementById('list');
   if(!all.length){
-    wrap.innerHTML = '<div class="none">你目前沒有任何教學工具的申請或授權。<br>到「教學分組」開啟一個分組即可指派。</div>';
+    wrap.innerHTML = '<div class="none">你目前沒有任何教學工具的申請或授權。<br><a href="groups.html" style="color:var(--ec-blue-dark);font-weight:600;">到「教學分組」開啟一個分組即可指派 →</a></div>';
     return;
   }
   /* Grouped by class, because "what is stuck" is nearly always asked about one

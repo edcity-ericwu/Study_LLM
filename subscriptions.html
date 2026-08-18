@@ -129,6 +129,16 @@
   .clk-btn:hover{border-color:var(--ec-purple);}
   .clk-btn.on{background:var(--ec-purple);border-color:var(--ec-purple);color:#fff;font-weight:700;}
   .clk-note{font-size:.68rem;color:var(--ink-3);flex-basis:100%;line-height:1.5;}
+  .sa-row{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:12px;padding:13px 18px;margin-bottom:9px;flex-wrap:wrap;background:#fff;}
+  .sa-row.none{background:#fff4f4;border-color:#f5d6d6;}
+  .sa-row.trial{background:#fdfaf0;border-color:#efdcb0;}
+  .sa-row.service{background:#f8fdfa;border-color:#bfe8d7;}
+  .sa-main b{font-size:.84rem;display:block;}
+  .sa-main small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:2px;}
+  .sa-main .sa-warn{color:#8a5a09;}
+  .sa-act{margin-left:auto;}
+  .sa-ok{font-size:.72rem;font-weight:700;color:#0c6b48;}
+  .sa-wait{font-size:.72rem;font-weight:700;color:#8a5a09;}
   .qlink{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 20px;margin-bottom:16px;flex-wrap:wrap;}
   .qlink.has{border-color:#efdcb0;background:#fdfaf0;}
   .qlink b{font-size:.86rem;display:block;}
@@ -226,6 +236,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
+    <button class="tab-btn" data-tab="agreements" onclick="showTab('agreements')">供應商協議</button>
     <button class="tab-btn" data-tab="existing" onclick="showTab('existing')">現有訂閱</button>
     <button class="tab-btn" data-tab="case" onclick="showTab('case')">預算建議書</button>
   </div>
@@ -262,6 +273,11 @@
     <div id="capacityAlerts"></div>
     <div class="plan-grid" id="planGrid"></div>
     <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動匯總，不會出現兩邊數字不一致的情況。</div>
+  </section>
+
+  <section class="tab-pane" data-pane="agreements">
+    <div class="sect-sub" style="margin:0 0 14px;">沒有生效協議，就不能發放任何學生資料。<b>協議由供應商確認，不是由學校宣稱</b>——學校自行宣稱等於自己給自己授權。你可以在此提出請求，供應商在其入口確認後，這裏會自動更新。教育城只記錄有沒有協議、屬哪一種，<b>不涉及價格與條款</b>。</div>
+    <div id="agrSchool"></div>
   </section>
 
   <section class="tab-pane" data-pane="existing">
@@ -354,6 +370,37 @@ function jumpTo(d){
   toast(lapsed.length
     ? `日期已設為 ${d}：${lapsed.length} 項已到期並失效（${lapsed.map(l=>l.label).join('、')}）`
     : `日期已設為 ${d}，沒有項目到期`);
+}
+
+/* Read-mostly. 馮 Sir can see the state and ask for a change; he cannot assert
+ * one. The single action here produces a request, not an agreement. */
+function renderAgreementsSchool(){
+  const host = document.getElementById('agrSchool');
+  if(!host) return;
+  host.innerHTML = VENDORS.map(v=>{
+    const a = agreementFor(v.id);
+    const asked = openAgreementRequests(v.id, MY_SCHOOL_ID).map(r=>r.kind);
+    const need = a && a.kind==='service' ? null : 'service';
+    return `<div class="sa-row ${a?a.kind:'none'}">
+      <div class="sa-main">
+        <b>${v.name} · ${v.product}</b>
+        <small>${a ? `${AGREEMENT_LABEL[a.kind]} · ${a.ref} · 有效至 ${a.expiresOn}` : '尚未有生效協議 — 不能發放任何資料'}</small>
+        ${a && a.kind==='trial' ? '<small class="sa-warn">只足以支援試用；正式發放需服務協議。</small>' : ''}
+      </div>
+      <div class="sa-act">
+        ${!need ? '<span class="sa-ok">可正式發放</span>'
+          : asked.includes('service')
+            ? '<span class="sa-wait">已請求，待供應商確認</span>'
+            : `<button class="btn ghost" onclick="askAgreement('${v.id}')">請供應商確認服務協議</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+function askAgreement(vendorId){
+  const r = requestAgreement(MY_SCHOOL_ID, vendorId, 'service');
+  renderAgreementsSchool();
+  const v = VENDORS.find(x=>x.id===vendorId);
+  toast(r ? `已向${v.name}提出確認服務協議的請求` : '已有一個未處理的請求');
 }
 
 function renderQueueLink(){
@@ -564,6 +611,12 @@ function exportCase(){
   toast(`已匯出 ${n} 個項目的預算建議書，可直接交校長`);
 }
 
+/* Deep-linked from the access console's agreement notice, so 「前往訂閱管理 ·
+ * 供應商協議」 lands on the tab it names rather than on whatever is default. */
+if(location.hash === '#agreements') {
+  document.addEventListener('DOMContentLoaded', ()=>showTab('agreements'));
+}
+
 function showTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
@@ -578,6 +631,7 @@ function showTab(name){
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 renderClock();
+renderAgreementsSchool();
 renderQueueLink();
 renderCapacityAlerts();
 renderPlanGrid();

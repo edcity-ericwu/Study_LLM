@@ -216,7 +216,7 @@
   </section>
 
   <div class="toolbar">
-    <button class="btn" onclick="toast('建立新分組')">＋ 新增分組</button>
+    <button class="btn" onclick="newGroup()">＋ 新增分組</button>
     <input type="text" class="board-search" id="boardSearchInput" placeholder="搜尋姓名或班號" oninput="onBoardSearch(this)">
     <span class="hint-move">提示：拖放學生到另一組</span>
   </div>
@@ -304,6 +304,23 @@ function renderAllClass(){
 /* Read-only. Assignment lives in the group container — one surface, one code
  * path. Keeping a second assign menu on the card meant two places to change a
  * scope and a card that grew every time a group gained an attachment. */
+/* The board's primary create action used to raise a toast saying 建立新分組 and
+ * create nothing — the one thing this page exists to let her do. */
+const GROUP_COLORS = ['var(--ec-purple)','var(--ec-blue)','var(--ec-green)','var(--ec-teal)','var(--ec-amber)'];
+function newGroup(){
+  const c = CLASSES[activeClassId];
+  const name = (prompt('新分組的名稱？', '') || '').trim();
+  if(!name) return;
+  if(c.groups.some(g=>g.name===name)){ toast('已有同名分組'); return; }
+  const goal = (prompt('這一組的目的？（可留空）', '') || '').trim();
+  c.groups.push({
+    id:'g'+Date.now(), name, goal: goal || '（未填寫目的）',
+    color: GROUP_COLORS[c.groups.length % GROUP_COLORS.length],
+  });
+  render();
+  toast(`已建立「${name}」，把學生拖進去即可`);
+}
+
 function attachSummary(classId, groupId){
   const list = (typeof toolsForGroup === 'function') ? toolsForGroup(classId, groupId) : [];
   const active = list.filter(t=>t.status==='active').length;

@@ -461,6 +461,8 @@
 
 <div class="toast" id="toast" style="position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:80;"></div>
 
+<script src="demo-state.js"></script>
+<script src="vendor-data.js"></script>
 <script>
 /* type: agent | app | doc | slides ; vis: private | public */
 const ITEMS = [
@@ -678,6 +680,30 @@ function renderVendors(q){
       </div>
     </div>`).join('');
 }
+/* Mirrors chat.html: a tool the school does not hold becomes a real pending
+ * request rather than a toast claiming one was sent.
+ *
+ * The catalogue here carries seven vendor names; the governance model knows
+ * three. Where a tool's vendor is not one the platform governs, say so — the
+ * alternative is asserting a request was sent to someone who is not there. */
+function requestSubscription(info){
+  const v = (typeof VENDORS !== 'undefined') && VENDORS.find(x=>x.name===info.vendor);
+  if(!v){ toastMini(`「${info.vendor}」尚未在 EdMarket 完成登記，未能經平台提出申請`); return; }
+  if(typeof CLASSES === 'undefined'){ toastMini('未能提出申請'); return; }
+  const c = CLASSES['2b'], ms=(c.students||[]).filter(x=>!x.left);
+  if((v.pending||[]).some(p=>p.classId==='2b' && p.groupId==='__whole_class__' && (!p.status||p.status==='pending'))){
+    toastMini('已有一個未處理的申請'); return;
+  }
+  (v.pending = v.pending || []).push({
+    id:'r'+Date.now(), teacherId:'T1001', classId:'2b', groupId:'__whole_class__',
+    group:`全班（${ms.length} 人）· ${c.className}`, memberSnapshot:ms.map(x=>x.n),
+    headcount:ms.length, tier:'Tier 1 · 基本資料', src:'來自 EdMarket 應用程式', status:'pending',
+  });
+  if(typeof publishRequests === 'function') publishRequests();
+  if(typeof closeVendorModal === 'function') closeVendorModal();
+  toastMini('已提出申請，馮 Sir 會在資料存取審批處理');
+}
+
 function openVendorModal(idx){
   const i = VENDOR_ITEMS[idx];
   const m = document.getElementById('modal');
@@ -693,7 +719,7 @@ function openVendorModal(idx){
     use.onclick = () => toastMini('於 '+i.vendor+' 平台開啟（單一登入）');
   } else {
     use.textContent = '向學校申請訂閱';
-    use.onclick = () => toastMini('訂閱申請已送交學校管理員');
+    use.onclick = () => requestSubscription(i);
   }
   document.getElementById('overlay').classList.add('show');
 }

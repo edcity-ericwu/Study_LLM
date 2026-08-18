@@ -487,14 +487,14 @@ function agreementRowHtml(vendorId){
     return `<div class="agr-row missing">
       <b>⚠ 未簽訂協議</b>
       學校與此供應商之間尚未有生效的協議，因此不能發放任何學生資料。零費用的試用協議亦可，簽妥後這裏會自動更新。
-      <a class="agr-link" href="subscriptions.html">前往訂閱管理處理 →</a>
+      <a class="agr-link" href="subscriptions.html#agreements">前往「訂閱管理 · 供應商協議」→</a>
     </div>`;
   }
   if(a.kind === 'trial'){
     return `<div class="agr-row partial">
       <b>⚠ 只有零費用試用協議</b>
       ${a.ref} · 有效至 ${a.expiresOn}。試用協議足以支援試用，但不足以支援正式的長期發放；要核准這個申請，需先簽訂服務協議。
-      <a class="agr-link" href="subscriptions.html">前往訂閱管理處理 →</a>
+      <a class="agr-link" href="subscriptions.html#agreements">前往「訂閱管理 · 供應商協議」→</a>
     </div>`;
   }
   return `<div class="agr-row">

@@ -247,6 +247,8 @@
   .amenu .anone{font-size:.72rem;color:var(--ink-3);padding:6px 9px 8px;}
   .att{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#effaf5;border:1px solid #bfe8d7;border-radius:9px;padding:9px 13px;margin-bottom:8px;font-size:.76rem;color:#0c6b48;}
   .att.pending{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
+  .att.budget{background:#f3f0fb;border-color:#d8cff0;color:#4a3b7a;}
+  .att.budget .when{color:#7566a8;}
   .att b{font-weight:700;}
   .att .when{color:#4a9b7c;font-size:.72rem;}
   .att.pending .when{color:#a8843c;}
@@ -277,6 +279,7 @@
     <div class="nav-group">
       <h6>課堂與學生</h6>
       <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
+      <a href="tool-status.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>工具申請進度</a>
       <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
@@ -387,6 +390,13 @@ function tools(){
     (v.grants||[]).forEach(g=>{ if(g.classId===classId && g.groupId===groupId) out.push({v, status:'active', since:g.since}); });
     (v.pending||[]).forEach(p=>{ if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({v, status:'pending'}); });
   });
+  /* 待預算 as she experiences it: the tool still works, and the school has not
+   * decided. She is told, and she is not asked to do anything about it — the
+   * budget decision is not hers. */
+  (typeof BUDGET_PENDING !== 'undefined' ? BUDGET_PENDING : []).forEach(b=>{
+    if(b.classId===classId && b.groupId===groupId)
+      out.push({v:{id:b.vendorId, product:b.product, name:b.vendorName}, status:'budget', until:b.endsOn});
+  });
   return out;
 }
 /* Which OTHER scopes in this class already give a student a tool — the honest
@@ -454,6 +464,10 @@ function renderMaterial(){
 function renderTools(){
   const list = tools();
   document.getElementById('toolList').innerHTML = list.length ? list.map(t=>{
+    if(t.status==='budget'){
+      return `<div class="att budget">📋 使用中：<b>${t.v.product}</b>
+        <span class="when">· 已納入下年度預算建議，可用至 ${t.until}</span></div>`;
+    }
     const p = t.status==='pending';
     return `<div class="att${p?' pending':''}">${p?'⏳':CK}
       ${p?'已申請：':'已啟用：'}<b>${t.v.product}</b>

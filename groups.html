@@ -116,6 +116,7 @@
   .sm span{border-radius:99px;padding:3px 10px;}
   .sm .sm-on{background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;}
   .sm .sm-wait{background:#fdf6e3;border:1px solid #efdcb0;color:#8a5a09;}
+  .sm .sm-budget{background:#f3f0fb;border:1px solid #d8cff0;color:#4a3b7a;}
   .more-row{font-size:.7rem;color:var(--ink-3);text-align:center;padding:6px 0 2px;}
   .col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
   .col .c-head .open{margin-left:6px;color:var(--ink-3);text-decoration:none;font-size:.78rem;}
@@ -183,6 +184,7 @@
     <div class="nav-group">
       <h6>課堂與學生</h6>
       <a href="groups.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
+      <a href="tool-status.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>工具申請進度</a>
       <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
@@ -306,9 +308,12 @@ function attachSummary(classId, groupId){
   const list = (typeof toolsForGroup === 'function') ? toolsForGroup(classId, groupId) : [];
   const active = list.filter(t=>t.status==='active').length;
   const pending = list.filter(t=>t.status==='pending').length;
+  const budget = (typeof BUDGET_PENDING !== 'undefined' ? BUDGET_PENDING : [])
+    .filter(b=>b.classId===classId && b.groupId===groupId).length;
   const bits = [];
   if(active) bits.push(`<span class="sm-on">🧩 ${active} 項工具</span>`);
   if(pending) bits.push(`<span class="sm-wait">⏳ ${pending} 項待審批</span>`);
+  if(budget) bits.push(`<span class="sm-budget">📋 ${budget} 項待預算</span>`);
   /* No chip when there is nothing assigned. The empty state was the board's most
    * common state, so a grey negative on most cards was the dominant visual. */
   if(!bits.length) return '';

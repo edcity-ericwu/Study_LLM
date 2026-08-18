@@ -354,6 +354,7 @@
   </div>
 </div>
 
+<script src="vendor-data.js"></script>
 <script>
 /* Skill-progress sparklines — same pattern as insights.html/dept.html:
  * derive the trend direction/label from a real 6-point series instead of
@@ -404,6 +405,8 @@ function renderSkillProgress(){
 }
 renderSkillProgress();
 
+let currentVendorId = null;
+const VENDOR_ID_BY_NAME = {'智寫科技':'zhixie', '點讀教育':'diandu', '墨言科技':null};
 /* Assignment-launch modal — same pattern as chat.html's tool-detail modal:
  * show what you're about to open (and who runs it) before actually opening
  * it. data-src on the .rec div marks whether it's a third-party vendor tool
@@ -441,10 +444,21 @@ function openAssignmentModal(btn){
     document.getElementById('tmDesc').textContent = '免費官方資源，直接在教育城平台內開啟，不會轉去其他網站，也不需要另外登入。';
     document.getElementById('tmUse').textContent = '開始練習 →';
   }
+  currentVendorId = VENDOR_ID_BY_NAME[vendorName] || null;
   document.getElementById('toolOverlay').classList.add('show');
 }
+/* 中二乙班 · 王思穎 — this page's persona. Needed because a seat is metered
+ * against a named student, not against a session. */
+const MY_SID = 'S2001';
+/* Signing in through EdConnect is the moment a seat is spent — not the moment a
+ * teacher assigned the tool. Shown to the student only as "no extra login
+ * needed"; the accounting is the school's business, not hers. */
 function launchFromModal(){
   document.getElementById('toolOverlay').classList.remove('show');
+  if(currentVendorId && typeof consumeSeat === 'function'){
+    const r = consumeSeat(currentVendorId, MY_SID);
+    if(r.consumed) sToast('已用教育城帳戶登入，毋須另行註冊');
+  }
   if(pendingRecBtn) startRec(pendingRecBtn);
 }
 function closeToolModal(){ document.getElementById('toolOverlay').classList.remove('show'); }

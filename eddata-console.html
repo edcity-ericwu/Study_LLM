@@ -200,6 +200,11 @@
    * overlapping scopes for the same tool. */
   .drift-note{background:#fff4f4;border:1px solid #f5d6d6;border-radius:9px;padding:9px 12px;margin-top:8px;font-size:.74rem;color:#9c2b2b;line-height:1.6;}
   .drift-note b{display:block;margin-bottom:2px;}
+  .agr-row{background:#effaf5;border:1px solid #bfe8d7;border-radius:9px;padding:9px 13px;margin-bottom:10px;font-size:.74rem;color:#0c6b48;line-height:1.6;}
+  .agr-row b{display:block;margin-bottom:2px;}
+  .agr-row.missing{background:#fff4f4;border-color:#f5d6d6;color:#9c2b2b;}
+  .agr-row.partial{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
+  .agr-row .agr-link{display:inline-block;margin-top:5px;color:inherit;font-weight:700;}
   .bound-summary{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin:9px 0;font-size:.75rem;}
   .bound-summary.over{border-color:#f0d5a0;background:#fffdf5;}
   .bound-summary .bs-row{display:flex;gap:8px;align-items:baseline;padding:2px 0;color:var(--ink-2);}
@@ -427,10 +432,35 @@ function boundSummaryHtml(vendorId, req){
   </div>`;
 }
 
+/* Shown before the tier picker, because it gates everything below it: no
+ * agreement, no release, whatever tier is chosen. */
+function agreementRowHtml(vendorId){
+  const a = (typeof agreementFor === 'function') ? agreementFor(vendorId) : null;
+  if(!a){
+    return `<div class="agr-row missing">
+      <b>⚠ 未簽訂協議</b>
+      學校與此供應商之間尚未有生效的協議，因此不能發放任何學生資料。零費用的試用協議亦可，簽妥後這裏會自動更新。
+      <a class="agr-link" href="subscriptions.html">前往訂閱管理處理 →</a>
+    </div>`;
+  }
+  if(a.kind === 'trial'){
+    return `<div class="agr-row partial">
+      <b>⚠ 只有零費用試用協議</b>
+      ${a.ref} · 有效至 ${a.expiresOn}。試用協議足以支援試用，但不足以支援正式的長期發放；要核准這個申請，需先簽訂服務協議。
+      <a class="agr-link" href="subscriptions.html">前往訂閱管理處理 →</a>
+    </div>`;
+  }
+  return `<div class="agr-row">
+    <b><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> ${AGREEMENT_LABEL[a.kind]}生效中</b>
+    ${a.ref} · 簽於 ${a.signedOn} · 有效至 ${a.expiresOn}
+  </div>`;
+}
+
 function tierPickHtml(vendorId, req, vendorName){
   const infoId = vendorId+'-'+req.id;
   return `<div class="release-zone">
     <div class="rz-label">⚠ 資料發放決定</div>
+    ${agreementRowHtml(vendorId)}
     <div class="rz-chain">
       <div class="rz-step"><div class="scope-chip"><span class="sc-ic">👥</span>${req.group} 的學生資料</div></div>
     ${boundSummaryHtml(vendorId, req)}
@@ -495,7 +525,14 @@ function renderVendors(){
       ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div><div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
       : `<div class="empty-note">此供應商目前未獲任何組別的資料存取權</div>`;
 
-    const blocked = v.vetting.status!=='certified';
+    /* Two independent gates, deliberately kept apart. Vetting asks whether this
+     * vendor may operate here at all; the agreement asks whether this school has
+     * a contract with them. Collapsing them into one flag made a certified
+     * vendor with only a trial agreement display "尚未通過供應商審核", which is
+     * simply untrue and sends 馮 Sir to the wrong place to fix it. */
+    const blockedVetting = v.vetting.status!=='certified';
+    const blockedAgreement = !agreementCovers(v.id, false);
+    const blocked = blockedVetting || blockedAgreement;
     const pendingHtml = pending.length
       ? pending.map(r=>{
           return `<div class="req" id="req-${v.id}-${r.id}">
@@ -509,8 +546,8 @@ function renderVendors(){
               <span class="status pending">⏳ 待審批</span>
             </div>
             ${r.overlapNote ? `<div class="drift-note"><b>⚠ 範圍可能重疊</b>${r.overlapNote}</div>` : ''}
-            ${blocked ? `<div class="block-note">🚫 此供應商尚未通過供應商審核，按管治規則不能核准任何資料層級，請先完成合規閘，或拒絕此請求。</div>` : ''}
-            ${!blocked ? tierPickHtml(v.id, r, v.name) : ''}
+            ${blockedVetting ? `<div class="block-note">🚫 此供應商尚未通過供應商審核，按管治規則不能核准任何資料層級，請先完成合規閘，或拒絕此請求。</div>` : ''}
+            ${!blockedVetting ? tierPickHtml(v.id, r, v.name) : ''}
             <div class="btns">
               <button class="act" id="approve-${v.id}-${r.id}" ${blocked?'disabled':''} onclick="approve('${v.id}','${r.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 核准</button>
               <button class="act deny" onclick="deny('${v.id}','${r.id}')">拒絕</button>
@@ -699,6 +736,14 @@ function pickTier(vendorId, reqId, btn){
 function approve(vendorId, reqId){
   const {v, r} = findReq(vendorId, reqId);
   if(v.vetting.status!=='certified'){ toast('此供應商尚未通過供應商審核，不能核准'); return; }
+  /* Contract before data. A release without an agreement in force is the one
+   * case where a vendor would hold student data with no relationship to the
+   * school — blocked here rather than flagged after the fact. */
+  if(!agreementCovers(vendorId, false)){
+    const a = agreementFor(vendorId);
+    toast(a ? '只有試用協議，正式發放需先簽訂服務協議' : '尚未簽訂協議，不能發放資料');
+    return;
+  }
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
   r.status='approved'; r.tier=r._pickedTier;
   v.grants.push({group:r.group, headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});

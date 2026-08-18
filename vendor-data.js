@@ -623,7 +623,10 @@ const TRIALS = [
   {id:'t2', vendor:'語音通 AI', vendorId:null, teacherId:'T1002', classId:'2b', groupId:'core', group:'核心組（5 人）· 中二乙班', headcount:5,
    tool:'AI 朗讀評測（試用版）', status:'declined', expiresAt:null, origin:'vendor',
    declineReason:'試用期內評語準確度不足，未能分辨聲調錯誤與地道口音差異。', cooldownUntil:'2026-11-05', declinedBy:'it'},
-  {id:'t3', vendor:'智寫科技', vendorId:'zhixie', teacherId:'T1001', classId:'2b', groupId:'support', group:'支援組（2 人）· 中二乙班', headcount:2,
+  /* Vendor-initiated and deliberately UNSCOPED: classId/groupId stay null until
+   * 陳凱怡老師 accepts and picks the group herself. A vendor never proposes a
+   * cohort — see §4.1 of the scoping document. */
+  {id:'t3', vendor:'智寫科技', vendorId:'zhixie', teacherId:'T1001', classId:null, groupId:null, group:null, headcount:null,
    tool:'AI 詞彙診斷追蹤（試用版）', status:'awaiting_teacher', expiresAt:null, origin:'vendor',
    declineReason:null, cooldownUntil:null, declinedBy:null},
   /* Second-class example, so trial-invites.html's class-switcher has something
@@ -670,6 +673,106 @@ const VENDOR_PLANS = {
   zhixie:  {plan:'Basic 方案',    teacherCap:4, studentCap:20,  seatsUsed:9,  renewal:'2026-09-30'},
   diandu:  {plan:'Standard 方案', teacherCap:8, studentCap:40,  seatsUsed:12, renewal:'2026-08-15'},
 };
+
+/* The agreement gate (decided 2026-08-18).
+ *
+ * Nothing is released until an agreement between this school and this vendor is
+ * in force. The bar is a CONTRACT, not a PAYMENT — a zero-cost trial agreement
+ * qualifies, so a teacher can still try a tool before procurement concludes.
+ * What it removes is the case where a vendor holds student data with no
+ * contractual relationship to the school at all.
+ *
+ * kind: 'trial' — zero-cost, dated, covers trials only
+ *       'service' — the paid subscription agreement
+ *       null / absent — nothing signed; release is blocked. */
+const AGREEMENTS = {
+  zhixie:  {kind:'service', signedOn:'2026-06-18', expiresOn:'2027-08-31', ref:'AGR-2026-0118'},
+  diandu:  {kind:'trial',   signedOn:'2026-07-14', expiresOn:'2026-09-30', ref:'AGR-2026-0233'},
+  // 字詞通 AI: nothing signed — approval is blocked until it is.
+};
+function agreementFor(vendorId){ return AGREEMENTS[vendorId] || null; }
+function agreementCovers(vendorId, isTrial){
+  const a = agreementFor(vendorId);
+  if(!a) return false;
+  return a.kind === 'service' || (a.kind === 'trial' && isTrial);
+}
+const AGREEMENT_LABEL = {trial:'零費用試用協議', service:'服務協議'};
+
+/* 待預算 — steps 12–14 of the release flow.
+ *
+ * When a trial ends and the school has not decided, the release does not simply
+ * vanish and does not silently continue. It enters 待預算: scope FROZEN at what
+ * it was, dated, non-renewable. 馮 Sir holds approval authority but not budget
+ * authority, so this is the state that exists precisely because the money
+ * decision belongs to someone else and happens offline, on the school's cycle.
+ *
+ * Decided 2026-08-18:
+ *   expiry — 31 August, the seat year and the date every school already plans
+ *            around. Accepted cost: something entering in September sits frozen
+ *            for eleven months.
+ *   cap    — none. A school-level cap was considered and deliberately not set;
+ *            there is no basis for a number yet. Uncapped and instrumented,
+ *            so pilot data can set it. `budgetPendingCount()` is the instrument. */
+const BUDGET_PENDING_END = '2027-08-31';
+const BUDGET_PENDING = [
+  {id:'bp1', vendorId:'diandu', vendorName:'點讀教育', product:'中文分級閱讀庫',
+   teacherId:'T1001', classId:'2b', groupId:'stretch', group:'增潤組（9 人）· 中二乙班', headcount:9,
+   frozenOn:'2026-08-04', endsOn:BUDGET_PENDING_END, trialRef:'t1',
+   note:'試用期完結，學校未就採購作決定。'},
+];
+function budgetPendingCount(){ return BUDGET_PENDING.length; }
+
+/* Seat metering — step 11.
+ *
+ * A seat is consumed at FIRST EdConnect authentication, and only the first
+ * time. This is the load-bearing detail behind several other decisions: it is
+ * why a teacher can regroup freely without spending anything, why the frozen
+ * cohort could be deleted, and why an unused release costs the school nothing
+ * (which is most of why seat reclamation stopped being a problem).
+ *
+ * Named-annual: the seat stays spent for the school year even if the student
+ * later leaves the group. It is a seat for a named child, not a concurrent
+ * licence, so releasing it on regrouping would let a school cycle one seat
+ * through thirty children. */
+const SEAT_LEDGER = {};            // vendorId -> Set of sids that have signed in
+function hasSeat(vendorId, sid){
+  return !!(SEAT_LEDGER[vendorId] && SEAT_LEDGER[vendorId].has(sid));
+}
+/* Returns {consumed:true} the first time, {consumed:false, reason} thereafter or
+ * when there is nothing left to consume. */
+function consumeSeat(vendorId, sid){
+  const plan = VENDOR_PLANS[vendorId];
+  if(!plan) return {consumed:false, reason:'no-plan'};
+  if(hasSeat(vendorId, sid)) return {consumed:false, reason:'already', seatsUsed:plan.seatsUsed};
+  if(plan.seatsUsed >= plan.studentCap) return {consumed:false, reason:'exhausted', seatsUsed:plan.seatsUsed};
+  (SEAT_LEDGER[vendorId] = SEAT_LEDGER[vendorId] || new Set()).add(sid);
+  plan.seatsUsed += 1;
+  return {consumed:true, seatsUsed:plan.seatsUsed, cap:plan.studentCap};
+}
+/* A trial that runs out moves here rather than lapsing silently — the school
+ * keeps the option, the vendor keeps the boundary, and nothing renews itself. */
+function toBudgetPending(trial){
+  if(BUDGET_PENDING.some(b=>b.trialRef===trial.id)) return null;
+  const v = VENDORS.find(x=>x.id===trial.vendorId);
+  const entry = {
+    id:'bp'+Date.now(), vendorId:trial.vendorId, vendorName:trial.vendor,
+    product:(v && v.product) || trial.tool,
+    teacherId:trial.teacherId, classId:trial.classId, groupId:trial.groupId,
+    group:trial.group, headcount:trial.headcount,
+    frozenOn:trial.expiresAt || '2026-08-18', endsOn:BUDGET_PENDING_END, trialRef:trial.id,
+    note:'試用期完結，學校未就採購作決定。',
+  };
+  BUDGET_PENDING.push(entry);
+  trial.status = 'budget_pending';
+  return entry;
+}
+function resolveBudgetPending(id, outcome){   // 'subscribed' | 'declined'
+  const i = BUDGET_PENDING.findIndex(b=>b.id===id);
+  if(i<0) return null;
+  const [b] = BUDGET_PENDING.splice(i,1);
+  b.outcome = outcome;
+  return b;
+}
 
 /* Sums approved grants only — pending requests are not consumption until approved. */
 function vendorUsage(vendorId){

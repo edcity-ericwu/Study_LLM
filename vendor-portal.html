@@ -268,11 +268,9 @@
   <section class="tab-pane" data-pane="invite">
     <div class="card">
       <h3>邀請老師試用工具</h3>
-      <div class="sect-sub" style="margin:0 0 14px;">你必須已經和該老師接觸過（如電郵、電話、學校活動）才能發出邀請——這不是繞過學校的資料查詢，而是為既有接洽補一個正式起點。老師確認後，邀請會交由資訊科技統籌核實試用時限與資料層級，才會正式開始；試用固定為 Tier 1 · 基本資料，最長 14 天。</div>
+      <div class="sect-sub" style="margin:0 0 14px;">邀請只註明老師和工具。<b>由老師決定用在哪一班、哪一組</b>——你不會看到、也不能指定學生名單。你必須已經和該老師接觸過（如電郵、電話、學校活動）才能發出邀請——這不是繞過學校的資料查詢，而是為既有接洽補一個正式起點。老師確認後，邀請會交由資訊科技統籌核實試用時限與資料層級，才會正式開始；試用固定為 Tier 1 · 基本資料，最長 14 天。</div>
       <div class="invite-form">
         <label>老師<select id="inv-teacher"></select></label>
-        <label>班別<select id="inv-class" onchange="populateGroupSelect()"></select></label>
-        <label>組別範圍<select id="inv-group"></select></label>
         <label>試用工具／方案名稱<input type="text" id="inv-tool" placeholder="例如：寫作回饋工具 · 進階版試用"></label>
         <button class="btn" onclick="sendInvite()">📨 發出試用邀請</button>
       </div>
@@ -372,19 +370,9 @@ function toggleTagMap(){
 }
 document.addEventListener('DOMContentLoaded', renderTagMap);
 
-function populateClassSelect(){
-  const sel = document.getElementById('inv-class');
-  sel.innerHTML = CLASS_LIST.map(c=>`<option value="${c.id}">${c.className}（${c.subjectLabel}）</option>`).join('');
-}
 function populateTeacherSelect(){
   const sel = document.getElementById('inv-teacher');
   sel.innerHTML = activeTeachers().map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-}
-function populateGroupSelect(){
-  const classId = document.getElementById('inv-class').value;
-  const sel = document.getElementById('inv-group');
-  sel.innerHTML = classGroups(classId).map(g=>`<option value="${g.id}">${g.name}（${groupHeadcount(classId, g.id)} 人）· ${CLASSES[classId].className}</option>`).join('')
-    + `<option value="__whole_class__">全班 · ${CLASSES[classId].className}</option>`;
 }
 
 function inviteStatusLabel(s){
@@ -397,7 +385,7 @@ function renderInvites(){
   document.getElementById('inviteList').innerHTML = mine.length ? mine.map(t=>`
     <div class="invite-row">
       <div class="i-body">
-        <b>${teacherName(t.teacherId)} · ${t.group}</b>
+        <b>${teacherName(t.teacherId)} · ${t.tool}</b>${t.group?`<small style="display:block;color:var(--ink-3);font-weight:400;">老師選定範圍：${t.group}</small>`:'<small style="display:block;color:var(--ink-3);font-weight:400;">範圍由老師決定</small>'}
         <small>${t.tool}${t.status==='declined' ? ' · '+t.declineReason : ''}${t.cooldownUntil ? '（冷靜期至 '+t.cooldownUntil+'，此組別在此之前不能再次邀請）' : ''}</small>
       </div>
       <span class="invite-chip ${t.status}">${inviteStatusLabel(t.status)}</span>
@@ -411,33 +399,37 @@ function showTab(name){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
 }
 
+/* A vendor may INITIATE a conversation; only a teacher may SCOPE it.
+ * This form used to carry 班別 and 組別範圍 selects, which meant the vendor
+ * chose the cohort — the exact failure §1 of the scoping document exists to
+ * remove. The invite now names a teacher and a tool. classId/groupId stay null
+ * until the teacher accepts and picks the scope herself.
+ * The volume cap moves with it: one open invitation per vendor per TEACHER
+ * (her attention is the scarce resource), not per class-group. */
 function sendInvite(){
   const teacherId = document.getElementById('inv-teacher').value;
-  const classId = document.getElementById('inv-class').value;
-  const groupId = document.getElementById('inv-group').value;
   const tool = document.getElementById('inv-tool').value.trim() || MY_VENDOR_NAME+' · 試用';
-  const groupText = groupLabel(classId, groupId);
   const block = document.getElementById('inviteBlock');
 
-  const existing = TRIALS.filter(t=>t.vendorId===MY_VENDOR_ID && t.classId===classId && t.groupId===groupId);
+  const existing = TRIALS.filter(t=>t.vendorId===MY_VENDOR_ID && t.teacherId===teacherId);
   const inFlight = existing.find(t=>['awaiting_teacher','pending_it','active'].includes(t.status));
   if(inFlight){
-    block.innerHTML = `<div class="invite-block-note">🚫 此班別／組別已有一個進行中的邀請（${inviteStatusLabel(inFlight.status)}），請待老師或資訊科技統籌回覆後再發出新邀請。</div>`;
-    toast('此班別／組別已有進行中的邀請');
+    block.innerHTML = `<div class="invite-block-note">🚫 你已有一個給${teacherName(teacherId)}的進行中邀請（${inviteStatusLabel(inFlight.status)}），請待老師或資訊科技統籌回覆後再發出新邀請。</div>`;
+    toast('你已有一個給'+teacherName(teacherId)+'的進行中邀請');
     return;
   }
   const cooling = existing.find(t=>t.status==='declined' && t.cooldownUntil);
   if(cooling){
-    block.innerHTML = `<div class="invite-block-note">🔒 冷靜期至 ${cooling.cooldownUntil}，在此日期前不能就「${groupText}」再次邀請試用（上次原因：${cooling.declineReason||'未提供'}）。</div>`;
-    toast('冷靜期內，暫時不能重新邀請');
+    block.innerHTML = `<div class="invite-block-note">🔒 冷靜期至 ${cooling.cooldownUntil}，在此日期前不能再邀請${teacherName(teacherId)}（上次原因：${cooling.declineReason||'未提供'}）。</div>`;
+    toast('冷靜期內，暫時不能再邀請'+teacherName(teacherId));
     return;
   }
   block.innerHTML = '';
 
-  const headcount = groupId==='__whole_class__' ? wholeClassMembers(classId).length : groupHeadcount(classId, groupId);
   TRIALS.push({
-    id:'v-'+Date.now(), vendor:MY_VENDOR_NAME, vendorId:MY_VENDOR_ID, teacherId, classId, groupId, group:groupText, headcount,
-    tool, status:'awaiting_teacher', expiresAt:null, declineReason:null, cooldownUntil:null, declinedBy:null,
+    id:'v-'+Date.now(), vendor:MY_VENDOR_NAME, vendorId:MY_VENDOR_ID, teacherId,
+    classId:null, groupId:null, group:null, headcount:null,   // the teacher's to fill in
+    tool, status:'awaiting_teacher', expiresAt:null, declineReason:null, cooldownUntil:null, declinedBy:null, origin:'vendor',
   });
   renderInvites();
   document.getElementById('inv-tool').value = '';
@@ -447,8 +439,6 @@ function sendInvite(){
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 populateTeacherSelect();
-populateClassSelect();
-populateGroupSelect();
 renderInvites();
 </script>
 <script src="demo-nav.js"></script>

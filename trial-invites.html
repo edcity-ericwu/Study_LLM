@@ -109,6 +109,9 @@
    *   .empty-row td — inside a table, where it has to be a <tr>
    *   .empty-note   — a small inline note beside other content
    * Values stay page-appropriate; only the vocabulary is shared. */
+  .scope-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f7fbfe;border:1px solid #c4e5f5;border-radius:10px;padding:10px 13px;}
+  .scope-pick .sp-label{font-size:.76rem;font-weight:700;color:var(--ec-blue-dark);}
+  .scope-pick select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:.78rem;font-family:inherit;background:#fff;}
   .empty{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;text-align:center;font-size:.8rem;color:var(--ink-3);}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
@@ -141,6 +144,7 @@
     <div class="nav-group">
       <h6>課堂與學生</h6>
       <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
+      <a href="tool-status.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>工具申請進度</a>
       <a href="trial-invites.html" data-feature="vendorInitiatedTrial" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
@@ -206,7 +210,11 @@ function switchClass(classId){
 document.addEventListener('click', e=>{ if(!e.target.closest('.class-dd')) document.getElementById('classMenu').classList.remove('show'); });
 
 function renderInvites(){
-  const mine = TRIALS.filter(t=>t.teacherId===MY_TEACHER_ID && t.classId===activeClassId);
+  /* An unscoped invite (classId null) has no class to be filtered by yet — it is
+   * addressed to her, not to a class — so it must appear whichever class is
+   * selected, otherwise a vendor invitation would be invisible until she happened
+   * to be on the right board. */
+  const mine = TRIALS.filter(t=>t.teacherId===MY_TEACHER_ID && (t.classId===activeClassId || t.classId==null));
   const waiting = mine.filter(t=>t.status==='awaiting_teacher');
   const decided = mine.filter(t=>t.status!=='awaiting_teacher');
 
@@ -214,12 +222,12 @@ function renderInvites(){
     <div class="invite" id="invite-${t.id}">
       <div class="i-head">
         <div class="i-ic">${t.vendor[0]}</div>
-        <div class="i-body"><b>${t.vendor} 邀請你試用「${t.tool}」</b><small>對象：${t.group}</small></div>
+        <div class="i-body"><b>${t.vendor} 邀請你試用「${t.tool}」</b><small>${t.group ? '對象：'+t.group : '由你決定用在哪一組'}</small></div>
         <div class="i-badges"><span class="ichip wait">⏳ 待你回應</span></div>
       </div>
       <div class="i-body-text">試用固定為 Tier 1 · 基本資料（姓名、班別、組別身份），最長 14 天。確認後會交資訊科技統籌核實，才正式開始；你隨時可以婉拒，不會影響其他工具的使用。</div>
-      <div class="i-foot">
-        <button class="btn" onclick="acceptInvite('${t.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 接受試用</button>
+      <div class="i-foot" id="foot-${t.id}">
+        <button class="btn" onclick="openScopePick('${t.id}')"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 接受試用</button>
         <button class="btn ghost" onclick="declineInvite('${t.id}')">婉拒</button>
       </div>
     </div>`).join('') : `<div class="empty">目前沒有待回應的試用邀請</div>`;
@@ -242,16 +250,53 @@ function renderInvites(){
     return `<div class="invite" id="invite-${t.id}">
       <div class="i-head">
         <div class="i-ic">${t.vendor[0]}</div>
-        <div class="i-body"><b>${t.vendor} · ${t.tool}</b><small>對象：${t.group}</small></div>
+        <div class="i-body"><b>${t.vendor} · ${t.tool}</b><small>對象：${t.group || '—'}</small></div>
         <div class="i-badges">${chip}</div>
       </div>
       <div class="i-body-text">${text}</div>
     </div>`;
   }).join('') : `<div class="empty">尚未有已回應的邀請紀錄</div>`;
 }
+/* The vendor's invite names a teacher and a tool and nothing else, so accepting
+ * is where the scope is decided — by her, from the classes she actually teaches.
+ * She cannot pick a class that isn't hers: the options come from 任教編配. */
+function openScopePick(id){
+  const t = TRIALS.find(x=>x.id===id);
+  if(t.group){ acceptInvite(id); return; }          // already scoped (older records)
+  const foot = document.getElementById('foot-'+id);
+  const mine = CLASS_LIST.filter(c=>c.teacherId===MY_TEACHER_ID);
+  foot.innerHTML = `<div class="scope-pick">
+    <div class="sp-label">用在哪一組？</div>
+    <select id="sp-class-${id}" onchange="fillScopeGroups('${id}')">
+      ${mine.map(c=>`<option value="${c.id}">${c.className}</option>`).join('')}
+    </select>
+    <select id="sp-group-${id}"></select>
+    <button class="btn" onclick="acceptInvite('${id}')">確認接受</button>
+    <button class="btn ghost" onclick="renderInvites()">取消</button>
+  </div>`;
+  fillScopeGroups(id);
+}
+function fillScopeGroups(id){
+  const classId = document.getElementById('sp-class-'+id).value;
+  const sel = document.getElementById('sp-group-'+id);
+  sel.innerHTML = CLASSES[classId].groups.map(g=>
+      `<option value="${g.id}">${g.name}（${groupHeadcount(classId,g.id)} 人）</option>`).join('')
+    + `<option value="__whole_class__">全班（${wholeClassMembers(classId).length} 人）</option>`;
+}
 function acceptInvite(id){
   const t = TRIALS.find(x=>x.id===id);
+  const cSel = document.getElementById('sp-class-'+id);
+  if(cSel){
+    const classId = cSel.value;
+    const groupId = document.getElementById('sp-group-'+id).value;
+    const whole = groupId === '__whole_class__';
+    const n = whole ? wholeClassMembers(classId).length : groupHeadcount(classId, groupId);
+    const label = whole ? '全班' : CLASSES[classId].groups.find(g=>g.id===groupId).name;
+    Object.assign(t, {classId, groupId, headcount:n, group:`${label}（${n} 人）· ${CLASSES[classId].className}`});
+  }
   t.status = 'pending_it';
+  activeClassId = t.classId;
+  renderClassSwitcher();
   renderInvites();
   toast('已接受試用，等候資訊科技統籌核實');
 }

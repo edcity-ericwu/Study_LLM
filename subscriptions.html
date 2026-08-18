@@ -99,6 +99,33 @@
   .chip.warn{color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
   .chip.dept{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
   .chip.ind{color:var(--ink-2);background:#f5f8fa;border:1px solid var(--line);}
+  .bp-card{background:#fff;border:1px solid var(--line);border-left:3px solid var(--ec-amber);border-radius:14px;padding:16px 20px;margin-bottom:12px;}
+  .bp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .bp-head b{font-size:.9rem;}
+  .bp-chip{font-size:.66rem;font-weight:700;color:#8a5a09;background:#fdf6e3;border:1px solid #efdcb0;border-radius:99px;padding:3px 10px;}
+  .bp-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 18px;margin-bottom:10px;}
+  .bp-row{font-size:.76rem;color:var(--ink-3);display:flex;gap:8px;}
+  .bp-row b{color:var(--ink);font-weight:600;}
+  .bp-note{font-size:.74rem;color:var(--ink-2);line-height:1.6;margin-bottom:12px;}
+  .bp-acts{display:flex;gap:8px;flex-wrap:wrap;}
+  .case-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:14px;}
+  .case-eyebrow{font-size:.66rem;font-weight:700;color:var(--ec-purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .case-head b{font-size:1rem;}
+  .case-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:12px;}
+  .case-row-head{display:flex;align-items:center;gap:10px;margin-bottom:11px;flex-wrap:wrap;}
+  .case-row-head b{font-size:.9rem;}
+  .case-kind{font-size:.66rem;font-weight:700;border-radius:99px;padding:3px 10px;}
+  .case-kind.k-budget{background:#f3f0fb;border:1px solid #d8cff0;color:#4a3b7a;}
+  .case-kind.k-cap{background:#fdf6e3;border:1px solid #efdcb0;color:#8a5a09;}
+  .case-deadline{margin-left:auto;font-size:.72rem;color:var(--ink-3);}
+  .case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 18px;margin-bottom:10px;}
+  .case-grid div{font-size:.76rem;color:var(--ink-3);display:flex;gap:8px;}
+  .case-grid b{color:var(--ink);font-weight:600;}
+  .case-why{font-size:.76rem;color:var(--ink-2);line-height:1.65;margin-bottom:11px;}
+  .case-note{display:block;font-size:.72rem;color:var(--ink-3);}
+  .case-note textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:.78rem;font-family:inherit;resize:vertical;}
+  .case-foot{font-size:.74rem;color:var(--ink-3);line-height:1.65;margin-top:6px;}
+  .meter-note{font-size:.68rem;color:var(--ink-3);margin-top:4px;line-height:1.5;}
   .note-row{font-size:.72rem;color:var(--ink-3);margin-top:10px;line-height:1.6;max-width:52em;}
 
   .req.capacity .ic{background:#fdf6ec;}
@@ -198,6 +225,8 @@
     <button class="tab-btn active" data-tab="pending" onclick="showTab('pending')">待處理申請<span class="tab-count" id="pendingCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
     <button class="tab-btn" data-tab="existing" onclick="showTab('existing')">現有訂閱</button>
+    <button class="tab-btn" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="case" onclick="showTab('case')">預算建議書</button>
   </div>
 
   <section class="tab-pane active" data-pane="pending">
@@ -236,8 +265,26 @@
     <div id="capacityAlerts"></div>
   </section>
 
+  <section class="tab-pane" data-pane="case">
+    <div class="sect-sub" style="margin:0 0 16px;">給校長的採購建議。內容由平台按實際使用情況自動彙整——你只需檢視、補充理由，然後匯出。你沒有動用預算的權限，這份文件是讓有權的人容易作決定。</div>
+    <div class="case-head">
+      <div>
+        <div class="case-eyebrow">2027／28 學年 · 教學工具採購建議</div>
+        <b id="caseTotalLine">—</b>
+      </div>
+      <button class="btn" onclick="exportCase()">匯出建議書（PDF）</button>
+    </div>
+    <div id="caseList"></div>
+    <div class="case-foot" id="caseFoot"></div>
+  </section>
+
+  <section class="tab-pane" data-pane="budget">
+    <div class="sect-sub" style="margin:0 0 14px;">試用期已完結、學校尚未決定採購的項目。範圍已凍結，不會自動續期，亦不會自行擴大；到期日一律為學年完結（8 月 31 日）。教師端會顯示「已納入下年度預算建議」。</div>
+    <div id="budgetList"></div>
+  </section>
+
   <section class="tab-pane" data-pane="plans">
-    <div class="sect-sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
+    <div class="sect-sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。<b>名額於學生首次以教育城帳戶登入時計算，其後同一學年內不再重複計算</b>——教師調動分組不會消耗名額。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
     <div class="plan-grid" id="planGrid"></div>
     <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動匯總，不會出現兩邊數字不一致的情況。</div>
   </section>
@@ -295,6 +342,16 @@ function pctStateChip(pct){
   return `<span class="plan-state ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 名額充裕</span>`;
 }
 
+/* Released but never signed in. The gap between these two numbers is the whole
+ * point of metering at authentication: a release that nobody uses costs the
+ * school nothing, which is why a teacher can assign generously and regroup
+ * freely without spending anything. */
+function releasedNotUsed(vendorId){
+  const rel = (typeof releasedFor === 'function') ? releasedFor(vendorId).length : 0;
+  const used = VENDOR_PLANS[vendorId] ? VENDOR_PLANS[vendorId].seatsUsed : 0;
+  return Math.max(0, rel - used);
+}
+
 function renderPlanGrid(){
   const cards = Object.keys(VENDOR_PLANS).map(vendorId=>{
     const v = VENDORS.find(x=>x.id===vendorId);
@@ -310,8 +367,11 @@ function renderPlanGrid(){
         <div class="cap-bar"><div class="cap-fill ${pctClass(tPct)}" style="width:${Math.min(tPct,100)}%"></div></div>
       </div>
       <div class="cap-row">
-        <div class="lbl"><span>學生名額</span><span>${usage.students} / ${plan.studentCap}</span></div>
+        <div class="lbl"><span>學生名額（已登入）</span><span>${plan.seatsUsed} / ${plan.studentCap}</span></div>
         <div class="cap-bar"><div class="cap-fill ${pctClass(sPct)}" style="width:${Math.min(sPct,100)}%"></div></div>
+        ${releasedNotUsed(vendorId) > 0
+          ? `<div class="meter-note">另有 ${releasedNotUsed(vendorId)} 位已獲發放但未登入——未登入不計名額。</div>`
+          : ''}
       </div>
       ${pctStateChip(worst)}
       <div class="renew">續期日：${plan.renewal}</div>
@@ -356,6 +416,112 @@ function renderCapacityAlerts(){
   const total = 2 + alerts.length;
   countEl.style.display = 'inline-block';
   countEl.textContent = total;
+}
+
+function renderBudgetPending(){
+  const wrap = document.getElementById('budgetList');
+  const n = BUDGET_PENDING.length;
+  const cnt = document.getElementById('budgetCount');
+  cnt.textContent = n; cnt.style.display = n ? '' : 'none';
+  if(!n){
+    wrap.innerHTML = '<div class="empty-note">目前沒有待預算項目。</div>';
+    return;
+  }
+  wrap.innerHTML = BUDGET_PENDING.map(b=>`
+    <div class="bp-card">
+      <div class="bp-head">
+        <b>${b.vendorName} · ${b.product}</b>
+        <span class="bp-chip">範圍已凍結</span>
+      </div>
+      <div class="bp-rows">
+        <div class="bp-row"><span>範圍</span><b>${b.group}</b></div>
+        <div class="bp-row"><span>申請教師</span><b>${teacherName(b.teacherId)}</b></div>
+        <div class="bp-row"><span>凍結於</span><b>${b.frozenOn}</b></div>
+        <div class="bp-row"><span>到期</span><b>${b.endsOn}</b>（學年完結，不自動續期）</div>
+      </div>
+      <div class="bp-note">${b.note}到期日一過，單一登入即停止授權，帳戶隨之失效。</div>
+      <div class="bp-acts">
+        <button class="btn" onclick="budgetOutcome('${b.id}','subscribed')">已獲批預算 · 轉為訂閱</button>
+        <button class="btn ghost" onclick="budgetOutcome('${b.id}','declined')">預算不獲批 · 結束</button>
+      </div>
+    </div>`).join('');
+}
+function budgetOutcome(id, outcome){
+  const b = resolveBudgetPending(id, outcome);
+  if(!b) return;
+  renderBudgetPending();
+  renderCase();          // an outcome changes what the principal still has to decide
+  toast(outcome==='subscribed'
+    ? `已轉為訂閱：${b.vendorName} · ${b.group}`
+    : `已結束：${b.vendorName} · ${b.group}，帳戶將於 ${b.endsOn} 失效`);
+}
+
+/* The budget-evidence pack.
+ *
+ * 馮 Sir holds approval authority but not budget authority — committing money
+ * means writing a paper for the principal, offline, on the school's cycle. The
+ * platform cannot absorb that step, so its only job is to make the paper easy
+ * to assemble. Decision 4 (2026-08-18) routed the principal entirely through
+ * this, which makes it the only artefact carrying a purchase decision.
+ *
+ * Everything here is evidence the platform already holds. Nothing is a
+ * recommendation: EdCity does not tell a school what to buy. */
+function caseItems(){
+  const items = [];
+  BUDGET_PENDING.forEach(b=>{
+    const plan = VENDOR_PLANS[b.vendorId];
+    const used = plan ? plan.seatsUsed : 0;
+    items.push({
+      kind:'待預算', vendorName:b.vendorName, product:b.product,
+      scope:b.group, teacher:teacherName(b.teacherId), headcount:b.headcount,
+      seatsUsed:used, cap:plan?plan.studentCap:null,
+      deadline:b.endsOn,
+      why:`${teacherName(b.teacherId)}於試用期間持續使用；試用完結後範圍已凍結。若不作決定，${b.endsOn}起帳戶失效。`,
+    });
+  });
+  Object.keys(VENDOR_PLANS).forEach(vid=>{
+    const plan = VENDOR_PLANS[vid];
+    const v = VENDORS.find(x=>x.id===vid);
+    if(!v) return;
+    const pct = Math.round((plan.seatsUsed/plan.studentCap)*100);
+    if(pct < 80) return;
+    items.push({
+      kind:'名額不足', vendorName:v.name, product:v.product,
+      scope:'全校現有訂閱', teacher:'—', headcount:null,
+      seatsUsed:plan.seatsUsed, cap:plan.studentCap, deadline:plan.renewal,
+      why:`學生名額已用 ${pct}%（${plan.seatsUsed}/${plan.studentCap}）。續期日 ${plan.renewal} 前若不增購，新的申請將無法批出。`,
+    });
+  });
+  return items;
+}
+function renderCase(){
+  const items = caseItems();
+  document.getElementById('caseTotalLine').textContent =
+    items.length ? `${items.length} 個項目需要校長決定` : '目前沒有需要校長決定的項目';
+  document.getElementById('caseList').innerHTML = items.length ? items.map((it,i)=>`
+    <div class="case-card">
+      <div class="case-row-head">
+        <span class="case-kind ${it.kind==='待預算'?'k-budget':'k-cap'}">${it.kind}</span>
+        <b>${it.vendorName} · ${it.product}</b>
+        <span class="case-deadline">須於 ${it.deadline} 前決定</span>
+      </div>
+      <div class="case-grid">
+        <div><span>範圍</span><b>${it.scope}</b></div>
+        <div><span>申請教師</span><b>${it.teacher}</b></div>
+        <div><span>實際使用</span><b>${it.seatsUsed}${it.cap?' / '+it.cap:''} 位學生已登入</b></div>
+      </div>
+      <div class="case-why">${it.why}</div>
+      <label class="case-note"><span>補充理由（會一併匯出）</span>
+        <textarea rows="2" id="caseNote-${i}" placeholder="例如：本組六位學生的作文修改次數由每篇 1.2 次升至 3.4 次。"></textarea></label>
+    </div>`).join('') : '<div class="empty-note">目前沒有待預算或名額不足的項目，暫時不需要提交採購建議。</div>';
+  document.getElementById('caseFoot').innerHTML = items.length
+    ? '<b>此文件不包含價格。</b>價格由學校與供應商直接商定，教育城不參與交易，亦不會建議購買哪一款工具。'
+    : '';
+}
+function exportCase(){
+  const n = caseItems().length;
+  if(!n){ toast('目前沒有項目可匯出'); return; }
+  toast(`已匯出 ${n} 個項目的預算建議書，可直接交校長`);
 }
 
 function showTab(name){
@@ -418,6 +584,8 @@ let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 renderCapacityAlerts();
 renderPlanGrid();
+renderBudgetPending();
+renderCase();
 
 /* Reconcile the one pre-existing "現有訂閱" row that overlaps with vendor-data.js,
  * instead of leaving a hand-typed teacher count that can drift from the real grants. */

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity AI 批改 — 批改與教學分組（教師版）</title>
+<title>EdCity 工具申請進度 — 教師視圖</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -199,6 +199,34 @@
   @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
 
   .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+
+  /* Cross-class status. Read-only by design, and that constraint is the reason
+   * the page is allowed to exist at all: the page deleted on 2026-08-18 was a
+   * place to ASK, and it pulled scoping, seat arithmetic and cohort curation
+   * onto the teacher. This is a place to CHECK. No assign, no cancel, no scope
+   * editing — every row links back to the group it belongs to, and the action
+   * happens there. If a button ever appears here, this has become the old page
+   * under a new name. */
+  .grp{margin-bottom:26px;}
+  .grp h2{font-size:1rem;font-weight:800;margin-bottom:3px;}
+  .grp .gsub{font-size:.74rem;color:var(--ink-3);margin-bottom:11px;}
+  .srow{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:13px 17px;margin-bottom:8px;flex-wrap:wrap;}
+  .srow .st{font-size:.68rem;font-weight:700;border-radius:99px;padding:4px 11px;white-space:nowrap;}
+  .st.ok{background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;}
+  .st.wait{background:#fdf6e3;border:1px solid #efdcb0;color:#8a5a09;}
+  .st.budget{background:#f3f0fb;border:1px solid #d8cff0;color:#4a3b7a;}
+  .srow .tool{font-size:.84rem;font-weight:700;}
+  .srow .where{font-size:.74rem;color:var(--ink-3);}
+  .srow .when{margin-left:auto;font-size:.72rem;color:var(--ink-3);white-space:nowrap;}
+  .srow .go{font-size:.74rem;color:var(--ec-blue-dark);text-decoration:none;font-weight:600;white-space:nowrap;}
+  .srow .go:hover{text-decoration:underline;}
+  .sum{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:26px;}
+  .sum .s{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;min-width:130px;}
+  .sum .s b{display:block;font-size:1.35rem;font-weight:800;line-height:1.2;}
+  .sum .s span{font-size:.72rem;color:var(--ink-3);}
+  .none{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:30px;text-align:center;
+    color:var(--ink-3);font-size:.8rem;line-height:1.8;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -219,13 +247,12 @@
       <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
       <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
       <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>EdMarket 應用程式</a>
-      <a href="marking.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>AI 批改</a>
+      <a href="marking.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>AI 批改</a>
       <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
     </div>
     <div class="nav-group">
       <h6>課堂與學生</h6>
       <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
-      <a href="tool-status.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>工具申請進度</a>
       <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
@@ -242,202 +269,91 @@
 
 <main class="main">
   <section class="hero">
-    <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
-
     <div class="page-head">
       <div class="ph-text">
-        <h1>AI 批改 — 閱讀理解短答</h1>
-        <div class="sub">批改時可同步標記能力標籤；完成後，成績會<b>自動存入學校帳戶管理系統</b>，毋須匯出試算表，也毋須重複輸入名單。</div>
+        <h1>工具申請進度</h1>
+        <div class="sub">你所有班別的教學工具狀態，一頁看完。要指派或停用工具，請開啟相關的分組。</div>
       </div>
-      <div class="class-pick">📋 中二乙班 · 中文 · <b>《背影》閱讀理解</b> <span class="chev">▼</span></div>
     </div>
   </section>
 
-  <div class="stage-chips">
-    <span class="stage-chip on" id="chip1">① 設定評改</span>
-    <span class="stage-arrow">→</span>
-    <span class="stage-chip" id="chip2">② 批改與標籤</span>
-  </div>
-
-  <!-- ─── Stage 1: setup (評改台 pattern) ─── -->
-  <div id="stageSetup">
-    <div class="setup">
-      <div>
-        <div class="drop-main" id="dropMain" onclick="fillDrop()">
-          <span class="d-ic">⬆️</span>拖放一個或多個學生檔案，或按此選取
-          <small>支援 PDF、Word、相片掃描（自動辨識手寫）· 名單自動對應學校帳戶管理系統</small>
-        </div>
-        <div class="drop-row">
-          <div class="drop-opt" onclick="toast('上載試題卷')"><b>上載試題卷（選填）</b><small>供 AI 對照題目批改</small></div>
-          <div class="drop-opt" onclick="toast('上載評分準則')"><b>上載評分準則（選填）</b><small>校本準則優先於預設準則</small></div>
-        </div>
-      </div>
-      <aside class="setup-rail">
-        <h3>評改設定</h3>
-        <div class="rail-sect">回饋詳細程度</div>
-        <label class="radio-opt"><input type="radio" name="fb"><span>僅分數<small>只評分，不寫評語</small></span></label>
-        <label class="radio-opt"><input type="radio" name="fb"><span>簡短<small>每題一句重點</small></span></label>
-        <label class="radio-opt"><input type="radio" name="fb" checked><span>預設<small>分數＋評語＋能力標籤建議</small></span></label>
-        <label class="radio-opt"><input type="radio" name="fb"><span>自訂<small>按你的評改說明生成</small></span></label>
-        <div class="rail-sect">評語發還方式 <span style="font-weight:700;color:var(--ec-green);">教學法選項</span></div>
-        <label class="radio-opt"><input type="radio" name="rel2" onclick="toast('評語將即時發還學生')"><span>即時發還<small>批改後學生立即看到評語</small></span></label>
-        <label class="radio-opt"><input type="radio" name="rel2" checked onclick="toast('評語暫緩發還 · 學生須先自行修訂')"><span>暫緩發還 — 先讓學生想<small>學生先自行修訂一稿，提交後才開放評語</small></span></label>
-        <div class="rail-row"><span>滿分</span><span class="val">自動偵測</span></div>
-        <div class="rail-row"><span>評分結構</span><span class="val">按試題卷</span></div>
-        <button class="start-btn" id="startBtn" onclick="startMarking()">▷ 開始評改</button>
-      </aside>
-    </div>
-  </div>
-
-  <!-- ─── Stage 2: results ─── -->
-  <div id="stageResults" style="display:none;">
-  <button class="back-setup" onclick="backToSetup()">← 返回設定</button>
-  <div class="groups">
-    <span class="g-label">教學分組</span>
-    <button class="gchip on" data-g="all" onclick="setGroup(this)">全班 <span class="n">32</span></button>
-    <button class="gchip" data-g="stretch" onclick="setGroup(this)">增潤組 <span class="n">3</span></button>
-    <button class="gchip" data-g="core" onclick="setGroup(this)">核心組 <span class="n">5</span></button>
-    <button class="gchip" data-g="support" onclick="setGroup(this)">支援組 <span class="n">2</span></button>
-    <span class="g-note">分組只屬於你，不會出現在行政系統或科組統計</span>
-  </div>
-
-  <div class="work">
-    <div class="resp-list" id="respList"></div>
-
-    <aside class="panel">
-      <h3>批改進度</h3>
-      <div class="prog"><div class="bar"><i id="progBar"></i></div><span id="progText">13 / 32</span></div>
-      <ul>
-        <li>能力標籤採用平台共用分類（推論、主旨理解、文意理解⋯），供日後個人及科組統計使用。</li>
-        <li>AI 建議的標籤須經內容審核後方會計入任何統計（故事 6）。</li>
-      </ul>
-      <div class="release" style="border-top:1px dashed var(--line);padding-top:12px;margin-top:14px;font-size:.72rem;color:var(--ink-2);">
-        評語發還：<b id="relEcho" style="color:var(--ec-green);">暫緩發還 — 先讓學生想</b>（於設定階段選擇）
-      </div>
-      <div class="sms"><span class="ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>完成的分數會自動送交學校帳戶管理系統核實入檔。批改工具與學生紀錄資料庫完全分離，互不影響。</div>
-      <button class="finish" onclick="finishMarking()">完成並自動入檔</button>
-    </aside>
-  </div>
-
-  </div><!-- /stageResults -->
+  <div class="sum" id="sum"></div>
+  <div id="list"></div>
 </main>
-
-<div class="toast" id="toast"></div>
 
 <script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
-const RESP = [
-  {name:'陳嘉欣', grp:'core', gl:'核心組', ans:'作者透過父親買橘子的背影，表達了父親對兒子深沉而不善言辭的愛。「蹣跚」一詞寫出父親行動不便，更突顯他堅持親自去買的心意。', score:'8', skills:[['推論','secure'],['主旨理解','secure']]},
-  {name:'李俊希', grp:'support', gl:'支援組', ans:'父親去買橘子，因為他愛兒子。', score:'4', skills:[['主旨理解','dev'],['引例支持','dev']]},
-  {name:'王思穎', grp:'stretch', gl:'增潤組', ans:'「背影」既是實寫父親攀爬月台的身影，亦是象徵——兒子成年後回望，才讀懂那個笨拙背影裏未曾說出口的愛。作者以四次流淚為線索，層層遞進。', score:'10', skills:[['推論','secure'],['寫作手法','secure']]},
-];
-let group='all';
-/* Which response's "add a tag" menu is currently open — at most one at a
- * time, same convention as every other single-open-picker in this suite
- * (roster.html's transfer-row, groups.html's class menu). */
-let addMenuOpenFor = null;
-function setGroup(btn){
-  group=btn.dataset.g;
-  document.querySelectorAll('.gchip').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  render();
-  toast(btn.textContent.trim().split(' ')[0] + '：顯示該組學生作答');
+const MY_TEACHER_ID = 'T1001';
+const WHOLE = '__whole_class__';
+function myClasses(){ return CLASS_LIST.filter(c=>c.teacherId===MY_TEACHER_ID); }
+
+function scopeName(classId, groupId){
+  if(groupId===WHOLE) return '全班';
+  const g = (CLASSES[classId].groups||[]).find(x=>x.id===groupId);
+  return g ? g.name : groupId;
 }
-/* A teacher can only ATTACH a tag from SKILL_TAGS (vendor-data.js) — never
- * type a new one. That's the whole point: 能力標籤 feeding any cross-teacher
- * or cross-class statistic (insights.html, tags.html) have to come from one
- * shared vocabulary, or "推論" from one teacher and "推理能力" from another
- * would silently be two different tags to any downstream aggregation. */
-function toggleAddMenu(i){
-  addMenuOpenFor = (addMenuOpenFor === i) ? null : i;
-  render();
+/* Every row this page can show, gathered from the same three sources the group
+ * pages read. Nothing is computed differently here — if the two ever disagree,
+ * this page is wrong, not the group page. */
+function rows(){
+  const out = [];
+  myClasses().forEach(c=>{
+    VENDORS.forEach(v=>{
+      (v.grants||[]).forEach(g=>{
+        if(g.classId===c.id) out.push({classId:c.id, groupId:g.groupId, status:'ok',
+          tool:v.product, vendor:v.name, when:g.since+' 起'});
+      });
+      (v.pending||[]).forEach(p=>{
+        if(p.classId===c.id && p.teacherId===MY_TEACHER_ID) out.push({classId:c.id, groupId:p.groupId,
+          status:'wait', tool:v.product, vendor:v.name, when:'已通知馮 Sir'});
+      });
+    });
+    (typeof BUDGET_PENDING!=='undefined'?BUDGET_PENDING:[]).forEach(b=>{
+      if(b.classId===c.id && b.teacherId===MY_TEACHER_ID) out.push({classId:c.id, groupId:b.groupId,
+        status:'budget', tool:b.product, vendor:b.vendorName, when:'可用至 '+b.endsOn});
+    });
+  });
+  return out;
 }
-/* 標籤名稱（來自 SKILL_TAGS）與熟練程度（穩固／發展中）是兩個獨立判斷，不是
- * 綁在一起的單一選項——能力名稱是共用分類決定的固定事實，程度是老師對這位
- * 學生當下表現的判斷，每次都要分開選，不能替老師預設。 */
-function addSkillTag(i, tagName, level){
-  const shown = RESP.filter(r=>group==='all'||r.grp===group);
-  const r = shown[i];
-  if (!r.skills.some(([s])=>s===tagName)) r.skills.push([tagName, level]);
-  addMenuOpenFor = null;
-  render();
-}
-document.addEventListener('click', e=>{
-  if (addMenuOpenFor !== null && !e.target.closest('.tags')) { addMenuOpenFor = null; render(); }
-});
+const LABEL = {ok:'使用中', wait:'審批中', budget:'待預算'};
+
 function render(){
-  const shown = RESP.filter(r=>group==='all'||r.grp===group);
-  document.getElementById('respList').innerHTML = shown.map((r,i)=>{
-    const remaining = SKILL_TAGS.filter(t=>!r.skills.some(([s])=>s===t.name));
-    // Name and level are two separate choices per row — the tag name comes
-    // from the fixed SKILL_TAGS list (no free text), the level is the
-    // teacher's own judgment for THIS student, picked explicitly each time
-    // rather than defaulted. Domain shown alongside the name (same grouping
-    // insights.html/student.html display) so it reads as one taxonomy, not
-    // a flat unrelated word list.
-    const addMenu = addMenuOpenFor===i
-      ? `<div class="tag-menu">
-          <div class="tm-label">從共用分類揀選標籤，並為這位學生判斷程度</div>
-          ${remaining.length
-            ? remaining.map(t=>`
-              <div class="tm-row">
-                <span class="tm-name">${t.name}<small>${t.domain}</small></span>
-                <button class="tm-lvl secure" onclick="addSkillTag(${i},'${t.name}','secure');event.stopPropagation()">穩固</button>
-                <button class="tm-lvl dev" onclick="addSkillTag(${i},'${t.name}','dev');event.stopPropagation()">發展中</button>
-              </div>`).join('')
-            : `<div class="tm-empty">已加入所有共用分類標籤</div>`}
-        </div>`
-      : '';
-    return `
-    <div class="resp">
-      <div class="r-head">
-        <div class="stu">${r.name[0]}</div><b>${r.name}</b>
-        <span class="grp">${r.gl}</span>
-        <div class="score"><input value="${r.score}" aria-label="分數"><small>/ 10</small></div>
-      </div>
-      <div class="ans">${r.ans}</div>
-      <div class="tags">
-        <span class="t-label">能力標籤：</span>
-        ${r.skills.map(([s,lv])=>`<button class="skill on ${lv==='dev'?'dev':''}" onclick="this.classList.toggle('on');event.stopPropagation()">${s} · ${lv==='dev'?'發展中':'穩固'}</button>`).join('')}
-        <span style="position:relative;">
-          <button class="skill" onclick="toggleAddMenu(${i});event.stopPropagation()">＋</button>
-          ${addMenu}
+  const all = rows();
+  const by = k => all.filter(r=>r.status===k).length;
+  document.getElementById('sum').innerHTML = `
+    <div class="s"><b>${by('wait')}</b><span>等候審批</span></div>
+    <div class="s"><b>${by('ok')}</b><span>使用中</span></div>
+    <div class="s"><b>${by('budget')}</b><span>待預算</span></div>`;
+
+  const wrap = document.getElementById('list');
+  if(!all.length){
+    wrap.innerHTML = '<div class="none">你目前沒有任何教學工具的申請或授權。<br>到「教學分組」開啟一個分組即可指派。</div>';
+    return;
+  }
+  /* Grouped by class, because "what is stuck" is nearly always asked about one
+   * class at a time — and sorted wait-first, because that is the only status
+   * she might act on (elsewhere). */
+  const order = {wait:0, budget:1, ok:2};
+  wrap.innerHTML = myClasses().map(c=>{
+    const mine = all.filter(r=>r.classId===c.id).sort((a,b)=>order[a.status]-order[b.status]);
+    if(!mine.length) return '';
+    const waiting = mine.filter(r=>r.status==='wait').length;
+    return `<div class="grp">
+      <h2>${c.className}</h2>
+      <div class="gsub">${mine.length} 項工具${waiting?` · ${waiting} 項等候審批`:''}</div>
+      ${mine.map(r=>`<div class="srow">
+        <span class="st ${r.status}">${LABEL[r.status]}</span>
+        <span>
+          <span class="tool">${r.tool}</span>
+          <span class="where">· ${scopeName(r.classId, r.groupId)} · ${r.vendor}</span>
         </span>
-      </div>
+        <span class="when">${r.when}</span>
+        <a class="go" href="group-detail.html?c=${r.classId}&g=${r.groupId}">開啟分組 →</a>
+      </div>`).join('')}
     </div>`;
   }).join('');
 }
-function fillDrop(){
-  const d=document.getElementById('dropMain');
-  d.classList.add('filled');
-  d.innerHTML='<span class="d-ic">✅</span>已加入 32 份學生作答（中二乙班）<small>名單已對應學校帳戶管理系統 · 無需重新輸入</small>';
-  toast('已加入 32 份學生檔案');
-}
-function startMarking(){
-  document.getElementById('stageSetup').style.display='none';
-  document.getElementById('stageResults').style.display='';
-  document.getElementById('chip1').className='stage-chip done';
-  document.getElementById('chip1').innerHTML=CHECK_SVG+' 設定評改';
-  document.getElementById('chip2').className='stage-chip on';
-  const rel=[...document.querySelectorAll('input[name=rel2]')].findIndex(r=>r.checked);
-  document.getElementById('relEcho').textContent = rel===0 ? '即時發還' : '暫緩發還 — 先讓學生想';
-  toast('AI 已完成初批 · 請逐份覆核與調整');
-}
-function backToSetup(){
-  document.getElementById('stageResults').style.display='none';
-  document.getElementById('stageSetup').style.display='';
-  document.getElementById('chip1').className='stage-chip on';
-  document.getElementById('chip1').textContent='① 設定評改';
-  document.getElementById('chip2').className='stage-chip';
-}
-function finishMarking(){
-  document.getElementById('progBar').style.width='100%';
-  document.getElementById('progText').textContent='32 / 32';
-  toast('已完成批改 · 成績已自動送交學校帳戶管理系統入檔');
-}
-let tt;
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}
 render();
 </script>
 <script src="usage-modal.js"></script>

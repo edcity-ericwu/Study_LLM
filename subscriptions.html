@@ -78,10 +78,6 @@
   .req b{font-size:.88rem;}
   .req p{font-size:.76rem;color:var(--ink-2);line-height:1.6;margin-top:4px;}
   .req .scope{font-size:.66rem;font-weight:700;border-radius:99px;padding:3px 10px;display:inline-block;margin-top:8px;}
-  .req.direct .ic{background:#effaf5;}
-  .req.direct .scope{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
-  .req.gated .ic{background:#faf1f3;}
-  .req.gated .scope{color:var(--ec-maroon);background:#faf1f3;border:1px solid #e5cdd4;}
   .req .btns{display:flex;gap:8px;align-self:center;flex-shrink:0;}
   .btn{border:none;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ec-blue);color:#fff;transition:background .15s ease;}
   .btn:not(.ghost):hover{background:var(--ec-blue-dark);}
@@ -125,24 +121,18 @@
   .case-note{display:block;font-size:.72rem;color:var(--ink-3);}
   .case-note textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:.78rem;font-family:inherit;resize:vertical;}
   .case-foot{font-size:.74rem;color:var(--ink-3);line-height:1.65;margin-top:6px;}
+  .qlink{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 20px;margin-bottom:16px;flex-wrap:wrap;}
+  .qlink.has{border-color:#efdcb0;background:#fdfaf0;}
+  .qlink b{font-size:.86rem;display:block;}
+  .qlink small{font-size:.74rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.6;max-width:46em;}
+  .qbtn{margin-left:auto;flex-shrink:0;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;color:var(--ec-purple);text-decoration:none;white-space:nowrap;}
+  .qbtn:hover{border-color:var(--ec-purple);}
   .meter-note{font-size:.68rem;color:var(--ink-3);margin-top:4px;line-height:1.5;}
   .note-row{font-size:.72rem;color:var(--ink-3);margin-top:10px;line-height:1.6;max-width:52em;}
 
   .req.capacity .ic{background:#fdf6ec;}
   .req.capacity .scope{color:#b07c10;background:#fdf6ec;border:1px solid #f3e3c3;}
 
-  .req.done .ic{background:#e6f7ef;}
-  .req.reminded .ic{background:#f1edfb;}
-  .preview-mock{background:#f7f9fb;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;}
-  .preview-mock .pm-label{font-size:.68rem;color:var(--ink-3);display:block;margin-bottom:6px;}
-  .pm-tool{display:flex;align-items:center;gap:9px;font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px;}
-  .pm-tool b{font-size:.82rem;}
-  .pm-tool span{display:block;font-size:.66rem;color:var(--ink-3);font-weight:400;margin-top:1px;}
-  .detail-block{margin-top:10px;background:#f7f9fb;border-radius:10px;padding:10px 14px;width:100%;}
-  .detail-row{display:flex;gap:10px;font-size:.76rem;padding:5px 0;border-bottom:1px solid var(--line);}
-  .detail-row:last-child{border-bottom:none;}
-  .detail-row span:first-child{width:110px;flex-shrink:0;color:var(--ink-3);}
-  .detail-row span:last-child{color:var(--ink);}
 
   .plan-zone{background:#f7f9fb;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:28px;}
   .plan-zone h2{margin-top:0;}
@@ -222,49 +212,17 @@
   </section>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="pending" onclick="showTab('pending')">待處理申請<span class="tab-count" id="pendingCount" style="display:none;"></span></button>
-    <button class="tab-btn" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
+    <button class="tab-btn active" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
     <button class="tab-btn" data-tab="existing" onclick="showTab('existing')">現有訂閱</button>
     <button class="tab-btn" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="case" onclick="showTab('case')">預算建議書</button>
   </div>
 
-  <section class="tab-pane active" data-pane="pending">
-    <div class="req direct" id="directTrialCard">
-      <div class="ic">🧑‍🏫</div>
-      <div class="body">
-        <b>兩位中文科教師申請試用「智寫」寫作回饋工具。</b>
-        <p>陳凱怡老師、黃穎詩老師 · 屬個人試用性質，並非科組承諾。按管治規則，小規模試用<b>可直接批出</b>。</p>
-        <span class="scope"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 小規模試用 · 可直接批出</span>
-        <div class="detail-block" id="directTrialDetail" style="display:none;">
-          <div class="detail-row"><span>申請人</span><span>陳凱怡老師、黃穎詩老師（中文科）</span></div>
-          <div class="detail-row"><span>工具</span><span>智寫科技 · 寫作回饋工具</span></div>
-          <div class="detail-row"><span>申請性質</span><span>個別教師試用，非科組承諾</span></div>
-          <div class="detail-row"><span>擬批層級</span><span>Tier 1 · 基本資料（試用預設層級，不屬於資料存取審批的個別核准範圍）</span></div>
-          <div class="detail-row"><span>來源</span><span>教師於 AI 工具介面自行申請試用</span></div>
-          <div class="detail-row"><span>提交日期</span><span>2026-07-24</span></div>
-        </div>
-      </div>
-      <div class="btns">
-        <button class="btn" id="grantBtn" onclick="grant(this)">批出（限 2 人）</button>
-        <button class="btn ghost" id="detailBtn" onclick="toggleDetail()">詳情</button>
-      </div>
-    </div>
-    <div class="req gated" id="deptTrialCard" data-feature="subjectPanelTrialReview">
-      <div class="ic">🏫</div>
-      <div class="body">
-        <b>中文科申請全科採用「智寫」寫作回饋工具。</b>
-        <p>科主任提出全科訂閱申請。按管治規則，<b>須待科主任完成實測評估並提交建議</b>（可參考科組視圖中的工具試用評估）方可批出。全科採用與小規模試用，在把關程度上自然有所不同。</p>
-        <span class="scope">⏳ 待科主任評估建議 · 暫不能批出</span>
-      </div>
-      <div class="btns">
-        <button class="btn" disabled>批出</button>
-        <button class="btn ghost" onclick="remindPanelHead(this)">催辦</button>
-      </div>
-    </div>
-    <div id="capacityAlerts"></div>
-  </section>
-
+  <!-- 待處理申請 removed 2026-08-18. 馮 Sir had two inboxes for the same
+       incoming work — a queue here AND 待審批請求 on the access-approval
+       console — and the cards here were static fiction that no teacher action
+       produced or cleared. Requests now live in exactly one place; this page
+       keeps only the consequences of them. -->
   <section class="tab-pane" data-pane="case">
     <div class="sect-sub" style="margin:0 0 16px;">給校長的採購建議。內容由平台按實際使用情況自動彙整——你只需檢視、補充理由，然後匯出。你沒有動用預算的權限，這份文件是讓有權的人容易作決定。</div>
     <div class="case-head">
@@ -283,8 +241,10 @@
     <div id="budgetList"></div>
   </section>
 
-  <section class="tab-pane" data-pane="plans">
+  <section class="tab-pane active" data-pane="plans">
+    <div class="queue-link" id="queueLink"></div>
     <div class="sect-sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。<b>名額於學生首次以教育城帳戶登入時計算，其後同一學年內不再重複計算</b>——教師調動分組不會消耗名額。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
+    <div id="capacityAlerts"></div>
     <div class="plan-grid" id="planGrid"></div>
     <div class="note-row">名額用量與 <a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a> 共用同一份供應商資料（vendor-data.js），已核准組別的學生人數會自動匯總，不會出現兩邊數字不一致的情況。</div>
   </section>
@@ -353,6 +313,23 @@ function releasedNotUsed(vendorId){
   return Math.max(0, rel - used);
 }
 
+/* Requests are not handled here. This is a pointer to the one queue, showing
+ * its live depth so 馮 Sir does not have to go and look to find out whether
+ * anything is waiting. */
+function renderQueueLink(){
+  const host = document.getElementById('queueLink');
+  if(!host) return;
+  let n = 0;
+  VENDORS.forEach(v => { (v.pending||[]).forEach(r => { if(!r.status || r.status==='pending') n++; }); });
+  host.innerHTML = `<div class="qlink${n?' has':''}">
+    <div>
+      <b>${n ? `${n} 個資料存取申請待你審批` : '目前沒有待審批的資料存取申請'}</b>
+      <small>教師提出的工具申請一律在「供應商資料存取審批」處理，那裏可以看到範圍、層級、協議與名額影響。</small>
+    </div>
+    <a class="qbtn" href="eddata-console.html">前往審批 →</a>
+  </div>`;
+}
+
 function renderPlanGrid(){
   /* This console belongs to one school, so it only ever lists that school's
    * plans — plansForSchool() defaults to MY_SCHOOL_ID. */
@@ -414,11 +391,8 @@ function renderCapacityAlerts(){
   });
   document.getElementById('capacityAlerts').innerHTML = alerts.join('');
 
-  // 2 static cards (direct trial + gated dept request) always count, plus any capacity alerts
-  const countEl = document.getElementById('pendingCount');
-  const total = 2 + alerts.length;
-  countEl.style.display = 'inline-block';
-  countEl.textContent = total;
+  /* The tab badge this used to write to counted "2 static cards + alerts", a
+   * number partly made of fiction. Both the badge and the cards are gone. */
 }
 
 function renderBudgetPending(){
@@ -532,59 +506,15 @@ function showTab(name){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active', p.dataset.pane===name));
 }
 
-/* "Next-step" screens added 2026-07-27, per Eric: every action on this page
- * used to be a toast()-only stub — clicking 批出/催辦/詳情 had no real result
- * to look at, so there was no way to see what actually happens next. These
- * three replace/expand the card in place with the concrete outcome, instead
- * of just acknowledging the click. Still illustrative (this prototype has no
- * real backend), but the copy is honest about what's simulated vs. what a
- * real system would do — e.g. 催辦 doesn't pretend to unlock 批出 on this
- * page, since that state genuinely lives on dept-trial-evaluations.html and
- * this page has no live link to it (same "each page is self-contained,
- * cross-page continuity is a link/note, not fake synced state" convention
- * already used between dept-trial-evaluations.html and this page). */
-function grant(btn){
-  const card = document.getElementById('directTrialCard');
-  card.className = 'req done';
-  card.innerHTML = `
-    <div class="ic">✅</div>
-    <div class="body">
-      <b>已批出：陳凱怡老師、黃穎詩老師 · 智寫寫作回饋工具（個人試用）</b>
-      <p>生效層級：Tier 1 · 基本資料（小規模試用預設層級，不涉及全班／全科規模存取，毋須經供應商資料存取審批個別核准）。生效日期：即日起。</p>
-      <div class="preview-mock">
-        <span class="pm-label">教師介面現在會顯示：</span>
-        <div class="pm-tool">🖊 <div><b>寫作回饋工具</b><span>智寫科技 · 校方已採購 · 個人試用</span></div></div>
-      </div>
-      <p class="note-row">🔐 此批出只決定「用不用這件工具」；若日後試用擴展至整組學生，資料存取層級須另經<a href="eddata-console.html" style="color:var(--ec-blue-dark);font-weight:700;">供應商資料存取審批</a>個別審批。</p>
-    </div>`;
-  toast('已批出試用權限 · 工具將自動出現在兩位教師的介面');
-  const countEl = document.getElementById('pendingCount');
-  countEl.textContent = Math.max(0, parseInt(countEl.textContent||'0',10)-1);
-}
-function toggleDetail(){
-  const d = document.getElementById('directTrialDetail');
-  const btn = document.getElementById('detailBtn');
-  const showing = d.style.display !== 'none';
-  d.style.display = showing ? 'none' : 'block';
-  btn.textContent = showing ? '詳情' : '收合詳情';
-}
-function remindPanelHead(btn){
-  const card = document.getElementById('deptTrialCard');
-  card.className = 'req reminded';
-  card.innerHTML = `
-    <div class="ic">🔔</div>
-    <div class="body">
-      <b>已提醒李天佑主任完成「智寫」寫作回饋工具的科組試用評估</b>
-      <p>提醒已送出（示意）。李天佑主任會在<a href="dept-trial-evaluations.html" style="color:var(--ec-blue-dark);font-weight:700;">工具試用評估</a>開始一週實測評估；評估通過並提交建議後，全科採用的批出按鈕才會在此處解鎖——這是另一頁的獨立狀態，本頁不會自動偵測到評估完成，須你之後回來查看。</p>
-      <span class="scope">⏳ 待科主任評估建議 · 暫不能批出</span>
-    </div>
-    <div class="btns">
-      <button class="btn ghost" onclick="location.href='dept-trial-evaluations.html'">前往工具試用評估 →</button>
-    </div>`;
-  toast('已提醒李天佑主任開始評估');
-}
+/* grant() / toggleDetail() / remindPanelHead() removed 2026-08-18 along with the
+ * static 待處理申請 pane they drove. They animated two hardcoded cards that no
+ * teacher action created and nothing cleared — the 兩位中文科教師 card Eric
+ * flagged as confusing. Approvals now happen in one place, on the
+ * access-approval console, against real request data. */
+
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
+renderQueueLink();
 renderCapacityAlerts();
 renderPlanGrid();
 renderBudgetPending();

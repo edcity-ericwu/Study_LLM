@@ -388,7 +388,11 @@ function tools(){
   const out=[];
   VENDORS.forEach(v=>{
     (v.grants||[]).forEach(g=>{ if(g.classId===classId && g.groupId===groupId) out.push({v, status:'active', since:g.since}); });
-    (v.pending||[]).forEach(p=>{ if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({v, status:'pending'}); });
+    /* An approved or denied request stays in v.pending with a status set — the
+     * console keeps it for its own history. The teacher's views must filter on
+     * status, or one tool shows as 已啟用 and 已申請 at the same time. */
+    (v.pending||[]).forEach(p=>{ if(p.status && p.status!=='pending') return;
+      if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({v, status:'pending'}); });
   });
   /* 待預算 as she experiences it: the tool still works, and the school has not
    * decided. She is told, and she is not asked to do anything about it — the
@@ -500,17 +504,19 @@ function assignTool(vendorId){
     memberSnapshot:ms.map(s=>s.n), headcount:ms.length,
     tier:'Tier 1 · 基本資料', src:isWhole ? '來自全班指派' : '來自教學分組',
   });
+  if(typeof publishRequests === 'function') publishRequests();
   openMenu=null; renderAll();
   toast(`已為「${grp.name}」申請 ${v.product}，馮 Sir 會收到通知`);
 }
 function removeTool(vendorId){
   const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
-  const wasPending = (v.pending||[]).some(p=>p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID);
+  const wasPending = (v.pending||[]).some(p=>(!p.status||p.status==='pending') && p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID);
   const who = isWhole ? '全班學生' : '此組學生';
   if(!wasPending && !confirm(`停用後，${who}會即時失去「${v.product}」的存取權。確定嗎？`)) return;
   v.pending = (v.pending||[]).filter(p=>!(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID));
   v.grants  = (v.grants ||[]).filter(g=>!(g.classId===classId && g.groupId===groupId));
   if(typeof publishReleases === 'function') publishReleases();
+  if(typeof publishRequests === 'function') publishRequests();
   renderAll();
   toast(wasPending ? `已取消 ${v.product} 的申請` : `已停用 ${v.product}`);
 }

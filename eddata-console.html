@@ -785,6 +785,7 @@ function confirmRevoke(vendorId, idx){
    * a school can show. */
   requestDeletion({vendorId, vendorName:v.name, group:g.group, tier:g.tier, headcount:g.headcount, reason});
   if(typeof publishDeletions === 'function') publishDeletions();
+  if(typeof publishRequests === 'function') publishRequests();
   renderVendors(); renderAudit(); renderDeletions();
   toast('已撤銷，並已向'+v.name+'發出刪除要求');
 }
@@ -817,8 +818,14 @@ function approve(vendorId, reqId){
   }
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
   r.status='approved'; r.tier=r._pickedTier;
-  v.grants.push({group:r.group, headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});
+  /* classId/groupId were missing here, so an approved grant carried a label but
+   * no scope keys — the teacher's group page filters on those, and her tool
+   * stayed 審批中 forever even after 馮 Sir approved it. The one step the whole
+   * flow exists to complete was the one that silently didn't. */
+  v.grants.push({group:r.group, classId:r.classId, groupId:r.groupId,
+    headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:'2026-07-21'});
   AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 批准'+teacherName(r.teacherId)+'使用'+v.name+'（'+r.group+'），發放'+r.tier+'予'+v.name, time:'2026-07-21'});
+  if(typeof publishRequests === 'function') publishRequests();
   renderVendors(); renderAudit();
   toast('已核准：發放'+r.tier+'予'+v.name);
 }
@@ -826,6 +833,7 @@ function deny(vendorId, reqId){
   const {v, r} = findReq(vendorId, reqId);
   r.status='denied';
   AUDIT.unshift({ic:'✕', text:'馮 Sir 拒絕「'+teacherName(r.teacherId)+' · '+r.group+'」使用'+v.name+'的請求', time:'2026-07-21'});
+  if(typeof publishRequests === 'function') publishRequests();
   renderVendors(); renderAudit();
   toast('已拒絕：'+v.name);
 }

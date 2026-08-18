@@ -908,6 +908,34 @@ function pendingDeletions(vendorId, schoolId){
 /* Published to the vendor console the same way releases are: a payload, not a
  * shared model. The vendor console must not gain access to CLASSES just to show
  * a deletion queue — that boundary is the point. */
+/* The teacher → 馮 Sir handoff.
+ *
+ * Releases and deletion receipts were already published; grants and pending
+ * requests were not, so a tool a teacher assigned existed only in that page's
+ * memory and vanished on navigation. That made the one link the whole flow
+ * turns on — she asks, he sees it — the only link that could not be
+ * demonstrated.
+ *
+ * Only the mutable parts travel (pending + grants per vendor). The vendor
+ * catalogue itself is static seed data and stays in the file. */
+function publishRequests(){
+  if(typeof DemoState === 'undefined') return;
+  const map = {};
+  VENDORS.forEach(v => { map[v.id] = {pending: v.pending || [], grants: v.grants || []}; });
+  DemoState.set('requests', map);
+}
+function applyPublishedRequests(){
+  if(typeof DemoState === 'undefined') return;
+  const map = DemoState.get('requests', null);
+  if(!map) return;
+  VENDORS.forEach(v => {
+    const m = map[v.id];
+    if(!m) return;
+    v.pending = m.pending || [];
+    v.grants  = m.grants  || [];
+  });
+}
+
 function publishDeletions(){
   if(typeof DemoState === 'undefined') return;
   DemoState.set('deletions', DELETION_RECEIPTS);
@@ -1010,3 +1038,6 @@ function capacityCheck(vendorId, addStudents){
 }
 
 applyGroupOverrides();
+/* Applied at load, before any page renders, so every screen starts from the
+ * same state the last screen left. */
+applyPublishedRequests();

@@ -13,19 +13,19 @@
  * hide, e.g. records-console.html) — for those, demo-nav.js filters the nav
  * entry AND the page itself shows a "hidden" placeholder if opened directly.
  * Others are a slice embedded inside a page that also covers other, unrelated
- * concerns (e.g. the 🧪試用 buttons living inside 學生工具申請, which is
+ * concerns (e.g. the 邀請老師試用 tab inside vendor-portal.html, which is
  * mostly not about trials) — for those, only the specific DOM section is
  * hidden; the rest of that page is unaffected. */
 const FEATURE_FLAGS = {
   // 工具試用機制 — 供應商或教師發起試用、資訊科技統籌核實、冷靜期。
   // 涉及頁面：trial-invites.html（整頁）、dept-trial-evaluations.html（整頁）、
-  // vendor-portal.html 的「邀請老師試用」分頁、eddata-console.html 的「試用請求」分頁、
-  // group-access-requests.html 裏的 🧪 申請試用按鈕。
+  // vendor-portal.html 的「邀請老師試用」分頁、eddata-console.html 的「試用請求」分頁。
   toolTrial: true,
 
-  // 跨班學習小組（2026-07-22 新增，Story 1）。
-  // 涉及頁面：groups.html 的「學習小組（跨班）」區塊、
-  // group-access-requests.html 的「學習小組（跨班）」申請區。
+  // 跨班學習小組（2026-07-22 新增，Story 1）。2026-08-18：兩個消費者都已刪除
+  // ——groups.html 的區塊與 group-access-requests.html 整頁——所以這個旗標
+  // 目前沒有任何作用，保留只為記錄這個決定。跨班分組會令 課室 不再是單一班別，
+  // 名單漂移隨之回來，要重建的話遠不只是把旗標打開。
   studyGroups: false,
 
   // School Accounts Administration System 角色與權限／RBAC（2026-07-22 新增，Story 3）。
@@ -60,26 +60,28 @@ const FEATURE_FLAGS = {
   // true to reinstate the always-visible "this isn't real" corner disclaimer.
   pocRibbon: false,
 
-  // 🧭 示範導覽 — the floating walkthrough pill, and the only route to the
-  // non-teacher pages (dept, roster, the consoles, vendor portal). It is fixed
-  // to the bottom-right, so it can sit on top of whatever a page puts in that
-  // corner — notably the worksheet panel's 交給「教材檢視」 button on chat.html.
-  // Set false to hide it suite-wide.
+  // 供應商發起的試用邀請 — a vendor inviting a teacher directly, before the
+  // school has asked for anything. On. This was briefly off, on the reading
+  // that it inverted the teacher-asks-first direction. That reading conflated
+  // two different rights: a vendor may *initiate* a conversation, but only a
+  // teacher may ever *scope* it — the invitation names no students and carries
+  // no roster. 馮 Sir still approves. Capped at one open invitation per vendor
+  // per teacher, since the scarce resource is one teacher's attention.
+  vendorInitiatedTrial: true,
+
   // 科主任的工具試用評估 — the panel-head review step between a teacher asking
   // for a whole-subject subscription and the ICT coordinator granting it.
   // Off: it adds a third approver to a story that is already about who may
   // release data, and the extra hop crowds out that discussion. Nothing is
   // deleted — the page, its nav entries and the request card it blocks all
   // come back with this set to true.
-  // 供應商發起的試用邀請 — a vendor inviting a teacher directly, before the
-  // school has asked for anything. Off: it inverts the direction this platform
-  // now depends on (teacher asks, school approves, vendor receives), so showing
-  // it alongside that model invites the wrong question. Teacher-initiated
-  // trials are unaffected — they stay under toolTrial.
-  vendorInitiatedTrial: false,
-
   subjectPanelTrialReview: false,
 
+  // 🧭 示範導覽 — the floating walkthrough pill, and the only route to the
+  // non-teacher pages (dept, roster, the consoles, vendor portal). It is fixed
+  // to the bottom-right, so it can sit on top of whatever a page puts in that
+  // corner — notably the worksheet panel's 交給「教材檢視」 button on chat.html.
+  // Set false to hide it suite-wide.
   demoNav: true,
 };
 

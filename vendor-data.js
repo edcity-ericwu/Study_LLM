@@ -1,7 +1,7 @@
 /* vendor-data.js
  * Single source of truth for vendor data-access grants and pending requests.
  * Loaded by eddata-console.html (tier-approval workflow), subscriptions.html
- * (seat-capacity view), groups.html, group-access-requests.html, trial-invites.html,
+ * (seat-capacity view), groups.html, trial-invites.html,
  * and vendor-portal.html, so all these pages can never show different headcounts or
  * membership for the same class/group — this was a recurring bug in earlier
  * iterations of this prototype, where each file kept its own hand-typed copy of
@@ -9,6 +9,8 @@
  *
  * grants  = access already approved (counts toward seat consumption)
  *
+ * eligible[] / released[] are legacy seed fields, no longer read (2026-08-18).
+ * Kept on the seed grants only so older saved DemoState doesn't break. Was:
  * eligible = the students a grant covers, frozen when it was approved. Stored as
  * sids, not names, and stored ON the grant rather than derived from CLASSES at
  * render time — the whole point is that it does NOT move when the teacher's
@@ -50,7 +52,7 @@
  * — fine for display, useless for filtering. Pages with a class switcher
  * (groups.html, and potentially others sharing the same CLASS_LIST-driven
  * dropdown) need a real field to filter "classes I teach" from "every class
- * that exists", the same gap just fixed in group-access-requests.html's
+ * that exists", the same gap just fixed in groups.html's
  * "我的請求" for vendor requests. Matches roster.html's own ASSIGNMENTS array
  * (a1/a2: 陳凱怡→2b/1c, a3: 黃穎詩→1a) — kept in sync by hand since ASSIGNMENTS
  * carries extra fields (subjectId, year) this doesn't need. */
@@ -415,9 +417,8 @@ function groupLabel(classId, groupId){
  *     Derived, never the source. The vendor console reads only this, so it can
  *     render what was released without ever touching the roster.
  *
- * Release = current group members ∩ the grant's frozen eligible list. A student
- * the teacher adds who is outside the bound is deliberately absent here — she
- * gets told to request them, and the vendor never sees them in the meantime. */
+ * Release = the group's current members. The bound is 課室 (one class, from
+ * 任教編配), so every member is inside it by construction. */
 function applyGroupOverrides(){
   if(typeof DemoState === 'undefined') return;
   const ov = DemoState.get('groupOverrides', null);
@@ -436,40 +437,34 @@ function recordGroupOverride(sid, groupId){
  * vocabulary at vetting; the group's own name never travels. */
 const RELEASE_LEVEL = { stretch:'程度 4', core:'程度 3', support:'程度 2' };
 
-/* Reads the grant's explicit released[] list, NOT live group membership.
- * A teacher regrouping her class is a pedagogical act and must not move a
- * child's data or spend a seat; releasing is a separate, deliberate act she
- * performs on 學生工具申請. released[] is seeded from the group at approval
- * and is hers to maintain from then on. */
+/* Release follows live group membership — deliberately.
+ *
+ * The previous version kept a frozen released[] list the teacher curated by
+ * hand, on the reasoning that regrouping must not silently move a child's data
+ * or spend a seat. Half of that reasoning was wrong. 課室 is derived from
+ * 任教編配 and is single-class, so a student moved between two groups of the
+ * same class never crosses the approved bound — there is nothing new to
+ * authorise. And seats are metered at first EdConnect authentication, not at
+ * assignment, so moving her costs nothing until she actually opens the tool.
+ *
+ * What that removes: the eligible/released split, the curated cohort, the drift
+ * banner, and the teacher-side reconciliation work all of it generated. */
 function releasedFor(vendorId){
   const v = VENDORS.find(x => x.id === vendorId);
   if(!v) return [];
   const out = [];
   (v.grants||[]).forEach(g => {
-    if(!g.classId || !g.released) return;
+    if(!g.classId) return;
     const roster = CLASSES[g.classId];
-    g.released.forEach(sid => {
-      if(g.eligible && !g.eligible.includes(sid)) return;   // never outside the bound
-      const st = (roster.students||[]).find(x => x.sid === sid);
-      if(!st || st.left) return;                            // left the school
+    const members = g.groupId && g.groupId !== '__whole_class__'
+      ? groupMembers(g.classId, g.groupId)
+      : wholeClassMembers(g.classId);
+    members.forEach(st => {
+      if(st.left) return;                                   // left the school
       out.push({ n:st.n, cls:roster.className, level:RELEASE_LEVEL[st.g] || '程度 3' });
     });
   });
   return out;
-}
-
-/* Of a group's current members, how many can actually use this vendor's tool.
- * Passive — shown where the teacher is already looking, so a gap between her
- * grouping and her tool cohort is visible without anything happening behind
- * her back. */
-function groupToolCoverage(classId, groupId, vendorId){
-  const v = VENDORS.find(x => x.id === vendorId);
-  if(!v) return null;
-  const g = (v.grants||[]).find(x => x.classId === classId);
-  if(!g || !g.released) return null;
-  const members = groupMembers(classId, groupId);
-  if(!members.length) return null;
-  return { covered: members.filter(s => g.released.includes(s.sid)).length, total: members.length };
 }
 function publishReleases(){
   if(typeof DemoState === 'undefined') return;
@@ -481,18 +476,6 @@ function publishReleases(){
 function seatsLeft(vendorId){
   const p = VENDOR_PLANS[vendorId];
   return p ? Math.max(0, p.studentCap - p.seatsUsed) : null;
-}
-
-/* Students currently in the group who are NOT on the grant's frozen eligible
- * list — the only membership change that needs a fresh approval. Everything
- * inside the list the teacher may move freely, which is the point of approving
- * a bound rather than a snapshot. Returns [] when a grant predates eligible[]. */
-function outsideBound(entry){
-  if(!entry.eligible || !entry.classId || !entry.groupId) return [];
-  const current = entry.groupId==='__whole_class__'
-    ? wholeClassMembers(entry.classId)
-    : groupMembers(entry.classId, entry.groupId);
-  return current.filter(s => !entry.eligible.includes(s.sid));
 }
 
 function membershipDrift(entry){
@@ -608,7 +591,7 @@ const VENDORS = [
 ];
 
 /* Trial requests — shared between trial-invites.html (teacher's confirm/decline
- * inbox), eddata-console.html (IT's confirm/decline queue), group-access-requests.html
+ * inbox), eddata-console.html (IT's confirm/decline queue), groups.html
  * (where a teacher can now START a trial directly), and vendor-portal.html (where
  * a vendor can also send an invite), so all these pages show the same trial at the
  * same stage instead of each assuming a different state.

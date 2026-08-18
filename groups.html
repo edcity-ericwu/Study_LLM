@@ -117,9 +117,6 @@
     padding:8px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
   }
   .col .assign:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
-  .tool-cov{font-size:.68rem;color:var(--ink-3);margin-top:6px;padding-left:2px;}
-  .tool-cov.short{color:#8a5a09;}
-  .tool-cov b{color:inherit;}
   .assign-wrap{position:relative;}
   /* Confirmation strip once a group actually has material assigned — a
    * separate, persistent line above the button, not just a toast that
@@ -128,6 +125,11 @@
    * applied elsewhere in this suite (subscriptions.html's request flows). */
   .assigned-material{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#effaf5;border:1px solid #bfe8d7;border-radius:8px;padding:7px 10px;margin-top:8px;font-size:.72rem;color:#0c6b48;}
   .assigned-material b{font-weight:700;}
+  .assigned-material.pending{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
+  .assigned-material.pending .am-when{color:#a8843c;}
+  .assigned-material.pending .am-x{color:#8a5a09;}
+  .assigned-material .am-ic{font-size:.8rem;}
+  .assign-menu .am-none{font-size:.72rem;color:var(--ink-3);padding:6px 9px 8px;}
   .assigned-material .am-when{color:#4a9b7c;}
   .assigned-material .am-x{margin-left:auto;border:none;background:none;color:#0c6b48;text-decoration:underline;cursor:pointer;font-size:.7rem;font-family:inherit;padding:0;}
   .assign-menu{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.14);padding:6px;z-index:30;max-height:240px;overflow-y:auto;}
@@ -136,16 +138,9 @@
   .assign-menu .am-opt:hover{background:#f2f6f9;}
   .assign-menu .am-opt .am-type{display:block;font-size:.66rem;color:var(--ink-3);margin-top:1px;}
 
-  .tool-link{
     margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
     display:flex;gap:14px;align-items:center;flex-wrap:wrap;
   }
-  .tool-link .tl-ic{width:38px;height:38px;border-radius:11px;background:#e6f4fb;color:var(--ec-blue-dark);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-  .tool-link .tl-body{flex:1;min-width:220px;}
-  .tool-link b{font-size:.86rem;display:block;}
-  .tool-link small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.6;}
-  .tool-link a.lbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 15px;font-size:.78rem;color:var(--ec-blue-dark);font-weight:700;text-decoration:none;flex-shrink:0;}
-  .tool-link a.lbtn:hover{border-color:var(--ec-blue);}
 
   .sync{
     margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;
@@ -157,39 +152,12 @@
   /* Study groups — deliberately distinct visual language from the per-class
      board above (teal accent, not blue/purple/green) so nobody mistakes a
      cross-class study group for one of 教學分組's per-class sub-groups. */
-  .sg-section{margin-top:30px;}
   /* Section heading, not a second page title — this was an <h1> shrunk with an
    * inline font-size, which broke the document outline and inherited the
    * page-title margin. */
-  .sg-section h2{font-size:1.15rem;font-weight:800;margin-bottom:10px;}
   /* Feature flag (see feature-flags.js) — hides without deleting anything. */
-  body.ff-hide-studygroups .sg-section{display:none !important;}
-  .sg-note{background:#effafa;border:1px solid #bfe0e0;border-radius:12px;padding:11px 15px;
     font-size:.76rem;color:#0f6b6b;line-height:1.65;max-width:56em;margin-bottom:14px;}
-  .sg-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
-  .sg-card{background:#fff;border:1px solid var(--line);border-top:3px solid var(--ec-teal);border-radius:14px;padding:15px 17px;}
-  .sg-card .sg-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;}
-  .sg-card b{font-size:.88rem;}
-  .sg-card .sg-n{margin-left:auto;font-size:.7rem;color:var(--ink-3);white-space:nowrap;}
-  .sg-card .sg-goal{font-size:.72rem;color:var(--ink-3);margin:4px 0 10px;line-height:1.55;}
-  .sg-member{display:inline-flex;align-items:center;gap:5px;background:#f2f9f9;border:1px solid #d9eeee;border-radius:99px;
     padding:4px 10px;font-size:.7rem;color:var(--ink-2);margin:0 6px 6px 0;}
-  .sg-member small{color:var(--ink-3);}
-  .sg-expiry{font-size:.68rem;color:#8a5a00;background:#fdf1c7;border-radius:99px;padding:3px 10px;display:inline-block;margin-top:4px;}
-  .sg-create{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:16px 18px;margin-top:12px;}
-  .sg-create input[type=text]{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:.8rem;font-family:inherit;margin-bottom:8px;}
-  .sg-create .sg-pick-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .sg-pick-col{flex:1;min-width:200px;border:1px solid var(--line);border-radius:9px;padding:9px;}
-  .sg-pick-col h6{font-size:.68rem;color:var(--ink-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:normal;display:flex;align-items:center;gap:4px;}
-  .sg-pick-col h6 .sg-pick-sel{color:var(--ec-teal);text-transform:none;letter-spacing:0;font-weight:600;}
-  .sg-pick-search{width:100%;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:.74rem;font-family:inherit;margin-bottom:6px;box-sizing:border-box;}
-  .sg-pick-gfilter{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px;}
-  .sg-pick-gchip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 9px;font-size:.68rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
-  .sg-pick-gchip:not(.on):hover{border-color:var(--ec-blue);}
-  .sg-pick-gchip.on{background:var(--ec-teal);border-color:var(--ec-teal);color:#fff;}
-  .sg-pick-list{max-height:200px;overflow-y:auto;}
-  .sg-pick-opt{display:flex;align-items:center;gap:6px;font-size:.76rem;padding:3px 0;}
-  .sg-pick-no{display:inline-block;min-width:20px;color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:.7rem;}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
   .toast.show{opacity:.94;}
@@ -221,7 +189,6 @@
     <div class="nav-group">
       <h6>課堂與學生</h6>
       <a href="groups.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
-      <a href="group-access-requests.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>學生工具申請</a>
       <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
@@ -243,7 +210,7 @@
     <div class="page-head">
       <div class="ph-text">
         <h1>教學分組</h1>
-        <div class="sub">把班級分成小組，按需要指派不同的練習與教材。名單直接取自學校帳戶管理系統，毋須重新輸入。</div>
+        <div class="sub">把班級分成小組，按需要指派練習、教材和教學工具。名單直接取自學校帳戶管理系統，毋須重新輸入。</div>
       </div>
       <div class="class-dd">
         <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel"></b><span id="classMeta"></span><span class="car">▾</span></button>
@@ -260,38 +227,16 @@
 
   <div class="board" id="board"></div>
 
-  <div class="tool-link">
-    <div class="tl-ic">🔐</div>
-    <div class="tl-body"><b>要為分組申請批改工具？</b><small>組建分組是一回事，申請資料存取權是另一個決定，分開處理，也讓「學生工具申請」看到的一律是你分組的最新狀態。</small></div>
-    <a class="lbtn" href="group-access-requests.html">🔐 學生工具申請 →</a>
-  </div>
+  <div class="sync"><span class="ic">🔄</span><span>簡愛琳上週由乙班轉到丙班，已自動退出你的所有分組，指派給她的工具亦同時停用。名冊由學校帳戶管理系統維護，這裏會跟著更新。</span></div>
 
-  <div class="sync"><span class="ic">🔄</span><span><b>自動同步示例：</b>簡愛琳（Karen）上週由乙班轉到丙班，系統已自動把她從所有分組移除（下方以灰色示意）。學校帳戶管理系統的名冊一經更新，這裏亦隨即更新，<b>毋須任何手動步驟</b>。</span></div>
-
-  <div class="sg-section">
-    <h2>學習小組（跨班）</h2>
-    <div class="sg-note">🗂 這裏管理的是<b>跨班學習小組</b>，與上方的「教學分組」是兩個不同的概念，不要混為一談：教學分組（增潤組／核心組／支援組）只能在同一班內劃分；學習小組可以從你任教的<b>不同班別</b>中挑選學生組成，例如一個不跟班別走的共讀單元。範圍僅限本校——跨校學習小組是已知的未來需要，這次不建置。</div>
-    <div class="sg-board" id="sgBoard"></div>
-    <div class="sg-create">
-      <b style="font-size:.82rem;display:block;margin-bottom:10px;">＋ 新增學習小組</b>
-      <input type="text" id="sgNameInput" placeholder="小組名稱，例如：跨班閱讀圈">
-      <input type="text" id="sgGoalInput" placeholder="小組目的（選填）">
-      <div class="sg-pick-row" id="sgPickRow"></div>
-      <label style="display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--ink-2);margin-bottom:10px;">
-        期限（選填）：<input type="date" id="sgExpiryInput" style="width:auto;padding:6px 9px;">
-      </label>
-      <button class="btn" onclick="createStudyGroup()">建立學習小組</button>
-    </div>
-  </div>
 </main>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
-document.body.classList.toggle('ff-hide-studygroups', typeof featureOn==='function' && !featureOn('studyGroups'));
 /* GROUPS/students used to live only here; they're now CLASSES[classId].groups/.students
- * in vendor-data.js, shared with group-access-requests.html, trial-invites.html, and
+ * in vendor-data.js, shared with trial-invites.html and
  * eddata-console.html so a tool request always compares against the same membership
  * this board shows. A teacher can teach more than one class (same subject) — see
  * activeClassId below — so every lookup is keyed by class, not just group. */
@@ -299,7 +244,7 @@ document.body.classList.toggle('ff-hide-studygroups', typeof featureOn==='functi
  * (陳凱怡老師). Used to scope the class switcher: it used to list every class
  * in CLASS_LIST regardless of who teaches it, so 陳凱怡 could switch to 中一甲班
  * even though that's 黃穎詩's class, not hers — same category of bug just
- * fixed in group-access-requests.html's "我的請求", here applied to which
+ * fixed in the since-deleted 學生工具申請 page, here applied to which
  * classes appear at all rather than which requests appear. */
 const MY_TEACHER_ID = 'T1001';
 let activeClassId = '2b';
@@ -407,8 +352,10 @@ function render(){
     const menuOpen = assignMenuOpenFor === matKey;
     const menuHtml = menuOpen
       ? `<div class="assign-menu">
-          <div class="am-label">從你的教材庫揀選</div>
+          <div class="am-label">教材與練習</div>
           ${MATERIAL_CATALOG.map(m=>`<button class="am-opt" onclick="assignMaterial('${activeClassId}','${grp.id}','${m.name.replace(/'/g,"\\'")}')">${m.name}<span class="am-type">${m.typeLabel}</span></button>`).join('')}
+          <div class="am-label">教學工具</div>
+          ${toolMenuHtml(activeClassId, grp.id)}
         </div>`
       : '';
     return `<div class="col" data-gi="${grp.id}" ondragover="dragOver(event)" ondragleave="this.classList.remove('dragover')" ondrop="dropStu(event,'${grp.id}')">
@@ -416,7 +363,7 @@ function render(){
       <div class="c-goal">${grp.goal}</div>
       ${visible.length ? rowsHtml : (q ? '<div class="stu-empty">沒有符合的學生</div>' : '')}
       ${assignedHtml}
-      ${toolCoverageHtml(activeClassId, grp.id)}
+      ${toolRowsHtml(activeClassId, grp.id)}
       <div class="assign-wrap">
         ${menuHtml}
         <button class="assign" onclick="toggleAssignMenu('${activeClassId}','${grp.id}')">${assigned ? '🔁 更換教材／練習' : '📎 指派教材／練習給此組'}</button>
@@ -439,15 +386,17 @@ function dragOver(ev){
 /* How many of this group's students can actually use each granted tool.
  * Read-only and non-blocking: it makes a gap between grouping and tool access
  * visible without creating pending state or acting on her behalf. */
-function toolCoverageHtml(classId, groupId){
-  if(typeof groupToolCoverage !== 'function' || typeof VENDORS === 'undefined') return '';
-  const rows = VENDORS.map(v=>{
-    const c = groupToolCoverage(classId, groupId, v.id);
-    if(!c) return '';
-    const short = c.covered < c.total;
-    return `<div class="tool-cov${short?' short':''}">${v.product}：${c.total} 人中 <b>${c.covered}</b> 人可使用</div>`;
-  }).filter(Boolean);
-  return rows.join('');
+function toolRowsHtml(classId, groupId){
+  return toolsForGroup(classId, groupId).map(t=>{
+    const pend = t.status === 'pending';
+    return `<div class="assigned-material${pend?' pending':''}">${pend
+        ? '<span class="am-ic">⏳</span>'
+        : '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>'}
+      ${pend ? '已申請：' : '已啟用：'}<b>${t.vendor.product}</b>
+      <span class="am-when">· ${pend ? '已通知馮 Sir，審批中' : t.since + ' 起'}</span>
+      <button class="am-x" onclick="removeTool('${classId}','${groupId}','${t.vendor.id}')">${pend ? '取消申請' : '停用'}</button>
+    </div>`;
+  }).join('');
 }
 
 function dropStu(ev,gid){
@@ -459,10 +408,14 @@ function dropStu(ev,gid){
   const s=c.students.find(x=>x.n===name);
   if(!s||s.left||s.g===gid) return;
   s.g=gid;
-  // Grouping only. Tool access is an explicit list on 學生工具申請 and is
-  // deliberately NOT touched here — moving a student between groups must not
-  // release her data or spend a year-long seat.
+  // Superseded 2026-08-18: tool access is no longer a separate curated list, so
+  // this move does change what the vendor sees — within 課室, which is what was
+  // approved.
   recordGroupOverride(s.sid, gid);
+  /* Release follows membership now, so the vendor payload has to be republished
+   * here. This does NOT spend anything: seats meter at first EdConnect sign-in,
+   * and both groups sit inside the same 課室, so nothing crosses the bound. */
+  if(typeof publishReleases === 'function') publishReleases();
   render();
   const grp = c.groups.find(g=>g.id===gid);
   toast(name+' → '+grp.name);
@@ -473,148 +426,64 @@ function dropStu(ev,gid){
  * whatever group happens to be "next" (not a chosen destination) was causing
  * real mistakes. Drag-and-drop remains the only way to move a student between
  * groups, since it requires picking the actual destination column. */
-/* Study groups (Story 1, wave-one build) — deliberately rendered independent
- * of activeClassId, since the whole point is they aren't scoped to one class.
- * Kept in this same file (not a separate page) because the ownership note
- * above ("分組只有你看得到") applies equally here — same teacher-only visibility
- * model, just a different membership shape. */
-let sgIdSeq = STUDY_GROUPS.length + 1;
 
-function renderStudyGroups(){
-  document.getElementById('sgBoard').innerHTML = STUDY_GROUPS.length ? STUDY_GROUPS.map(sg=>{
-    const members = studyGroupMembers(sg.id);
-    const memberChips = members.map(m=>
-      `<span class="sg-member">${m.n}<small>· ${m.className}</small> <span style="cursor:pointer;" onclick="removeStudyGroupMember('${sg.id}','${m.classId}','${m.n}')">✕</span></span>`
-    ).join('') || '<span class="sg-member" style="color:var(--ink-3);">目前沒有成員</span>';
-    const expiryHtml = sg.expiresAt ? `<div class="sg-expiry">⏳ 期限至 ${sg.expiresAt}</div>` : '';
-    return `<div class="sg-card">
-      <div class="sg-head"><b>${sg.name}</b><span class="sg-n">${members.length} 人 · 跨班</span></div>
-      <div class="sg-goal">${sg.goal||'（未填寫目的）'}</div>
-      <div>${memberChips}</div>
-      ${expiryHtml}
-      <div style="margin-top:10px;"><button class="btn ghost" onclick="deleteStudyGroup('${sg.id}')" style="font-size:.72rem;padding:6px 12px;">刪除此學習小組</button></div>
-    </div>`;
-  }).join('') : '<div class="sg-card" style="color:var(--ink-3);text-align:center;">尚未建立任何跨班學習小組</div>';
-}
-
-/* Picker redesign (2026-07-27): classes now run ~35 students each, so a flat
- * checkbox list per class (the original build) forces the teacher to scroll
- * and eyeball-match names with no way to narrow down — exactly the
- * "mistake-prone under load" problem Eric flagged. Fix: per-class search
- * (name or 班號), a group filter (matches the teacher's existing mental model
- * of 增潤/核心/支援, so narrowing down doesn't require learning a new
- * grouping), and 班號 shown on every row so a name collision (e.g. 陳嘉欣 in
- * both 2b and 1a) is never the only way to tell two students apart.
- * Selection state is tracked in sgPickSelected (not just DOM checkbox state),
- * because filtering/searching re-renders the row list — losing checked state
- * on every keystroke would be worse than the problem being fixed. */
-let sgPickFilters = {};  // {classId: {q, group}}
-let sgPickSelected = {}; // {classId: Set<studentName>}
-
-function renderSgPickRow(){
-  // Cross-class only means "across the classes I teach" — pulling students
-  // from 黃穎詩's 中一甲班 into 陳凱怡's own study group would be the same
-  // access-scope bug as the class switcher above, just one level deeper.
-  document.getElementById('sgPickRow').innerHTML = myClasses().map(cl=>{
-    if(!sgPickFilters[cl.id]) sgPickFilters[cl.id] = {q:'', group:'all'};
-    if(!sgPickSelected[cl.id]) sgPickSelected[cl.id] = new Set();
-    const gfilter = sgPickFilters[cl.id].group;
-    return `<div class="sg-pick-col">
-      <h6>${cl.className}<span class="sg-pick-sel" id="sgSelCount-${cl.id}"></span></h6>
-      <input type="text" class="sg-pick-search" placeholder="搜尋姓名或班號" data-cls="${cl.id}" oninput="onSgPickSearch(this)">
-      <div class="sg-pick-gfilter">
-        <button type="button" class="sg-pick-gchip ${gfilter==='all'?'on':''}" data-cls="${cl.id}" data-g="all" onclick="onSgPickGroupFilter(this)">全部</button>
-        ${cl.groups.map(g=>`<button type="button" class="sg-pick-gchip ${gfilter===g.id?'on':''}" data-cls="${cl.id}" data-g="${g.id}" onclick="onSgPickGroupFilter(this)">${g.name}</button>`).join('')}
-      </div>
-      <div class="sg-pick-list" id="sgPickList-${cl.id}"></div>
-    </div>`;
-  }).join('');
-  myClasses().forEach(cl=>renderSgPickList(cl.id));
-}
-
-function renderSgPickList(classId){
-  const cl = CLASSES[classId];
-  const filt = sgPickFilters[classId];
-  const selected = sgPickSelected[classId];
-  const q = filt.q.trim();
-  let rows = cl.students.filter(s=>!s.left);
-  if(filt.group!=='all') rows = rows.filter(s=>s.g===filt.group);
-  if(q) rows = rows.filter(s=>s.n.includes(q) || String(s.no).includes(q) || (/^\d+$/.test(q) && s.no===parseInt(q,10)));
-  rows = rows.slice().sort((a,b)=>(a.no||0)-(b.no||0));
-  document.getElementById('sgPickList-'+classId).innerHTML = rows.length ? rows.map(s=>{
-    const checked = selected.has(s.n) ? 'checked' : '';
-    const no = s.no!=null ? String(s.no).padStart(2,'0') : '—';
-    return `<label class="sg-pick-opt"><input type="checkbox" data-classid="${classId}" data-name="${s.n}" ${checked} onchange="onSgPickCheck(this)"><span class="sg-pick-no">${no}</span>${s.n}</label>`;
-  }).join('') : '<span style="color:var(--ink-3);font-size:.72rem;">沒有符合的學生</span>';
-  updateSgSelCount(classId);
-}
-
-function updateSgSelCount(classId){
-  const n = sgPickSelected[classId].size;
-  document.getElementById('sgSelCount-'+classId).textContent = n ? '（已選 '+n+'）' : '';
-}
-
-function onSgPickSearch(input){
-  const classId = input.dataset.cls;
-  sgPickFilters[classId].q = input.value;
-  renderSgPickList(classId);
-}
-function onSgPickGroupFilter(btn){
-  const classId = btn.dataset.cls;
-  sgPickFilters[classId].group = btn.dataset.g;
-  document.querySelectorAll(`.sg-pick-gchip[data-cls="${classId}"]`).forEach(b=>b.classList.toggle('on', b===btn));
-  renderSgPickList(classId);
-}
-function onSgPickCheck(cb){
-  const classId = cb.dataset.classid;
-  if(cb.checked) sgPickSelected[classId].add(cb.dataset.name);
-  else sgPickSelected[classId].delete(cb.dataset.name);
-  updateSgSelCount(classId);
-}
-
-function createStudyGroup(){
-  const name = document.getElementById('sgNameInput').value.trim();
-  if(!name){ toast('請先填寫小組名稱'); return; }
-  const goal = document.getElementById('sgGoalInput').value.trim();
-  const expiresAt = document.getElementById('sgExpiryInput').value || null;
-  const memberRefs = [];
-  Object.keys(sgPickSelected).forEach(classId=>{
-    sgPickSelected[classId].forEach(name=>memberRefs.push({classId, name}));
+/* A tool assignment IS the data-release request — same gesture as assigning a
+ * worksheet. She never visits a request page, never enumerates students, never
+ * sees a seat count. The bound is 課室 (this class, from 任教編配), so everyone
+ * in the group is inside it by construction and there is nothing to reconcile.
+ * 馮 Sir approves; until then the row reads 審批中 rather than blocking her. */
+function toolsForGroup(classId, groupId){
+  if(typeof VENDORS === 'undefined') return [];
+  const out = [];
+  VENDORS.forEach(v=>{
+    (v.grants||[]).forEach(g=>{
+      if(g.classId===classId && g.groupId===groupId) out.push({vendor:v, status:'active', since:g.since});
+    });
+    (v.pending||[]).forEach(p=>{
+      if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({vendor:v, status:'pending'});
+    });
   });
-  if(!memberRefs.length){ toast('請至少選一位學生'); return; }
-  STUDY_GROUPS.push({id:'sg'+(sgIdSeq++), name, goal, teacherId:'T1001', color:'var(--ec-teal)', expiresAt, memberRefs});
-  document.getElementById('sgNameInput').value = '';
-  document.getElementById('sgGoalInput').value = '';
-  document.getElementById('sgExpiryInput').value = '';
-  Object.keys(sgPickSelected).forEach(classId=>sgPickSelected[classId].clear());
-  renderSgPickRow();
-  renderStudyGroups();
-  toast('已建立學習小組：'+name+'（'+memberRefs.length+' 人）');
+  return out;
 }
-
-function removeStudyGroupMember(sgId, classId, name){
-  const sg = STUDY_GROUPS.find(x=>x.id===sgId);
-  if(!sg) return;
-  sg.memberRefs = sg.memberRefs.filter(r=>!(r.classId===classId && r.name===name));
-  renderStudyGroups();
-  toast('已將 '+name+' 移出學習小組');
+/* Unapproved tools are offered, not hidden and not greyed out. Discovery is the
+ * point of the platform; approval is latency, not a wall. */
+function toolMenuHtml(classId, groupId){
+  if(typeof VENDORS === 'undefined') return '';
+  const taken = toolsForGroup(classId, groupId).map(t=>t.vendor.id);
+  const opts = VENDORS.filter(v=>!taken.includes(v.id));
+  if(!opts.length) return '<div class="am-none">已指派所有可用工具</div>';
+  return opts.map(v=>{
+    const held = (v.grants||[]).length > 0;
+    return `<button class="am-opt" onclick="assignTool('${classId}','${groupId}','${v.id}')">${v.product}<span class="am-type">${v.name}${held?'':' · 學校未訂用，需經審批'}</span></button>`;
+  }).join('');
 }
-
-function deleteStudyGroup(sgId){
-  const idx = STUDY_GROUPS.findIndex(x=>x.id===sgId);
-  if(idx===-1) return;
-  const name = STUDY_GROUPS[idx].name;
-  STUDY_GROUPS.splice(idx,1);
-  renderStudyGroups();
-  toast('已刪除學習小組：'+name);
+function assignTool(classId, groupId, vendorId){
+  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
+  const c = CLASSES[classId], grp = c.groups.find(g=>g.id===groupId);
+  const members = c.students.filter(s=>s.g===groupId && !s.left);
+  (v.pending = v.pending || []).push({
+    id:'r'+Date.now(), teacherId:MY_TEACHER_ID, classId, groupId,
+    group:`${grp.name}（${members.length} 人）· ${c.name}`,
+    memberSnapshot:members.map(s=>s.n), headcount:members.length,
+    tier:'Tier 1 · 基本資料', src:'來自教學分組',
+  });
+  assignMenuOpenFor = null; render();
+  toast(`已為「${grp.name}」申請 ${v.product}，馮 Sir 會收到通知`);
+}
+function removeTool(classId, groupId, vendorId){
+  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
+  const wasPending = (v.pending||[]).some(p=>p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID);
+  if(!wasPending && !confirm(`停用後，此組學生會即時失去「${v.product}」的存取權。確定嗎？`)) return;
+  v.pending = (v.pending||[]).filter(p=>!(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID));
+  v.grants  = (v.grants ||[]).filter(g=>!(g.classId===classId && g.groupId===groupId));
+  render();
+  toast(wasPending ? `已取消 ${v.product} 的申請` : `已停用 ${v.product}`);
 }
 
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1500);}
 renderClassSwitcher();
 render();
-renderStudyGroups();
-renderSgPickRow();
 </script>
 <script src="usage-modal.js"></script>
 <script src="demo-nav.js"></script>

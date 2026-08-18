@@ -173,12 +173,9 @@
     background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:10px 13px;
     font-size:.76rem;color:#991b1b;line-height:1.6;margin-bottom:10px;
   }
-  .drift-note{
     background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:9px 12px;
     font-size:.73rem;color:#991b1b;line-height:1.6;margin:8px 0;
   }
-  .drift-note b{display:block;margin-bottom:2px;}
-  .drift-note .go{border:1px solid #f5c6c6;background:#fff;border-radius:7px;padding:5px 11px;font-size:.7rem;font-weight:700;color:#991b1b;cursor:pointer;font-family:inherit;margin-top:7px;}
 
   .req{background:#fafcfd;border:1px solid var(--line);border-radius:9px;padding:13px 15px;margin-bottom:10px;}
   .req:last-child{margin-bottom:0;}
@@ -198,6 +195,11 @@
   .req-context .tool-target{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:8px;padding:3px 11px;font-size:.8rem;}
   .req-context small{width:100%;font-size:.7rem;color:var(--ink-3);margin-top:1px;}
 
+  /* Still used by the 範圍可能重疊 notice — a different concern from the
+   * deleted membership-drift banner, and a real one: two teachers requesting
+   * overlapping scopes for the same tool. */
+  .drift-note{background:#fff4f4;border:1px solid #f5d6d6;border-radius:9px;padding:9px 12px;margin-top:8px;font-size:.74rem;color:#9c2b2b;line-height:1.6;}
+  .drift-note b{display:block;margin-bottom:2px;}
   .bound-summary{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin:9px 0;font-size:.75rem;}
   .bound-summary.over{border-color:#f0d5a0;background:#fffdf5;}
   .bound-summary .bs-row{display:flex;gap:8px;align-items:baseline;padding:2px 0;color:var(--ink-2);}
@@ -411,18 +413,17 @@ function toggleTierInfo(id){
  * Seats are named-annual, so an approval that overruns the plan is a purchase
  * decision — worth seeing before clicking, not after. */
 function boundSummaryHtml(vendorId, req){
-  if(!req.eligible) return '';
+  if(!req.classId || !CLASSES[req.classId]) return '';
   const left = (typeof seatsLeft === 'function') ? seatsLeft(vendorId) : null;
-  const need = req.headcount || (req.memberSnapshot||[]).length;
+  const members = req.groupId && req.groupId !== '__whole_class__'
+    ? groupMembers(req.classId, req.groupId) : wholeClassMembers(req.classId);
+  const need = members.length;
   const over = (left !== null && need > left);
-  const names = req.eligible
-    .map(sid => (CLASSES[req.classId].students.find(s=>s.sid===sid)||{}).n)
-    .filter(Boolean);
   return `<div class="bound-summary${over?' over':''}">
-    <div class="bs-row"><span>核准名單</span><b>${names.length} 人</b>（${CLASSES[req.classId].className}，${teacherName(req.teacherId)}任教）</div>
-    <div class="bs-row"><span>即時發放</span><b>${need} 人</b>${left===null?'':`，本學年尚餘 ${left} 個學生名額${over?'（不足）':''}`}</div>
+    <div class="bs-row"><span>存取範圍</span><b>${need} 人</b>（${CLASSES[req.classId].className}，${teacherName(req.teacherId)}任教）</div>
+    <div class="bs-row"><span>本學年名額</span><b>${left===null?'不適用':`尚餘 ${left} 個${over?'（不足，需增購）':''}`}</b></div>
     <div class="bs-row"><span>有效期至</span><b>2027-08-31</b>（本學年完結）</div>
-    <details class="bs-names"><summary>查看核准名單</summary><div>${names.join('、')}</div></details>
+    <details class="bs-names"><summary>查看學生名單</summary><div>${members.map(s=>s.n).join('、')}</div></details>
   </div>`;
 }
 
@@ -443,20 +444,6 @@ function tierPickHtml(vendorId, req, vendorName){
       <div class="rz-arrow">↓ 發放至</div>
       <div class="rz-step"><div class="vendor-target"><span class="vt-mini">${vendorName[0]}</span>${vendorName}</div></div>
     </div>
-  </div>`;
-}
-
-/* Rewritten alongside the bounded-grant change: a teacher moving students within
- * the approved name list needs no action from you, so flagging it as drift was
- * noise that trained people to dismiss the banner. What does need you is a
- * student who joined the group but was never on the list — they cannot use the
- * tool until you add them. */
-function driftNoteHtml(entry, vendorId, kind){
-  const outside = (typeof outsideBound === 'function') ? outsideBound(entry) : [];
-  if(!outside.length) return '';
-  return `<div class="drift-note">
-    <b>⚠ ${outside.length} 名學生不在核准名單內</b>${outside.map(s=>s.n).join('、')}已加入此分組，但不在核准名單內，未能使用此工具。
-    <button class="go" onclick="reconfirmScope('${vendorId}','${kind}','${entry.id||entry.since}')">加入核准名單</button>
   </div>`;
 }
 
@@ -505,7 +492,7 @@ function renderVendors(){
     if (queueFilter==='approved' && v.grants.length===0) return '';
 
     const grantsHtml = v.grants.length
-      ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div>${driftNoteHtml(g, v.id, 'grant')}<div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
+      ? v.grants.map((g,gi)=>`<div class="grant-row"><span>${g.group}</span><span class="g-tier">${g.tier}</span><span class="g-since">生效於 ${g.since}</span><button class="revoke-btn" onclick="toggleRevoke('${v.id}',${gi})">撤銷存取</button></div><div class="revoke-zone" id="revoke-${v.id}-${gi}" style="display:none;"></div>`).join('')
       : `<div class="empty-note">此供應商目前未獲任何組別的資料存取權</div>`;
 
     const blocked = v.vetting.status!=='certified';
@@ -522,7 +509,6 @@ function renderVendors(){
               <span class="status pending">⏳ 待審批</span>
             </div>
             ${r.overlapNote ? `<div class="drift-note"><b>⚠ 範圍可能重疊</b>${r.overlapNote}</div>` : ''}
-            ${driftNoteHtml(r, v.id, 'pending')}
             ${blocked ? `<div class="block-note">🚫 此供應商尚未通過供應商審核，按管治規則不能核准任何資料層級，請先完成合規閘，或拒絕此請求。</div>` : ''}
             ${!blocked ? tierPickHtml(v.id, r, v.name) : ''}
             <div class="btns">
@@ -630,7 +616,7 @@ function renderTrials(){
 }
 /* Vetting stays mandatory regardless of trial scale (confirmed by Eric —
  * EdCity_School Accounts Administration System_Consolidation_Stories.md Story 2) — this guard applies to
- * teacher-initiated trials too, even though group-access-requests.html only
+ * teacher-initiated trials too, even though the teacher-side flow only
  * offers certified vendors in its picker. Defense in depth, same rule as
  * approve() above for full grants. */
 function confirmTrial(id){
@@ -663,17 +649,6 @@ function graduateTrial(id){
   AUDIT.unshift({ic:'🎓', text:teacherName(t.teacherId)+'的'+t.vendor+'試用轉為正式申請（'+t.group+'）', time:'2026-07-21'});
   renderVendors(); renderTrials(); renderAudit();
   toast('已轉為正式申請，請到「供應商關係」分頁選定資料層級');
-}
-function reconfirmScope(vendorId, kind, id){
-  const v = VENDORS.find(x=>x.id===vendorId);
-  const entry = kind==='grant' ? v.grants.find(g=>g.since===id) : v.pending.find(r=>r.id===id);
-  if(!entry || !entry.groupId) return;
-  const current = entry.groupId==='__whole_class__' ? wholeClassMembers(entry.classId).map(s=>s.n) : groupMembers(entry.classId, entry.groupId).map(s=>s.n);
-  entry.memberSnapshot = current;
-  entry.headcount = current.length;
-  AUDIT.unshift({ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'馮 Sir 已知悉'+v.name+'（'+entry.group+'）的成員異動，並更新記錄範圍至 '+current.length+' 人', time:'2026-07-21'});
-  renderVendors(); renderAudit();
-  toast('已更新記錄範圍：'+current.length+' 人');
 }
 const REVOKE_REASONS = [
   '供應商關係終止',

@@ -128,7 +128,7 @@
     padding:10px 4px;margin-right:22px;cursor:pointer;border-bottom:2px solid transparent;}
   .tab-btn.active{color:var(--ec-blue-dark);border-bottom-color:var(--ec-blue);}
   /* Tab counts follow the same convention as subscriptions.html/eddata-console.html/
-   * group-access-requests.html: a number only appears when something on that tab
+   * groups.html: a number only appears when something on that tab
    * needs the user's attention (never a plain total), shown as a colored pill whose
    * color matches the issue's severity — amber for "needs review/action" (pending
    * approval, unassigned student, teacher reassignment needed), red for "blocks a
@@ -318,7 +318,7 @@
       <div class="page-head">
         <div class="ph-text">
           <h1>任教編配</h1>
-          <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、學生工具申請、試用邀請等教師畫面所見的班別，均以此為準，而非由教師自行設定。</div>
+          <div class="sub">哪位老師任教哪一班、哪一科，由校務處在此編配——教學分組、試用邀請等教師畫面所見的班別，均以此為準，而非由教師自行設定。</div>
         </div>
       </div>
     </div>
@@ -637,7 +637,7 @@ function confirmReassign(id){
 }
 
 /* Student-class assignment reads/writes the SAME CLASSES object (from vendor-data.js)
- * that groups.html/group-access-requests.html/trial-invites.html use — so a transfer
+ * that groups.html/trial-invites.html use — so a transfer
  * made here is a real mutation, not a cosmetic label swap, for as long as this page
  * stays open. It still can't survive navigating to another page, since this suite has
  * no cross-page persistence (no localStorage) — see studentScopeNote below. */

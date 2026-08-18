@@ -817,6 +817,18 @@ function approve(vendorId, reqId){
     return;
   }
   if(!r._pickedTier){ toast('請先選擇資料層級，再核准'); return; }
+  /* Seats are the third gate, and the one that was missing. Approving past the
+   * cap would have released data the school has not bought — and left the
+   * shortfall to surface later as a teacher's tool silently not working. */
+  const cap = (typeof capacityCheck === 'function') ? capacityCheck(vendorId, r.headcount) : null;
+  if(cap && cap.overBy > 0){
+    queueForCapacity(vendorId, reqId, cap.overBy);
+    if(typeof publishRequests === 'function') publishRequests();
+    AUDIT.unshift({ic:'📊', text:'「'+r.group+'」的申請因名額不足（尚欠 '+cap.overBy+' 個）改為待方案決定', time:TODAY()});
+    renderVendors(); renderAudit();
+    toast('名額不足，已轉為待方案決定，請到訂閱管理處理');
+    return;
+  }
   r.status='approved'; r.tier=r._pickedTier;
   /* classId/groupId were missing here, so an approved grant carried a label but
    * no scope keys — the teacher's group page filters on those, and her tool

@@ -407,7 +407,7 @@ function toolsForGroup(classId, groupId){
       if(g.classId===classId && g.groupId===groupId) out.push({vendor:v, status:'active', since:g.since});
     });
     (v.pending||[]).forEach(p=>{
-      if(p.status && p.status!=='pending') return;
+      if(p.status && p.status!=='pending' && p.status!=='queued') return;
       if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({vendor:v, status:'pending'});
     });
   });

@@ -306,9 +306,10 @@ function rows(){
           tool:v.product, vendor:v.name, when:g.since+' 起'});
       });
       (v.pending||[]).forEach(p=>{
-        if(p.status && p.status!=='pending') return;   // resolved — it is a grant now
+        if(p.status && p.status!=='pending' && p.status!=='queued') return;   // resolved
         if(p.classId===c.id && p.teacherId===MY_TEACHER_ID) out.push({classId:c.id, groupId:p.groupId,
-          status:'wait', tool:v.product, vendor:v.name, when:'已通知馮 Sir'});
+          status:'wait', tool:v.product, vendor:v.name,
+          when: p.status==='queued' ? '名額不足，處理中' : '已通知馮 Sir'});
       });
     });
     (typeof BUDGET_PENDING!=='undefined'?BUDGET_PENDING:[]).forEach(b=>{

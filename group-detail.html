@@ -391,8 +391,13 @@ function tools(){
     /* An approved or denied request stays in v.pending with a status set — the
      * console keeps it for its own history. The teacher's views must filter on
      * status, or one tool shows as 已啟用 and 已申請 at the same time. */
-    (v.pending||[]).forEach(p=>{ if(p.status && p.status!=='pending') return;
-      if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({v, status:'pending'}); });
+    (v.pending||[]).forEach(p=>{
+      if(p.status && p.status!=='pending' && p.status!=='queued') return;
+      if(p.classId!==classId || p.groupId!==groupId || p.teacherId!==MY_TEACHER_ID) return;
+      /* A seat shortfall is a school constraint, not her problem to solve. She
+       * is told it has been raised, and offered nothing to decide. */
+      out.push({v, status: p.status==='queued' ? 'queued' : 'pending'});
+    });
   });
   /* 待預算 as she experiences it: the tool still works, and the school has not
    * decided. She is told, and she is not asked to do anything about it — the
@@ -471,6 +476,10 @@ function renderTools(){
     if(t.status==='budget'){
       return `<div class="att budget">📋 使用中：<b>${t.v.product}</b>
         <span class="when">· 已納入下年度預算建議，可用至 ${t.until}</span></div>`;
+    }
+    if(t.status==='queued'){
+      return `<div class="att pending">⏳ 已申請：<b>${t.v.product}</b>
+        <span class="when">· 本學年名額不足，已通知馮 Sir 處理</span></div>`;
     }
     const p = t.status==='pending';
     return `<div class="att${p?' pending':''}">${p?'⏳':CK}

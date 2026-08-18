@@ -121,6 +121,14 @@
   .case-note{display:block;font-size:.72rem;color:var(--ink-3);}
   .case-note textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:.78rem;font-family:inherit;resize:vertical;}
   .case-foot{font-size:.74rem;color:var(--ink-3);line-height:1.65;margin-top:6px;}
+  .clock{margin-bottom:14px;}
+  .clk{display:flex;align-items:center;gap:10px;background:#fff;border:1px dashed var(--line);border-radius:12px;padding:11px 16px;flex-wrap:wrap;}
+  .clk-lbl{font-size:.66rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;}
+  .clk b{font-size:.86rem;font-variant-numeric:tabular-nums;}
+  .clk-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 13px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .clk-btn:hover{border-color:var(--ec-purple);}
+  .clk-btn.on{background:var(--ec-purple);border-color:var(--ec-purple);color:#fff;font-weight:700;}
+  .clk-note{font-size:.68rem;color:var(--ink-3);flex-basis:100%;line-height:1.5;}
   .qlink{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 20px;margin-bottom:16px;flex-wrap:wrap;}
   .qlink.has{border-color:#efdcb0;background:#fdfaf0;}
   .qlink b{font-size:.86rem;display:block;}
@@ -211,10 +219,14 @@
     </div>
   </section>
 
+  <!-- The demo clock. Every expiry rule in this design was a sentence on a
+       screen until something could move the date past it. -->
+  <div class="clock" id="clock"></div>
+
   <div class="tabs">
-    <button class="tab-btn active" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
+    <button class="tab-btn active" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
+    <button class="tab-btn" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
     <button class="tab-btn" data-tab="existing" onclick="showTab('existing')">現有訂閱</button>
-    <button class="tab-btn" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="case" onclick="showTab('case')">預算建議書</button>
   </div>
 
@@ -236,13 +248,16 @@
     <div class="case-foot" id="caseFoot"></div>
   </section>
 
-  <section class="tab-pane" data-pane="budget">
+  <!-- Landing tab. 待預算 is the only thing here with a deadline attached: an
+       item ignored long enough simply lapses on 31 August and the teacher loses
+       the tool. Capacity and existing subscriptions can wait; this cannot. -->
+  <section class="tab-pane active" data-pane="budget">
+    <div class="queue-link" id="queueLink"></div>
     <div class="sect-sub" style="margin:0 0 14px;">試用期已完結、學校尚未決定採購的項目。範圍已凍結，不會自動續期，亦不會自行擴大；到期日一律為學年完結（8 月 31 日）。教師端會顯示「已納入下年度預算建議」。</div>
     <div id="budgetList"></div>
   </section>
 
-  <section class="tab-pane active" data-pane="plans">
-    <div class="queue-link" id="queueLink"></div>
+  <section class="tab-pane" data-pane="plans">
     <div class="sect-sub" style="margin:0 0 14px;">每個方案的教師與學生名額上限。<b>名額於學生首次以教育城帳戶登入時計算，其後同一學年內不再重複計算</b>——教師調動分組不會消耗名額。用量達八成即提早示警，讓你在教師提交請求前，先看到快要滿額的方案。</div>
     <div id="capacityAlerts"></div>
     <div class="plan-grid" id="planGrid"></div>
@@ -316,6 +331,31 @@ function releasedNotUsed(vendorId){
 /* Requests are not handled here. This is a pointer to the one queue, showing
  * its live depth so 馮 Sir does not have to go and look to find out whether
  * anything is waiting. */
+const CLOCK_STEPS = [
+  {label:'今天',        d:'2026-08-18'},
+  {label:'學年完結後',   d:'2027-09-01'},
+];
+function renderClock(){
+  const host = document.getElementById('clock');
+  if(!host) return;
+  const t = TODAY();
+  host.innerHTML = `<div class="clk">
+    <span class="clk-lbl">示範日期</span>
+    <b>${t}</b>
+    ${CLOCK_STEPS.map(s=>`<button class="clk-btn${s.d===t?' on':''}" onclick="jumpTo('${s.d}')">${s.label}（${s.d}）</button>`).join('')}
+    <span class="clk-note">用於示範到期行為：日期一過，待預算與授權會實際失效，不只是畫面上的文字。</span>
+  </div>`;
+}
+function jumpTo(d){
+  setToday(d);
+  const lapsed = applyExpiries();
+  if(typeof publishRequests === 'function') publishRequests();   // lapses are state, not a view
+  renderClock(); renderQueueLink(); renderCapacityAlerts(); renderPlanGrid(); renderBudgetPending(); renderCase();
+  toast(lapsed.length
+    ? `日期已設為 ${d}：${lapsed.length} 項已到期並失效（${lapsed.map(l=>l.label).join('、')}）`
+    : `日期已設為 ${d}，沒有項目到期`);
+}
+
 function renderQueueLink(){
   const host = document.getElementById('queueLink');
   if(!host) return;
@@ -366,24 +406,46 @@ function renderPlanGrid(){
   document.getElementById('planGrid').innerHTML = cards.concat(unlimitedCards).join('');
 }
 
+function closeQueue(vendorId, reqId, outcome){
+  const v = VENDORS.find(x=>x.id===vendorId);
+  const r = (v.pending||[]).find(p=>p.id===reqId);
+  if(r && r.status !== 'queued') r.status = 'queued';   // came straight from the alert list
+  const res = closeQueued(vendorId, reqId, outcome, r ? r.shortBy : 0);
+  if(!res) return;
+  if(typeof publishRequests === 'function') publishRequests();
+  renderQueueLink(); renderCapacityAlerts(); renderPlanGrid(); renderBudgetPending(); renderCase();
+  toast({
+    buy:    `已增購名額並批出：${v.name} · ${r.group}`,
+    defer:  `已納入下年度預算建議：${v.name} · ${r.group}，可用至 ${BUDGET_PENDING_END}`,
+    decline:`已婉拒：${v.name} · ${r.group}`,
+  }[outcome]);
+}
+
 function renderCapacityAlerts(){
   const alerts = [];
   VENDORS.forEach(v=>{
     if(!planFor(v.id)) return;
     v.pending.forEach(req=>{
-      if(req.status!=='pending') return;
+      if(req.status!=='pending' && req.status!=='queued') return;
       const check = capacityCheck(v.id, req.headcount);
-      if(check.overBy>0){
+      /* A queued request stays listed until it is closed, whatever the live
+       * numbers say. Deciding purely by recomputing capacity meant a request
+       * queued when the plan was full disappeared the moment anything else
+       * changed — 馮 Sir would lose a decision he had not made yet. shortBy is
+       * the shortfall recorded at the moment of queueing. */
+      const short = req.status==='queued' ? (req.shortBy || check.overBy || 0) : check.overBy;
+      if(req.status==='queued' || check.overBy>0){
         alerts.push(`<div class="req capacity">
           <div class="ic">📊</div>
           <div class="body">
             <b>${teacherName(req.teacherId)}為${req.group}申請「${v.name}」${v.product}</b>
             <p>「${v.name}」${check.plan.plan}的學生名額目前用去 ${check.usage.students} / ${check.plan.studentCap} 個，批出這個請求需要另加 ${req.headcount} 個，會超出上限 ${check.overBy} 個。這是<b>方案容量</b>的決定，不是資料存取層級的決定，所以在進入供應商資料存取審批前，先由此攔截。</p>
-            <span class="scope">⚠ 超出方案名額 ${check.overBy} 個 · 需要方案決定</span>
+            <span class="scope">⚠ 超出方案名額 ${short} 個 · 需要方案決定</span>
           </div>
           <div class="btns">
-            <button class="btn" onclick="toast('升級「${v.name}」方案並批出請求')">升級方案並批出</button>
-            <button class="btn ghost" onclick="toast('婉拒，並請${teacherName(req.teacherId)}於 ${check.plan.renewal} 續期後重新申請')">婉拒</button>
+            <button class="btn" onclick="closeQueue('${v.id}','${req.id}','buy')">增購 ${short} 個名額並批出</button>
+            <button class="btn ghost" onclick="closeQueue('${v.id}','${req.id}','defer')">納入下年度預算建議</button>
+            <button class="btn ghost" onclick="closeQueue('${v.id}','${req.id}','decline')">婉拒</button>
           </div>
         </div>`);
       }
@@ -426,6 +488,7 @@ function renderBudgetPending(){
 function budgetOutcome(id, outcome){
   const b = resolveBudgetPending(id, outcome);
   if(!b) return;
+  if(typeof publishRequests === 'function') publishRequests();
   renderBudgetPending();
   renderCase();          // an outcome changes what the principal still has to decide
   toast(outcome==='subscribed'
@@ -514,6 +577,7 @@ function showTab(name){
 
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
+renderClock();
 renderQueueLink();
 renderCapacityAlerts();
 renderPlanGrid();

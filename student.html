@@ -354,6 +354,7 @@
   </div>
 </div>
 
+<script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
 /* Skill-progress sparklines — same pattern as insights.html/dept.html:
@@ -457,7 +458,10 @@ function launchFromModal(){
   document.getElementById('toolOverlay').classList.remove('show');
   if(currentVendorId && typeof consumeSeat === 'function'){
     const r = consumeSeat(currentVendorId, MY_SID);
-    if(r.consumed) sToast('已用教育城帳戶登入，毋須另行註冊');
+    if(r.consumed){
+      if(typeof publishRequests === 'function') publishRequests();   // a seat was spent
+      sToast('已用教育城帳戶登入，毋須另行註冊');
+    }
   }
   if(pendingRecBtn) startRec(pendingRecBtn);
 }

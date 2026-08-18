@@ -109,6 +109,58 @@ const CLASSES = {
 };
 const CLASS_LIST = Object.keys(CLASSES).map(id=>({id, ...CLASSES[id]}));
 
+/* The demo clock.
+ *
+ * Several things in this design are promises about dates — a trial ends, 待預算
+ * lapses on 31 August, sign-in stops authorising — and none of them could be
+ * shown, because nothing moved. The screens said 「到期日一過，單一登入即停止
+ * 授權」 and then the date never arrived. A promise on screen is not a
+ * behaviour, and "release precedes payment but is bounded and dated" is exactly
+ * the claim a school or a regulator would want to see enacted rather than
+ * asserted.
+ *
+ * Shared across pages like any other state, so advancing it on one screen is
+ * visible on the next. */
+const DEFAULT_TODAY = '2026-08-18';
+function TODAY(){
+  if(typeof DemoState === 'undefined') return DEFAULT_TODAY;
+  return DemoState.get('today', DEFAULT_TODAY);
+}
+function setToday(d){
+  if(typeof DemoState !== 'undefined') DemoState.set('today', d);
+}
+function isPast(dateStr){ return !!dateStr && dateStr < TODAY(); }
+/* Everything that expires, in one place, so no screen has to reimplement the
+ * rule. Returns what lapsed, so a page can report it rather than silently
+ * changing under the user. */
+function applyExpiries(){
+  const lapsed = [];
+  (typeof BUDGET_PENDING !== 'undefined' ? BUDGET_PENDING : []).slice().forEach(b=>{
+    if(isPast(b.endsOn)){
+      const i = BUDGET_PENDING.indexOf(b);
+      if(i>=0) BUDGET_PENDING.splice(i,1);
+      lapsed.push({kind:'budget', label:`${b.vendorName} · ${b.group}`, on:b.endsOn});
+    }
+  });
+  if(typeof VENDORS !== 'undefined') VENDORS.forEach(v=>{
+    (v.grants||[]).slice().forEach(g=>{
+      if(isPast(g.expiresOn)){
+        v.grants.splice(v.grants.indexOf(g),1);
+        lapsed.push({kind:'grant', label:`${v.name} · ${g.group}`, on:g.expiresOn});
+      }
+    });
+  });
+  if(typeof TRIALS !== 'undefined') TRIALS.forEach(t=>{
+    if(t.status==='active' && isPast(t.expiresAt)){
+      /* A trial that runs out does not vanish — it becomes the school's
+       * decision to make, which is what 待預算 is for. */
+      if(typeof toBudgetPending === 'function') toBudgetPending(t);
+      lapsed.push({kind:'trial', label:`${t.vendor} · ${t.group}`, on:t.expiresAt});
+    }
+  });
+  return lapsed;
+}
+
 /* Sequential ID generator for students created via 批量編班's intake path —
  * simulates what the school's identity layer (School Accounts Administration System, via 曾主任's approval) would
  * assign in reality. Starts past every seed sid above so nothing collides. */
@@ -923,17 +975,26 @@ function publishRequests(){
   const map = {};
   VENDORS.forEach(v => { map[v.id] = {pending: v.pending || [], grants: v.grants || []}; });
   DemoState.set('requests', map);
+  /* Published alongside, because they change together and a half-restored state
+   * is worse than none: buying seats raises a cap, deferring creates a 待預算
+   * item, and a student signing in spends a seat. Leaving these in the file
+   * meant 馮 Sir could buy capacity, navigate, and find he hadn't. */
+  DemoState.set('plans', VENDOR_PLANS);
+  DemoState.set('budgetPending', BUDGET_PENDING);
 }
 function applyPublishedRequests(){
   if(typeof DemoState === 'undefined') return;
   const map = DemoState.get('requests', null);
-  if(!map) return;
-  VENDORS.forEach(v => {
+  if(map) VENDORS.forEach(v => {
     const m = map[v.id];
     if(!m) return;
     v.pending = m.pending || [];
     v.grants  = m.grants  || [];
   });
+  const plans = DemoState.get('plans', null);
+  if(plans) Object.keys(plans).forEach(k => { if(VENDOR_PLANS[k]) Object.assign(VENDOR_PLANS[k], plans[k]); });
+  const bp = DemoState.get('budgetPending', null);
+  if(bp){ BUDGET_PENDING.length = 0; bp.forEach(x => BUDGET_PENDING.push(x)); }
 }
 
 function publishDeletions(){
@@ -1024,6 +1085,60 @@ function vendorUsage(vendorId){
 /* Given a vendor's usage and its plan cap, is a would-be addition (e.g. approving
  * a pending request) going to exceed the student seat cap? Returns null if the
  * vendor has no seat-capped plan (e.g. unlimited full-school licences). */
+/* Outcome 3 of the authorisation step: subscribed, but out of seats.
+ *
+ * This existed as a label and not a path. approve() checked vetting and the
+ * agreement but never seats, so 馮 Sir could approve straight past the cap; the
+ * over-capacity cards on 訂閱管理 had buttons that only raised a toast; and
+ * 已納入下年度預算建議 was reachable only from trial expiry. Two routes that
+ * should converge on 待預算 did not meet.
+ *
+ * A queued request stays in v.pending with status 'queued' — visible to the
+ * teacher as 「名額不足，已通知馮 Sir」 and never as a decision she has to make. */
+function queueForCapacity(vendorId, reqId, shortBy){
+  const v = VENDORS.find(x=>x.id===vendorId);
+  const r = (v.pending||[]).find(p=>p.id===reqId);
+  if(!r) return null;
+  r.status = 'queued';
+  r.queuedOn = TODAY();
+  r.shortBy = shortBy;
+  return r;
+}
+/* The three closures. Buy raises the cap and grants; decline ends it; defer
+ * moves it into 待預算, the same place a lapsed trial lands — so both routes
+ * end in one queue with one expiry rule. */
+function closeQueued(vendorId, reqId, outcome, addSeats){
+  const v = VENDORS.find(x=>x.id===vendorId);
+  const r = (v.pending||[]).find(p=>p.id===reqId);
+  if(!r || r.status!=='queued') return null;
+  const plan = planFor(vendorId);
+  if(outcome==='buy'){
+    if(plan) plan.studentCap += (addSeats || r.shortBy || 0);
+    r.status='approved'; r.tier = r.tier || 'Tier 1 · 基本資料';
+    v.grants.push({group:r.group, classId:r.classId, groupId:r.groupId,
+      headcount:r.headcount, teacherId:r.teacherId, tier:r.tier, since:TODAY()});
+    return {outcome, plan};
+  }
+  if(outcome==='decline'){ r.status='denied'; return {outcome}; }
+  if(outcome==='defer'){
+    r.status='deferred';
+    BUDGET_PENDING.push({
+      id:'bp'+Date.now(), vendorId, vendorName:v.name, product:v.product,
+      teacherId:r.teacherId, classId:r.classId, groupId:r.groupId,
+      group:r.group, headcount:r.headcount,
+      frozenOn:TODAY(), endsOn:BUDGET_PENDING_END, trialRef:null,
+      note:'名額不足，未獲本學年預算增購。',
+    });
+    return {outcome};
+  }
+  return null;
+}
+function queuedRequests(){
+  const out=[];
+  VENDORS.forEach(v=>(v.pending||[]).forEach(r=>{ if(r.status==='queued') out.push({v,r}); }));
+  return out;
+}
+
 function capacityCheck(vendorId, addStudents){
   const plan = planFor(vendorId);
   if(!plan) return null;
@@ -1041,3 +1156,6 @@ applyGroupOverrides();
 /* Applied at load, before any page renders, so every screen starts from the
  * same state the last screen left. */
 applyPublishedRequests();
+/* After state is restored, before anything renders: the clock is part of the
+ * state, so a page opened after time was advanced starts already expired. */
+applyExpiries();

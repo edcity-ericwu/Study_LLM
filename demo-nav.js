@@ -25,11 +25,17 @@ const CSS = `
  * disk — just not listed here for this walkthrough). See feature-flags.js for
  * what each flag covers and why. */
 const PAGES = [
+  {group:'🧭 入口', items:[
+    ['poc-hub.html','各科 POC 導覽',''],
+  ]},
   {group:'👩‍🏫 教師（陳凱怡老師）', items:[
     ['chat.html','EdCity.ai（科目助理）',''],
     ['index.html','教學工具箱',''],
     ['agents.html','EdMarket 應用程式',''],
+    ['marking.html','AI 批改','y'],
     ['material-library.html','校本教材庫','y'],
+    ['groups.html','教學分組',''],
+    ['group-access-requests.html','學生工具申請',''],
     ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
   ]},
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
@@ -40,7 +46,7 @@ const PAGES = [
   ]},
   {group:'📈 科主任（李天佑主任）', items:[
     ['dept.html','科組統計','y','subjectPanelView'],
-    ['dept-trial-evaluations.html','工具試用評估','y','toolTrial'],
+    ['dept-trial-evaluations.html','工具試用評估','y','subjectPanelTrialReview'],
   ]},
   {group:'🎒 學生／家長（Karen）', items:[
     ['student.html','學生／家長入口','r'],

@@ -21,12 +21,12 @@ const FEATURE_FLAGS = {
   // 涉及頁面：trial-invites.html（整頁）、dept-trial-evaluations.html（整頁）、
   // vendor-portal.html 的「邀請老師試用」分頁、eddata-console.html 的「試用請求」分頁、
   // group-access-requests.html 裏的 🧪 申請試用按鈕。
-  toolTrial: false,
+  toolTrial: true,
 
   // 跨班學習小組（2026-07-22 新增，Story 1）。
   // 涉及頁面：groups.html 的「學習小組（跨班）」區塊、
   // group-access-requests.html 的「學習小組（跨班）」申請區。
-  studyGroups: false,
+  studyGroups: true,
 
   // SMS 角色與權限／RBAC（2026-07-22 新增，Story 3）。
   // 涉及頁面：roster.html 的「角色與權限」分頁。
@@ -34,7 +34,7 @@ const FEATURE_FLAGS = {
 
   // 校務紀錄組身份審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）。
   // 涉及頁面：records-console.html（整頁）。
-  recordsApproval: false,
+  recordsApproval: true,
 
   // 科主任視圖 — 科組統計。
   // 涉及頁面：dept.html（整頁）。
@@ -44,7 +44,7 @@ const FEATURE_FLAGS = {
   // 涉及頁面：tags.html（整頁）。
   // 暫時關閉（2026-07-30）：這個角色與相關動作的實際定位尚未想清楚，先從
   // 導覽中隱藏，頁面建置內容完全保留。
-  contentModeration: false,
+  contentModeration: true,
 
   // Reviewer-only meta annotations — build-status ribbons ("🟡 提案中" /
   // "🔴 待決策"), data-source disclosures, and taxonomy-dependency notes.
@@ -65,6 +65,14 @@ const FEATURE_FLAGS = {
   // to the bottom-right, so it can sit on top of whatever a page puts in that
   // corner — notably the worksheet panel's 交給「教材檢視」 button on chat.html.
   // Set false to hide it suite-wide.
+  // 科主任的工具試用評估 — the panel-head review step between a teacher asking
+  // for a whole-subject subscription and the ICT coordinator granting it.
+  // Off: it adds a third approver to a story that is already about who may
+  // release data, and the extra hop crowds out that discussion. Nothing is
+  // deleted — the page, its nav entries and the request card it blocks all
+  // come back with this set to true.
+  subjectPanelTrialReview: false,
+
   demoNav: true,
 };
 

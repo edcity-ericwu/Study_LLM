@@ -198,6 +198,13 @@
   .req-context .tool-target{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:8px;padding:3px 11px;font-size:.8rem;}
   .req-context small{width:100%;font-size:.7rem;color:var(--ink-3);margin-top:1px;}
 
+  .bound-summary{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin:9px 0;font-size:.75rem;}
+  .bound-summary.over{border-color:#f0d5a0;background:#fffdf5;}
+  .bound-summary .bs-row{display:flex;gap:8px;align-items:baseline;padding:2px 0;color:var(--ink-2);}
+  .bound-summary .bs-row span{min-width:64px;color:var(--ink-3);}
+  .bound-summary .bs-names{margin-top:7px;}
+  .bound-summary .bs-names summary{cursor:pointer;color:var(--ec-blue-dark);font-weight:600;font-size:.72rem;}
+  .bound-summary .bs-names div{margin-top:6px;color:var(--ink-2);line-height:1.8;}
   .release-zone{background:#fdf6ec;border:1px solid #f3e3c3;border-radius:10px;padding:13px 15px;margin:11px 0;}
   .release-zone .rz-label{font-size:.66rem;font-weight:700;color:#8a5a00;letter-spacing:normal;margin-bottom:11px;text-transform:uppercase;}
   .rz-chain{display:flex;flex-direction:column;gap:9px;align-items:stretch;}
@@ -398,12 +405,34 @@ function toggleTierInfo(id){
   pop.classList.toggle('show', opening);
   if (opening && !pop.dataset.filled) { pop.innerHTML = tierInfoPopHtml(); pop.dataset.filled = '1'; }
 }
+/* The three facts a release decision turns on, none of which were on screen
+ * before: how many students the approval would cover (the frozen name list,
+ * not just today's group), what it costs against the plan, and when it lapses.
+ * Seats are named-annual, so an approval that overruns the plan is a purchase
+ * decision — worth seeing before clicking, not after. */
+function boundSummaryHtml(vendorId, req){
+  if(!req.eligible) return '';
+  const left = (typeof seatsLeft === 'function') ? seatsLeft(vendorId) : null;
+  const need = req.headcount || (req.memberSnapshot||[]).length;
+  const over = (left !== null && need > left);
+  const names = req.eligible
+    .map(sid => (CLASSES[req.classId].students.find(s=>s.sid===sid)||{}).n)
+    .filter(Boolean);
+  return `<div class="bound-summary${over?' over':''}">
+    <div class="bs-row"><span>核准名單</span><b>${names.length} 人</b>（${CLASSES[req.classId].className}，${teacherName(req.teacherId)}任教）</div>
+    <div class="bs-row"><span>即時發放</span><b>${need} 人</b>${left===null?'':`，本學年尚餘 ${left} 個學生名額${over?'（不足）':''}`}</div>
+    <div class="bs-row"><span>有效期至</span><b>2027-08-31</b>（本學年完結）</div>
+    <details class="bs-names"><summary>查看核准名單</summary><div>${names.join('、')}</div></details>
+  </div>`;
+}
+
 function tierPickHtml(vendorId, req, vendorName){
   const infoId = vendorId+'-'+req.id;
   return `<div class="release-zone">
     <div class="rz-label">⚠ 資料發放決定</div>
     <div class="rz-chain">
       <div class="rz-step"><div class="scope-chip"><span class="sc-ic">👥</span>${req.group} 的學生資料</div></div>
+    ${boundSummaryHtml(vendorId, req)}
       <div class="rz-arrow">↓ 選擇發放層級<button class="tier-info-btn" type="button" onclick="toggleTierInfo('${infoId}')" title="各層級說明">ⓘ</button></div>
       <div class="tier-info-pop" id="tierinfo-${infoId}"></div>
       <div class="tier-pick">
@@ -417,15 +446,17 @@ function tierPickHtml(vendorId, req, vendorName){
   </div>`;
 }
 
+/* Rewritten alongside the bounded-grant change: a teacher moving students within
+ * the approved name list needs no action from you, so flagging it as drift was
+ * noise that trained people to dismiss the banner. What does need you is a
+ * student who joined the group but was never on the list — they cannot use the
+ * tool until you add them. */
 function driftNoteHtml(entry, vendorId, kind){
-  const drift = membershipDrift(entry);
-  if(!drift) return '';
-  const parts = [];
-  if(drift.added.length) parts.push('新增：'+drift.added.join('、'));
-  if(drift.removed.length) parts.push('移除：'+drift.removed.join('、'));
+  const outside = (typeof outsideBound === 'function') ? outsideBound(entry) : [];
+  if(!outside.length) return '';
   return `<div class="drift-note">
-    <b>⚠ 分組成員已改變</b>自${kind==='grant'?'核准':'申請'}後，${parts.join('；')}。存取範圍維持原狀，未自動調整。
-    <button class="go" onclick="reconfirmScope('${vendorId}','${kind}','${entry.id||entry.since}')">已知悉，更新記錄範圍</button>
+    <b>⚠ ${outside.length} 名學生不在核准名單內</b>${outside.map(s=>s.n).join('、')}已加入此分組，但不在核准名單內，未能使用此工具。
+    <button class="go" onclick="reconfirmScope('${vendorId}','${kind}','${entry.id||entry.since}')">加入核准名單</button>
   </div>`;
 }
 

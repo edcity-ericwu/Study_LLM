@@ -58,7 +58,7 @@
  * carries extra fields (subjectId, year) this doesn't need. */
 const CLASSES = {
   '2b': {
-    className:'中二乙班', subjectLabel:'中文 · 35 人 · 任教中', form:'S2', formLabel:'中二', teacherId:'T1001',
+    className:'中二乙班', subjectLabel:'中文 · 任教中', form:'S2', formLabel:'中二', teacherId:'T1001',
     groups:[
       {id:'stretch', name:'增潤組', color:'var(--ec-purple)', goal:'進度較快，適合延伸閱讀與較深的寫作任務'},
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
@@ -78,7 +78,7 @@ const CLASSES = {
    * dataset, not a cosmetic label swap, so switching classes actually changes what
    * every 課堂管理 page shows. */
   '1c': {
-    className:'中一丙班', subjectLabel:'中文 · 35 人 · 本學期剛接手', form:'S1', formLabel:'中一', teacherId:'T1001',
+    className:'中一丙班', subjectLabel:'中文 · 本學期剛接手', form:'S1', formLabel:'中一', teacherId:'T1001',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
       {id:'support', name:'支援組', color:'var(--ec-green)', goal:'剛接手，仍在觀察哪些學生需要較多支援'},
@@ -92,7 +92,7 @@ const CLASSES = {
    * Giving Form 1 a second class is also what makes 批量編班's form-then-class
    * navigation demonstrate something real instead of a single-class no-op. */
   '1a': {
-    className:'中一甲班', subjectLabel:'中文 · 35 人 · 黃穎詩老師任教', form:'S1', formLabel:'中一', teacherId:'T1002',
+    className:'中一甲班', subjectLabel:'中文 · 黃穎詩老師任教', form:'S1', formLabel:'中一', teacherId:'T1002',
     groups:[
       {id:'core', name:'核心組', color:'var(--ec-blue)', goal:'跟隨主進度，做標準課業與練習'},
       {id:'support', name:'支援組', color:'var(--ec-green)', goal:'需要多些時間，由黃穎詩老師親自帶領'},
@@ -433,9 +433,12 @@ function recordGroupOverride(sid, groupId){
   DemoState.set('groupOverrides', ov);
 }
 
-/* The neutral scale the school maps its groups onto. Vendors declare the
- * vocabulary at vetting; the group's own name never travels. */
-const RELEASE_LEVEL = { stretch:'程度 4', core:'程度 3', support:'程度 2' };
+/* No ability band travels to the vendor (decided 2026-08-18). The previous
+ * design sent a "neutral scale" — 支援組→程度 2, 核心組→程度 3, 增潤組→程度 4 —
+ * which was a 1:1 re-encoding of the group name. Withholding the label 支援組
+ * while transmitting a number that means exactly 支援組 protected nothing, and
+ * on a 全班 grant it handed over the school's full banding of the class.
+ * A vendor whose tool needs an entry level now assesses for it in-product. */
 
 /* Release follows live group membership — deliberately.
  *
@@ -461,7 +464,7 @@ function releasedFor(vendorId){
       : wholeClassMembers(g.classId);
     members.forEach(st => {
       if(st.left) return;                                   // left the school
-      out.push({ n:st.n, cls:roster.className, level:RELEASE_LEVEL[st.g] || '程度 3' });
+      out.push({ n:st.n, cls:roster.className });
     });
   });
   return out;

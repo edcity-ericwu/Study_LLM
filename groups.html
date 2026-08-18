@@ -116,7 +116,7 @@
   .sm span{border-radius:99px;padding:3px 10px;}
   .sm .sm-on{background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;}
   .sm .sm-wait{background:#fdf6e3;border:1px solid #efdcb0;color:#8a5a09;}
-  .sm .sm-none{color:var(--ink-3);}
+  .more-row{font-size:.7rem;color:var(--ink-3);text-align:center;padding:6px 0 2px;}
   .col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
   .col .c-head .open{margin-left:6px;color:var(--ink-3);text-decoration:none;font-size:.78rem;}
   .col .c-head .open:hover{color:var(--ec-blue-dark);}
@@ -250,7 +250,11 @@ function myClasses(){ return CLASS_LIST.filter(cl=>cl.teacherId===MY_TEACHER_ID)
 function renderClassSwitcher(){
   const c = CLASSES[activeClassId];
   document.getElementById('classLabel').textContent = c.className;
-  document.getElementById('classMeta').textContent = '· '+c.subjectLabel;
+  /* Live count, not the seeded one. The label used to carry a static 35 人 while
+   * the 全班 card computed 34 from the roster (one student had transferred out) —
+   * two numbers for the same class on one screen. */
+  const active = (c.students||[]).filter(s=>!s.left).length;
+  document.getElementById('classMeta').textContent = `· ${c.subjectLabel} · ${active} 人`;
   document.getElementById('classMenu').innerHTML = myClasses().map(cl=>
     `<div class="class-opt ${cl.id===activeClassId?'on':''}" data-c="${cl.id}" onclick="switchClass('${cl.id}')">${cl.className}<small>${cl.subjectLabel}</small></div>`
   ).join('');
@@ -305,7 +309,9 @@ function attachSummary(classId, groupId){
   const bits = [];
   if(active) bits.push(`<span class="sm-on">🧩 ${active} 項工具</span>`);
   if(pending) bits.push(`<span class="sm-wait">⏳ ${pending} 項待審批</span>`);
-  if(!bits.length) bits.push('<span class="sm-none">尚未指派教材或工具</span>');
+  /* No chip when there is nothing assigned. The empty state was the board's most
+   * common state, so a grey negative on most cards was the dominant visual. */
+  if(!bits.length) return '';
   return `<div class="sm">${bits.join('')}</div>`;
 }
 
@@ -319,6 +325,13 @@ function render(){
     let visible = members;
     if(q) visible = visible.filter(s=>s.n.includes(q) || String(s.no).includes(q) || (/^\d+$/.test(q) && s.no===parseInt(q,10)));
     visible = visible.slice().sort((a,b)=>(a.no||0)-(b.no||0));
+    /* Long columns (核心組 can hold 20 against 8 and 7) ran far past their
+     * neighbours. The full list is one click away in the group view now. */
+    const CAP = 10;
+    /* Only truncate when it actually saves space — hiding one or two students
+     * behind 「還有 N 位」 costs a row and gains nothing. */
+    const overflow = (q || visible.length <= CAP + 2) ? 0 : visible.length - CAP;
+    if(overflow) visible = visible.slice(0, CAP);
     const rowsHtml = visible.map(s=>`<div class="stu ${s.left?'left':''}" ${s.left?'':'draggable="true" ondragstart="dragStu(event,\''+s.n+'\')" ondragend="this.classList.remove(\'dragging\')"'}>
         <span class="av">${s.n[0]}</span><span class="no">${s.no!=null?String(s.no).padStart(2,'0'):''}</span>${s.n}${s.left?'（已轉班 · 自動退出）':''}
       </div>`).join('');
@@ -326,6 +339,7 @@ function render(){
       <div class="c-head"><span class="dot" style="background:${grp.color}"></span><b><a href="group-detail.html?c=${activeClassId}&g=${grp.id}">${grp.name}</a></b><span class="n">${active} 人</span></div>
       <div class="c-goal">${grp.goal}</div>
       ${visible.length ? rowsHtml : (q ? '<div class="stu-empty">沒有符合的學生</div>' : '')}
+      ${overflow ? `<div class="more-row">還有 ${overflow} 位</div>` : ''}
       ${attachSummary(activeClassId, grp.id)}
       <a class="openbtn" href="group-detail.html?c=${activeClassId}&g=${grp.id}">開啟分組 →</a>
     </div>`;

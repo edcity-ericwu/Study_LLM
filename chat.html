@@ -1059,7 +1059,7 @@ function sendMsg(){
     const tag = mode==='plan' ? '規劃模式 · '+model : mode==='ask' ? '提問模式 · '+model : model;
     thread.insertAdjacentHTML('beforeend', `
       <div class="msg ai"><span class="tag">${tag}</span><br>
-      這只是示例回覆；正式版本會按你的要求${mode==='plan'?'先草擬教學計劃供你確認，再':''}生成完整內容，例如教案大綱、課堂活動建議或評估設計。<br><br>
+      好的。${mode==='plan'?'我先草擬教學計劃供你確認，再':'我會'}按你的要求整理內容——教案大綱、課堂活動建議或評估設計都可以。<br><br>
       你可以試試切換「<b>提問／規劃</b>」模式、開關<b>工具</b>，或轉用其他<b>模型</b>，看看不同的互動效果。</div>`);
     scrollBottom();
   }, 900);

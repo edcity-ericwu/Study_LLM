@@ -209,8 +209,9 @@
  * the school's roster — this console has no access to CLASSES and shouldn't.
  * Falls back to the seeded two when there is no shared state, which is the case
  * on file:// and on a first visit. */
-/* Mirrors the one approved grant in vendor-data.js (增潤組, 9 students), so the
- * two sides agree even without shared state. */
+/* Mirrors the one approved grant in vendor-data.js (9 students), so the two
+ * sides agree even without shared state. The school-side group behind it is
+ * deliberately not named here — this file has no business knowing it. */
 const SEED_ACCOUNTS = [
   {name:'王思穎', cls:'中二乙班', mapped:'程度 4', status:'active'},
   {name:'林一心', cls:'中二乙班', mapped:'程度 4', status:'active'},

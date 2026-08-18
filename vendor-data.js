@@ -436,21 +436,40 @@ function recordGroupOverride(sid, groupId){
  * vocabulary at vetting; the group's own name never travels. */
 const RELEASE_LEVEL = { stretch:'程度 4', core:'程度 3', support:'程度 2' };
 
+/* Reads the grant's explicit released[] list, NOT live group membership.
+ * A teacher regrouping her class is a pedagogical act and must not move a
+ * child's data or spend a seat; releasing is a separate, deliberate act she
+ * performs on 學生工具申請. released[] is seeded from the group at approval
+ * and is hers to maintain from then on. */
 function releasedFor(vendorId){
   const v = VENDORS.find(x => x.id === vendorId);
   if(!v) return [];
   const out = [];
   (v.grants||[]).forEach(g => {
-    if(!g.classId || !g.groupId) return;
-    const members = g.groupId === '__whole_class__'
-      ? wholeClassMembers(g.classId)
-      : groupMembers(g.classId, g.groupId);
-    members.forEach(s => {
-      if(g.eligible && !g.eligible.includes(s.sid)) return;   // outside the bound
-      out.push({ n:s.n, cls:CLASSES[g.classId].className, level:RELEASE_LEVEL[s.g] || '程度 3' });
+    if(!g.classId || !g.released) return;
+    const roster = CLASSES[g.classId];
+    g.released.forEach(sid => {
+      if(g.eligible && !g.eligible.includes(sid)) return;   // never outside the bound
+      const st = (roster.students||[]).find(x => x.sid === sid);
+      if(!st || st.left) return;                            // left the school
+      out.push({ n:st.n, cls:roster.className, level:RELEASE_LEVEL[st.g] || '程度 3' });
     });
   });
   return out;
+}
+
+/* Of a group's current members, how many can actually use this vendor's tool.
+ * Passive — shown where the teacher is already looking, so a gap between her
+ * grouping and her tool cohort is visible without anything happening behind
+ * her back. */
+function groupToolCoverage(classId, groupId, vendorId){
+  const v = VENDORS.find(x => x.id === vendorId);
+  if(!v) return null;
+  const g = (v.grants||[]).find(x => x.classId === classId);
+  if(!g || !g.released) return null;
+  const members = groupMembers(classId, groupId);
+  if(!members.length) return null;
+  return { covered: members.filter(s => g.released.includes(s.sid)).length, total: members.length };
 }
 function publishReleases(){
   if(typeof DemoState === 'undefined') return;
@@ -559,7 +578,7 @@ const VENDORS = [
     id:'zhixie', name:'智寫科技', product:'寫作回饋工具',
     vetting:{status:'certified', label:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已通過基準認證', note:'合規閘 5/5 通過（見供應商審核 vetting.html）'},
     grants:[
-      {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20', eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024']},
+      {group:'增潤組（9 人）· 中二乙班', classId:'2b', groupId:'stretch', memberSnapshot:['王思穎','林一心','徐朗','邵浩霖','梁俊熙','邵嘉俐','柯子傲','楊子誠','阮子健'], headcount:9, teacherId:'T1001', tier:'Tier 1 · 基本資料', since:'2026-06-20', eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024'], released:['S2001','S2002','S2003','S3001','S3002','S3003','S3004','S3005','S3006']},
     ],
     pending:[
       {id:'r1', teacherId:'T1001', group:'支援組（6 人）· 中二乙班', classId:'2b', groupId:'support', memberSnapshot:['李俊希','鄭家朗','何嘉睿','沈詩妍','施詠芝','范俊希'], headcount:6, src:'來自教學分組（groups.html）', status:'pending', _pickedTier:null, eligible:['S2001','S2002','S2003','S2004','S2005','S2006','S2007','S2008','S2009','S2010','S3001','S3002','S3003','S3004','S3005','S3006','S3007','S3008','S3009','S3010','S3011','S3012','S3013','S3014','S3015','S3016','S3017','S3018','S3019','S3020','S3021','S3022','S3023','S3024']},

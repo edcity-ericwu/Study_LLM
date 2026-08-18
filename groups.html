@@ -117,6 +117,9 @@
     padding:8px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
   }
   .col .assign:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+  .tool-cov{font-size:.68rem;color:var(--ink-3);margin-top:6px;padding-left:2px;}
+  .tool-cov.short{color:#8a5a09;}
+  .tool-cov b{color:inherit;}
   .assign-wrap{position:relative;}
   /* Confirmation strip once a group actually has material assigned — a
    * separate, persistent line above the button, not just a toast that
@@ -413,6 +416,7 @@ function render(){
       <div class="c-goal">${grp.goal}</div>
       ${visible.length ? rowsHtml : (q ? '<div class="stu-empty">沒有符合的學生</div>' : '')}
       ${assignedHtml}
+      ${toolCoverageHtml(activeClassId, grp.id)}
       <div class="assign-wrap">
         ${menuHtml}
         <button class="assign" onclick="toggleAssignMenu('${activeClassId}','${grp.id}')">${assigned ? '🔁 更換教材／練習' : '📎 指派教材／練習給此組'}</button>
@@ -432,6 +436,20 @@ function dragOver(ev){
   ev.dataTransfer.dropEffect='move';
   ev.currentTarget.classList.add('dragover');
 }
+/* How many of this group's students can actually use each granted tool.
+ * Read-only and non-blocking: it makes a gap between grouping and tool access
+ * visible without creating pending state or acting on her behalf. */
+function toolCoverageHtml(classId, groupId){
+  if(typeof groupToolCoverage !== 'function' || typeof VENDORS === 'undefined') return '';
+  const rows = VENDORS.map(v=>{
+    const c = groupToolCoverage(classId, groupId, v.id);
+    if(!c) return '';
+    const short = c.covered < c.total;
+    return `<div class="tool-cov${short?' short':''}">${v.product}：${c.total} 人中 <b>${c.covered}</b> 人可使用</div>`;
+  }).filter(Boolean);
+  return rows.join('');
+}
+
 function dropStu(ev,gid){
   ev.preventDefault();
   ev.currentTarget.classList.remove('dragover');
@@ -441,10 +459,10 @@ function dropStu(ev,gid){
   const s=c.students.find(x=>x.n===name);
   if(!s||s.left||s.g===gid) return;
   s.g=gid;
-  // The group is the school's own state; the release is what follows from it.
-  // Recorded separately so a vendor never receives more than the grant allows.
+  // Grouping only. Tool access is an explicit list on 學生工具申請 and is
+  // deliberately NOT touched here — moving a student between groups must not
+  // release her data or spend a year-long seat.
   recordGroupOverride(s.sid, gid);
-  publishReleases();
   render();
   const grp = c.groups.find(g=>g.id===gid);
   toast(name+' → '+grp.name);

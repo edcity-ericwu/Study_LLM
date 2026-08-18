@@ -126,6 +126,16 @@
   .rchip.pending{color:#8a5a00;background:#fdf1c7;}
   .rchip.approved{color:#0c6b48;background:#e6f7ef;}
   .rchip.denied{color:#b91c1c;background:#fee2e2;}
+  .cohort{background:#f7fbfe;border:1px solid #dceaf3;border-radius:9px;padding:9px 12px;margin-top:10px;}
+  .cohort .bound-row{background:none;border:none;padding:0;margin:0;}
+  .stu-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .stu-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);
+    border-radius:99px;padding:3px 6px 3px 10px;font-size:.72rem;color:var(--ink-2);}
+  .stu-chip .x{border:none;background:none;color:var(--ink-3);cursor:pointer;font-size:.76rem;padding:0 3px;font-family:inherit;}
+  .stu-chip .x:hover{color:var(--ec-red);}
+  .stu-chips .none,.add-row .none{font-size:.72rem;color:var(--ink-3);}
+  .add-row{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap;}
+  .add-row select{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:.75rem;font-family:inherit;background:#fff;color:var(--ink);}
   .bound-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-size:.72rem;color:var(--ink-2);background:#f7fbfe;border:1px solid #dceaf3;
     border-radius:9px;padding:8px 12px;margin-top:10px;}
@@ -505,6 +515,39 @@ const TRIAL_STATUS_CHIP = {
   graduated:'<span class="rchip approved">🎓 已轉為正式申請</span>',
 };
 
+/* Releasing a student is its own act, separate from grouping. Seats are
+ * named-annual, so adding spends one that does not return this school year —
+ * the confirmation on removal says so rather than letting her find out in
+ * August. Bounded by eligible[]: the picker cannot offer anyone the school
+ * has not approved. */
+function grantFor(vendorId, classId){
+  const v = VENDORS.find(x=>x.id===vendorId);
+  return v && (v.grants||[]).find(g=>g.classId===classId);
+}
+function addStudent(vendorId, classId){
+  const g = grantFor(vendorId, classId); if(!g) return;
+  const sel = document.getElementById('add-'+vendorId+'-'+classId);
+  const sid = sel && sel.value; if(!sid) return;
+  if(!g.eligible.includes(sid) || g.released.includes(sid)) return;
+  const left = seatsLeft(vendorId);
+  if(left !== null && left <= 0){ toast('本學年名額已用完，請聯絡資訊科技統籌'); return; }
+  g.released.push(sid);
+  if(VENDOR_PLANS[vendorId]) VENDOR_PLANS[vendorId].seatsUsed++;
+  if(typeof publishReleases === 'function') publishReleases();
+  const n = (CLASSES[classId].students.find(x=>x.sid===sid)||{}).n || sid;
+  renderMyRequests(); renderScopeCards();
+  toast('已加入 '+n+'，本學年名額已使用一個');
+}
+function dropStudent(vendorId, classId, sid){
+  const g = grantFor(vendorId, classId); if(!g) return;
+  const n = (CLASSES[classId].students.find(x=>x.sid===sid)||{}).n || sid;
+  if(!confirm(n+'：移除後名額不會退回，本學年不能再分配給其他學生。確定移除？')) return;
+  g.released = g.released.filter(x=>x!==sid);
+  if(typeof publishReleases === 'function') publishReleases();
+  renderMyRequests(); renderScopeCards();
+  toast('已移除 '+n+'，其帳戶存取將於下次同步時取消');
+}
+
 function renderGrantCard(v, entry, kind, driftCounter){
   // driftCounter is a {n:0} box rather than a return value, since callers need
   // to accumulate across two separate lists (class-scoped + study-group-scoped)
@@ -521,14 +564,27 @@ function renderGrantCard(v, entry, kind, driftCounter){
     driftHtml = `<div class="drift-banner"><b>⚠ ${outside.length} 名學生不在核准名單內</b>${outside.map(s=>s.n).join('、')}已加入此分組，但不在此工具的核准名單內，未能使用。請為這些學生另行提出申請。</div>`;
   }
   let boundHtml = '';
-  if(entry.eligible && kind==='grant'){
-    const released = (entry.groupId==='__whole_class__'
-      ? wholeClassMembers(entry.classId) : groupMembers(entry.classId, entry.groupId))
-      .filter(s=>entry.eligible.includes(s.sid));
+  if(entry.eligible && entry.released && kind==='grant'){
     const left = seatsLeft(v.id);
-    boundHtml = `<div class="bound-row">
-      <span>已釋出 <b>${released.length}</b> 人 · 核准名單共 ${entry.eligible.length} 人</span>
-      ${left===null?'':`<span class="seats">本學年尚餘 ${left} 個學生名額</span>`}
+    const roster = CLASSES[entry.classId].students;
+    const nameOf = sid => (roster.find(x=>x.sid===sid)||{}).n || sid;
+    const chips = entry.released.map(sid=>
+      `<span class="stu-chip">${nameOf(sid)}<button class="x" title="移除" onclick="dropStudent('${v.id}','${entry.classId}','${sid}')">✕</button></span>`).join('');
+    const addable = entry.eligible.filter(sid=>{
+      if(entry.released.includes(sid)) return false;
+      const st = roster.find(x=>x.sid===sid);
+      return st && !st.left;
+    });
+    boundHtml = `<div class="cohort">
+      <div class="bound-row">
+        <span>可使用此工具 <b>${entry.released.length}</b> 人 · 核准名單共 ${entry.eligible.length} 人</span>
+        ${left===null?'':`<span class="seats">本學年尚餘 ${left} 個學生名額</span>`}
+      </div>
+      <div class="stu-chips">${chips || '<span class="none">尚未加入學生</span>'}</div>
+      ${addable.length ? `<div class="add-row">
+        <select id="add-${v.id}-${entry.classId}">${addable.map(sid=>`<option value="${sid}">${nameOf(sid)}</option>`).join('')}</select>
+        <button class="lbtn" onclick="addStudent('${v.id}','${entry.classId}')">＋ 加入學生</button>
+      </div>` : '<div class="add-row"><span class="none">核准名單內的學生已全部加入</span></div>'}
     </div>`;
   }
   const overlapHtml = entry.overlapNote ? `<div class="overlap-flag">⚠ ${entry.overlapNote}</div>` : '';

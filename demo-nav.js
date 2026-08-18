@@ -20,7 +20,13 @@ const CSS = `
 .dn-panel .tag.r{color:#b91c1c;background:#fee2e2;}
 .dn-panel .legend{font-size:.62rem;color:#8a97a3;margin-top:10px;padding:8px 4px 0;border-top:1px solid #e6ebf0;line-height:1.6;}
 `;
-/* 4th element (optional) = feature-flag key from feature-flags.js. An entry
+/* Ordered to follow the data-release flow, so a walkthrough reads as one story
+ * rather than an org chart: the teacher asks → the coordinator approves → the
+ * vendor receives → the student uses. Roles that sit outside that chain follow
+ * after it — the roster that feeds it, and the platform-operations roles that
+ * gate who may enter it at all.
+ *
+ * 4th element (optional) = feature-flag key from feature-flags.js. An entry
  * whose flag is off is filtered out of the nav entirely (page is untouched on
  * disk — just not listed here for this walkthrough). See feature-flags.js for
  * what each flag covers and why. */
@@ -28,50 +34,57 @@ const PAGES = [
   {group:'🧭 入口', items:[
     ['poc-hub.html','各科 POC 導覽',''],
   ]},
-  {group:'👩‍🏫 教師（陳凱怡老師）', items:[
+
+  /* ── the release flow, in order ── */
+  {group:'① 👩‍🏫 教師（陳凱怡老師）· 提出', items:[
     ['chat.html','EdCity.ai（科目助理）',''],
     ['index.html','教學工具箱',''],
+    ['tool-form.html','　└ 工具內頁（示意）',''],
     ['agents.html','EdMarket 應用程式',''],
     ['marking.html','AI 批改','y'],
     ['material-library.html','校本教材庫','y'],
-    ['groups.html','教學分組',''],
+    ['groups.html','教學分組（總覽）',''],
     ['group-detail.html?c=2b&g=support','　└ 分組內頁（支援組）',''],
     ['tool-status.html','工具申請進度',''],
-    ['trial-invites.html','試用邀請（供應商發起）','r','vendorInitiatedTrial'],
+    ['trial-invites.html','試用邀請與邀請碼',''],
   ]},
-  /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
-   * features, so they sit apart from the teacher's working tools here too. */
-  {group:'⚗ Ideas Lab（構思階段）', items:[
-    ['materials.html','教材檢視（三大用例）','y'],
-    ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
+  {group:'② 🔧 資訊科技統籌（馮 Sir）· 審批', items:[
+    ['eddata-console.html','供應商資料存取審批（EdData）','r'],
+    ['subscriptions.html','訂閱管理（含待預算、預算建議書）','y'],
+    ['usage-report.html','使用報告',''],
   ]},
-  {group:'📈 科主任（李天佑主任）', items:[
-    ['dept.html','科組統計','y','subjectPanelView'],
-    ['dept-trial-evaluations.html','工具試用評估','y','subjectPanelTrialReview'],
+  {group:'③ 🏢 供應商（智寫科技）· 接收', items:[
+    ['vendor-portal.html','EdMarket 認證進度與邀請碼',''],
+    ['vendor-data-console.html','資料存取控制台（含刪除確認）','r'],
   ]},
-  {group:'🎒 學生／家長（Karen）', items:[
+  {group:'④ 🎒 學生／家長（Karen）· 使用', items:[
     ['student.html','學生／家長入口','r'],
   ]},
-  {group:'🔧 資訊科技統籌（馮 Sir）', items:[
-    ['subscriptions.html','訂閱管理','y'],
-    ['usage-report.html','使用報告',''],
-    ['eddata-console.html','供應商資料存取審批（EdData）','r'],
+
+  /* ── upstream: the roster everything above is measured against ── */
+  {group:'📋 校務處（何主任）· 編班', items:[
+    ['roster.html','校務處控制台（教師名冊／任教編配／學年升班／學生編班）','y'],
   ]},
-  {group:'📋 校務處（何主任）', items:[
-    ['roster.html','校務處控制台（教師名冊／任教編配／批量編班／學生編班）','y'],
+  {group:'🗂 校務紀錄組（曾主任）· 身份', items:[
+    ['records-console.html','身份紀錄審批與查閱','r','recordsApproval'],
   ]},
-  {group:'🗂 校務紀錄組（曾主任）', items:[
-    ['records-console.html','身份紀錄審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）','r','recordsApproval'],
+
+  /* ── platform operations: who may enter the ecosystem at all ── */
+  {group:'🤝 供應商關係主任（方小姐 · 平台營運）', items:[
+    ['vetting.html','供應商審核（含資料需求申報）','y'],
   ]},
   {group:'🏷 內容審核員（平台營運）', items:[
     ['tags.html','標籤審核與管理','r','contentModeration'],
   ]},
-  {group:'🤝 供應商關係主任（方小姐 · 平台營運）', items:[
-    ['vetting.html','供應商審核','y'],
+
+  /* ── outside the release chain ── */
+  {group:'📈 科主任（李天佑主任）· 唯讀', items:[
+    ['dept.html','科組統計','y','subjectPanelView'],
+    ['dept-trial-evaluations.html','工具試用評估（已決定不納入審批鏈）','y','subjectPanelTrialReview'],
   ]},
-  {group:'🏢 供應商（智寫科技）', items:[
-    ['vendor-portal.html','EdMarket 認證進度','y'],
-    ['vendor-data-console.html','資料存取控制台（接收學校核准後的供應商資料）','r'],
+  {group:'⚗ Ideas Lab（構思階段）', items:[
+    ['materials.html','教材檢視（三大用例）','y'],
+    ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
   ]},
 ];
 function init(){

@@ -35,6 +35,7 @@
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
   .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
   .sys-nav{padding:12px 10px;flex:1;}
+  .sys-nav h6{font-size:.62rem;font-weight:700;color:#a99ddb;letter-spacing:normal;padding:10px 10px 6px;text-transform:uppercase;}
   .sys-nav a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:#c7d2da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
   .sys-nav a:hover{background:rgba(255,255,255,.06);}
   .sys-nav a.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;}
@@ -172,9 +173,6 @@
   .block-note{
     background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:10px 13px;
     font-size:.76rem;color:#991b1b;line-height:1.6;margin-bottom:10px;
-  }
-    background:#fee2e2;border:1px solid #f5c6c6;border-radius:8px;padding:9px 12px;
-    font-size:.73rem;color:#991b1b;line-height:1.6;margin:8px 0;
   }
 
   .req{background:#fafcfd;border:1px solid var(--line);border-radius:9px;padding:13px 15px;margin-bottom:10px;}
@@ -327,11 +325,19 @@
 <aside class="sys-sidebar">
   <div class="sh-label">資訊科技統籌（馮 Sir）</div>
   <div class="viewer-chip">🔧 校務行政層級 · 資訊科技統籌視圖</div>
+  <!-- 馮 Sir's three screens, in the same shape and order as subscriptions.html
+       and usage-report.html. This page previously listed only itself, so the
+       same person's other two systems were reachable from those pages but not
+       from this one — a one-way nav for one role. -->
   <nav class="sys-nav">
+    <h6>供應商資料存取</h6>
     <a href="eddata-console.html" class="active">🔐 供應商資料存取審批</a>
+    <h6>其他系統（同一人，不同帳戶）</h6>
+    <a href="subscriptions.html">🗂 訂閱管理 →</a>
+    <a href="usage-report.html">📊 使用報告 →</a>
   </nav>
   <div class="sys-sidebar-foot">
-    <a href="subscriptions.html">← 返回 EdCity.ai（訂閱管理）</a>
+    <a href="index.html">← 返回 EdCity.ai（教師視圖）</a>
   </div>
 </aside>
 

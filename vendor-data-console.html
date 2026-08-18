@@ -26,7 +26,7 @@
 
   /* System color-coding: same maroon vendor-side identity as vendor-portal.html —
    * this page is also outside EdCity.ai, on the vendor's own system, so it should
-   * read as the same "space" as the vendor portal, not blend into the SMS/EdData
+   * read as the same "space" as the vendor portal, not blend into the School Accounts Administration System/EdData
    * blue/purple pair. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#f0abb8;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -198,7 +198,7 @@
         <button class="btn ghost" onclick="toast('查看完整同步紀錄')">查看完整記錄</button>
       </div>
     </div>
-    <div class="revoke-note">⚠️ <b>自動失效：</b>如學生轉組或轉班，下次同步時本系統會自動移除其帳戶關聯——供應商不會保留已失效的存取，也毋須手動清理。這與校管系統（roster.html）的轉班同步同屬自動化流程。</div>
+    <div class="revoke-note">⚠️ <b>自動失效：</b>如學生轉組或轉班，下次同步時本系統會自動移除其帳戶關聯——供應商不會保留已失效的存取，也毋須手動清理。這與學校帳戶管理系統（roster.html）的轉班同步同屬自動化流程。</div>
   </section>
 </div>
 </div>
@@ -231,7 +231,7 @@ function loadAccounts(){
 let accounts = loadAccounts();
 let syncLog = [
   {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：存取名單 9 人，無變動', time:'2026-07-15 03:00'},
-  {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見校管系統名冊）', time:'2026-05-10 03:00'},
+  {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見學校帳戶管理系統名冊）', time:'2026-05-10 03:00'},
 ];
 function syncGrantScope(){
   const el = document.getElementById('grantScope');

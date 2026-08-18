@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>供應商資料存取審批（EdData）— 校管系統</title>
+<title>供應商資料存取審批（EdData）— 學校帳戶管理系統</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -24,12 +24,12 @@
   body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
 
   /* shared "system" sidebar — separate visual language from the EdCity.ai teacher sidebar,
-     so it's clear this is navigation WITHIN the SMS/EdData system, not the teaching-tools app.
+     so it's clear this is navigation WITHIN the School Accounts Administration System/EdData system, not the teaching-tools app.
      CORRECTED 2026-07-22: the original comment here claimed "EdData is a records layer
-     UNDER SMS" — wrong, superseded after real EdData/Account Admin product screens showed
-     real EdData's scope is vendor data-access governance only, sitting on SMS's data, not
+     UNDER School Accounts Administration System" — wrong, superseded after real EdData/Account Admin product screens showed
+     real EdData's scope is vendor data-access governance only, sitting on School Accounts Administration System's data, not
      holding student/teacher identity records. Same blue family as roster.html is kept anyway
-     — still a reasonable choice (both are SMS-family screens), just not for the reason
+     — still a reasonable choice (both are School Accounts Administration System-family screens), just not for the reason
      originally given. The actor distinction (何主任 vs 馮 Sir) is carried by the topbar avatar. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#0c2c40;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-blue-dark);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#8fcdf0;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
@@ -43,7 +43,7 @@
   .sys-sidebar-foot a:hover{color:#fff;}
   .sys-main{flex:1;min-width:0;}
 
-  /* deliberately the same plain SMS-family shell as roster.html — this is EdData, not the Resources Platform */
+  /* deliberately the same plain School Accounts Administration System-family shell as roster.html — this is EdData, not the Resources Platform */
   .role-banner{display:none;background:#0f3347;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
@@ -52,7 +52,7 @@
   /* Actor avatar — this is the thing that should say "different user," not the
    * page chrome. 馮 Sir's avatar uses purple as a personal/role tag (EdData
    * approver), distinct from 何主任's blue tag on roster.html, while the
-   * surrounding system shell stays in the same SMS blue family on both pages. */
+   * surrounding system shell stays in the same School Accounts Administration System blue family on both pages. */
   .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.78rem;color:var(--ink-2);text-align:right;}
   .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
   .topbar .who small{display:block;font-size:.66rem;color:var(--ink-3);}
@@ -305,7 +305,7 @@
 </aside>
 
 <div class="sys-main">
-<div class="role-banner">校務行政層級 — 供應商資料存取審批（校管系統）</div>
+<div class="role-banner">校務行政層級 — 供應商資料存取審批（學校帳戶管理系統）</div>
 <div class="topbar">
   <img src="edcity_logo.svg" alt="香港教育城 EdCity">
   <span class="sys">供應商資料存取審批<small>現由 EdData 提供 · 與校務紀錄審批（曾主任）、EdCity.ai 分屬不同職能</small></span>
@@ -570,7 +570,9 @@ function renderVendors(){
 function renderTrials(){
   // awaiting_teacher trials live in the teacher's own inbox (trial-invites.html) —
   // this page only shows trials that have already passed that step.
-  const visible = TRIALS.filter(t=>t.status!=='awaiting_teacher');
+  const vendorRoute = (typeof featureOn !== 'function') || featureOn('vendorInitiatedTrial');
+  const visible = TRIALS.filter(t =>
+    t.status!=='awaiting_teacher' && (vendorRoute || t.origin!=='vendor'));
 
   const countEl = document.getElementById('trialCount');
   const waitingCount = visible.filter(t=>t.status==='pending_it').length;
@@ -627,7 +629,7 @@ function renderTrials(){
   }).join('');
 }
 /* Vetting stays mandatory regardless of trial scale (confirmed by Eric —
- * EdCity_SMS_Consolidation_Stories.md Story 2) — this guard applies to
+ * EdCity_School Accounts Administration System_Consolidation_Stories.md Story 2) — this guard applies to
  * teacher-initiated trials too, even though group-access-requests.html only
  * offers certified vendors in its picker. Defense in depth, same rule as
  * approve() above for full grants. */

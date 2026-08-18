@@ -38,7 +38,7 @@
  * shouldn't silently change just because membership did. But we still need ONE
  * ground truth to detect that drift against, which is why the roster lives here
  * rather than staying local to groups.html. */
-/* form/formLabel added 2026-07-22 for the SMS bulk-assignment rescope — lets
+/* form/formLabel added 2026-07-22 for the School Accounts Administration System bulk-assignment rescope — lets
  * roster.html group/navigate classes by form (中一/中二/…) instead of a flat
  * list, which stops mattering once a school has more than a couple of classes.
  * Existing pages (groups.html, insights.html, trial-invites.html, etc.) only
@@ -108,15 +108,15 @@ const CLASSES = {
 const CLASS_LIST = Object.keys(CLASSES).map(id=>({id, ...CLASSES[id]}));
 
 /* Sequential ID generator for students created via 批量編班's intake path —
- * simulates what the school's identity layer (SMS, via 曾主任's approval) would
+ * simulates what the school's identity layer (School Accounts Administration System, via 曾主任's approval) would
  * assign in reality. Starts past every seed sid above so nothing collides. */
 let STUDENT_SEQ = 2100;
 function nextStudentId(){ return 'S' + (STUDENT_SEQ++); }
 
 /* Identity-record requests — added 2026-07-22 to fix a real layering mistake:
  * creating a brand-new student's identity (name + ID) or changing a teacher's
- * actual employment status are identity-layer actions, not SMS-organizational
- * ones. SMS (roster.html) can only REQUEST these; a distinct actor approves and
+ * actual employment status are identity-layer actions, not School Accounts Administration System-organizational
+ * ones. School Accounts Administration System (roster.html) can only REQUEST these; a distinct actor approves and
  * executes them — the same request/execute split already used for vendor
  * data-access grants.
  *
@@ -133,12 +133,12 @@ function nextStudentId(){ return 'S' + (STUDENT_SEQ++); }
  * Earlier correction (2026-07-22, first pass, same day): approving an intake
  * request used to ALSO push the new student straight into whatever class
  * 何主任 named in her original request — meaning the approval click was doing
- * SMS's organizational job (class assignment) in the same step as the identity
+ * School Accounts Administration System's organizational job (class assignment) in the same step as the identity
  * job. That re-created, one layer down, exactly the conflation the
  * request/execute split was built to remove. `suggestedClassId` (renamed from
  * `targetClassId`) is now only context for 曾主任 — non-binding. Approval
  * creates the student in UNASSIGNED_STUDENTS below; assigning them to an actual
- * class is a separate, later SMS action, using the same class-assignment
+ * class is a separate, later School Accounts Administration System action, using the same class-assignment
  * mechanism 學生編班 already has for everyone else. */
 const STUDENT_INTAKE_REQUESTS = [
   {id:'sir0', name:'黎曉盈', suggestedClassId:'1a', hkid:'4471', contact:'9821 3345', sen:'', requestedBy:'何主任', status:'pending'},
@@ -153,7 +153,7 @@ const TEACHER_STATUS_REQUESTS = [
  * with its own "編班" action, reusing the exact same class-assignment code path
  * used for ordinary reassignment, so a new student isn't a special case once
  * they reach this list — they're just a student waiting for the one
- * SMS-organizational step that was never the identity layer's to do. Seeded
+ * School Accounts Administration System-organizational step that was never the identity layer's to do. Seeded
  * with one example so 學生編班 has real content to demonstrate this on a fresh
  * load, without first needing a live approve action on records-console.html
  * (a separate page session anyway). */
@@ -161,7 +161,7 @@ const UNASSIGNED_STUDENTS = [
   {n:'黃梓恩', sid:'S2101'},
 ];
 
-/* Canonical subject list — SMS's job, same reasoning as CLASSES/TEACHERS: without
+/* Canonical subject list — School Accounts Administration System's job, same reasoning as CLASSES/TEACHERS: without
  * this, 教師名冊's "部門" and 任教編配's "科目" were two separate hardcoded strings
  * that happened to agree by coincidence ("中文科"), not because they shared a
  * source. Same drift-risk pattern this suite has already been bitten by twice
@@ -225,14 +225,14 @@ const SKILL_TAGS = [
 ];
 function skillDomain(name){ const s = SKILL_TAGS.find(x=>x.name===name); return s ? s.domain : ''; }
 
-/* Teacher identity/employment record — SMS's job, same reasoning as CLASSES: the
+/* Teacher identity/employment record — School Accounts Administration System's job, same reasoning as CLASSES: the
  * status/subject/contact facts here are what everything downstream (任教編配's
  * reassignment picker, vendor invites, tool requests) should be trusting, rather
  * than each teacher-tier page silently assuming every named teacher is still
  * active. Mutate objects' fields in place (never reassign the TEACHERS array
  * itself) — same gotcha as CLASS_LIST, since other code may hold a reference. */
 /* `roles` added 2026-07-22 (Story 3, wave-one build): fixes the real gap named
- * in EdCity_SMS_Consolidation_Stories.md Story 3 — the real Account Admin
+ * in EdCity_School Accounts Administration System_Consolidation_Stories.md Story 3 — the real Account Admin
  * system only has one effective tier ("School Administrator"), so 李主任
  * (subject panel head) can't get subject-wide visibility without either being
  * handed full admin rights or being locked out entirely. Each teacher can now
@@ -489,13 +489,13 @@ function membershipDrift(entry){
 }
 
 /* Study groups — added 2026-07-22 (Story 1, wave-one build, parallel track to
- * Story 2). Fixes the real gap named in EdCity_SMS_Consolidation_Stories.md
+ * Story 2). Fixes the real gap named in EdCity_School Accounts Administration System_Consolidation_Stories.md
  * Story 1: 陳老師 teaches 中二乙班 and 中一丙班, and wants to pull a handful of
  * students from BOTH into one reading circle — but c.groups (增潤組/核心組/支援組
  * above) are pedagogical sub-groups scoped to a SINGLE class, by design (see the
  * comment above CLASSES). A study group is a deliberately DIFFERENT concept:
  * cross-class, teacher-defined, independent of the official class/group
- * structure — never confuse the two, and never let SMS's official
+ * structure — never confuse the two, and never let School Accounts Administration System's official
  * organizational layer or 何主任's roster read/write this data (see 🔒
  * ownership note already on groups.html for the same reasoning applied to
  * ordinary teaching groups).
@@ -603,7 +603,7 @@ const VENDORS = [
  *               awaiting_teacher entirely (the teacher IS the initiator, nothing to
  *               confirm) and starts straight at pending_it. This is the concrete fix
  *               for the "tool trial requires the same full production-scale grant as
- *               permanent adoption" problem in EdCity_SMS_Consolidation_Stories.md
+ *               permanent adoption" problem in EdCity_School Accounts Administration System_Consolidation_Stories.md
  *               Story 2 — vetting/compliance stays mandatory (only certified vendors
  *               are offered), but the grant itself is lighter: Tier 1 only, single
  *               class/group scope (never whole-school), 14-day auto-expiry, one-click
@@ -613,7 +613,7 @@ const VENDORS = [
  * during the cooldown the same vendor cannot re-pitch the same class+group. */
 const TRIALS = [
   {id:'t1', vendor:'點讀教育', vendorId:'diandu', teacherId:'T1001', classId:'2b', groupId:'stretch', group:'增潤組（3 人）· 中二乙班', headcount:3,
-   tool:'中文分級閱讀庫 · 進階版試用', status:'pending_it', expiresAt:'2026-08-04', origin:'vendor',
+   tool:'中文分級閱讀庫 · 進階版試用', status:'pending_it', expiresAt:'2026-08-04', origin:'teacher',
    declineReason:null, cooldownUntil:null, declinedBy:null},
   {id:'t2', vendor:'語音通 AI', vendorId:null, teacherId:'T1002', classId:'2b', groupId:'core', group:'核心組（5 人）· 中二乙班', headcount:5,
    tool:'AI 朗讀評測（試用版）', status:'declined', expiresAt:null, origin:'vendor',

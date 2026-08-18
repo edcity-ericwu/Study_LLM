@@ -36,7 +36,7 @@ const PAGES = [
     ['material-library.html','校本教材庫','y'],
     ['groups.html','教學分組',''],
     ['group-access-requests.html','學生工具申請',''],
-    ['trial-invites.html','試用邀請（供應商發起）','r','toolTrial'],
+    ['trial-invites.html','試用邀請（供應商發起）','r','vendorInitiatedTrial'],
   ]},
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built
    * features, so they sit apart from the teacher's working tools here too. */

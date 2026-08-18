@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>學校管理系統（SMS）— 校務處控制台</title>
+<title>學校帳戶管理系統 — 校務處控制台</title>
 <!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
      Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
      replacing the plain system-font stack. Falls back to the previous
@@ -24,7 +24,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
 
-  /* System color-coding: SMS = blue. The sidebar's actual background carries the
+  /* System color-coding: School Accounts Administration System = blue. The sidebar's actual background carries the
    * color (not just a thin accent stripe) so the system is unmistakable at a
    * glance — matched by eddata-console.html (purple), vendor-portal.html and
    * vendor-data-console.html (maroon), all still the same dark, "plainer than
@@ -41,16 +41,16 @@
   .sys-sidebar-foot a:hover{color:#fff;}
   .sys-main{flex:1;min-width:0;}
 
-  /* deliberately plainer shell — this is SMS, not the Resources Platform */
+  /* deliberately plainer shell — this is School Accounts Administration System, not the Resources Platform */
   .role-banner{display:none;background:#1a4763;color:#dfe8ef;font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 26px;position:sticky;top:0;z-index:50;}
   .topbar{background:#fff;border-bottom:3px solid var(--ec-blue-dark);padding:12px 26px;display:flex;align-items:center;gap:14px;}
   .topbar img{height:28px;width:auto;}
   .topbar .sys{font-size:.85rem;font-weight:700;color:var(--ec-blue-dark);}
   .topbar .sys small{display:block;font-size:.64rem;color:var(--ink-3);font-weight:500;}
   /* Actor avatar — the "different user" signal lives here, not in page-level color:
-   * 何主任's avatar is tagged blue (same family as the SMS shell she's on), while
+   * 何主任's avatar is tagged blue (same family as the School Accounts Administration System shell she's on), while
    * 馮 Sir's on eddata-console.html is tagged purple — a personal/role color, not
-   * a system color, since eddata-console.html is still part of SMS, just a
+   * a system color, since eddata-console.html is still part of School Accounts Administration System, just a
    * different actor's screen within it. */
   .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.78rem;color:var(--ink-2);}
   .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
@@ -239,10 +239,10 @@
 </aside>
 
 <div class="sys-main">
-<div class="role-banner">學校行政層級 — 校務處名冊維護（校管系統）</div>
+<div class="role-banner">學校行政層級 — 校務處名冊維護（學校帳戶管理系統）</div>
 <div class="topbar">
   <img src="edcity_logo.svg" alt="香港教育城 EdCity">
-  <span class="sys">學校管理系統（SMS）<small>紀錄系統 · 與教學工具分離運作</small></span>
+  <span class="sys">學校帳戶管理系統<small>紀錄系統 · 與教學工具分離運作</small></span>
   <span class="who"><span>何主任<small>校務處文書主任</small></span><span class="avatar">何</span></span>
 </div>
 
@@ -677,7 +677,7 @@ function renderStudents(){
   const rows = [];
   // 未編班 group — where a student lands right after 曾主任 approves an intake
   // request, per Eric's correction: the identity layer creates the identity,
-  // but assigning a class is a separate, later SMS-organizational step, not
+  // but assigning a class is a separate, later School Accounts Administration System-organizational step, not
   // bundled into approval. Shown first (only when no class filter is active), with its
   // own 編班 action rather than 轉班, since there's no "from" class yet.
   if (!filterClasses.size && UNASSIGNED_STUDENTS.length) {
@@ -940,7 +940,7 @@ function renderTeachers(){
  *
  * Only "已離職" goes through 曾主任 (School Records Officer): departure ends
  * employment — a genuine identity/records fact — while 在職/請假 are reversible,
- * organizational states (a leave doesn't end anyone's employment) that SMS can
+ * organizational states (a leave doesn't end anyone's employment) that School Accounts Administration System can
  * set directly, same as before this request/execute pattern existed. Routing
  * every status flip through an approval queue would make a routine, temporary
  * change (someone going on leave) wait on the records layer for no real reason. */
@@ -969,8 +969,8 @@ function proposeTeacherStatus(selectEl, teacherId){
 }
 function confirmTeacherStatus(teacherId, status){
   if (status === 'departed'){
-    // Departure is an identity/records fact (SMS's identity layer), not an
-    // organizational one — SMS can only request it here, mirroring the vendor
+    // Departure is an identity/records fact (School Accounts Administration System's identity layer), not an
+    // organizational one — School Accounts Administration System can only request it here, mirroring the vendor
     // data-access request/approve pattern in eddata-console.html, but approved
     // by a distinct actor. TEACHERS.status is NOT written here; it only changes
     // once 曾主任 (School Records Officer) approves on records-console.html.
@@ -985,7 +985,7 @@ function confirmTeacherStatus(teacherId, status){
     toast('已向校務紀錄組送出請求：將 '+teacherLabel(teacherId)+' 的狀態改為「'+STATUS_LABEL[status]+'」，待審批');
     return;
   }
-  // 在職／請假 are reversible organizational states — SMS applies these directly.
+  // 在職／請假 are reversible organizational states — School Accounts Administration System applies these directly.
   const t = TEACHERS.find(x=>x.id===teacherId);
   t.status = status;
   renderTeachers();
@@ -995,14 +995,14 @@ function confirmTeacherStatus(teacherId, status){
 /* 批量編班 — Corrected scope (Eric, 2026-07-22): this is NOT the annual/official
  * intake mechanism. It was originally built as if it were ("如開學新收生" in the
  * old copy), but that's wrong — annual official student records come from
- * WebSAMS and should land in SMS's identity layer directly, not via SMS
+ * WebSAMS and should land in School Accounts Administration System's identity layer directly, not via School Accounts Administration System
  * requesting hundreds of individual approvals through this CSV tool. This
  * pipeline is for MID-YEAR EXCEPTIONS ONLY: an individual transfer student, a
  * handful of students reassigned mid-term. Each row is judged independently by
  * whether its name/id matches an existing, currently-enrolled student anywhere
  * in CLASS_LIST. No match → new-student identity request, routed to 曾主任
  * (School Records Officer — low-volume, one-by-one approval is appropriate for
- * this scope). Exactly one match → reassignment (pure SMS-organizational, no
+ * this scope). Exactly one match → reassignment (pure School Accounts Administration System-organizational, no
  * records-layer involvement). More than one match → 手動核實, never guessed.
  * Sensitive fields (HKID/contact/SEN) are parsed and shown for verification
  * only, never persisted — see the tab's own caveat box. */
@@ -1157,7 +1157,7 @@ function renderBulkPreview(){
   const sensitiveHeaders = showSensitive ? '<th>HKID 尾4碼</th><th>家長聯絡電話</th><th>SEN 備註</th>' : '';
 
   wrap.innerHTML = `
-    <label class="bulk-toggle"><input type="checkbox" id="bulkShowSensitive" ${showSensitive?'checked':''} onchange="renderBulkPreview()"> 顯示敏感欄位（HKID／家長聯絡電話／SEN 備註）— 預設隱藏 <span class="toggle-note">（僅供核對，執行後不會保留在校管系統內）</span></label>
+    <label class="bulk-toggle"><input type="checkbox" id="bulkShowSensitive" ${showSensitive?'checked':''} onchange="renderBulkPreview()"> 顯示敏感欄位（HKID／家長聯絡電話／SEN 備註）— 預設隱藏 <span class="toggle-note">（僅供核對，執行後不會保留在學校帳戶管理系統內）</span></label>
     <table>
       <thead><tr><th>姓名</th><th>學生編號</th><th>判定</th><th>目標班別</th><th>狀態</th>${sensitiveHeaders}</tr></thead>
       <tbody>${rowsHtml}</tbody>
@@ -1185,10 +1185,10 @@ function commitBulkBatch(){
     if (!targetClass || r.problems.some(p=>p.includes('完全重複'))){ remaining.push(r); return; }
     if (r.mode === 'new'){
       // A brand-new student's identity (name + ID) is a records-layer fact, not
-      // an SMS-organizational one — SMS can only REQUEST intake here, same as
+      // an School Accounts Administration System-organizational one — School Accounts Administration System can only REQUEST intake here, same as
       // teacher status changes. hkid/contact/sen ARE carried into the request
       // (曾主任 needs them to actually create the identity record), but they
-      // still never land in SMS's own CLASSES data — only in the request object,
+      // still never land in School Accounts Administration System's own CLASSES data — only in the request object,
       // which lives on until 曾主任 approves or denies it on records-console.html.
       // The class code typed in the CSV is only a SUGGESTION for her context —
       // approval creates the student unassigned; the admin still has to place them

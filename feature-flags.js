@@ -26,9 +26,9 @@ const FEATURE_FLAGS = {
   // 跨班學習小組（2026-07-22 新增，Story 1）。
   // 涉及頁面：groups.html 的「學習小組（跨班）」區塊、
   // group-access-requests.html 的「學習小組（跨班）」申請區。
-  studyGroups: true,
+  studyGroups: false,
 
-  // SMS 角色與權限／RBAC（2026-07-22 新增，Story 3）。
+  // School Accounts Administration System 角色與權限／RBAC（2026-07-22 新增，Story 3）。
   // 涉及頁面：roster.html 的「角色與權限」分頁。
   rolesPermissions: true,
 
@@ -71,6 +71,13 @@ const FEATURE_FLAGS = {
   // release data, and the extra hop crowds out that discussion. Nothing is
   // deleted — the page, its nav entries and the request card it blocks all
   // come back with this set to true.
+  // 供應商發起的試用邀請 — a vendor inviting a teacher directly, before the
+  // school has asked for anything. Off: it inverts the direction this platform
+  // now depends on (teacher asks, school approves, vendor receives), so showing
+  // it alongside that model invites the wrong question. Teacher-initiated
+  // trials are unaffected — they stay under toolTrial.
+  vendorInitiatedTrial: false,
+
   subjectPanelTrialReview: false,
 
   demoNav: true,

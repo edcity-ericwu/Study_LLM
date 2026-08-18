@@ -26,7 +26,7 @@
 
   /* System color-coding: vendor-side (this page + vendor-data-console.html) = maroon
    * — an external, non-school-staff space, carried in the sidebar's actual background
-   * so it's unmistakably different from SMS (blue) and EdData (purple) at a glance. */
+   * so it's unmistakably different from School Accounts Administration System (blue) and EdData (purple) at a glance. */
   .sys-sidebar{width:248px;flex-shrink:0;background:#4a2029;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-maroon);}
   .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;letter-spacing:normal;color:#f0abb8;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
   .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;letter-spacing:normal;text-transform:none;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
@@ -298,10 +298,10 @@
 <script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
 <script>
-/* 邀請老師試用 is the toolTrial slice of this page — 認證進度 (the default tab)
+/* 邀請老師試用 is the vendorInitiatedTrial slice of this page — 認證進度 (the default tab)
  * is unrelated and stays regardless of this flag. */
 document.addEventListener('DOMContentLoaded', () => {
-  if (typeof featureOn === 'function' && !featureOn('toolTrial')) {
+  if (typeof featureOn === 'function' && !featureOn('vendorInitiatedTrial')) {
     const btn = document.querySelector('[data-tab="invite"]');
     const pane = document.querySelector('[data-pane="invite"]');
     if (btn) btn.style.display = 'none';

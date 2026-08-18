@@ -226,7 +226,7 @@
       <h6>課堂與學生</h6>
       <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
       <a href="group-access-requests.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>學生工具申請</a>
-      <a href="trial-invites.html" data-feature="toolTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
+      <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
     </div>
     <div class="nav-group ideas">
       <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
@@ -247,7 +247,7 @@
     <div class="page-head">
       <div class="ph-text">
         <h1>AI 批改 — 閱讀理解短答</h1>
-        <div class="sub">批改時可同步標記能力標籤；完成後，成績會<b>自動存入校管系統</b>，毋須匯出試算表，也毋須重複輸入名單。</div>
+        <div class="sub">批改時可同步標記能力標籤；完成後，成績會<b>自動存入學校帳戶管理系統</b>，毋須匯出試算表，也毋須重複輸入名單。</div>
       </div>
       <div class="class-pick">📋 中二乙班 · 中文 · <b>《背影》閱讀理解</b> <span class="chev">▼</span></div>
     </div>
@@ -265,7 +265,7 @@
       <div>
         <div class="drop-main" id="dropMain" onclick="fillDrop()">
           <span class="d-ic">⬆️</span>拖放一個或多個學生檔案，或按此選取
-          <small>支援 PDF、Word、相片掃描（自動辨識手寫）· 名單自動對應校管系統</small>
+          <small>支援 PDF、Word、相片掃描（自動辨識手寫）· 名單自動對應學校帳戶管理系統</small>
         </div>
         <div class="drop-row">
           <div class="drop-opt" onclick="toast('上載試題卷')"><b>上載試題卷（選填）</b><small>供 AI 對照題目批改</small></div>
@@ -314,7 +314,7 @@
       <div class="release" style="border-top:1px dashed var(--line);padding-top:12px;margin-top:14px;font-size:.72rem;color:var(--ink-2);">
         評語發還：<b id="relEcho" style="color:var(--ec-green);">暫緩發還 — 先讓學生想</b>（於設定階段選擇）
       </div>
-      <div class="sms"><span class="ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>完成的分數會自動送交校管系統核實入檔。批改工具與學生紀錄資料庫完全分離，互不影響。</div>
+      <div class="sms"><span class="ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></span>完成的分數會自動送交學校帳戶管理系統核實入檔。批改工具與學生紀錄資料庫完全分離，互不影響。</div>
       <button class="finish" onclick="finishMarking()">完成並自動入檔</button>
     </aside>
   </div>
@@ -411,7 +411,7 @@ function render(){
 function fillDrop(){
   const d=document.getElementById('dropMain');
   d.classList.add('filled');
-  d.innerHTML='<span class="d-ic">✅</span>已加入 32 份學生作答（中二乙班）<small>名單已對應校管系統 · 無需重新輸入</small>';
+  d.innerHTML='<span class="d-ic">✅</span>已加入 32 份學生作答（中二乙班）<small>名單已對應學校帳戶管理系統 · 無需重新輸入</small>';
   toast('已加入 32 份學生檔案');
 }
 function startMarking(){
@@ -434,7 +434,7 @@ function backToSetup(){
 function finishMarking(){
   document.getElementById('progBar').style.width='100%';
   document.getElementById('progText').textContent='32 / 32';
-  toast('已完成批改 · 成績已自動送交校管系統入檔');
+  toast('已完成批改 · 成績已自動送交學校帳戶管理系統入檔');
 }
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1700);}

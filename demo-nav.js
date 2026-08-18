@@ -35,6 +35,7 @@ const PAGES = [
     ['marking.html','AI 批改','y'],
     ['material-library.html','校本教材庫','y'],
     ['groups.html','教學分組',''],
+    ['group-detail.html?c=2b&g=support','　└ 分組內頁（支援組）',''],
     ['trial-invites.html','試用邀請（供應商發起）','r','vendorInitiatedTrial'],
   ]},
   /* Mirrors the sidebar's Ideas Lab group — these two are proposals, not built

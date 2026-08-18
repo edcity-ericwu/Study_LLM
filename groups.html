@@ -93,7 +93,35 @@
   .hint-move{font-size:.7rem;color:var(--ink-3);}
 
   .board{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;align-items:start;}
+  /* Whole-class scope. A real scope, not a group that happens to hold everyone
+   * — some tools are for the whole class by nature (a reading library), and
+   * pretending otherwise would make a teacher keep a 全班 group in sync by hand. */
+  .allclass{background:#fff;border:1px solid var(--line);border-left:3px solid var(--ec-blue);border-radius:14px;padding:14px 17px;margin-bottom:18px;}
+  .allclass .ac-head{display:flex;align-items:center;gap:9px;margin-bottom:3px;}
+  .allclass .ac-head b{font-size:.88rem;}
+  .allclass .ac-head .n{font-size:.7rem;color:var(--ink-3);}
+  .allclass .ac-goal{font-size:.7rem;color:var(--ink-3);margin-bottom:9px;}
+  .allclass .ac-head .dot{width:9px;height:9px;border-radius:50%;background:var(--ec-blue);flex-shrink:0;}
+  .allclass .ac-head b a{color:inherit;text-decoration:none;}
+  .allclass .ac-head b a:hover{color:var(--ec-blue-dark);text-decoration:underline;}
+  /* Opening a scope is the board's one action, so it gets a real button on every
+   * card rather than a 12px arrow. 全班 takes the solid variant because there is
+   * exactly one of it; three solid buttons in the group row would shout. */
+  .openbtn{display:block;text-align:center;margin-top:12px;border:1px solid var(--line);border-radius:9px;
+    padding:9px;font-size:.76rem;font-weight:600;color:var(--ec-blue-dark);text-decoration:none;background:#fff;}
+  .openbtn:hover{border-color:var(--ec-blue);background:#f7fbfe;}
+  .openbtn.solid{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;max-width:240px;}
+  .openbtn.solid:hover{background:var(--ec-blue-dark);border-color:var(--ec-blue-dark);}
+  .sm{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:.7rem;}
+  .sm span{border-radius:99px;padding:3px 10px;}
+  .sm .sm-on{background:#effaf5;border:1px solid #bfe8d7;color:#0c6b48;}
+  .sm .sm-wait{background:#fdf6e3;border:1px solid #efdcb0;color:#8a5a09;}
+  .sm .sm-none{color:var(--ink-3);}
   .col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .col .c-head .open{margin-left:6px;color:var(--ink-3);text-decoration:none;font-size:.78rem;}
+  .col .c-head .open:hover{color:var(--ec-blue-dark);}
+  .col .c-head b a{color:inherit;text-decoration:none;}
+  .col .c-head b a:hover{color:var(--ec-blue-dark);text-decoration:underline;}
   .col .c-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
   .col .c-head .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
   .col .c-head b{font-size:.85rem;}
@@ -112,35 +140,11 @@
   .stu.left{opacity:.45;text-decoration:line-through;cursor:default;}
   .board-search{border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:.78rem;font-family:inherit;min-width:200px;}
   .col .stu-empty{font-size:.72rem;color:var(--ink-3);padding:10px 0;text-align:center;}
-  .col .assign{
-    width:100%;margin-top:8px;border:1px dashed var(--line);background:transparent;border-radius:9px;
-    padding:8px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;
-  }
-  .col .assign:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
-  .assign-wrap{position:relative;}
   /* Confirmation strip once a group actually has material assigned — a
    * separate, persistent line above the button, not just a toast that
    * disappears — so re-opening this page later still shows what's assigned,
    * same "don't hide the current state behind a transient toast" fix already
    * applied elsewhere in this suite (subscriptions.html's request flows). */
-  .assigned-material{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#effaf5;border:1px solid #bfe8d7;border-radius:8px;padding:7px 10px;margin-top:8px;font-size:.72rem;color:#0c6b48;}
-  .assigned-material b{font-weight:700;}
-  .assigned-material.pending{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
-  .assigned-material.pending .am-when{color:#a8843c;}
-  .assigned-material.pending .am-x{color:#8a5a09;}
-  .assigned-material .am-ic{font-size:.8rem;}
-  .assign-menu .am-none{font-size:.72rem;color:var(--ink-3);padding:6px 9px 8px;}
-  .assigned-material .am-when{color:#4a9b7c;}
-  .assigned-material .am-x{margin-left:auto;border:none;background:none;color:#0c6b48;text-decoration:underline;cursor:pointer;font-size:.7rem;font-family:inherit;padding:0;}
-  .assign-menu{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.14);padding:6px;z-index:30;max-height:240px;overflow-y:auto;}
-  .assign-menu .am-label{font-size:.64rem;color:var(--ink-3);font-weight:700;padding:5px 8px 6px;letter-spacing:normal;}
-  .assign-menu .am-opt{display:block;width:100%;text-align:left;border:none;background:none;border-radius:7px;padding:8px 9px;font-size:.76rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
-  .assign-menu .am-opt:hover{background:#f2f6f9;}
-  .assign-menu .am-opt .am-type{display:block;font-size:.66rem;color:var(--ink-3);margin-top:1px;}
-
-    margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
-    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
-  }
 
   .sync{
     margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;
@@ -148,16 +152,6 @@
   }
   .sync .ic{font-size:1.1rem;flex-shrink:0;}
   .sync b{color:var(--ink);}
-
-  /* Study groups — deliberately distinct visual language from the per-class
-     board above (teal accent, not blue/purple/green) so nobody mistakes a
-     cross-class study group for one of 教學分組's per-class sub-groups. */
-  /* Section heading, not a second page title — this was an <h1> shrunk with an
-   * inline font-size, which broke the document outline and inherited the
-   * page-title margin. */
-  /* Feature flag (see feature-flags.js) — hides without deleting anything. */
-    font-size:.76rem;color:#0f6b6b;line-height:1.65;max-width:56em;margin-bottom:14px;}
-    padding:4px 10px;font-size:.7rem;color:var(--ink-2);margin:0 6px 6px 0;}
 
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
   .toast.show{opacity:.94;}
@@ -210,7 +204,7 @@
     <div class="page-head">
       <div class="ph-text">
         <h1>教學分組</h1>
-        <div class="sub">把班級分成小組，按需要指派練習、教材和教學工具。名單直接取自學校帳戶管理系統，毋須重新輸入。</div>
+        <div class="sub">把班級分成小組，總覽每組已指派的教材與工具。開啟任何一組或全班，即可指派。名單直接取自學校帳戶管理系統，毋須重新輸入。</div>
       </div>
       <div class="class-dd">
         <button class="class-btn" id="classBtn" onclick="toggleClassMenu()">📋 <b id="classLabel"></b><span id="classMeta"></span><span class="car">▾</span></button>
@@ -224,6 +218,8 @@
     <input type="text" class="board-search" id="boardSearchInput" placeholder="搜尋姓名或班號" oninput="onBoardSearch(this)">
     <span class="hint-move">提示：拖放學生到另一組</span>
   </div>
+
+  <div class="allclass" id="allClass"></div>
 
   <div class="board" id="board"></div>
 
@@ -287,52 +283,34 @@ function onBoardSearch(input){
   render();
 }
 
-/* 指派教材／練習給此組 — picks from the teacher's OWN material library
- * (material-library.html), not free text: this is a distribution action
- * (connect an already-prepared item to a group), not authoring new content
- * here. A page-local catalog rather than a shared one for now — reuses the
- * same item names material-library.html already shows so the demo doesn't
- * invent a second, disconnected set of material names, but the two pages
- * don't share live state yet (see note on GROUP_MATERIAL's seed value below). */
-const MATERIAL_CATALOG = [
-  {name:'支援組工作紙 v2 · 分層提問版', typeLabel:'工作紙'},
-  {name:'《背影》單元教案 v3 · 驗證報告', typeLabel:'驗證報告'},
-  {name:'散文閱讀理解工作紙（組合版）', typeLabel:'工作紙'},
-  {name:'二十四節氣 — 文學意象與地球科學', typeLabel:'跨學科教材'},
-  {name:'《朱自清散文選讀》配套練習（組合版）', typeLabel:'工作紙'},
-];
-/* Which group's material has been assigned, keyed by `${classId}::${groupId}`
- * since group ids (core/support/stretch) repeat across classes. Seeded to
- * match what material-library.html ALREADY claims ("支援組工作紙 v2 · 分層
- * 提問版" · usage: "中二乙班 · 支援組（6 人）在用") — starting 2b's 支援組
- * as unassigned here would silently contradict that other page's own data. */
-const GROUP_MATERIAL = {
-  '2b::support': {name:'支援組工作紙 v2 · 分層提問版', at:'2026-05-28'},
-};
-let assignMenuOpenFor = null;
-function toggleAssignMenu(classId, groupId){
-  const key = classId+'::'+groupId;
-  assignMenuOpenFor = (assignMenuOpenFor === key) ? null : key;
-  render();
+
+function renderAllClass(){
+  const c = CLASSES[activeClassId];
+  const n = (c.students||[]).filter(s=>!s.left).length;
+  const href = `group-detail.html?c=${activeClassId}&g=__whole_class__`;
+  document.getElementById('allClass').innerHTML = `
+    <div class="ac-head"><span class="dot"></span><b><a href="${href}">全班</a></b><span class="n">· ${n} 人</span></div>
+    <div class="ac-goal">整班一起使用的教材與工具，例如分級閱讀庫。指派給全班，不必逐組重複；下方各組是這個班的細分。</div>
+    ${attachSummary(activeClassId,'__whole_class__')}
+    <a class="openbtn solid" href="${href}">開啟全班 →</a>`;
 }
-function assignMaterial(classId, groupId, name){
-  GROUP_MATERIAL[classId+'::'+groupId] = {name, at:'剛剛'};
-  assignMenuOpenFor = null;
-  render();
-  toast('已指派「'+name+'」給此組');
+
+/* Read-only. Assignment lives in the group container — one surface, one code
+ * path. Keeping a second assign menu on the card meant two places to change a
+ * scope and a card that grew every time a group gained an attachment. */
+function attachSummary(classId, groupId){
+  const list = (typeof toolsForGroup === 'function') ? toolsForGroup(classId, groupId) : [];
+  const active = list.filter(t=>t.status==='active').length;
+  const pending = list.filter(t=>t.status==='pending').length;
+  const bits = [];
+  if(active) bits.push(`<span class="sm-on">🧩 ${active} 項工具</span>`);
+  if(pending) bits.push(`<span class="sm-wait">⏳ ${pending} 項待審批</span>`);
+  if(!bits.length) bits.push('<span class="sm-none">尚未指派教材或工具</span>');
+  return `<div class="sm">${bits.join('')}</div>`;
 }
-function removeMaterialAssignment(classId, groupId){
-  const key = classId+'::'+groupId;
-  const name = GROUP_MATERIAL[key] ? GROUP_MATERIAL[key].name : '';
-  delete GROUP_MATERIAL[key];
-  render();
-  toast('已移除「'+name+'」的指派');
-}
-document.addEventListener('click', e=>{
-  if (assignMenuOpenFor !== null && !e.target.closest('.assign-wrap')) { assignMenuOpenFor = null; render(); }
-});
 
 function render(){
+  renderAllClass();
   const c = CLASSES[activeClassId];
   const q = boardSearch.trim();
   document.getElementById('board').innerHTML = c.groups.map((grp)=>{
@@ -344,30 +322,12 @@ function render(){
     const rowsHtml = visible.map(s=>`<div class="stu ${s.left?'left':''}" ${s.left?'':'draggable="true" ondragstart="dragStu(event,\''+s.n+'\')" ondragend="this.classList.remove(\'dragging\')"'}>
         <span class="av">${s.n[0]}</span><span class="no">${s.no!=null?String(s.no).padStart(2,'0'):''}</span>${s.n}${s.left?'（已轉班 · 自動退出）':''}
       </div>`).join('');
-    const matKey = activeClassId+'::'+grp.id;
-    const assigned = GROUP_MATERIAL[matKey];
-    const assignedHtml = assigned
-      ? `<div class="assigned-material"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已指派：<b>${assigned.name}</b><span class="am-when">· ${assigned.at}</span><button class="am-x" onclick="removeMaterialAssignment('${activeClassId}','${grp.id}')">移除</button></div>`
-      : '';
-    const menuOpen = assignMenuOpenFor === matKey;
-    const menuHtml = menuOpen
-      ? `<div class="assign-menu">
-          <div class="am-label">教材與練習</div>
-          ${MATERIAL_CATALOG.map(m=>`<button class="am-opt" onclick="assignMaterial('${activeClassId}','${grp.id}','${m.name.replace(/'/g,"\\'")}')">${m.name}<span class="am-type">${m.typeLabel}</span></button>`).join('')}
-          <div class="am-label">教學工具</div>
-          ${toolMenuHtml(activeClassId, grp.id)}
-        </div>`
-      : '';
     return `<div class="col" data-gi="${grp.id}" ondragover="dragOver(event)" ondragleave="this.classList.remove('dragover')" ondrop="dropStu(event,'${grp.id}')">
-      <div class="c-head"><span class="dot" style="background:${grp.color}"></span><b>${grp.name}</b><span class="n">${active} 人</span></div>
+      <div class="c-head"><span class="dot" style="background:${grp.color}"></span><b><a href="group-detail.html?c=${activeClassId}&g=${grp.id}">${grp.name}</a></b><span class="n">${active} 人</span></div>
       <div class="c-goal">${grp.goal}</div>
       ${visible.length ? rowsHtml : (q ? '<div class="stu-empty">沒有符合的學生</div>' : '')}
-      ${assignedHtml}
-      ${toolRowsHtml(activeClassId, grp.id)}
-      <div class="assign-wrap">
-        ${menuHtml}
-        <button class="assign" onclick="toggleAssignMenu('${activeClassId}','${grp.id}')">${assigned ? '🔁 更換教材／練習' : '📎 指派教材／練習給此組'}</button>
-      </div>
+      ${attachSummary(activeClassId, grp.id)}
+      <a class="openbtn" href="group-detail.html?c=${activeClassId}&g=${grp.id}">開啟分組 →</a>
     </div>`;
   }).join('');
 }
@@ -386,18 +346,6 @@ function dragOver(ev){
 /* How many of this group's students can actually use each granted tool.
  * Read-only and non-blocking: it makes a gap between grouping and tool access
  * visible without creating pending state or acting on her behalf. */
-function toolRowsHtml(classId, groupId){
-  return toolsForGroup(classId, groupId).map(t=>{
-    const pend = t.status === 'pending';
-    return `<div class="assigned-material${pend?' pending':''}">${pend
-        ? '<span class="am-ic">⏳</span>'
-        : '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>'}
-      ${pend ? '已申請：' : '已啟用：'}<b>${t.vendor.product}</b>
-      <span class="am-when">· ${pend ? '已通知馮 Sir，審批中' : t.since + ' 起'}</span>
-      <button class="am-x" onclick="removeTool('${classId}','${groupId}','${t.vendor.id}')">${pend ? '取消申請' : '停用'}</button>
-    </div>`;
-  }).join('');
-}
 
 function dropStu(ev,gid){
   ev.preventDefault();
@@ -447,38 +395,6 @@ function toolsForGroup(classId, groupId){
 }
 /* Unapproved tools are offered, not hidden and not greyed out. Discovery is the
  * point of the platform; approval is latency, not a wall. */
-function toolMenuHtml(classId, groupId){
-  if(typeof VENDORS === 'undefined') return '';
-  const taken = toolsForGroup(classId, groupId).map(t=>t.vendor.id);
-  const opts = VENDORS.filter(v=>!taken.includes(v.id));
-  if(!opts.length) return '<div class="am-none">已指派所有可用工具</div>';
-  return opts.map(v=>{
-    const held = (v.grants||[]).length > 0;
-    return `<button class="am-opt" onclick="assignTool('${classId}','${groupId}','${v.id}')">${v.product}<span class="am-type">${v.name}${held?'':' · 學校未訂用，需經審批'}</span></button>`;
-  }).join('');
-}
-function assignTool(classId, groupId, vendorId){
-  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
-  const c = CLASSES[classId], grp = c.groups.find(g=>g.id===groupId);
-  const members = c.students.filter(s=>s.g===groupId && !s.left);
-  (v.pending = v.pending || []).push({
-    id:'r'+Date.now(), teacherId:MY_TEACHER_ID, classId, groupId,
-    group:`${grp.name}（${members.length} 人）· ${c.name}`,
-    memberSnapshot:members.map(s=>s.n), headcount:members.length,
-    tier:'Tier 1 · 基本資料', src:'來自教學分組',
-  });
-  assignMenuOpenFor = null; render();
-  toast(`已為「${grp.name}」申請 ${v.product}，馮 Sir 會收到通知`);
-}
-function removeTool(classId, groupId, vendorId){
-  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
-  const wasPending = (v.pending||[]).some(p=>p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID);
-  if(!wasPending && !confirm(`停用後，此組學生會即時失去「${v.product}」的存取權。確定嗎？`)) return;
-  v.pending = (v.pending||[]).filter(p=>!(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID));
-  v.grants  = (v.grants ||[]).filter(g=>!(g.classId===classId && g.groupId===groupId));
-  render();
-  toast(wasPending ? `已取消 ${v.product} 的申請` : `已停用 ${v.product}`);
-}
 
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1500);}

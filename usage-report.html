@@ -125,6 +125,11 @@
 
   .role-banner{display:none;background:#f1edfb;border-bottom:1px solid #ddd3f5;color:var(--ec-purple);
     font-size:.7rem;font-weight:700;letter-spacing:normal;padding:9px 34px;position:sticky;top:0;z-index:50;}
+  /* Was missing entirely: the div and toast() existed, but with no rule the
+   * element stayed in flow as a body-level flex child — it rendered as plain
+   * text beside the main column instead of a transient pill. */
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
+  .toast.show{opacity:.94;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint

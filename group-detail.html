@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity 分組 — 課堂層級</title>
+<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
+     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
+     replacing the plain system-font stack. Falls back to the previous
+     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
+     the network font fails to load. -->
+<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  :root{
+    --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
+    --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
+
+  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
+  .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  /* Spacing between nav groups. This rule was missing on most pages, so the
+   * Ideas Lab box sat 14px below the last link (its own margin-top) instead of
+   * the 18px the two margins collapse to when it's present — the box visibly
+   * hugged 校本教材庫 on those pages and not on chat/index/agents. */
+  .nav-group{margin-bottom:18px;}
+  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Flask marks the Ideas Lab section: these pages are experiments, not built
+   * features. Sized to the text it sits beside rather than to the nav icons —
+   * it labels the group, it isn't a nav item of its own. */
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;color:#8a5a09;}
+  .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
+  .nav a:hover{background:#f2f6f9;}
+  .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
+  .nav a .ic{width:17px;height:17px;flex-shrink:0;}
+  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
+  .sidebar .user .meta b{font-size:.8rem;display:block;}
+  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+
+  .main{flex:1;min-width:0;padding:44px 34px 80px;}
+
+  .ribbon{
+    display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
+    color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;
+    padding:5px 14px;margin-bottom:16px;
+  }
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  .class-pick{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:.82rem;color:var(--ink);}
+  .class-pick b{color:var(--ec-blue-dark);}
+  .class-pick .chev{color:var(--ink-3);font-size:.65rem;}
+
+  /* ─── Setup stage (評改台 pattern) ─── */
+  .stage-chips{display:flex;gap:8px;margin:14px 0 18px;align-items:center;}
+  .stage-chip{font-size:.72rem;font-weight:700;border-radius:99px;padding:6px 14px;border:1px solid var(--line);color:var(--ink-3);background:#fff;}
+  .stage-chip.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;}
+  .stage-chip.done{color:var(--ec-green);border-color:#bfe8d7;background:#effaf5;}
+  .stage-arrow{color:var(--ink-3);font-size:.7rem;}
+  .setup{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start;}
+  @media (max-width:1100px){.setup{grid-template-columns:1fr;}}
+  .drop-main{
+    border:2px dashed var(--line);border-radius:14px;padding:44px 20px;text-align:center;
+    font-size:.85rem;color:var(--ink-2);cursor:pointer;background:#fff;
+  }
+  .drop-main:hover{border-color:var(--ec-blue);}
+  .drop-main .d-ic{font-size:1.6rem;display:block;margin-bottom:8px;}
+  .drop-main small{display:block;font-size:.7rem;color:var(--ink-3);margin-top:5px;}
+  .drop-main.filled{border-style:solid;border-color:#bfe8d7;background:#f7fdf9;color:#0c6b48;cursor:default;}
+  .drop-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+  @media (max-width:700px){.drop-row{grid-template-columns:1fr;}}
+  .drop-opt{
+    border:2px dashed var(--line);border-radius:12px;padding:18px 14px;text-align:center;
+    font-size:.76rem;color:var(--ink-2);cursor:pointer;background:#fff;
+  }
+  .drop-opt:hover{border-color:var(--ec-blue);}
+  .drop-opt b{display:block;font-size:.78rem;margin-bottom:3px;}
+  .drop-opt small{font-size:.66rem;color:var(--ink-3);}
+  .setup-rail{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:sticky;top:26px;}
+  .setup-rail h3{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+  .rail-sect{font-size:.7rem;font-weight:700;color:var(--ink-3);letter-spacing:normal;margin:14px 0 8px;}
+  .radio-opt{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:pointer;font-size:.78rem;}
+  .radio-opt:has(input:checked){border-color:#c4e5f5;background:#f4fafd;}
+  .radio-opt input{margin-top:3px;accent-color:var(--ec-blue);}
+  .radio-opt small{display:block;font-size:.66rem;color:var(--ink-3);margin-top:1px;}
+  .rail-row{display:flex;align-items:center;justify-content:space-between;font-size:.78rem;padding:9px 0;border-top:1px solid #f2f6f8;}
+  .rail-row .val{font-size:.7rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border-radius:99px;padding:3px 10px;}
+  .start-btn{width:100%;margin-top:14px;border:none;border-radius:12px;padding:13px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(120deg,var(--ec-blue),var(--ec-green));color:#fff;transition:filter .15s ease;}
+  .start-btn:hover{filter:brightness(.93);}
+  .back-setup{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 14px;cursor:pointer;font-family:inherit;margin-bottom:14px;}
+  .back-setup:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+
+  /* teaching groups */
+  .groups{display:flex;align-items:center;gap:8px;margin:18px 0 6px;flex-wrap:wrap;}
+  .groups .g-label{font-size:.68rem;letter-spacing:normal;color:var(--ink-2);font-weight:600;margin-right:4px;}
+  .gchip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 15px;font-size:.8rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .gchip:not(.on):hover{border-color:var(--ec-blue);}
+  .gchip .n{font-size:.66rem;color:var(--ink-3);}
+  .gchip.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;}
+  .gchip.on .n{color:rgba(255,255,255,.75);}
+  .groups .g-note{font-size:.68rem;color:var(--ink-3);margin-left:4px;}
+
+  /* layout */
+  .work{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:14px;align-items:start;}
+  @media (max-width:1100px){.work{grid-template-columns:1fr;}}
+
+  .resp-list{display:flex;flex-direction:column;gap:12px;}
+  .resp{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+  .resp .r-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .resp .r-head .stu{width:30px;height:30px;border-radius:50%;background:#e6f4fb;color:var(--ec-blue-dark);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+  .resp .r-head b{font-size:.85rem;}
+  .resp .r-head .grp{font-size:.62rem;font-weight:600;border-radius:99px;padding:2px 8px;background:#f5f8fa;border:1px solid var(--line);color:var(--ink-3);}
+  .resp .r-head .score{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .resp .r-head .score input{width:52px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:.85rem;text-align:center;font-family:inherit;outline:none;}
+  .resp .r-head .score input:focus{border-color:var(--ec-blue);}
+  .resp .r-head .score small{font-size:.7rem;color:var(--ink-3);}
+  .resp .ans{font-size:.84rem;color:var(--ink-2);line-height:1.7;background:#fafcfd;border:1px solid #eef3f6;border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+  .resp .tags{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .resp .tags .t-label{font-size:.68rem;color:var(--ink-3);}
+  .skill{display:inline-flex;border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 12px;font-size:.72rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .skill:not(.on):hover{border-color:var(--ec-blue);}
+  .skill.on{background:#effaf5;border-color:#bfe8d7;color:var(--ec-green);font-weight:600;}
+  .skill.on.dev{background:#fdf6ec;border-color:#f3e3c3;color:#b07c10;}
+  /* Add-tag picker — deliberately NOT a text input anywhere in here. The only
+   * way to attach a tag is to click one of these buttons, and this list is
+   * exactly SKILL_TAGS (vendor-data.js), nothing else. */
+  .tag-menu{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.14);padding:8px;min-width:260px;z-index:30;display:flex;flex-direction:column;gap:1px;}
+  .tag-menu .tm-label{font-size:.64rem;color:var(--ink-3);font-weight:700;padding:4px 8px 8px;letter-spacing:normal;line-height:1.5;max-width:220px;}
+  /* Each row is ONE skill name plus TWO separate level buttons — picking a
+   * level is what commits the tag; there's no bare tag-name button that
+   * would force a hidden default level. */
+  .tag-menu .tm-row{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:8px;}
+  .tag-menu .tm-row:hover{background:#fafcfd;}
+  .tag-menu .tm-name{flex:1;font-size:.78rem;color:var(--ink);}
+  .tag-menu .tm-name small{display:block;font-size:.64rem;color:var(--ink-3);font-weight:400;}
+  .tag-menu .tm-lvl{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 10px;font-size:.68rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink-2);white-space:nowrap;}
+  .tag-menu .tm-lvl.secure:hover{background:#effaf5;border-color:#bfe8d7;color:var(--ec-green);}
+  .tag-menu .tm-lvl.dev:hover{background:#fdf6ec;border-color:#f3e3c3;color:#b07c10;}
+  .tag-menu .tm-empty{font-size:.74rem;color:var(--ink-3);padding:6px 9px;}
+
+  /* side panel */
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:sticky;top:26px;}
+  .panel h3{font-size:.9rem;font-weight:700;margin-bottom:12px;}
+  .panel .prog{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--ink-2);margin-bottom:14px;}
+  .panel .prog .bar{flex:1;height:7px;border-radius:99px;background:#dcedf8;overflow:hidden;}
+  .panel .prog .bar i{display:block;height:100%;width:40%;background:var(--ec-blue);border-radius:99px;transition:width .3s;}
+  .panel ul{list-style:none;display:flex;flex-direction:column;gap:9px;font-size:.76rem;color:var(--ink-2);}
+  .panel ul li{display:flex;gap:8px;align-items:flex-start;line-height:1.55;}
+  .panel ul li::before{content:"·";color:var(--ec-blue);font-weight:800;}
+  .panel .release{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px;}
+  .panel .release .rel-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .panel .release .rel-head b{font-size:.8rem;}
+  .panel .release .ped{font-size:.6rem;font-weight:700;color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;border-radius:99px;padding:2px 8px;}
+  .rel-opt{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;}
+  .rel-opt.on,.rel-opt:has(input:checked){border-color:#bfe8d7;background:#f7fdf9;}
+  .rel-opt input{margin-top:3px;accent-color:var(--ec-green);}
+  .rel-opt b{font-size:.76rem;display:block;}
+  .rel-opt small{font-size:.68rem;color:var(--ink-3);line-height:1.5;display:block;margin-top:2px;}
+  .panel .sms{
+    margin-top:16px;border-top:1px dashed var(--line);padding-top:14px;font-size:.74rem;color:var(--ink-2);line-height:1.65;
+    display:flex;gap:9px;align-items:flex-start;
+  }
+  .panel .sms .ok{color:var(--ec-green);font-weight:700;flex-shrink:0;}
+  .finish{width:100%;margin-top:14px;border:none;border-radius:12px;padding:12px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(120deg,var(--ec-blue),var(--ec-green));color:#fff;transition:filter .15s ease;}
+  .finish:hover{filter:brightness(.93);}
+
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
+  .toast.show{opacity:.94;}
+  footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
+  @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
+
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  /* ── group container ─────────────────────────────────────────────────────
+   * The Sayo pattern applied at the level it actually fits. Their "classroom"
+   * is a free-form room a commercial tutor mints at will, which is our 教學分組,
+   * not our 班別. Deliberately NOT stolen: room code, QR, invite link, Leave
+   * Room — membership comes from the class roster and nowhere else, which is
+   * what keeps 課室 a stable approval bound. */
+  .gh{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-bottom:18px;}
+  .gh .eyebrow{font-size:.66rem;font-weight:700;color:var(--ec-blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+  .gh h1{font-size:1.55rem;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+  .gh h1 .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+  .gh .stats{font-size:.8rem;color:var(--ink-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .gh .stats b{color:var(--ink);font-weight:700;}
+  .gh .stats .sep{color:var(--ink-3);}
+  .gh .goal{font-size:.78rem;color:var(--ink-3);margin-top:8px;line-height:1.6;max-width:52em;}
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-2);text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 15px;margin-bottom:18px;}
+  .back:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+
+  .tabs{display:flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:22px;flex-wrap:wrap;}
+  .tab{display:flex;align-items:center;gap:7px;border:none;background:none;border-radius:10px;padding:10px 17px;font-size:.82rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .tab:hover{background:#f2f6f9;}
+  .tab.on{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:700;}
+  .tab .cnt{font-size:.68rem;background:#eef2f6;color:var(--ink-2);border-radius:99px;padding:1px 8px;}
+  .tab.on .cnt{background:#c9e8f7;color:var(--ec-blue-dark);}
+  .pane{display:none;}
+  .pane.on{display:block;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:14px;}
+  .card h2{font-size:1rem;font-weight:800;margin-bottom:3px;}
+  .card .sect-sub{font-size:.76rem;color:var(--ink-3);margin-bottom:14px;line-height:1.6;max-width:52em;}
+  .gtable{width:100%;border-collapse:collapse;}
+  .gtable th{text-align:left;font-size:.66rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;padding:0 10px 9px;border-bottom:1px solid var(--line);}
+  .gtable td{padding:11px 10px;font-size:.8rem;border-bottom:1px solid #f2f5f8;vertical-align:middle;}
+  .gtable tr:last-child td{border-bottom:none;}
+  .gav{width:28px;height:28px;border-radius:50%;background:#e6f4fb;color:var(--ec-blue-dark);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;margin-right:9px;}
+  .seatno{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:.74rem;}
+  .g-empty{text-align:center;color:var(--ink-3);font-size:.78rem;padding:26px 0;line-height:1.8;}
+  .src-note{font-size:.72rem;color:var(--ink-3);margin-top:12px;line-height:1.6;}
+
+  .aw{position:relative;max-width:340px;}
+  .abtn{width:100%;margin-top:10px;border:1px dashed var(--line);background:transparent;border-radius:9px;padding:9px;font-size:.74rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .abtn:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+  .amenu{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.14);padding:6px;z-index:30;max-height:260px;overflow-y:auto;}
+  .amenu .aopt{display:block;width:100%;text-align:left;border:none;background:none;border-radius:7px;padding:8px 9px;font-size:.76rem;color:var(--ink-2);cursor:pointer;font-family:inherit;}
+  .amenu .aopt:hover{background:#f2f6f9;}
+  .amenu .aopt small{display:block;font-size:.66rem;color:var(--ink-3);margin-top:1px;}
+  .amenu .anone{font-size:.72rem;color:var(--ink-3);padding:6px 9px 8px;}
+  .att{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#effaf5;border:1px solid #bfe8d7;border-radius:9px;padding:9px 13px;margin-bottom:8px;font-size:.76rem;color:#0c6b48;}
+  .att.pending{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
+  .att b{font-weight:700;}
+  .att .when{color:#4a9b7c;font-size:.72rem;}
+  .att.pending .when{color:#a8843c;}
+  .att .x{margin-left:auto;border:none;background:none;color:inherit;text-decoration:underline;cursor:pointer;font-size:.72rem;font-family:inherit;padding:0;}
+</style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+    <div class="logo-sub">教學工具平台 · POC v0.1</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <h6>教學工具</h6>
+      <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
+      <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>EdMarket 應用程式</a>
+      <a href="marking.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>AI 批改</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
+    </div>
+    <div class="nav-group">
+      <h6>課堂與學生</h6>
+      <a href="groups.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>教學分組</a>
+      <a href="trial-invites.html" data-feature="vendorInitiatedTrial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3 3-2-2"/></svg>試用邀請</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材檢視</a>
+      <a href="insights.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg>學習紀錄庫</a>
+    </div>
+  </nav>
+  <div class="user">
+    <div class="avatar">陳</div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
+  </div>
+</aside>
+
+<main class="main">
+  <a class="back" href="groups.html">← 返回 <span id="backClass"></span></a>
+
+  <section class="gh">
+    <div class="eyebrow" id="ghKind">教學分組</div>
+    <h1><span class="dot" id="ghDot"></span><span id="ghName"></span></h1>
+    <div class="stats" id="ghStats"></div>
+    <div class="goal" id="ghGoal"></div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab on" data-p="members" onclick="showPane('members')">👥 成員 <span class="cnt" id="cMembers">0</span></button>
+    <button class="tab" data-p="material" onclick="showPane('material')">📄 教材 <span class="cnt" id="cMaterial">0</span></button>
+    <button class="tab" data-p="tools" onclick="showPane('tools')">🧩 教學工具 <span class="cnt" id="cTools">0</span></button>
+    <button class="tab" data-p="perf" onclick="showPane('perf')">📈 表現</button>
+  </div>
+
+  <div class="pane on" id="pane-members">
+    <div class="card">
+      <h2>學生名單</h2>
+      <div class="sect-sub" id="memSub"></div>
+      <table class="gtable"><thead><tr><th>學生</th><th>班號</th><th>其他分組的工具</th></tr></thead>
+        <tbody id="memBody"></tbody></table>
+      <div class="src-note">名冊由學校帳戶管理系統維護。學生轉班或離校時會自動退出，指派給他的工具亦同時停用。</div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-material">
+    <div class="card">
+      <h2>教材與練習</h2>
+      <div class="sect-sub">從你的教材庫指派。指派後學生即時看到，不需任何審批。</div>
+      <div id="matList"></div>
+      <div class="aw">
+        <div id="matMenu"></div>
+        <button class="abtn" onclick="toggleMenu('mat')">📄 從教材庫指派</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-tools">
+    <div class="card">
+      <h2>教學工具</h2>
+      <div class="sect-sub">由校外供應商提供的工具。指派後會通知資訊科技統籌（馮 Sir），經核准才會啟用。</div>
+      <div id="toolList"></div>
+      <div class="aw">
+        <div id="toolMenu"></div>
+        <button class="abtn" onclick="toggleMenu('tool')">🧩 指派教學工具</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-perf">
+    <div class="card">
+      <h2>表現</h2>
+      <div class="sect-sub">按本組成員彙整的完成度與批改結果。</div>
+      <div class="g-empty">尚未有已批改的課業，暫時未有表現數據。<br>批改完成後，這裏會顯示完成度與常見錯誤。</div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
+<script src="vendor-data.js"></script>
+<script>
+const MY_TEACHER_ID = 'T1001';
+const qs = new URLSearchParams(location.search);
+const classId = qs.get('c') || '2b';
+const groupId = qs.get('g') || 'core';
+const WHOLE = '__whole_class__';
+const cls = CLASSES[classId];
+/* 全班 is a real scope, not a group that happens to contain everyone — so it
+ * gets the same container rather than a special case bolted onto the board. */
+const isWhole = groupId === WHOLE;
+const grp = isWhole
+  ? {id:WHOLE, name:'全班', color:'var(--ec-blue)', goal:'整班一起使用的教材與工具，例如分級閱讀庫。指派給全班，不必逐組重複。'}
+  : (cls && cls.groups.find(g=>g.id===groupId)) || null;
+
+const MATERIAL_CATALOG = [
+  {name:'支援組工作紙 v2 · 分層提問版', typeLabel:'工作紙'},
+  {name:'《背影》單元教案 v3 · 驗證報告', typeLabel:'驗證報告'},
+  {name:'散文閱讀理解工作紙（組合版）', typeLabel:'工作紙'},
+  {name:'二十四節氣 — 文學意象與地球科學', typeLabel:'跨學科教材'},
+];
+let materials = [];
+let openMenu = null;   // 'mat' | 'tool' | null
+
+function members(){
+  const all = (cls.students||[]).filter(s=>!s.left);
+  return (isWhole ? all : all.filter(s=>s.g===groupId)).sort((a,b)=>(a.no||0)-(b.no||0));
+}
+function tools(){
+  const out=[];
+  VENDORS.forEach(v=>{
+    (v.grants||[]).forEach(g=>{ if(g.classId===classId && g.groupId===groupId) out.push({v, status:'active', since:g.since}); });
+    (v.pending||[]).forEach(p=>{ if(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID) out.push({v, status:'pending'}); });
+  });
+  return out;
+}
+/* Which OTHER scopes in this class already give a student a tool — the honest
+ * answer to "why can she use it and he can't", shown where she is looking. */
+function otherToolsFor(sid){
+  const out=[];
+  VENDORS.forEach(v=>{
+    (v.grants||[]).forEach(g=>{
+      if(g.classId!==classId || g.groupId===groupId) return;
+      const inIt = g.groupId===WHOLE || (cls.students||[]).some(s=>s.sid===sid && s.g===g.groupId);
+      if(inIt) out.push(v.product);
+    });
+  });
+  return out;
+}
+
+function renderHeader(){
+  document.getElementById('backClass').textContent = cls.className + ' 分組版面';
+  document.getElementById('ghKind').textContent = isWhole ? '課堂範圍' : '教學分組';
+  document.getElementById('ghDot').style.background = grp.color;
+  document.getElementById('ghName').textContent = grp.name;
+  document.getElementById('ghGoal').textContent = grp.goal || '';
+  /* subjectLabel is a composed string ("中文 · 35 人 · 任教中") built for the class
+   * switcher; taking it whole repeated the headcount and appended 任教中 as though
+   * it described the group. Only the subject is used. */
+  const subject = String(cls.subjectLabel||'').split('·')[0].trim();
+  const n = members().length, t = tools().length;
+  document.getElementById('ghStats').innerHTML =
+    `<span><b>${n}</b> 位學生</span><span class="sep">·</span>`
+  + `<span>${cls.className}${subject?' · '+subject:''}</span>`;
+  document.getElementById('cMembers').textContent = n;
+  document.getElementById('cMaterial').textContent = materials.length;
+  document.getElementById('cTools').textContent = t;
+}
+
+function renderMembers(){
+  document.getElementById('memSub').textContent = isWhole
+    ? '本班全部在讀學生。名單來自班別名冊，不能在此新增或移除。'
+    : '名單來自班別名冊，不能在此新增或移除。要調整組別，請回到分組版面拖放學生。';
+  const rows = members();
+  document.getElementById('memBody').innerHTML = rows.length ? rows.map(s=>{
+    const other = otherToolsFor(s.sid);
+    return `<tr>
+      <td><span class="gav">${s.n[0]}</span>${s.n}</td>
+      <td class="seatno">${s.no!=null?String(s.no).padStart(2,'0'):'—'}</td>
+      <td style="color:var(--ink-3);font-size:.74rem;">${other.length?other.join('、'):'—'}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="3" class="g-empty">本組尚未有學生。回到分組版面拖放學生加入。</td></tr>';
+}
+
+const CK = '<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>';
+
+function renderMaterial(){
+  document.getElementById('matList').innerHTML = materials.length
+    ? materials.map((m,i)=>`<div class="att">${CK} <b>${m.name}</b><span class="when">· ${m.at}</span>
+        <button class="x" onclick="removeMaterial(${i})">移除</button></div>`).join('')
+    : '<div class="g-empty">尚未指派任何教材。</div>';
+  const taken = materials.map(m=>m.name);
+  const opts = MATERIAL_CATALOG.filter(m=>!taken.includes(m.name));
+  document.getElementById('matMenu').innerHTML = openMenu==='mat' ? `<div class="amenu">${
+    opts.length ? opts.map(m=>`<button class="aopt" onclick="assignMaterial('${m.name.replace(/'/g,"\\'")}')">${m.name}<small>${m.typeLabel}</small></button>`).join('')
+                : '<div class="anone">教材庫的項目已全部指派</div>'}</div>` : '';
+}
+
+function renderTools(){
+  const list = tools();
+  document.getElementById('toolList').innerHTML = list.length ? list.map(t=>{
+    const p = t.status==='pending';
+    return `<div class="att${p?' pending':''}">${p?'⏳':CK}
+      ${p?'已申請：':'已啟用：'}<b>${t.v.product}</b>
+      <span class="when">· ${p?'已通知馮 Sir，審批中':t.since+' 起'}</span>
+      <button class="x" onclick="removeTool('${t.v.id}')">${p?'取消申請':'停用'}</button></div>`;
+  }).join('') : '<div class="g-empty">尚未指派任何教學工具。</div>';
+  const taken = list.map(t=>t.v.id);
+  const opts = VENDORS.filter(v=>!taken.includes(v.id));
+  /* Unapproved tools are offered, not hidden and not greyed out. Discovery is
+   * the point of the platform; approval is latency, not a wall. */
+  document.getElementById('toolMenu').innerHTML = openMenu==='tool' ? `<div class="amenu">${
+    opts.length ? opts.map(v=>`<button class="aopt" onclick="assignTool('${v.id}')">${v.product}<small>${v.name}${(v.grants||[]).length?'':' · 學校未訂用，需經審批'}</small></button>`).join('')
+                : '<div class="anone">已指派所有可用工具</div>'}</div>` : '';
+}
+
+function renderAll(){ renderHeader(); renderMembers(); renderMaterial(); renderTools(); }
+
+function toggleMenu(which){ openMenu = openMenu===which ? null : which; renderMaterial(); renderTools(); }
+document.addEventListener('click', e=>{ if(openMenu && !e.target.closest('.aw')){ openMenu=null; renderMaterial(); renderTools(); } });
+
+function assignMaterial(name){ materials.push({name, at:'剛剛'}); openMenu=null; renderAll(); toast('已指派：'+name); }
+function removeMaterial(i){ const n=materials[i].name; materials.splice(i,1); renderAll(); toast('已移除：'+n); }
+
+function assignTool(vendorId){
+  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
+  const ms = members();
+  (v.pending = v.pending || []).push({
+    id:'r'+Date.now(), teacherId:MY_TEACHER_ID, classId, groupId,
+    group:`${grp.name}（${ms.length} 人）· ${cls.className}`,
+    memberSnapshot:ms.map(s=>s.n), headcount:ms.length,
+    tier:'Tier 1 · 基本資料', src:isWhole ? '來自全班指派' : '來自教學分組',
+  });
+  openMenu=null; renderAll();
+  toast(`已為「${grp.name}」申請 ${v.product}，馮 Sir 會收到通知`);
+}
+function removeTool(vendorId){
+  const v = VENDORS.find(x=>x.id===vendorId); if(!v) return;
+  const wasPending = (v.pending||[]).some(p=>p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID);
+  const who = isWhole ? '全班學生' : '此組學生';
+  if(!wasPending && !confirm(`停用後，${who}會即時失去「${v.product}」的存取權。確定嗎？`)) return;
+  v.pending = (v.pending||[]).filter(p=>!(p.classId===classId && p.groupId===groupId && p.teacherId===MY_TEACHER_ID));
+  v.grants  = (v.grants ||[]).filter(g=>!(g.classId===classId && g.groupId===groupId));
+  if(typeof publishReleases === 'function') publishReleases();
+  renderAll();
+  toast(wasPending ? `已取消 ${v.product} 的申請` : `已停用 ${v.product}`);
+}
+
+function showPane(p){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on', b.dataset.p===p));
+  document.querySelectorAll('.pane').forEach(el=>el.classList.toggle('on', el.id==='pane-'+p));
+}
+
+let tt;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+
+if(!grp){
+  document.querySelector('.main').innerHTML =
+    '<div class="card"><h2>找不到這個分組</h2><div class="sect-sub">它可能已被刪除。<a href="groups.html">返回分組版面</a></div></div>';
+} else {
+  renderAll();
+}
+</script>
+<script src="usage-modal.js"></script>
+<script src="demo-nav.js"></script>
+</body>
+</html>

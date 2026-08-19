@@ -32,7 +32,7 @@ const CSS = `
  * what each flag covers and why. */
 const PAGES = [
   {group:'🧭 入口', items:[
-    ['poc-hub.html','各科 POC 導覽',''],
+    ['poc-hub.html','各科 POC 導覽','','pocHub'],
   ]},
 
   /* ── the release flow, in order ── */
@@ -80,7 +80,7 @@ const PAGES = [
 
   /* ── platform operations: who may enter the ecosystem at all ── */
   {group:'🤝 供應商關係主任（方小姐 · 平台營運）', items:[
-    ['vetting.html','供應商審核（含資料需求申報）','y'],
+    ['vetting.html','供應商審核（含資料需求申報）','y','vendorVetting'],
   ]},
   {group:'🏷 內容審核員（平台營運）', items:[
     ['tags.html','標籤審核與管理','r','contentModeration'],

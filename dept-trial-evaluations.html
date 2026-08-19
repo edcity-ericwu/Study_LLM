@@ -149,7 +149,7 @@ function renderTrials(){
       stateChip = `<span class="state-chip progress">⏳ 待你評估 · 全科訂閱在此之前不會生效</span>`;
       body = `<p>供應商申請中文科全科採用。按管治規則，<b>全科訂閱須先由你實測評估</b>：以真實學生作文檢驗回饋質素，再向資訊科技統籌（訂閱管理）提交建議。</p>`;
       btns = `<button class="btn" onclick="startEval('${t.id}')">開始評估</button>
-              <a class="btn ghost" href="vetting.html" style="text-decoration:none;display:inline-block;">查看合規資料 →</a>`;
+              <a class="btn ghost" href="vetting.html" data-feature="vendorVetting" style="text-decoration:none;display:inline-block;">查看合規資料 →</a>`;
     } else if(t.status==='progress'){
       stateChip = `<span class="state-chip progress">🧪 實測評估中 · 第 3/7 天</span>`;
       body = `<p>正以真實學生作文檢驗回饋質素。完成一週後，請在下方記錄評估結果：通過會交資訊科技統籌批出全科訂閱，不通過須說明原因，並進入冷靜期。</p>`;
@@ -163,7 +163,7 @@ function renderTrials(){
       stateChip = `<span class="state-chip declined">✕ 評估不通過</span>`;
       body = `<div class="reason-box">評估不通過原因：${t.declineReason}</div>
               <div class="cooldown-note">🔒 冷靜期至 ${t.cooldownUntil}，在此日期前，${cjkPad(t.vendor)}不能就「${t.product}」再次申請全科評估。</div>`;
-      btns = `<button class="btn ghost" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新申請全科評估')">供應商嘗試重新申請（示範）</button>`;
+      btns = `<button class="btn ghost" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新申請全科評估')">供應商嘗試重新申請</button>`;
     }
     return `<div class="trial ${t.status==='pending'?'':t.status}" id="trial-${t.id}">
       <div class="t-ic">🧪</div>

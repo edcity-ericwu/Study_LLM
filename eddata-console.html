@@ -682,7 +682,7 @@ function renderTrials(){
       foot = `<div class="t-foot">
         <span class="tchip cooldown">🔒 冷靜期至 ${t.cooldownUntil}</span>
         <span class="cd-note">在此日期前，${cjkPad(t.vendor)}不能就同一組別再次發起試用請求。</span>
-        <button class="act" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新提交')">供應商嘗試重新提交（示範）</button>
+        <button class="act" onclick="toast('🔒 冷靜期至 ${t.cooldownUntil}，暫時不能重新提交')">供應商嘗試重新提交</button>
       </div>`;
     } else if(t.status==='graduated'){
       foot = `<div class="t-foot"><span class="cd-note">已於「供應商關係」分頁提出正式申請，等候你選定資料層級。</span></div>`;

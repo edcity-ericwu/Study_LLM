@@ -34,17 +34,17 @@ const FEATURE_FLAGS = {
 
   // 校務紀錄組身份審批（2026-07-22 新增，取代誤植於 EdData 的同一職能）。
   // 涉及頁面：records-console.html（整頁）。
-  recordsApproval: true,
+  recordsApproval: false,   // off 2026-08-18 — not in the coming discussions
 
   // 科主任視圖 — 科組統計。
   // 涉及頁面：dept.html（整頁）。
-  subjectPanelView: true,
+  subjectPanelView: false,  // off 2026-08-18 — panel head is out of the release chain
 
   // 內容審核員視圖 — 標籤審核與管理。
   // 涉及頁面：tags.html（整頁）。
   // 暫時關閉（2026-07-30）：這個角色與相關動作的實際定位尚未想清楚，先從
   // 導覽中隱藏，頁面建置內容完全保留。
-  contentModeration: true,
+  contentModeration: false, // off 2026-08-18 — not in the coming discussions
 
   // Reviewer-only meta annotations — build-status ribbons ("🟡 提案中" /
   // "🔴 待決策"), data-source disclosures, and taxonomy-dependency notes.
@@ -83,6 +83,18 @@ const FEATURE_FLAGS = {
   // corner — notably the worksheet panel's 交給「教材檢視」 button on chat.html.
   // Set false to hide it suite-wide.
   demoNav: true,
+
+  // 供應商審核（合規閘與適配資料）— vetting.html.
+  // Off 2026-08-18: the vetting process is not in the coming discussions. The
+  // tier declaration it captures still binds downstream, so nothing in the
+  // release flow breaks; the two screens that linked here fall back to plain
+  // text rather than pointing at a hidden page.
+  vendorVetting: false,
+
+  // 🧭 各科 POC 導覽 — poc-hub.html, the cross-subject landing page.
+  // Off 2026-08-18: the discussion is about one subject's flow, and the hub
+  // invites a conversation about other subjects that is not on the agenda.
+  pocHub: false,
 };
 
 function featureOn(key){

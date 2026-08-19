@@ -359,7 +359,7 @@ function renderClock(){
     <span class="clk-lbl">示範日期</span>
     <b>${t}</b>
     ${CLOCK_STEPS.map(s=>`<button class="clk-btn${s.d===t?' on':''}" onclick="jumpTo('${s.d}')">${s.label}（${s.d}）</button>`).join('')}
-    <span class="clk-note">用於示範到期行為：日期一過，待預算與授權會實際失效，不只是畫面上的文字。</span>
+    <span class="clk-note">日期一過，待預算項目與相關授權即會失效，單一登入亦停止授權。</span>
   </div>`;
 }
 function jumpTo(d){

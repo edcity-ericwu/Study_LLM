@@ -196,6 +196,7 @@
       <thead><tr><th>學生</th><th>班別</th><th>狀態</th></tr></thead>
       <tbody id="acctTbody"></tbody>
     </table>
+    <div class="readonly-note" id="provNote" style="margin-top:12px;"></div>
     <div class="readonly-note" style="margin-top:12px;">目前層級為 <b>Tier 1 · 基本資料</b>，只提供姓名與班別。學校不會傳送能力分組或程度資料；如工具需要起始程度，請在工具內自行評估。學號、聯絡方式等進一步資料維持遮蔽狀態，除非學校日後批出更高層級。</div>
   </section>
 
@@ -231,6 +232,19 @@ const SEED_ACCOUNTS = ['王思穎','林一心','徐朗','邵浩霖','梁俊熙',
 /* Confirming deletion is the vendor's act, not the school's. A receipt the
  * school writes on its own is a school asserting something about someone else's
  * systems — worth nothing to a regulator. Two parties, two signatures. */
+/* Stated on the vendor's own screen, because it explains why the account list
+ * looks the way it does — a JIT vendor sees it fill up as students arrive
+ * rather than all at once on approval. */
+function renderProvNote(){
+  const host = document.getElementById('provNote');
+  if(!host) return;
+  const prov = (typeof DemoState !== 'undefined') ? DemoState.get('provisioning', null) : null;
+  const jit = prov ? prov[MY_VENDOR_ID]==='jit' : (MY_VENDOR_ID==='diandu');
+  host.innerHTML = jit
+    ? 'ℹ️ 你申報的是<b>「首次登入時建立」</b>：學校核准後不會即時收到名單，學生首次以教育城帳戶登入時，本清單才會加入該名學生。未登入的學生，你不會持有其資料。'
+    : 'ℹ️ 你申報的是<b>「核准時同步名單」</b>：學校核准後即同步整份名單，包括尚未使用工具的學生。此為較寬的要求，已在供應商審核時說明理由。';
+}
+
 function renderDeletionRequests(){
   const wrap = document.getElementById('delList');
   if(!wrap) return;
@@ -272,6 +286,7 @@ function loadAccounts(){
 }
 let accounts = loadAccounts();
 renderDeletionRequests();
+renderProvNote();
 let syncLog = [
   {ic:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg>', text:'同步完成：存取名單 9 人，無變動', time:'2026-07-15 03:00'},
   {ic:'⚠', text:'同步完成：1 名學生因轉班，帳戶存取已自動移除（詳見學校帳戶管理系統名冊）', time:'2026-05-10 03:00'},

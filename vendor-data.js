@@ -507,6 +507,11 @@ function recordGroupOverride(sid, groupId){
 function releasedFor(vendorId){
   const v = VENDORS.find(x => x.id === vendorId);
   if(!v) return [];
+  /* A JIT vendor receives a student only once she has actually signed in — the
+   * approval authorises the release, the sign-in performs it. A roster vendor
+   * receives the whole approved scope at approval, because its tool cannot
+   * function without the list. */
+  const jit = provisioningOf(vendorId) === 'jit';
   const out = [];
   (v.grants||[]).forEach(g => {
     if(!g.classId) return;
@@ -516,6 +521,7 @@ function releasedFor(vendorId){
       : wholeClassMembers(g.classId);
     members.forEach(st => {
       if(st.left) return;                                   // left the school
+      if(jit && !hasSeat(vendorId, st.sid)) return;         // not yet arrived
       out.push({ n:st.n, cls:roster.className });
     });
   });
@@ -523,9 +529,13 @@ function releasedFor(vendorId){
 }
 function publishReleases(){
   if(typeof DemoState === 'undefined') return;
-  const map = {};
-  VENDORS.forEach(v => { map[v.id] = releasedFor(v.id); });
+  const map = {}, prov = {};
+  VENDORS.forEach(v => { map[v.id] = releasedFor(v.id); prov[v.id] = provisioningOf(v.id); });
   DemoState.set('releases', map);
+  /* Published rather than looked up: the vendor console has no access to the
+   * shared model by design, and it should not gain one just to render a note
+   * about its own provisioning mode. */
+  DemoState.set('provisioning', prov);
 }
 
 function seatsLeft(vendorId, schoolId){
@@ -627,7 +637,10 @@ const VENDORS = [
     id:'diandu', name:'點讀教育', product:'中文分級閱讀庫',
     vetting:{status:'certified', label:'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 已通過基準認證', note:'合規閘 5/5 通過'},
     grants:[
-      {group:'全班 · 中一甲班', classId:null, groupId:null, memberSnapshot:null, headcount:35, teacherId:'T1002', tier:'Tier 1 · 基本資料', since:'2026-07-15'},
+      /* classId/groupId were null here, so this grant could never release a single
+       * student — releasedFor() skips a grant with no class. It read as a working
+       * whole-class grant on every screen and produced nothing. */
+      {group:'全班 · 中一甲班', classId:'1a', groupId:'__whole_class__', memberSnapshot:null, headcount:35, teacherId:'T1002', tier:'Tier 1 · 基本資料', since:'2026-07-15'},
     ],
     /* Second-class example: 陳凱怡老師 also teaches 中一丙班, and has a request pending
      * there — this is what makes multi-class support real rather than cosmetic. */
@@ -917,11 +930,41 @@ const DATA_TIERS = {
   2:{label:'Tier 2 · 敏感個人資料',  fields:'加上聯絡方式、特殊教育需要標記'},
   3:{label:'Tier 3 · 表現數據',      fields:'加上評估結果與學習紀錄'},
 };
+/* provisioning — when a student's record may reach the vendor. Declared at
+ * vetting alongside the tier, and binding the same way.
+ *
+ * Metering happens at first sign-in so that an unused release costs the school
+ * nothing. But under blanket pre-provisioning the vendor still *holds* the name
+ * of a child who never opened the tool — the money was metered at use and the
+ * data was not. The two should match wherever they can.
+ *
+ *   'jit'    — nothing at approval. The record is created from the SSO
+ *              assertion the first time the student actually arrives. The
+ *              vendor ends up holding records only for real users.
+ *   'roster' — the class list syncs on approval, because the tool genuinely
+ *              cannot work without it: a marking dashboard has to show a
+ *              teacher her class before any student has submitted anything.
+ *
+ * 'roster' is the wider ask, so it is the one that needs justifying at vetting. */
 const TIER_DECLARATIONS = {
-  zhixie:       {tier:1, declaredOn:'2026-06-28', why:'只需辨識學生身分以配對其作文與回饋紀錄。', verified:true},
-  diandu:       {tier:1, declaredOn:'2026-07-02', why:'只需辨識學生身分以記錄閱讀進度。', verified:true},
-  unknownvendor:{tier:2, declaredOn:null, why:'聲稱需要特殊教育需要標記以調整題目難度，未提供說明文件。', verified:false},
+  zhixie:       {tier:1, provisioning:'roster', declaredOn:'2026-06-28', verified:true,
+                 why:'只需辨識學生身分以配對其作文與回饋紀錄。',
+                 provisioningWhy:'教師評改介面須在學生提交前就顯示全組名單，否則無法安排批改次序。'},
+  diandu:       {tier:1, provisioning:'jit', declaredOn:'2026-07-02', verified:true,
+                 why:'只需辨識學生身分以記錄閱讀進度。',
+                 provisioningWhy:'學生首次登入時才建立紀錄；未登入的學生，本系統不會持有其姓名。'},
+  unknownvendor:{tier:2, provisioning:'roster', declaredOn:null, verified:false,
+                 why:'聲稱需要特殊教育需要標記以調整題目難度，未提供說明文件。',
+                 provisioningWhy:'聲稱需預先取得全班名單以預先分析，未說明原因。'},
 };
+const PROVISIONING_LABEL = {
+  jit:    {short:'首次登入時建立', long:'學生首次登入時才建立紀錄——未登入的學生，供應商不會持有其資料'},
+  roster: {short:'核准時同步名單', long:'核准後即同步整份名單——包括尚未使用該工具的學生'},
+};
+function provisioningOf(vendorId){
+  const d = TIER_DECLARATIONS[vendorId];
+  return (d && d.provisioning) || 'jit';   // absent declaration = the narrower one
+}
 function declaredTier(vendorId){
   const d = TIER_DECLARATIONS[vendorId];
   return d ? DATA_TIERS[d.tier] : null;

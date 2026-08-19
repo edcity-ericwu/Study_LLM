@@ -220,7 +220,9 @@
   .decl-line{background:#f7fbfe;border:1px solid #c4e5f5;border-radius:9px;padding:8px 12px;margin:8px 0;font-size:.72rem;color:var(--ec-blue-dark);line-height:1.55;}
   .decl-line.unver{background:#fdf6e3;border-color:#efdcb0;color:#8a5a09;}
   .decl-line b{display:block;}
-  .decl-line span{color:var(--ink-3);}
+  .decl-line span{color:var(--ink-3);display:block;}
+  .decl-line .dl-prov{margin-top:3px;}
+  .decl-line .dl-prov b{display:inline;}
   .decl-line.unver span{color:#a8843c;}
   .agr-row{background:#effaf5;border:1px solid #bfe8d7;border-radius:9px;padding:9px 13px;margin-bottom:10px;font-size:.74rem;color:#0c6b48;line-height:1.6;}
   .agr-row b{display:block;margin-bottom:2px;}
@@ -475,9 +477,11 @@ function declaredRowHtml(vendorId){
   const t = declaredTier(vendorId);
   const d = TIER_DECLARATIONS[vendorId];
   if(!t) return '';
+  const p = PROVISIONING_LABEL[provisioningOf(vendorId)];
   return `<div class="decl-line${d.verified?'':' unver'}">
     <b>供應商申報需要：${t.label}</b>
     <span>${d.verified ? '審核時已核實' : '⚠ 審核時未核實此申報'} · 你可以發放較低層級，但不應高於此上限</span>
+    <span class="dl-prov"><b>建立紀錄時機：</b>${p.long}</span>
   </div>`;
 }
 

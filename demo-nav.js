@@ -15,9 +15,6 @@ const CSS = `
   font-size:.8rem;color:#55636f;text-decoration:none;}
 .dn-panel a:hover{background:#f2f6f9;}
 .dn-panel a.here{background:#e6f4fb;color:#0072ab;font-weight:600;}
-.dn-panel .tag{margin-left:auto;font-size:.58rem;font-weight:700;border-radius:99px;padding:2px 7px;white-space:nowrap;flex-shrink:0;}
-.dn-panel .tag.y{color:#8a6d00;background:#fdf1c7;}
-.dn-panel .tag.r{color:#b91c1c;background:#fee2e2;}
 .dn-panel .legend{font-size:.62rem;color:#8a97a3;margin-top:10px;padding:8px 4px 0;border-top:1px solid #e6ebf0;line-height:1.6;}
 `;
 /* Ordered to follow the data-release flow, so a walkthrough reads as one story
@@ -107,10 +104,16 @@ function init(){
   const flagOn = k => (typeof featureOn === 'function') ? featureOn(k) : true;
   const visiblePages = PAGES.map(g=>({group:g.group, items:g.items.filter(([,,,flag])=>!flag || flagOn(flag))}))
     .filter(g=>g.items.length);
-  panel.innerHTML = visiblePages.map(g=>'<h6>'+g.group+'</h6>'+g.items.map(([f,n,t])=>
-    '<a href="'+f+'"'+(f===here?' class="here"':'')+'>'+n+(t?'<span class="tag '+t+'">'+(t==='y'?'🟡 提案中':'🔴 待決策')+'</span>':'')+'</a>'
+  /* Build-status tags removed from this panel 2026-08-18. They answered a
+   * question nobody in the room is asking — 「是否已建置」 — while sitting on
+   * top of the one this panel exists for, which is 「我現在在誰的畫面」. The
+   * third element of each item is kept as a record of that status; it just is
+   * not rendered here. Page-level ribbons still carry it when protoAnnotations
+   * is on. */
+  panel.innerHTML = visiblePages.map(g=>'<h6>'+g.group+'</h6>'+g.items.map(([f,n])=>
+    '<a href="'+f+'"'+(f===here?' class="here"':'')+'>'+n+'</a>'
   ).join('')).join('')
-  + '<div class="legend">🟡 提案中＝設計方案，未建置　🔴 待決策＝尚待管治／領導層決定<br>正式產品不會顯示此導覽。</div>';
+  + '<div class="legend">正式產品不會顯示此導覽。</div>';
   // Scroll the current page's entry into view on every open, so the panel
   // doesn't dump you back at the top each time — it stays oriented on where
   // you actually are, not just where the list happens to start.

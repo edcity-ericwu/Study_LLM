@@ -85,6 +85,7 @@
   .trend-badge{font-size:.64rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap;}
   .trend-badge.up{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .trend-badge.down{color:var(--ec-red);background:#fdecec;border:1px solid #f3c6c9;}
+  .trend-badge.gone{color:var(--ink-3);background:#f2f5f8;border:1px solid var(--line);}
   .sparkline-row{display:flex;align-items:center;gap:14px;margin:14px 0 10px;}
   .sparkline-row svg{flex-shrink:0;}
   .sc-stat{font-size:.72rem;color:var(--ink-2);line-height:1.7;}
@@ -174,7 +175,7 @@
 
   <div class="data-note">
     📊 本頁的活躍人數、趨勢與最後使用日期為<b>示範數據</b>，用來示意「使用報告」畫面建成後的樣貌——目前 vendor-data.js 並無任何登入或互動紀錄可供讀取，這是尚待建置的資料來源，非真實使用紀錄。<br>
-    只列出<b>已有核准存取</b>的工具（智寫科技、點讀教育）；仍在待審或未核准的工具（如字詞通 AI）沒有使用可言，本頁不會顯示。訂閱管理「現有訂閱」分頁中另外幾項工具（AI 中文作文批改、普通話朗讀評測、古典詩詞互動課件）目前也沒有對應的使用數據模型，暫不納入本頁。
+    只列出<b>曾獲核准存取</b>的工具（智寫科技、點讀教育）；仍在待審或從未核准的工具（如字詞通 AI）沒有使用可言，本頁不會顯示。存取結束後，該工具的歷史數據仍會保留在此，並標示為「已撤銷存取」——續期或不續期的判斷，往往正需要看它停用前的實際使用情況。訂閱管理「現有訂閱」分頁中另外幾項工具（AI 中文作文批改、普通話朗讀評測、古典詩詞互動課件）目前也沒有對應的使用數據模型，暫不納入本頁。
   </div>
 
   <div class="summary-grid" id="summaryGrid"></div>
@@ -233,10 +234,17 @@ const USAGE_DATA = {
 
 function severityClass(pct){ return pct>=70 ? 'ok' : (pct>=40 ? 'warn' : 'danger'); }
 
+/* `max` is the approved headcount, which can legitimately be 0 — a revoked or
+ * lapsed grant leaves historical usage with nobody currently approved — and it
+ * can also be smaller than a past week's peak. Dividing by it unguarded turned
+ * every point into -Infinity and collapsed the line to nothing; scaling to it
+ * alone would push an above-cap week outside the box. Scale to whichever is
+ * larger, and never to zero. */
 function sparklineSVG(values, max, color){
   const w=150, h=42, pad=5;
+  const top = Math.max(1, Number(max) || 0, ...values);
   const stepX = (w-2*pad)/(values.length-1);
-  const y = v => h-pad - (v/max)*(h-2*pad);
+  const y = v => h-pad - (v/top)*(h-2*pad);
   const pts = values.map((v,i)=>`${pad+i*stepX},${y(v)}`).join(' ');
   const dots = values.map((v,i)=>`<circle cx="${pad+i*stepX}" cy="${y(v)}" r="2.8" fill="${color}"/>`).join('');
   return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
@@ -250,27 +258,35 @@ function renderSummaryCards(){
   grid.innerHTML = VENDORS.filter(v=>USAGE_DATA[v.id]).map(v=>{
     const u = USAGE_DATA[v.id];
     const usage = vendorUsage(v.id);
+    /* Access can end while the usage history remains — and that history is
+     * exactly what is worth looking at come renewal. What must not happen is a
+     * card implying the tool is still in use: with nobody approved, the rate is
+     * meaningless and the teacher flag would read 仍在使用 about a tool nobody
+     * can open. */
+    const revoked = usage.students === 0;
     const lastWeekActive = u.weeklyActiveStudents[u.weeklyActiveStudents.length-1];
     const pct = usage.students ? Math.round((lastWeekActive/usage.students)*100) : 0;
     const trendUp = lastWeekActive >= u.weeklyActiveStudents[0];
-    const color = trendUp ? '#00AC6C' : '#ED1A2E';
+    const color = revoked ? '#8a97a3' : (trendUp ? '#00AC6C' : '#ED1A2E');
     const teacherActiveLastWeek = u.weeklyActiveTeachers[u.weeklyActiveTeachers.length-1];
-    const teacherFlag = teacherActiveLastWeek < usage.teachers
+    const teacherFlag = revoked
+      ? `<span class="sc-teacher-flag warn">存取已結束，以下為歷史數據</span>`
+      : (teacherActiveLastWeek < usage.teachers
       ? `<span class="sc-teacher-flag warn">⚠ 負責老師本週未登入使用</span>`
-      : `<span class="sc-teacher-flag ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 負責老師本週仍在使用</span>`;
+      : `<span class="sc-teacher-flag ok"><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 負責老師本週仍在使用</span>`);
     return `
     <div class="sum-card">
       <div class="sc-head">
         <div><b>${v.name}</b><span class="sc-vend">${v.product}</span></div>
-        <span class="trend-badge ${trendUp?'up':'down'}">${trendUp?'↑ 使用上升':'↓ 使用下滑'}</span>
+        <span class="trend-badge ${revoked?'gone':(trendUp?'up':'down')}">${revoked?'已撤銷存取':(trendUp?'↑ 使用上升':'↓ 使用下滑')}</span>
       </div>
       <div class="sparkline-row">
         ${sparklineSVG(u.weeklyActiveStudents, usage.students, color)}
-        <div class="sc-stat">近 4 週活躍學生人數<br><b>${lastWeekActive}</b> / ${usage.students} 人（已核准）</div>
+        <div class="sc-stat">近 4 週活躍學生人數<br><b>${lastWeekActive}</b>${revoked?'（存取已結束）':' / '+usage.students+' 人（已核准）'}</div>
       </div>
       <div class="sc-row">
-        <div class="lbl"><span>本週學生活躍率</span><span>${pct}%</span></div>
-        <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${pct}%;"></div></div>
+        <div class="lbl"><span>本週學生活躍率</span><span>${revoked?'—':pct+'%'}</span></div>
+        <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${revoked?0:pct}%;"></div></div>
       </div>
       ${teacherFlag}
     </div>`;
@@ -283,12 +299,13 @@ function renderComparisonRows(){
     const u = USAGE_DATA[v.id];
     const usage = vendorUsage(v.id);
     const lastWeekActive = u.weeklyActiveStudents[u.weeklyActiveStudents.length-1];
+    const revoked = usage.students === 0;
     const pct = usage.students ? Math.round((lastWeekActive/usage.students)*100) : 0;
     return `
     <div class="cmp-row">
       <div class="cmp-label">${v.name}<small>${v.product}</small></div>
-      <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${pct}%;"></div></div>
-      <div class="cmp-value">${pct}%</div>
+      <div class="cap-bar"><div class="cap-fill ${severityClass(pct)}" style="width:${revoked?0:pct}%;"></div></div>
+      <div class="cmp-value">${revoked?'—':pct+'%'}</div>
     </div>`;
   }).join('');
 }

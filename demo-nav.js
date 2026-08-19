@@ -36,28 +36,37 @@ const PAGES = [
   ]},
 
   /* ── the release flow, in order ── */
-  {group:'① 👩‍🏫 教師（陳凱怡老師）· 提出', items:[
-    ['chat.html','EdCity.ai（科目助理）',''],
+  /* The teacher has two portals, not one list. ✨ EdCity.ai is where she makes
+   * things; 🏫 課堂與學生 is where she manages who her students are and what
+   * they may use. Split 2026-08-18 because the second carries approvals,
+   * statuses and a coordinator, and having it inside the assistant made the
+   * assistant look like a governance product. */
+  {group:'① ✨ 教師 · EdCity.ai（製作）', items:[
+    ['chat.html','科目助理',''],
     ['index.html','教學工具箱',''],
     ['tool-form.html','　└ 工具內頁（示意）',''],
     ['agents.html','EdMarket 應用程式',''],
     ['marking.html','AI 批改','y'],
     ['material-library.html','校本教材庫','y'],
+    ['materials.html','教材檢視（三大用例）','y'],
+  ]},
+  {group:'② 🏫 教師 · 課堂與學生（管理）', items:[
     ['groups.html','教學分組（總覽）',''],
     ['group-detail.html?c=2b&g=support','　└ 分組內頁（支援組）',''],
     ['tool-status.html','工具申請進度',''],
     ['trial-invites.html','試用邀請與邀請碼',''],
+    ['insights.html','學習紀錄庫','r'],
   ]},
-  {group:'② 🔧 資訊科技統籌（馮 Sir）· 審批', items:[
+  {group:'③ 🔧 資訊科技統籌（馮 Sir）· 審批', items:[
     ['eddata-console.html','供應商資料存取審批（EdData）','r'],
     ['subscriptions.html','訂閱管理（含待預算、預算建議書）','y'],
     ['usage-report.html','使用報告',''],
   ]},
-  {group:'③ 🏢 供應商（智寫科技）· 接收', items:[
+  {group:'④ 🏢 供應商（智寫科技）· 接收', items:[
     ['vendor-portal.html','EdMarket 認證進度與邀請碼',''],
     ['vendor-data-console.html','資料存取控制台（含刪除確認）','r'],
   ]},
-  {group:'④ 🎒 學生／家長（Karen）· 使用', items:[
+  {group:'⑤ 🎒 學生／家長（Karen）· 使用', items:[
     ['student.html','學生／家長入口','r'],
   ]},
 
@@ -81,10 +90,6 @@ const PAGES = [
   {group:'📈 科主任（李天佑主任）· 唯讀', items:[
     ['dept.html','科組統計','y','subjectPanelView'],
     ['dept-trial-evaluations.html','工具試用評估（已決定不納入審批鏈）','y','subjectPanelTrialReview'],
-  ]},
-  {group:'⚗ Ideas Lab（構思階段）', items:[
-    ['materials.html','教材檢視（三大用例）','y'],
-    ['insights.html','學習紀錄庫（核心價值，含多班切換）','r'],
   ]},
 ];
 function init(){

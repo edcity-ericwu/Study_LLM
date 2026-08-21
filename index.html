@@ -265,7 +265,12 @@
    * under it too, and the English name wrapped early despite having plenty
    * of room. Scoping it to .hd means only the title competes with the
    * tags; .en below spans the full column. */
-  .card .top .hd{display:flex;align-items:flex-start;gap:8px;}
+  /* Badges wrap to their own line rather than squeezing the title. .badges is
+   * flex-shrink:0, so with a third badge (繼續) the h3 was compressed to its
+   * min-content width — which for CJK is one character per line, turning the
+   * title vertical. Giving the h3 max-content forces the badges to wrap. */
+  .card .top .hd{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
+  .card .top .hd h3{flex:0 0 auto;min-width:max-content;}
   .card .top .hd h3{flex:1;min-width:0;}
   .card .top .badges{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-top:1px;}
   .card .tile{

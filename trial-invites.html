@@ -60,14 +60,20 @@
   .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
   .nav a .ic{width:17px;height:17px;flex-shrink:0;}
   .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;}
-  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
+  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
   .sidebar .user .meta b{font-size:.8rem;display:block;}
   .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
 
   .main{flex:1;min-width:0;padding:44px 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
-  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  /* The class chip must stay top-right. flex-wrap dropped it below the
+   * paragraph as soon as the viewport narrowed, so the same control appeared
+   * in two different places depending on the screen. The text column shrinks
+   * instead — .ph-text has no min-width, so it yields before the chip moves. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .page-head .ph-text{flex:1;min-width:0;}
+  .page-head .class-dd{flex-shrink:0;}
   h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
   .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
   .class-dd{position:relative;}
@@ -242,7 +248,10 @@ function renderClassSwitcher(){
   const c = CLASSES[activeClassId];
   document.getElementById('classLabel').textContent = c.className;
   document.getElementById('classMeta').textContent = '· '+c.subjectLabel;
-  document.getElementById('classMenu').innerHTML = CLASS_LIST.map(cl=>
+  /* Was CLASS_LIST — every class in the school, so 陳凱怡 could switch to
+   * 中一甲班, which 黃穎詩 teaches. Same fix already applied in groups.html;
+   * this page was missed. */
+  document.getElementById('classMenu').innerHTML = CLASS_LIST.filter(cl=>cl.teacherId===MY_TEACHER_ID).map(cl=>
     `<div class="class-opt ${cl.id===activeClassId?'on':''}" data-c="${cl.id}" onclick="switchClass('${cl.id}')">${cl.className}<small>${cl.subjectLabel}</small></div>`
   ).join('');
 }

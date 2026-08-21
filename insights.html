@@ -76,7 +76,13 @@
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;
     color:#b91c1c;background:#fee2e2;border:1px solid #f5c6c6;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
-  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  /* The class chip must stay top-right. flex-wrap dropped it below the
+   * paragraph as soon as the viewport narrowed, so the same control appeared
+   * in two different places depending on the screen. The text column shrinks
+   * instead — .ph-text has no min-width, so it yields before the chip moves. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .page-head .ph-text{flex:1;min-width:0;}
+  .page-head .class-dd{flex-shrink:0;}
   h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
   .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
   .class-dd{position:relative;}

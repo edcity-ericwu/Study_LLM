@@ -1,0 +1,113 @@
+/* ── shell-chrome.css ────────────────────────────────────────────────────
+ * Sidebar collapse + the "still working" count.
+ *
+ * This used to be injected from JavaScript. It is a real stylesheet now
+ * because the injected version did not apply on Eric's machine (2026-08-21),
+ * and the failure mode was ugly: body is display:flex on every page, so an
+ * unstyled .sc-toggle appended to <body> stops being a fixed overlay and
+ * becomes a THIRD FLEX COLUMN on the right, showing a full-size EdCity logo.
+ *
+ * A <link> cannot half-load, cannot race the parser, and cannot depend on
+ * document.head being ready. Layout must never rest on a script running.
+ */
+
+/* ── collapse ─────────────────────────────────────────────────────────── */
+
+.nav-collapsed .sidebar,
+.nav-collapsed .sys-sidebar{ display:none; }
+
+/* Collapsed, the button must not sit on top of anything. Padding the content
+ * down was not enough: several pages put a sticky header — logo included — at
+ * the very top, and the button landed on it (Eric, 2026-08-21).
+ *
+ * So the button gets a reserved gutter instead of an overlay. Padding <body>
+ * shifts every page's content right by exactly the strip the button occupies,
+ * which works regardless of what a given page puts at its top-left, and needs
+ * no per-page rules. It replaces an earlier pair of padding-top rules that had
+ * to be maintained page by page and still missed anything sticky.
+ *
+ * Expanded, no gutter is needed — the sidebar header is padded to clear the
+ * button instead, which is what shrinks the logo. */
+.nav-collapsed body{ padding-left:52px; }
+
+/* One control, one position, both states.
+ *
+ * The first attempt had a control inside the sidebar and a second, different
+ * control floating top-left once collapsed. Eric's note, and he is right: a
+ * control that teleports between states destroys positional memory — you
+ * cannot build the habit of "the button is there" if there is no there.
+ *
+ * So there is exactly one button, permanently at top-left of the viewport, in
+ * both states. It never moves; only the sidebar behind it does. The sidebar
+ * header is padded to clear it, which also shrinks the logo — .logo-wrap img
+ * is width:100%, so narrowing the content box is all it takes.
+ */
+.sc-toggle{
+  position:fixed; top:15px; left:13px; z-index:200;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; padding:0;
+  background:transparent; border:1px solid transparent; border-radius:8px;
+  cursor:pointer; font-family:inherit; color:var(--ink-3,#8a97a3);
+}
+.sc-toggle:hover{ background:rgba(0,0,0,.05); border-color:var(--line,#e6ebf0); color:var(--ink-2,#55636f); }
+.sc-toggle svg{ width:18px; height:18px; display:block; }
+
+/* Collapsed, it sits over page content rather than the sidebar, so it needs
+ * to read as a surface of its own. */
+.nav-collapsed .sc-toggle{
+  background:#fff; border-color:var(--line,#e6ebf0);
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+
+/* Room for the button in the sidebar header. */
+.sidebar .logo-wrap{ padding-left:52px; }
+.sys-sidebar .sh-label{ padding-left:52px; }
+
+/* On the dark shell the button needs the opposite treatment — but only while
+ * the dark sidebar is behind it. Once collapsed it is over light content
+ * again, so the rule above takes back over. */
+.sys-shell .sc-toggle{ color:#8fb0c4; }
+.sys-shell .sc-toggle:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#dfe8ef; }
+.sys-shell.nav-collapsed .sc-toggle{ color:var(--ink-3,#8a97a3); }
+.sys-shell.nav-collapsed .sc-toggle:hover{ background:rgba(0,0,0,.05); border-color:var(--line,#e6ebf0); color:var(--ink-2,#55636f); }
+
+/* ── the count in the shell ───────────────────────────────────────────── */
+
+.jb-ind{ display:none; margin:0 10px 12px; position:relative; }
+.jb-ind.on{ display:block; }
+
+.jb-btn{
+  width:100%; display:flex; align-items:center; gap:9px;
+  background:#f2f8fb; border:1px solid #d8ecf6; border-radius:11px;
+  padding:9px 12px; cursor:pointer; font-family:inherit; text-align:left;
+  color:var(--ink-2,#55636f); text-decoration:none;
+}
+.jb-btn:hover{ border-color:var(--ec-blue,#008BD1); }
+.jb-btn b{ font-size:.78rem; color:var(--ink,#1e2a35); display:block; }
+.jb-btn small{ font-size:.68rem; color:var(--ink-3,#8a97a3); display:block; margin-top:1px; }
+
+.jb-spin{
+  width:13px; height:13px; border-radius:50%; flex-shrink:0;
+  border:2px solid #cfe6f3; border-top-color:var(--ec-blue,#008BD1);
+  animation:jbspin 1s linear infinite;
+}
+@keyframes jbspin{ to{ transform:rotate(360deg); } }
+
+.jb-menu{
+  display:none; position:absolute; left:0; right:0; top:100%; margin-top:5px; z-index:60;
+  background:#fff; border:1px solid var(--line,#e6ebf0); border-radius:11px; padding:5px;
+  box-shadow:0 6px 18px rgba(0,0,0,.09);
+}
+.jb-menu.on{ display:block; }
+.jb-menu a{ display:block; padding:8px 10px; border-radius:8px; text-decoration:none; color:var(--ink-2,#55636f); font-size:.76rem; }
+.jb-menu a:hover{ background:#f2f6f9; }
+.jb-menu a b{ display:block; font-size:.78rem; color:var(--ink,#1e2a35); }
+
+/* Collapsed, the count goes with the sidebar, so the toggle carries a dot.
+ * A dot only — expanding is one click, and a second copy of the list here
+ * would rebuild the duplicate inbox we ruled out. */
+.jb-dot{
+  position:absolute; top:-3px; right:-3px; width:9px; height:9px;
+  border-radius:50%; background:var(--ec-blue,#008BD1); border:2px solid #fff; display:none;
+}
+.nav-collapsed .jb-dot.on{ display:block; }

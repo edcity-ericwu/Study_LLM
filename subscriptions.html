@@ -50,7 +50,7 @@
   .topbar .who .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;flex-shrink:0;}
   .topbar .who small{display:block;font-size:.66rem;color:var(--ink-3);}
 
-  .main{flex:1;min-width:0;padding:26px 34px 80px;}
+  .main{flex:1;min-width:0;padding:0 34px 80px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   h1{font-size:1.8rem;font-weight:800;color:var(--ec-purple);margin-bottom:16px;}
   .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
@@ -192,6 +192,11 @@
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
+<!-- Collapsible sidebar. In <head> for the same reason as feature-flags.js:
+     the stored collapsed state must be on <html> before first paint, or the
+     sidebar renders full-width and then disappears on every navigation. -->
+<link rel="stylesheet" href="shell-chrome.css">
+<script src="shell-chrome.js"></script>
 </head>
 <body>
 
@@ -217,7 +222,7 @@
   <span class="sys">訂閱管理<small>EdCity.ai 學校行政 · 與供應商資料存取審批（EdData）分屬不同系統</small></span>
   <span class="who"><span>馮 Sir<small>資訊科技統籌 · 訂閱與名額管理</small></span><span class="avatar">馮</span></span>
 </div>
-<main class="main" style="padding-top:0;">
+<main class="main">
 <div style="padding:44px 0 0;">
   <section class="hero">
     <div class="ribbon">🟡 提案中 · 此畫面為設計方案，功能未建置</div>
@@ -647,5 +652,6 @@ renderCase();
 })();
 </script>
 <script src="demo-nav.js"></script>
+<script src="jobs.js"></script>
 </body>
 </html>

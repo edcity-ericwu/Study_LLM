@@ -42,6 +42,8 @@ const PAGES = [
     ['chat.html','科目助理',''],
     ['index.html','教學工具箱',''],
     ['tool-form.html','　└ 工具內頁（示意）',''],
+    ['text-workshop.html','　└ 課文工房',''],
+    ['my-materials.html','　　└ 我的教材',''],
     ['agents.html','EdMarket 應用程式',''],
     ['marking.html','AI 批改','y'],
     ['material-library.html','校本教材庫','y'],

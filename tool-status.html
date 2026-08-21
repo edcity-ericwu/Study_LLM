@@ -252,6 +252,11 @@
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
+<!-- Collapsible sidebar. In <head> for the same reason as feature-flags.js:
+     the stored collapsed state must be on <html> before first paint, or the
+     sidebar renders full-width and then disappears on every navigation. -->
+<link rel="stylesheet" href="shell-chrome.css">
+<script src="shell-chrome.js"></script>
 </head>
 <body>
 
@@ -389,6 +394,7 @@ render();
 </script>
 <script src="usage-modal.js"></script>
 <script src="demo-nav.js"></script>
+<script src="jobs.js"></script>
 <script>
 /* Sidebar-local; no dependency on demo-nav.js. */
 function togglePortal(){ document.getElementById('portalMenu').classList.toggle('show'); }

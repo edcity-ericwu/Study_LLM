@@ -30,6 +30,33 @@
  * button instead, which is what shrinks the logo. */
 .nav-collapsed body{ padding-left:52px; }
 
+/* The gutter needs its own tone. Left the same colour as the page it sits
+ * beside, a blank 52px strip reads as a rendering fault rather than as a
+ * deliberately collapsed rail (Eric, 2026-08-21). Darker than --bg, with a
+ * hairline, so it reads as a surface the sidebar retracted into. */
+.nav-collapsed body::before{
+  content:""; position:fixed; left:0; top:0; bottom:0; width:52px;
+  background:var(--sc-rail, #dfe3ec);
+  border-right:1px solid rgba(0,0,0,.10); z-index:1;
+}
+
+/* --sc-rail is set by shell-chrome.js from the page's own sidebar background,
+ * rather than hardcoded here. There are eight distinct role colours across the
+ * system shells (#0c2c40, #123a52, #2b2450, #4a2029, #3a2c12, plus white for
+ * the teacher shell) and a hardcoded list would silently go stale the moment a
+ * role is added or recoloured. Reading it from the sidebar cannot drift. */
+
+
+/* Below 900px each page hides its own sidebar and drops .main to 18px of
+ * padding. The toggle is position:fixed, so it then sat directly on the
+ * content with nothing behind it. Clear it vertically rather than adding a
+ * side gutter, so the narrow layout keeps symmetric side padding. */
+@media (max-width:900px){
+  body, .nav-collapsed body{ padding-left:0; }
+  body::before, .nav-collapsed body::before{ display:none; }
+  .main{ padding-top:62px; }
+}
+
 /* One control, one position, both states.
  *
  * The first attempt had a control inside the sidebar and a second, different
@@ -47,29 +74,19 @@
   display:inline-flex; align-items:center; justify-content:center;
   width:30px; height:30px; padding:0;
   background:transparent; border:1px solid transparent; border-radius:8px;
-  cursor:pointer; font-family:inherit; color:var(--ink-3,#8a97a3);
+  cursor:pointer; font-family:inherit;
+  color:var(--sc-rail-ink, #8a97a3);
 }
-.sc-toggle:hover{ background:rgba(0,0,0,.05); border-color:var(--line,#e6ebf0); color:var(--ink-2,#55636f); }
+.sc-toggle:hover{
+  background:var(--sc-rail-wash, rgba(0,0,0,.05));
+  border-color:var(--sc-rail-wash, var(--line,#e6ebf0));
+}
 .sc-toggle svg{ width:18px; height:18px; display:block; }
-
-/* Collapsed, it sits over page content rather than the sidebar, so it needs
- * to read as a surface of its own. */
-.nav-collapsed .sc-toggle{
-  background:#fff; border-color:var(--line,#e6ebf0);
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
-}
 
 /* Room for the button in the sidebar header. */
 .sidebar .logo-wrap{ padding-left:52px; }
 .sys-sidebar .sh-label{ padding-left:52px; }
 
-/* On the dark shell the button needs the opposite treatment — but only while
- * the dark sidebar is behind it. Once collapsed it is over light content
- * again, so the rule above takes back over. */
-.sys-shell .sc-toggle{ color:#8fb0c4; }
-.sys-shell .sc-toggle:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#dfe8ef; }
-.sys-shell.nav-collapsed .sc-toggle{ color:var(--ink-3,#8a97a3); }
-.sys-shell.nav-collapsed .sc-toggle:hover{ background:rgba(0,0,0,.05); border-color:var(--line,#e6ebf0); color:var(--ink-2,#55636f); }
 
 /* ── the count in the shell ───────────────────────────────────────────── */
 
@@ -111,3 +128,22 @@
   border-radius:50%; background:var(--ec-blue,#008BD1); border:2px solid #fff; display:none;
 }
 .nav-collapsed .jb-dot.on{ display:block; }
+
+/* ── one content measure across the role shells ──────────────────────────
+ * These pages had drifted to five different widths — 840, 960, 1300, 1400 and
+ * three with no max-width at all — so the same shell changed shape as you
+ * moved between roles (Eric, 2026-08-21). 訂閱管理 is the reference: full
+ * width, 34px either side.
+ *
+ * Horizontal only. Each page's top padding is left alone because they do not
+ * share a vertical rhythm — some open with a sticky header, some with an h1 —
+ * and flattening that here would fix one inconsistency by creating another.
+ */
+.sys-main > .wrap{
+  max-width:none; margin:0;
+  padding-left:34px; padding-right:34px;
+}
+
+@media (max-width:900px){
+  .sys-main > .wrap{ padding-left:18px; padding-right:18px; }
+}

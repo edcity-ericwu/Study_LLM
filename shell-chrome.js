@@ -30,6 +30,17 @@
    * yet when this file runs. */
   if(read()) document.documentElement.classList.add('nav-collapsed');
 
+  /* The collapsed rail takes the colour of the sidebar it replaced, so each
+   * role keeps its own identity when retracted. The sidebar cannot be measured
+   * yet at this point, so the value measured on the last visit is applied
+   * pre-paint and refreshed below — otherwise a collapsed rail flashes a
+   * neutral fallback on every navigation. */
+  var RAIL = 'edcity:navBg:' + location.pathname;
+  try {
+    var cached = JSON.parse(localStorage.getItem(RAIL) || 'null');
+    if(cached) applyRail(cached);
+  } catch(e){ /* no-op */ }
+
   /* Opened straight off disk, a browser treats each file as its own opaque
    * origin and localStorage may throw. Everything here degrades silently, so
    * the prototype still renders — but nothing that spans pages will work:
@@ -50,6 +61,33 @@
     }
   })();
 
+  /* The control sits inside the rail in both states, so it should carry the
+   * rail's own tone rather than a per-shell override. Deriving ink from the
+   * measured colour means a role added or recoloured later is handled without
+   * touching this file — the same reason the rail colour is measured at all.
+   *
+   * Perceived brightness (ITU-R BT.601) rather than a raw average: the eye is
+   * far more sensitive to green than to blue, and 馮 Sir's #2b2450 and the
+   * vendor's #4a2029 would land on the wrong side of a naive threshold. */
+  function toneOf(bg){
+    var m = /rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/.exec(bg || '');
+    if(!m) return null;
+    var r = +m[1], g = +m[2], b = +m[3];
+    var light = (0.299 * r + 0.587 * g + 0.114 * b) > 140;
+    return {
+      bg: bg,
+      ink:  light ? '#8a97a3' : 'rgba(255,255,255,.72)',
+      wash: light ? 'rgba(0,0,0,.06)' : 'rgba(255,255,255,.14)'
+    };
+  }
+
+  function applyRail(t){
+    var st = document.documentElement.style;
+    st.setProperty('--sc-rail', t.bg);
+    st.setProperty('--sc-rail-ink', t.ink);
+    st.setProperty('--sc-rail-wash', t.wash);
+  }
+
   /* Mirrored panel glyphs: the filled bar shows which side the sidebar is on,
    * so the same button reads as "hide it" and "bring it back" without moving. */
   var IC_OPEN =
@@ -69,6 +107,16 @@
      * expanded, and against light content once collapsed — the stylesheet
      * needs to know which shell it is on to do that. */
     if(bar.classList.contains('sys-sidebar')) document.documentElement.classList.add('sys-shell');
+
+    /* Measure the real thing and remember it. Reading the colour beats a
+     * hardcoded per-role list, which would go stale the moment a role is
+     * added or recoloured. */
+    var bg = getComputedStyle(bar).backgroundColor;
+    var tone = toneOf(bg);
+    if(tone){
+      applyRail(tone);
+      try { localStorage.setItem(RAIL, JSON.stringify(tone)); } catch(e){ /* no-op */ }
+    }
 
     /* ONE button, permanently at top-left, in both states. It is created once
      * and never re-parented: only the icon and the label change. Moving it

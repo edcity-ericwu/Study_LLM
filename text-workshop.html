@@ -356,8 +356,11 @@
   .lp-more{background:none;border:none;font-family:inherit;font-size:.78rem;color:var(--ec-blue-dark);
     cursor:pointer;font-weight:600;margin-top:12px;padding:0;}
 
+  /* padding was 15px 0 — the row sat flush against the white edges. The wider
+   * gap keeps the primary action off the advisory text beside it; at 16px they
+   * read as one block. */
   .lp-bar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);margin-top:20px;
-    padding:15px 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    padding:15px 22px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
   .lp-bar .sel{display:flex;gap:11px;align-items:center;}
   .lp-bar .sel .ring{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;}
   .lp-bar .sel.has .ring{border:6px solid var(--ec-blue);}

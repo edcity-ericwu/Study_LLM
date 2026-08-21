@@ -185,9 +185,11 @@
    * list of its own — a "recent work" surface would be the second inbox we
    * ruled out on 2026-08-20. */
   .cont-tag{
-    font-size:.6rem;font-weight:700;color:var(--ec-blue-dark);background:#eaf5fb;
-    border:1px solid #cfe6f3;padding:2px 8px;border-radius:99px;letter-spacing:normal;
+    display:flex;align-items:center;gap:7px;margin-top:12px;padding-top:11px;
+    border-top:1px solid var(--line);font-size:.72rem;font-weight:600;
+    color:var(--ec-blue-dark);
   }
+  .cont-tag .when{font-weight:400;color:var(--ink-3);margin-left:auto;}
 
   /* ─── Subject row (inside hero) ─── */
   /* Primary filter row — the page's top-level axis (科目 here, 來源 on agents).
@@ -265,12 +267,10 @@
    * under it too, and the English name wrapped early despite having plenty
    * of room. Scoping it to .hd means only the title competes with the
    * tags; .en below spans the full column. */
-  /* Badges wrap to their own line rather than squeezing the title. .badges is
-   * flex-shrink:0, so with a third badge (繼續) the h3 was compressed to its
-   * min-content width — which for CJK is one character per line, turning the
-   * title vertical. Giving the h3 max-content forces the badges to wrap. */
+  /* Kept wrapping as a safety for long tool names, but the actual fix was
+   * removing the third badge: 推薦 and 小·中 classify the tool, 繼續 reports
+   * its state. Different nature, so it now has its own row below. */
   .card .top .hd{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
-  .card .top .hd h3{flex:0 0 auto;min-width:max-content;}
   .card .top .hd h3{flex:1;min-width:0;}
   .card .top .badges{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-top:1px;}
   .card .tile{
@@ -578,7 +578,8 @@ function resumeTag(t){
   const id = RESUMABLE[t.link];
   if(!id || !window.ToolSession || !ToolSession.has(id)) return '';
   const age = ToolSession.ageLabel(id);
-  return '<span class="cont-tag">↩ 繼續' + (age ? '・' + age : '') + '</span>';
+  return '<div class="cont-tag"><span>↩ 繼續上次的工作</span>' +
+         (age ? '<span class="when">' + age + '</span>' : '') + '</div>';
 }
 
 function applyFilters(){
@@ -628,12 +629,13 @@ function applyFilters(){
         <div class="ttl">
           <div class="hd">
             <h3>${t.name}</h3>
-            <div class="badges">${resumeTag(t)}${t.recommended ? '<span class="rec-tag">⭐ 推薦</span>' : ''}${levelBadge(t)}</div>
+            <div class="badges">${t.recommended ? '<span class="rec-tag">⭐ 推薦</span>' : ''}${levelBadge(t)}</div>
           </div>
           <span class="en">${t.en}</span>
         </div>
       </div>
       <p>${t.desc}</p>
+      ${resumeTag(t)}
     </div>`).join('');
   document.getElementById('empty').style.display = shown.length ? 'none' : 'block';
   document.getElementById('resultCount').textContent =

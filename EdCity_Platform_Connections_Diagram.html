@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity — How the Digital Education Platform Connects (from the 9 user stories, v2)</title>
+<style>
+:root{
+  --surface-0:#ffffff; --surface-1:#f7f6f3; --surface-2:#eeece6;
+  --text-primary:#1c1c1a; --text-secondary:#4e4e49; --text-muted:#83827b;
+  --text-accent:#534AB7;
+  --border:#dcdad2; --border-strong:#b9b7ac;
+  --font-sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-mono:'SF Mono',Consolas,monospace;
+}
+body{font-family:var(--font-sans);color:var(--text-primary);background:var(--surface-0);max-width:820px;margin:0 auto;padding:32px 20px 64px}
+h1{font-size:20px;margin:0 0 4px}
+h2{font-size:15px;margin:36px 0 4px}
+p.meta{color:var(--text-muted);font-size:12px;margin:0 0 8px}
+p.cap{color:var(--text-secondary);font-size:13px;line-height:1.5;margin:4px 0 12px}
+svg{width:100%;height:auto;display:block}
+.note{border:1px solid var(--border);border-radius:8px;background:var(--surface-1);padding:10px 14px;font-size:12.5px;color:var(--text-secondary);line-height:1.5}
+</style>
+</head>
+<body>
+<h1>EdCity — how the Digital Education Platform connects</h1>
+<p class="meta">Derived from the 9 user-journey stories (v2) and Roadmap Notes §4–5 · v2, corrected 2026-07-09 (mandate-alignment pass) · honesty rule preserved: green = exists, amber = proposed, red = gated</p>
+<div class="note">Every box and arrow below is traceable to a story (S1–S9) or a decided flow (Flows A–F). Almost everything is <b>proposed, not built</b> — the green parts are SMS itself, the admin roster work in Story 2, and (new, 2026-07-09) EdMarket's live beta catalog: bare listings only, with no vetting behind them yet. The mandated Subject AI Assistant (S9) is the headline "Now" track.</div>
+
+<h2>1 · System connection map</h2>
+<p class="cap">All connections cross deliberately designed async contracts — nothing volatile is ever embedded in the fragile SMS core. EdMarket gates what can appear in a teacher's launcher; the shared taxonomy (red, top right) is the single biggest unbuilt dependency — performance views (S7) and vendor data aggregation (S5) both wait on it.</p>
+
+<svg viewBox="0 0 740 672" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t1 d1">
+<title id="t1">EdCity Digital Education Platform connection map</title>
+<desc id="d1">System map showing how EdMarket, Resources Platform, EdCity.ai, the School Management System, the student/parent portal and the shared taxonomy connect, colour-coded by status: exists, proposed, or gated.</desc>
+<style>
+.h{font:600 13px var(--font-sans);fill:var(--text-primary)}
+.sub{font:10.5px var(--font-sans);fill:var(--text-muted)}
+.row{font:11.5px var(--font-sans);fill:var(--text-primary)}
+.rowsm{font:11px var(--font-sans);fill:var(--text-primary)}
+.tag{font:10px var(--font-mono);fill:var(--text-muted)}
+.lbl{font:10.5px var(--font-sans);fill:var(--text-secondary)}
+.leg{font:11px var(--font-sans);fill:var(--text-secondary)}
+.umb{font:600 11px var(--font-sans);fill:var(--text-secondary);letter-spacing:.08em}
+.box{fill:var(--surface-1);stroke:var(--border)}
+.chip{fill:var(--surface-2);stroke:var(--border)}
+.edge{stroke:var(--text-muted);stroke-width:1.3;fill:none;marker-end:url(#ar)}
+.redge{stroke:#E24B4A;stroke-width:1.2;stroke-dasharray:4 3;fill:none;marker-end:url(#arr)}
+.g{fill:#1D9E75}.a{fill:#EF9F27}.r{fill:#E24B4A}
+</style>
+<defs>
+<marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" style="fill:var(--text-muted)"/></marker>
+<marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#E24B4A"/></marker>
+</defs>
+
+<circle cx="16" cy="18" r="4" class="g"/><text x="26" y="22" class="leg">Exists today</text>
+<circle cx="116" cy="18" r="4" class="a"/><text x="126" y="22" class="leg">Proposed — designed, not built</text>
+<circle cx="316" cy="18" r="4" class="r"/><text x="326" y="22" class="leg">Gated on an unmade decision</text>
+<text x="728" y="22" text-anchor="end" class="sub">S# = user story</text>
+
+<rect x="12" y="40" width="340" height="96" rx="8" class="box"/>
+<circle cx="24" cy="56" r="4" class="g"/>
+<text x="34" y="60" class="h">EdMarket <tspan class="sub">beta catalog LIVE — unvetted</tspan></text>
+<rect x="24" y="74" width="142" height="48" rx="6" class="chip"/>
+<circle cx="36" cy="90" r="3.5" class="a"/>
+<text x="44" y="94" class="rowsm">Two-tier standard</text>
+<text x="44" y="110" class="sub">gates + fit info · retrofit · S3</text>
+<line x1="170" y1="98" x2="188" y2="98" class="edge"/>
+<rect x="196" y="74" width="142" height="48" rx="6" class="chip"/>
+<circle cx="208" cy="90" r="3.5" class="a"/>
+<text x="216" y="94" class="rowsm">School subscriptions</text>
+<text x="216" y="110" class="sub">dept + teacher scoping · S4</text>
+
+<rect x="388" y="40" width="340" height="96" rx="8" fill="none" stroke="#E24B4A" stroke-dasharray="5 3"/>
+<circle cx="402" cy="60" r="4" class="r"/>
+<text x="412" y="64" class="h">Shared taxonomy</text>
+<text x="400" y="84" class="row">subject · skill dimension · proficiency band</text>
+<text x="400" y="102" class="sub">owner assigned 2026-07-08; the content itself doesn't exist</text>
+<text x="400" y="117" class="sub">performance views and vendor data both wait on it</text>
+
+<line x1="182" y1="136" x2="182" y2="210" class="edge"/>
+<text x="192" y="162" class="lbl">launch token — issued only if the school</text>
+<text x="192" y="176" class="lbl">holds an active subscription <tspan class="tag">S4→S5</tspan></text>
+<line x1="558" y1="136" x2="558" y2="210" class="redge"/>
+<text x="568" y="166" class="lbl">every tag and rollup</text>
+<text x="568" y="180" class="lbl">needs it <tspan class="tag">S5–S7</tspan></text>
+
+<rect x="12" y="176" width="716" height="484" rx="10" fill="none" style="stroke:var(--border-strong)" stroke-dasharray="7 4"/>
+<circle cx="288" cy="193" r="3.5" class="a"/>
+<text x="298" y="197" class="umb">DIGITAL EDUCATION PLATFORM — ONE SSO LOGIN</text>
+
+<rect x="32" y="214" width="310" height="196" rx="8" class="box"/>
+<text x="44" y="236" class="h">Resources Platform</text>
+<text x="44" y="250" class="sub">teacher home base</text>
+<circle cx="50" cy="270" r="3.5" class="a"/><text x="60" y="274" class="row">Launcher &amp; content discovery <tspan class="tag">S1·S5</tspan></text>
+<circle cx="50" cy="296" r="3.5" class="a"/><text x="60" y="300" class="row">Marking tool — files into SMS by contract <tspan class="tag">S1</tspan></text>
+<circle cx="50" cy="322" r="3.5" class="a"/><text x="60" y="326" class="row">Teaching groups — teacher-private <tspan class="tag">S1</tspan></text>
+<circle cx="50" cy="348" r="3.5" class="a"/><text x="60" y="352" class="row">Embedded vendor tools, in-shell <tspan class="tag">S5</tspan></text>
+<circle cx="50" cy="374" r="3.5" class="r"/><text x="60" y="378" class="row">Performance &amp; dept trend views <tspan class="tag">S7</tspan></text>
+
+<rect x="398" y="214" width="310" height="196" rx="8" class="box"/>
+<text x="410" y="236" class="h">EdCity.ai</text>
+<text x="410" y="250" class="sub">intelligence layer — free within per-school quota, official</text>
+<circle cx="416" cy="270" r="3.5" class="a"/><text x="426" y="274" class="row">Subject AI Assistant — mandated, "Now" <tspan class="tag">S9</tspan></text>
+<text x="426" y="288" class="sub">3 teacher tasks · Chi/Eng/Maths first · no SMS dep.</text>
+<circle cx="416" cy="308" r="3.5" class="r"/><text x="426" y="312" class="row">Tool recs — neutrality ruling pending <tspan class="tag">S5·S8</tspan></text>
+<circle cx="416" cy="334" r="3.5" class="a"/><text x="426" y="338" class="row">AI-suggested skill tags — proposals only <tspan class="tag">S6</tspan></text>
+<circle cx="416" cy="360" r="3.5" class="a"/><text x="426" y="364" class="row">Content-ops review screen — human gate <tspan class="tag">S6</tspan></text>
+<text x="426" y="388" class="sub">not competing with the market — certify &amp; inform, never endorse</text>
+
+<line x1="398" y1="272" x2="344" y2="272" class="edge"/>
+<text x="370" y="264" text-anchor="middle" class="lbl">assistant + recs</text>
+
+<line x1="110" y1="410" x2="110" y2="452" class="edge"/>
+<text x="118" y="430" class="lbl">completed-mark events</text>
+<text x="118" y="443" class="lbl">async contract <tspan class="tag">S1</tspan></text>
+<line x1="290" y1="452" x2="290" y2="412" class="edge"/>
+<text x="298" y="430" class="lbl">rosters,</text>
+<text x="298" y="443" class="lbl">read-only <tspan class="tag">S2</tspan></text>
+<line x1="553" y1="452" x2="553" y2="412" class="edge"/>
+<text x="561" y="424" class="lbl">performance data — SMS +</text>
+<text x="561" y="437" class="lbl">STAR feed (mandated; discovery</text>
+<text x="561" y="450" class="lbl">underway, data-cleaning needed)</text>
+
+<rect x="32" y="454" width="676" height="84" rx="8" class="box"/>
+<circle cx="50" cy="472" r="4" class="g"/>
+<text x="60" y="476" class="h">School Management System</text>
+<text x="60" y="490" class="sub">records layer · source of truth · never hosts tools · not mandate-covered — never blocks mandated tracks</text>
+<circle cx="50" cy="514" r="3.5" class="g"/><text x="60" y="518" class="row">Official class rosters — admin-maintained today <tspan class="tag">S2</tspan></text>
+<circle cx="400" cy="514" r="3.5" class="a"/><text x="410" y="518" class="row">Validates &amp; accepts all contract writes</text>
+
+<line x1="140" y1="538" x2="140" y2="576" class="edge"/>
+<text x="148" y="561" class="lbl">one student's own data only <tspan class="tag">S8</tspan></text>
+
+<rect x="32" y="578" width="676" height="70" rx="8" class="box"/>
+<text x="44" y="600" class="h">Student / Parent Portal <tspan class="sub">separate, simpler surface — same login</tspan></text>
+<circle cx="50" cy="622" r="3.5" class="a"/><text x="60" y="626" class="rowsm">Own progress — no rankings</text>
+<circle cx="248" cy="622" r="3.5" class="a"/><text x="258" y="626" class="rowsm">Practice recs (EdCity.ai)</text>
+<circle cx="428" cy="622" r="3.5" class="r"/><text x="438" y="626" class="rowsm">Live AI tutor pilot — consent-gated, monitored, no clock</text>
+</svg>
+
+<h2>2 · The vendor-tool lifecycle (stories 1–8)</h2>
+<p class="cap">Story order follows a tool's real lifecycle: vetted → subscribed → discovered and used → output reviewed → visible in trends → reflected to the student. Ms. Ho's roster work (S2) is the foundation everything reads from. The mandated Subject AI Assistant (S9) runs parallel to this whole lifecycle and needs none of it — which is exactly why it can ship first.</p>
+
+<svg viewBox="0 0 740 252" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t2 d2">
+<title id="t2">The 8 EdCity user stories as one tool's journey</title>
+<desc id="d2">Six-step chain from vendor vetting to student view, resting on Ms. Ho's roster maintenance — the only part that exists today.</desc>
+<style>
+.bx{fill:var(--surface-1);stroke:var(--border)}
+.bdg{font:700 12px var(--font-mono);fill:var(--text-accent)}
+.ti{font:600 11.5px var(--font-sans);fill:var(--text-primary)}
+.ds{font:9.8px var(--font-sans);fill:var(--text-secondary)}
+.sb{font:10.5px var(--font-sans);fill:var(--text-muted)}
+.fh{font:600 11.5px var(--font-sans);fill:var(--text-primary)}
+.edge2{stroke:var(--text-muted);stroke-width:1.3;fill:none;marker-end:url(#ar2)}
+.dep{stroke:var(--border-strong);stroke-width:1;stroke-dasharray:3 3}
+.g{fill:#1D9E75}.a{fill:#EF9F27}.r{fill:#E24B4A}
+</style>
+<defs><marker id="ar2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" style="fill:var(--text-muted)"/></marker></defs>
+
+<g><rect x="12" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="110" cy="30" r="3.5" class="a"/>
+<text x="24" y="36" class="bdg">S3</text><text x="24" y="54" class="ti">Vet</text>
+<text x="24" y="72" class="ds">Ms. Fong checks</text><text x="24" y="85" class="ds">compliance gates +</text><text x="24" y="98" class="ds">verifies fit evidence</text></g>
+<line x1="123" y1="75" x2="133" y2="75" class="edge2"/>
+
+<g><rect x="134" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="232" cy="30" r="3.5" class="a"/>
+<text x="146" y="36" class="bdg">S4</text><text x="146" y="54" class="ti">Subscribe</text>
+<text x="146" y="72" class="ds">Mr. Fung adds it once,</text><text x="146" y="85" class="ds">scoped to departments</text><text x="146" y="98" class="ds">or single teachers</text></g>
+<line x1="245" y1="75" x2="255" y2="75" class="edge2"/>
+
+<g><rect x="256" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="354" cy="30" r="3.5" class="a"/>
+<text x="268" y="36" class="bdg">S1·S5</text><text x="268" y="54" class="ti">Teach &amp; mark</text>
+<text x="268" y="72" class="ds">Ms. Chan discovers it,</text><text x="268" y="85" class="ds">uses it — results file</text><text x="268" y="98" class="ds">into SMS themselves</text></g>
+<line x1="367" y1="75" x2="377" y2="75" class="edge2"/>
+
+<g><rect x="378" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="476" cy="30" r="3.5" class="a"/>
+<text x="390" y="36" class="bdg">S6</text><text x="390" y="54" class="ti">Review</text>
+<text x="390" y="72" class="ds">A human approves</text><text x="390" y="85" class="ds">every AI-suggested tag</text><text x="390" y="98" class="ds">before it counts</text></g>
+<line x1="489" y1="75" x2="499" y2="75" class="edge2"/>
+
+<g><rect x="500" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="598" cy="30" r="3.5" class="a"/>
+<text x="512" y="36" class="bdg">S7</text><text x="512" y="54" class="ti">Trends</text>
+<text x="512" y="72" class="ds">Mr. Lee sees dept</text><text x="512" y="85" class="ds">direction — never</text><text x="512" y="98" class="ds">teacher rankings</text></g>
+<line x1="611" y1="75" x2="621" y2="75" class="edge2"/>
+
+<g><rect x="622" y="16" width="110" height="118" rx="8" class="bx"/>
+<circle cx="708" cy="30" r="3.5" class="a"/><circle cx="720" cy="30" r="3.5" class="r"/>
+<text x="634" y="36" class="bdg">S8</text><text x="634" y="54" class="ti">Student view</text>
+<text x="634" y="72" class="ds">Karen sees her own</text><text x="634" y="85" class="ds">progress; AI tutor pilot</text><text x="634" y="98" class="ds">still needs sign-off</text></g>
+
+<line x1="190" y1="168" x2="190" y2="140" class="dep"/>
+<line x1="380" y1="168" x2="380" y2="140" class="dep"/>
+<line x1="570" y1="168" x2="570" y2="140" class="dep"/>
+
+<rect x="12" y="168" width="720" height="52" rx="8" fill="none" stroke="#1D9E75"/>
+<circle cx="28" cy="188" r="4" class="g"/>
+<text x="38" y="192" class="fh">S2 — Ms. Ho keeps the official rosters current in SMS</text>
+<text x="38" y="208" class="sb">the only part that exists today — every step above reads from it</text>
+
+<text x="12" y="244" class="sb">amber = proposed · red = gated · green = exists today</text>
+</svg>
+
+<h2>What's deliberately not shown</h2>
+<p class="cap">Corporate website decoupling (Phase 5); EMM's content-delivery connection and the thin PD lane into EdAcademy/Go eLearning (both now tracked, 2026-07-09 — see Roadmap Notes §4a/§4b — but omitted here to keep the map readable); the teacher publish/adopt loop for AI-assisted artifacts (S9 → shared library); and the governance gates outside Ms. Fong's tiers (vendor conflict-of-interest, deeper PDPO readiness, the neutrality-boundary ruling). The vendor server-to-server callback (Flow D step 4) is folded into the "embedded vendor tools" row — its taxonomy dependency is what the red dashed arrow marks. STAR/EMM are no longer "untracked": their AI optimisation is an explicit Blueprint obligation.</p>
+</body>
+</html>

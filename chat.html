@@ -21,8 +21,11 @@
    * files (not the variable font) since only one weight is needed here. */
   @font-face{
     font-family:'Aspekta';
-    src:url('../fonts/webfonts/Aspekta-800.woff2') format('woff2'),
-        url('../fonts/ttf/Aspekta-800.ttf') format('truetype');
+    /* Copied into this folder 2026-08-21 rather than reached via ../fonts:
+     * the prototype has to be publishable on its own, and a path that climbs
+     * out of the published root 404s the moment the folder is the site root. */
+    src:url('fonts/Aspekta-800.woff2') format('woff2'),
+        url('fonts/Aspekta-800.ttf') format('truetype');
     font-weight:800;font-style:normal;font-display:swap;
   }
   :root{

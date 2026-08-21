@@ -1,0 +1,8 @@
+# jsdom, installed only to verify these pages. 26 MB, and nothing here needs
+# it at runtime — every page is plain HTML/CSS/JS.
+node_modules/
+package-lock.json
+
+# scratch files from build scripts
+*.tmp
+.DS_Store

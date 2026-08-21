@@ -147,3 +147,23 @@
 @media (max-width:900px){
   .sys-main > .wrap{ padding-left:18px; padding-right:18px; }
 }
+
+/* ── prose measure ───────────────────────────────────────────────────────
+ * The shells are full-bleed so tables, card grids and queues can use the
+ * whole window, which is right for them. Continuous text is not: at 1400px+
+ * a paragraph runs past any comfortable measure.
+ *
+ * 52em is the suite's existing house measure — it was already on .sub on
+ * every page — so this adopts the established value rather than inventing a
+ * second one. Applied only to text-carrying elements that are direct children
+ * of the content container: anything inside a card, table or panel is left
+ * alone, because those size to their container by design.
+ */
+.sys-main > .wrap > p,
+.sys-main > .wrap > .lede,
+.sys-main > .wrap > .intro,
+main.main > p,
+main.main > .lede,
+main.main > .intro{
+  max-width:52em;
+}

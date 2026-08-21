@@ -414,6 +414,14 @@
   .rs-bar b{font-size:.84rem;}
   .rs-bar small{font-size:.74rem;color:var(--ink-3);display:block;margin-top:1px;}
   .rs-bar .btn{margin-left:auto;}
+
+  /* 我已核對課文內容 cannot be ticked before there is a課文 to check. Left
+   * enabled, it invited the teacher to confirm nothing, and the sequence read
+   * backwards. Unticks itself if the text is later cleared — a confirmation
+   * that outlives its subject is worse than no confirmation. */
+  .tw-check.off{opacity:.45;}
+  .tw-check.off input{cursor:not-allowed;}
+  .tw-check.off b,.tw-check.off small{color:var(--ink-3);}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -529,7 +537,7 @@
 
           <div class="tw-row">
             <div class="tw-field"><label for="fTitle">篇名</label>
-              <input type="text" id="fTitle" placeholder="例如：岳陽樓記"></div>
+              <input type="text" id="fTitle" placeholder="例如：岳陽樓記" oninput="gate()"></div>
             <div class="tw-field"><label for="fLevel">年級</label>
               <select id="fLevel">
                 <option>中一</option><option>中二</option><option>中三</option>
@@ -548,8 +556,8 @@
             <input type="text" id="fNote" placeholder="例如：課文出處、注釋版本、班上已學過的相關篇章">
           </div>
 
-          <label class="tw-check">
-            <input type="checkbox" id="fOk" onchange="gate()">
+          <label class="tw-check" id="okWrap">
+            <input type="checkbox" id="fOk" onchange="gate()" disabled>
             <span><b>我已核對課文內容</b>
               <small>課文如有錯漏，整理出來的學習重點也會受影響。請先確認文字無誤。</small></span>
           </label>
@@ -773,10 +781,17 @@ function countLines(){
   gate();
 }
 function gate(){
-  const ok = document.getElementById('fOk').checked
-          && document.getElementById('fText').value.trim().length > 0
-          && document.getElementById('fTitle').value.trim().length > 0;
-  document.getElementById('goBtn').disabled = !ok;
+  const hasText  = document.getElementById('fText').value.trim().length > 0;
+  const hasTitle = document.getElementById('fTitle').value.trim().length > 0;
+  const ready    = hasText && hasTitle;
+  const box      = document.getElementById('fOk');
+
+  /* Nothing to confirm yet, so the confirmation is not offered. */
+  box.disabled = !ready;
+  if(!ready) box.checked = false;
+  document.getElementById('okWrap').classList.toggle('off', !ready);
+
+  document.getElementById('goBtn').disabled = !(ready && box.checked);
 }
 
 function stage(id){

@@ -224,7 +224,7 @@
 
 <main class="main">
   <div class="topline">
-    <a class="back" href="index.html">← 返回教學工具箱</a>
+    <a class="back" id="backLink" href="index.html">← 返回教學工具箱</a>
     <span class="balance" onclick="openUsage()" title="查看用量與代幣">🪙 學習代幣餘額 <b id="bal">12,500</b></span>
   </div>
 
@@ -320,6 +320,13 @@ function togglePortal(){ document.getElementById('portalMenu').classList.toggle(
 document.addEventListener('click', e=>{
   if(!e.target.closest('.portal-sw')) document.getElementById('portalMenu')?.classList.remove('show');
 });
+
+/* This page is opened for any subject's tool, so it cannot hardcode a shelf —
+ * it returns to whichever one it was opened from. */
+(function(){
+  const subj = new URLSearchParams(location.search).get('subject');
+  if(subj) document.getElementById('backLink').href = 'index.html?subject=' + subj;
+})();
 </script>
 </body>
 </html>

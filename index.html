@@ -563,9 +563,18 @@ let subject = 'chi';
 const SUBJ_NAME = {chi:'中文', maths:'數學', eng:'英文', sci:'科學'};
 
 function setSubject(btn){
-  subject = btn.dataset.subj;
-  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  applySubject(btn.dataset.subj);
+}
+
+/* Split out so the subject can also be set from a URL. A teacher returning
+ * from an English tool was landing back on 中文 — the catalog reset to its
+ * default and quietly discarded where she had been. Tools pass ?subject= on
+ * the way back so the shelf she came from is the shelf she returns to. */
+function applySubject(key){
+  if(!SUBJ_NAME[key]) return;
+  subject = key;
+  document.querySelectorAll('.pill').forEach(b =>
+    b.classList.toggle('on', b.dataset.subj === key));
   applyFilters();
 }
 
@@ -649,7 +658,7 @@ function applyFilters(){
    * not a different set of tools. */
   shown.sort((a,b) => (b.recommended?1:0) - (a.recommended?1:0));
   grid.innerHTML = shown.map(t => `
-    <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? (t.target==='_blank' ? `window.open('${t.link}','_blank')` : `location.href='${t.link}'`) : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')`}">
+    <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? (t.target==='_blank' ? `window.open('${t.link}','_blank')` : `location.href='${t.link}'`) : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')+'&subject='+subject`}">
       <div class="top">
         <div class="tile">${IC[t.icon]}</div>
         <div class="ttl">
@@ -668,7 +677,13 @@ function applyFilters(){
     `顯示 ${shown.length} 個工具 · ${level==='primary'?'小學':'中學'}適用`;
 }
 document.getElementById('searchInput').addEventListener('input', applyFilters);
-applyFilters();
+/* Honour ?subject= before the first paint of the grid, so the correct shelf
+ * is the one that renders rather than one that swaps in afterwards. */
+(function(){
+  const want = new URLSearchParams(location.search).get('subject');
+  if(want && SUBJ_NAME[want]){ applySubject(want); return; }
+  applyFilters();
+})();
 </script>
 <script src="usage-modal.js"></script>
 <script src="demo-nav.js"></script>

@@ -11,6 +11,21 @@
  * document.head being ready. Layout must never rest on a script running.
  */
 
+/* ── typography ──────────────────────────────────────────────────────────
+ * The monospace stack was ui-monospace / SF Mono / Menlo — all macOS-only, so
+ * Windows fell through to generic monospace, i.e. Courier New: thin, small and
+ * poor at bold, which is exactly how the invite code is set (Eric, 2026-08-21).
+ *
+ * JetBrains Mono because these strings are read aloud and typed back: it has a
+ * slashed zero and distinct 1/l/I, and holds its weight at 700. The generator
+ * alphabet already excludes I, O, 0 and 1; this covers what is left — 5/S, 8/B,
+ * 2/Z. Defined once here because the same stack was written out in three files
+ * and drifting copies are how the last few defects started.
+ */
+:root{
+  --font-mono:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
 /* ── collapse ─────────────────────────────────────────────────────────── */
 
 .nav-collapsed .sidebar,
@@ -90,7 +105,11 @@
 
 /* ── the count in the shell ───────────────────────────────────────────── */
 
-.jb-ind{ display:none; margin:0 10px 12px; position:relative; }
+/* .portal-sw above has padding:12px 12px 0 — no bottom padding — so with no
+ * top margin here the two boxes sat flush against each other. Side margin
+ * matched to the switcher's 12px too: they are adjacent cards and a 2px
+ * step between their edges reads as a mistake. */
+.jb-ind{ display:none; margin:14px 12px 12px; position:relative; }
 .jb-ind.on{ display:block; }
 
 .jb-btn{

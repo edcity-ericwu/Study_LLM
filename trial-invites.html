@@ -4,17 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EdCity 試用邀請 — 課堂層級</title>
-<!-- Site-wide typeface (2026-07-31): Chiron GoRound TC, a rounded
-     Traditional Chinese sans built on Source Han Sans/Chiron Hei HK,
-     replacing the plain system-font stack. Falls back to the previous
-     stack (PingFang TC / Microsoft JhengHei / Noto Sans TC / system) if
-     the network font fails to load. -->
-<link rel="preload" href="fonts/chiron-goround-tc-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/chiron-goround-tc-500.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/chiron-goround-tc-600.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/chiron-goround-tc-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/chiron-goround-tc-800.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="fonts.css">
+<!-- Site-wide typeface: Chiron GoRound TC, a rounded Traditional Chinese sans
+     built on Source Han Sans/Chiron Hei HK.
+
+     Served from Google Fonts (Eric's call, 2026-08-21) rather than self-hosted
+     and subsetted. The subset was built from the characters the prototype
+     happened to contain, which cannot be right for a tool whose whole premise
+     is a teacher pasting arbitrary 課文 — 岳 was missing the moment 岳陽樓記
+     was added. Google's unicode-range delivery gives full coverage while the
+     browser fetches only the ranges each page actually touches.
+
+     display=block, not swap: swap paints the fallback first and Chiron has
+     different metrics, so every nav row changed height on the swap. block has
+     nothing to swap from.
+
+     Trade-off recorded in the Decision Log: this sends each visitor's IP to
+     Google, which a government-funded body may not be able to ship. Falls back
+     to PingFang TC / Microsoft JhengHei / Noto Sans TC if it cannot load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;600;700;800&display=block">
 <style>
   :root{
     --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;

@@ -410,7 +410,7 @@
       <button class="pill" data-subj="sci" onclick="setSubject(this)">科學</button>
       <button class="pill on" data-subj="chi" onclick="setSubject(this)">中文</button>
       <button class="pill" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
-      <button class="pill" data-subj="eng" onclick="setSubject(this)">英文<span class="soon">即將推出</span></button>
+      <button class="pill" data-subj="eng" onclick="setSubject(this)">英文</button>
     </div>
 
   </section>
@@ -533,6 +533,18 @@ const TOOLS = [
   {name:'議論文寫作教練', en:'Argumentative Writing Coach', cat:'literacy', level:'secondary', color:'var(--ec-green)', icon:'debate', isNew:false,
    desc:'協助建立論點、論據及駁論結構，並生成寫作評改重點。'},
 
+  /* ── 英文科 ──
+   * Three tools that form a chain: the lesson plan spawns matching materials
+   * and passes its subject, level and topic to them. Built pages, so `link`
+   * goes straight to them rather than to the tool-form.html concept preview.
+   * English UI throughout — the subject is English and the teacher works in it. */
+  {name:'Lesson Plan', en:'Lesson Plan', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'eng', link:'lesson-plan.html', recommended:true,
+   desc:'Build a lesson plan from a topic and level, then generate a matching worksheet or quiz that carries the same context across.'},
+  {name:'Worksheet Generator', en:'Worksheet Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'pen', isNew:true, subject:'eng', link:'worksheet-generator.html',
+   desc:'Turn a topic or text into a printable worksheet with a graphic organiser, discussion prompt and teacher answer key.'},
+  {name:'Quiz Generator', en:'Quiz Generator', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'quiz', isNew:true, subject:'eng', link:'quiz-generator.html',
+   desc:'Generate a mixed-format quiz — multiple choice, true/false, short and long answers — with model answers and mark bands.'},
+
   /* ── 科學科 ──
    * Real product, confirmed 2026-08-03 from EdCity's own screenshot deck
    * (sci_ed_ai_sc.pptx, last updated 2026-03-02). In-product it brands as
@@ -581,7 +593,12 @@ function levelBadge(t){
  * tool-form.html placeholder) as the main grid. */
 /* Which catalog entries are resumable tools. Keyed off `link` so a tool is
  * never listed here twice under two names. */
-const RESUMABLE = {'text-workshop.html':'text-workshop'};
+const RESUMABLE = {
+  'text-workshop.html':        'text-workshop',
+  'lesson-plan.html':          'lesson-plan',
+  'worksheet-generator.html':  'worksheet-generator',
+  'quiz-generator.html':       'quiz-generator'
+};
 
 function resumeTag(t){
   const id = RESUMABLE[t.link];

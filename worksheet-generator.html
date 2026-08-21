@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity Worksheet Generator</title>
+<!-- Site-wide typeface: Chiron GoRound TC, a rounded Traditional Chinese sans
+     built on Source Han Sans/Chiron Hei HK.
+
+     Served from Google Fonts (Eric's call, 2026-08-21) rather than self-hosted
+     and subsetted. The subset was built from the characters the prototype
+     happened to contain, which cannot be right for a tool whose whole premise
+     is a teacher pasting arbitrary 課文 — 岳 was missing the moment 岳陽樓記
+     was added. Google's unicode-range delivery gives full coverage while the
+     browser fetches only the ranges each page actually touches.
+
+     display=block, not swap: swap paints the fallback first and Chiron has
+     different metrics, so every nav row changed height on the swap. block has
+     nothing to swap from.
+
+     Trade-off recorded in the Decision Log: this sends each visitor's IP to
+     Google, which a government-funded body may not be able to ship. Falls back
+     to PingFang TC / Microsoft JhengHei / Noto Sans TC if it cannot load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=block">
+<style>
+  :root{
+    --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
+    --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
+  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;letter-spacing:normal;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  /* Spacing between nav groups. This rule was missing on most pages, so the
+   * Ideas Lab box sat 14px below the last link (its own margin-top) instead of
+   * the 18px the two margins collapse to when it's present — the box visibly
+   * hugged 校本教材庫 on those pages and not on chat/index/agents. */
+  .nav-group{margin-bottom:18px;}
+  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);letter-spacing:normal;padding:0 10px 8px;text-transform:uppercase;}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;}
+  /* Ideas Lab — screens that are proposals, not built features. Grouped and
+   * pill-tagged so the status is visible from the nav and from the page
+   * headline, without having to open the page and read its ribbon. */
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  /* The nav no longer carries a per-link "Ideas Lab" pill — the group heading
+   * above already says it, so the pill was pure repetition, and it was the pill
+   * rather than the label that made the 248px sidebar tight. nowrap is kept so
+   * a long label still can't reflow onto a second line. */
+  .nav a{white-space:nowrap;}
+  /* Hover/active inside the Ideas Lab box use the box's own amber family —
+   * the default blue tints read as a different system sitting inside a warm
+   * container. (The bronze nav pill this once had to coexist with is gone.) */
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas a.active{background:#ecdcbe;color:#7a4f08;font-weight:600;}
+  /* Flask marks the Ideas Lab section: these pages are experiments, not built
+   * features. Sized to the text it sits beside rather than to the nav icons —
+   * it labels the group, it isn't a nav item of its own. */
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;color:#8a5a09;}
+  .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
+  .nav a:hover{background:#f2f6f9;}
+  .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
+  .nav a .ic{width:17px;height:17px;flex-shrink:0;}
+  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
+  .sidebar .user .meta b{font-size:.8rem;display:block;}
+  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+
+  .main{flex:1;min-width:0;padding:44px 34px 80px;}
+  .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
+  .hero{margin-bottom:24px;border-bottom:1px solid var(--line);}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+
+  /* Three bands, each answering a different question, so the upload action
+   * is never mistaken for a search or filter control:
+   *   1. .page-head  — what is this page, and the one thing you can CREATE here
+   *   2. .stat-row   — filter by status (in use / pending / all)
+   *   3. .toolbar    — filter by source, plus search
+   * Upload previously sat immediately right of the search box, which read as
+   * "search-related", and its label collided with the 我上載的 filter chip
+   * two positions away. */
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-head .ph-text{flex:1;min-width:280px;}
+  .row-label{font-size:.68rem;font-weight:600;color:var(--ink-2);margin-right:2px;white-space:nowrap;}
+  .stat-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;font-size:.72rem;color:var(--ink-3);min-width:140px;cursor:pointer;font-family:inherit;text-align:left;transition:box-shadow .12s;}
+  .stat:hover{box-shadow:0 0 0 2px rgba(0,0,0,.05);}
+  .stat.on{border-color:var(--ec-blue);box-shadow:0 0 0 2px #e6f4fb;background:#f7fbfe;}
+  .stat.on b{color:var(--ec-blue-dark);}
+  .stat b{display:block;font-size:1.05rem;color:var(--ink);margin-bottom:2px;}
+
+
+  /* Upload — the page copy promises 「存放你上載的教材」, so the library needs a
+   * visible way in. Mockup only (see the 提案中 ribbon): it reads real filenames
+   * off a native file input so the flow feels true, but nothing is transmitted
+   * or stored — the rows live in memory for the session. */
+  .up-btn{display:inline-flex;align-items:center;gap:7px;background:var(--ec-blue);color:#fff;border:none;
+    border-radius:10px;padding:9px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;
+    transition:background .15s ease;white-space:nowrap;}
+  .up-btn:hover{background:var(--ec-blue-dark);}
+  .up-panel{display:none;background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin-bottom:16px;}
+  .up-panel.show{display:block;}
+  /* No sub-line under the heading: the dropzone below self-explains, and what
+   * happens after upload is stated once in .up-note rather than twice. h3 now
+   * carries the gap the removed sub used to provide. */
+  .up-panel h3{font-size:.9rem;font-weight:700;margin-bottom:14px;}
+  .dropzone{border:2px dashed var(--line);border-radius:12px;padding:26px 18px;text-align:center;
+    cursor:pointer;background:#fafcfd;transition:border-color .15s ease,background .15s ease;}
+  .dropzone:hover,.dropzone.drag{border-color:var(--ec-blue);background:#f4fafd;}
+  .dropzone .dz-ic{font-size:1.5rem;display:block;margin-bottom:8px;}
+  .dropzone b{display:block;font-size:.84rem;margin-bottom:4px;}
+  .dropzone small{font-size:.7rem;color:var(--ink-3);line-height:1.55;}
+  .up-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .up-file{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;
+    padding:9px 13px;font-size:.78rem;}
+  .up-file .f-ic{font-size:1.05rem;flex-shrink:0;}
+  .up-file b{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .up-file .sz{font-size:.7rem;color:var(--ink-3);flex-shrink:0;}
+  .up-file .rm{border:none;background:transparent;color:var(--ink-3);cursor:pointer;font-size:.9rem;
+    padding:2px 4px;font-family:inherit;flex-shrink:0;}
+  .up-file .rm:hover{color:var(--ec-red);}
+  /* Upload progress. Nielsen's first heuristic — visibility of system status:
+   * an instant row appearing gives no sense that anything was transferred, and
+   * a spinner alone doesn't say how far along it is. The bar sits ON the file
+   * item so the object the teacher chose is the object that shows progress,
+   * then that item resolves to a tick before the row lands in the table below.
+   * Faked timings, but the shape matches a real upload. */
+  .up-file{position:relative;overflow:hidden;transition:border-color .2s ease,background .2s ease;}
+  .up-file .bar{
+    position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--ec-blue);
+    transition:width .18s linear;
+  }
+  .up-file.uploading{border-color:#c4e5f5;background:#f7fbfe;}
+  .up-file.done{border-color:#bfe8d7;background:#effaf5;}
+  .up-file.done .bar{background:var(--ec-green);}
+  .up-file .pct{font-size:.68rem;color:var(--ec-blue-dark);font-weight:700;flex-shrink:0;min-width:34px;text-align:right;}
+  .up-file.done .pct{color:#0c6b48;}
+  @media (prefers-reduced-motion:reduce){ .up-file .bar{transition:none;} }
+  .up-actions{display:flex;gap:9px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+  .up-note{font-size:.7rem;color:var(--ink-3);line-height:1.6;margin-top:10px;}
+  .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .pill-sm{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:7px 15px;font-size:.78rem;color:var(--ink-2);cursor:pointer;font-family:inherit;transition:border-color .15s ease;}
+  .pill-sm:not(.on):hover{border-color:var(--ec-blue);}
+  .pill-sm.on{background:var(--ec-blue);border-color:var(--ec-blue);color:#fff;font-weight:600;}
+  .search{flex:1;min-width:180px;max-width:280px;border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:.8rem;font-family:inherit;outline:none;background:#fff;}
+  .search:focus{border-color:var(--ec-blue);}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  th,td{text-align:left;padding:12px 16px;font-size:.8rem;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{font-size:.68rem;letter-spacing:normal;color:var(--ink-3);font-weight:600;background:#fafcfd;}
+  tr:last-child td{border-bottom:none;}
+  .m-name{display:flex;gap:10px;align-items:flex-start;}
+  .m-name .stripe{width:3px;border-radius:3px;flex-shrink:0;align-self:stretch;min-height:32px;}
+  .m-name b{font-size:.84rem;display:block;}
+  .just-saved{font-size:.6rem;font-weight:700;color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;border-radius:99px;padding:2px 8px;margin-left:7px;white-space:nowrap;}
+  .m-name small{font-size:.7rem;color:var(--ink-3);line-height:1.5;display:block;margin-top:2px;}
+  .tchip{font-size:.66rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap;}
+  .tchip.report{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  .tchip.sheet{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
+  .tchip.xs{color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;}
+  .tchip.up{color:var(--ink-2);background:#f2f5f8;border:1px solid var(--line);}
+  .usage{font-size:.74rem;color:var(--ink-2);line-height:1.6;}
+  .usage .none{color:var(--ink-3);}
+  .usage .pending{color:#b07c10;}
+  .lbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 15px;font-size:.78rem;color:var(--ec-blue-dark);font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;}
+  .lbtn:hover{border-color:var(--ec-blue);}
+  .date{font-size:.76rem;color:var(--ink-3);white-space:nowrap;}
+  .empty-row td{padding:34px 16px;text-align:center;color:var(--ink-3);font-size:.8rem;}
+
+  .link-note{
+    margin-top:18px;background:#effaf5;border:1px solid #bfe8d7;border-radius:12px;
+    padding:11px 15px;font-size:.76rem;color:#0c6b48;line-height:1.65;max-width:52em;
+  }
+
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:.78rem;padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120;}
+  .toast.show{opacity:.94;}
+  footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
+  @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
+  /* Portal switcher */
+  .portal-sw{position:relative;padding:12px 12px 0;}
+  .ps-btn{width:100%;display:flex;align-items:center;gap:9px;background:#f7fafc;border:1px solid var(--line);
+    border-radius:11px;padding:9px 12px;cursor:pointer;font-family:inherit;text-align:left;}
+  .ps-btn:hover{border-color:var(--ec-blue);}
+  .ps-ic{font-size:1rem;flex-shrink:0;}
+  .ps-txt{flex:1;min-width:0;}
+  .ps-txt small{display:block;font-size:.6rem;color:var(--ink-3);letter-spacing:.04em;}
+  .ps-txt b{display:block;font-size:.82rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ps-car{font-size:.62rem;color:var(--ink-3);flex-shrink:0;}
+  .portal-menu{position:absolute;top:calc(100% + 4px);left:12px;right:12px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 12px 30px rgba(20,30,40,.16);padding:6px;display:none;z-index:60;}
+  .portal-menu.show{display:block;}
+  .portal-menu a{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border-radius:9px;
+    text-decoration:none;color:var(--ink-2);}
+  .portal-menu a:hover{background:#f2f6f9;}
+  .portal-menu a.on{background:#e6f4fb;}
+  .portal-menu .pm-ic{font-size:.95rem;}
+  .portal-menu b{display:block;font-size:.8rem;color:var(--ink);}
+  .portal-menu small{display:block;font-size:.66rem;color:var(--ink-3);line-height:1.45;margin-top:1px;}
+
+  /* ── English lesson-planning tools ───────────────────────────────────────
+   * English UI throughout (Eric's call): the subject is English and an HK
+   * English panel teacher works in it. Everything outside this family stays
+   * Traditional Chinese.
+   *
+   * Shared by lesson-plan / worksheet-generator / quiz-generator, which form a
+   * chain: the plan spawns matching materials and passes its context to them.
+   */
+  .lp-back{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-2);
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 16px;
+    cursor:pointer;font-family:inherit;text-decoration:none;margin-bottom:18px;}
+  .lp-back:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+
+  .en-h1{font-size:1.7rem;font-weight:800;color:var(--ec-blue);margin-bottom:4px;}
+  .en-sub{font-size:.86rem;color:var(--ink-2);margin-bottom:26px;max-width:52em;line-height:1.6;}
+
+  /* carried context — the whole point of the chain, so it is stated, not implied */
+  .carry{display:flex;align-items:flex-start;gap:12px;background:#f2f8fb;border:1px solid #d8ecf6;
+    border-radius:12px;padding:13px 18px;margin-bottom:24px;flex-wrap:wrap;}
+  .carry .ci{font-size:1rem;line-height:1.3;}
+  .carry b{font-size:.8rem;display:block;}
+  .carry small{font-size:.74rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.55;}
+  .carry .chg{margin-left:auto;background:none;border:none;font-family:inherit;font-size:.76rem;
+    color:var(--ec-blue-dark);font-weight:600;cursor:pointer;white-space:nowrap;}
+
+  .en-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px;}
+  .en-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  @media (max-width:860px){.en-grid{grid-template-columns:1fr;}}
+  .en-sec{font-size:.86rem;font-weight:800;margin-bottom:14px;}
+  .fld{margin-bottom:16px;}
+  .fld label{display:block;font-size:.78rem;font-weight:600;margin-bottom:6px;}
+  .fld .req{color:var(--ec-red);font-weight:600;font-size:.72rem;margin-left:3px;}
+  .fld input[type=text],.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:10px;
+    padding:10px 13px;font-size:.82rem;font-family:inherit;background:#fff;color:var(--ink);}
+  .fld textarea{resize:vertical;min-height:110px;line-height:1.7;}
+  .fld .help{font-size:.72rem;color:var(--ink-3);margin-top:5px;line-height:1.5;}
+
+  .tpl-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:#fafbfc;
+    border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:22px;}
+  .tpl-row .lbl{font-size:.76rem;font-weight:700;margin-right:4px;}
+  .tpl{border:1px solid #cfe6f3;background:#eaf5fb;color:var(--ec-blue-dark);border-radius:99px;
+    padding:6px 14px;font-size:.76rem;font-family:inherit;cursor:pointer;font-weight:600;}
+  .tpl:hover{border-color:var(--ec-blue);}
+  .tpl.on{background:var(--ec-blue);color:#fff;border-color:var(--ec-blue);}
+
+  .subj-pill{display:inline-block;border:1px solid #bfe3c9;background:#eff9f1;color:#1c7a3e;
+    border-radius:8px;padding:7px 14px;font-size:.8rem;font-weight:600;}
+
+  .go-row{display:flex;justify-content:flex-end;margin-top:8px;}
+  .btn{display:inline-flex;align-items:center;gap:7px;background:var(--ec-blue);color:#fff;border:none;
+    border-radius:10px;padding:11px 22px;font-size:.84rem;font-weight:700;cursor:pointer;
+    font-family:inherit;white-space:nowrap;}
+  .btn:hover{background:var(--ec-blue-dark);}
+  .btn.ghost{background:#fff;color:var(--ec-blue-dark);border:1px solid var(--line);font-weight:600;}
+  .btn.ghost:hover{background:#f2f8fb;border-color:var(--ec-blue);}
+  .btn[disabled]{opacity:.45;cursor:default;}
+  .btn[disabled]:hover{background:var(--ec-blue);}
+  .btn.wide{width:100%;justify-content:center;padding:13px 22px;}
+
+  /* generated output */
+  .out{background:#fff;border:1px solid var(--line);border-left:3px solid var(--ec-green);
+    border-radius:14px;padding:0 0 26px;margin-bottom:20px;}
+  .out-head{display:flex;align-items:center;gap:12px;padding:16px 26px;border-bottom:1px solid var(--line);}
+  .out-head b{font-size:.86rem;flex:1;}
+  .out-head button{background:none;border:none;font-family:inherit;font-size:.78rem;
+    color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:7px;}
+  .out-head button:hover{background:#f2f6f9;color:var(--ink-2);}
+  .out-body{padding:22px 26px 0;}
+  .out-body h2{font-size:1.15rem;font-weight:800;margin:0 0 16px;}
+  .out-body h3{font-size:.92rem;font-weight:800;margin:22px 0 9px;}
+  .out-body h4{font-size:.84rem;font-weight:700;margin:16px 0 7px;}
+  .out-body p{font-size:.82rem;color:var(--ink-2);line-height:1.75;margin-bottom:9px;max-width:52em;}
+  .out-body ul{margin:0 0 12px 20px;}
+  .out-body li{font-size:.82rem;color:var(--ink-2);line-height:1.75;margin-bottom:6px;max-width:52em;}
+  .out-body a{color:var(--ec-blue-dark);}
+
+  /* collapsed form strip */
+  .fold{display:flex;align-items:center;gap:14px;background:#fafbfc;border:1px solid var(--line);
+    border-radius:12px;padding:12px 18px;margin-bottom:20px;font-size:.78rem;color:var(--ink-3);}
+  .fold button{margin-left:auto;}
+
+  /* matching materials */
+  .match{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 26px;}
+  .match .mh{font-size:.7rem;font-weight:700;color:var(--ink-3);letter-spacing:.06em;
+    text-transform:uppercase;margin-bottom:14px;}
+  .match-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .mbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;
+    border-radius:11px;padding:11px 17px;font-size:.8rem;font-family:inherit;color:var(--ink);
+    cursor:pointer;text-decoration:none;}
+  .mbtn:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
+  .mbtn[disabled]{opacity:.5;cursor:default;background:#fafbfc;}
+  .mbtn[disabled]:hover{border-color:var(--line);color:var(--ink);}
+  .mbtn .soon{font-size:.64rem;font-weight:700;color:var(--ink-3);background:#eef2f6;
+    border-radius:99px;padding:2px 8px;}
+
+  /* progress, shared with the child tools */
+  .prog{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+  .prog .now{background:#f2f8fb;padding:20px 24px;display:flex;gap:14px;}
+  .prog .spark{width:36px;height:36px;border-radius:50%;background:var(--ec-blue);color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;}
+  .prog .el{font-size:.7rem;color:var(--ec-blue-dark);font-weight:700;}
+  .prog .now b{display:block;font-size:.95rem;margin:2px 0 4px;}
+  .prog .now p{font-size:.78rem;color:var(--ink-2);line-height:1.6;margin-bottom:14px;}
+  .bar{height:7px;border-radius:99px;background:#dbe9f2;}
+  .bar .fill{height:100%;border-radius:99px;background:var(--ec-blue);transition:width .5s ease;}
+  .bhead{display:flex;font-size:.72rem;color:var(--ink-3);margin-bottom:6px;}
+  .bhead span:last-child{margin-left:auto;}
+  .plist{padding:6px 24px 4px;}
+  .prow{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid #f2f5f8;}
+  .prow:last-child{border-bottom:none;}
+  .prow .dot{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;
+    margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;}
+  .prow.done .dot{background:#e6f4fb;border-color:#bcdff2;color:var(--ec-blue-dark);}
+  .prow.doing .dot{background:var(--ec-blue);border-color:var(--ec-blue);}
+  .prow b{font-size:.84rem;font-weight:600;}
+  .prow.doing b{color:var(--ec-blue-dark);}
+  .prow small{display:block;font-size:.72rem;color:var(--ink-3);margin-top:2px;line-height:1.5;}
+  .prow .stat{margin-left:auto;font-size:.72rem;color:var(--ink-3);white-space:nowrap;padding-left:12px;}
+  .prow.doing .stat{color:var(--ec-blue-dark);font-weight:600;}
+  .pfoot{border-top:1px solid var(--line);padding:13px 24px;font-size:.74rem;color:var(--ink-3);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .pfoot span{flex:1;}
+
+  /* worksheet preview — paper, not a web page, because that is what it becomes */
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:10px;padding:44px 52px;
+    margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .sheet h2{font-size:1.15rem;font-weight:800;margin-bottom:4px;}
+  .sheet .meta{font-size:.72rem;color:var(--ink-3);border-bottom:1px solid var(--line);
+    padding-bottom:10px;margin-bottom:18px;display:flex;gap:18px;flex-wrap:wrap;}
+  .sheet .meta span:last-child{margin-left:auto;}
+  .sheet h3{font-size:.9rem;font-weight:800;color:var(--ec-blue-dark);margin:22px 0 8px;}
+  .sheet p{font-size:.8rem;line-height:1.8;color:var(--ink-2);margin-bottom:10px;}
+  .obj{background:#f2f8fb;border-left:3px solid var(--ec-blue);border-radius:0 8px 8px 0;
+    padding:13px 18px;margin-bottom:18px;}
+  .obj b{font-size:.78rem;display:block;margin-bottom:6px;}
+  .obj li{font-size:.76rem;line-height:1.7;color:var(--ink-2);}
+  .q{font-size:.8rem;font-weight:600;margin:14px 0 6px;}
+  .rule{border-bottom:1px solid var(--line);height:26px;margin-bottom:6px;}
+  .sheet table{width:100%;border-collapse:collapse;margin:10px 0 18px;}
+  .sheet th{background:#1e2a35;color:#fff;font-size:.74rem;text-align:left;padding:9px 12px;font-weight:600;}
+  .sheet td{border:1px solid var(--line);padding:14px 12px;font-size:.76rem;vertical-align:top;}
+  .sheet td.k{font-weight:700;width:34%;background:#fafbfc;}
+  .promptbox{background:#eaf5fb;border:1px solid #cfe6f3;border-radius:8px;padding:12px 16px;
+    font-size:.78rem;margin-bottom:12px;}
+  .writebox{border:1px dashed var(--line);border-radius:8px;min-height:96px;padding:12px 16px;
+    font-size:.74rem;color:var(--ink-3);margin-bottom:8px;}
+  .answerkey{background:#fffbf0;border:1px dashed #f0dfa0;border-radius:10px;padding:18px 22px;margin-top:26px;}
+  .answerkey b.t{color:#8a6d00;font-size:.88rem;display:block;margin-bottom:3px;}
+  .answerkey .n{font-size:.72rem;color:#7a6320;font-style:italic;margin-bottom:12px;}
+  .answerkey li{font-size:.76rem;line-height:1.75;color:var(--ink-2);margin-bottom:7px;}
+
+  .figure{margin:12px 0 18px;}
+  .figure img{width:100%;max-width:420px;border-radius:8px;display:block;border:1px solid var(--line);}
+  .figure .cap{font-size:.68rem;color:var(--ink-3);margin-top:6px;}
+  .figure .ph{max-width:420px;height:150px;border:1px dashed var(--line);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:.74rem;color:var(--ink-3);
+    background:#fafbfc;text-align:center;padding:0 20px;}
+
+  .tog{display:flex;align-items:flex-start;gap:12px;border-top:1px solid var(--line);
+    padding-top:16px;margin-top:6px;}
+  .tog input{margin-top:2px;width:16px;height:16px;accent-color:var(--ec-blue);flex-shrink:0;}
+  .tog b{font-size:.8rem;display:block;}
+  .tog small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.55;}
+
+  .exp{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+  .exp .lic{margin-right:auto;font-size:.7rem;color:var(--ink-3);line-height:1.5;max-width:34em;}
+</style>
+<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+     hide feature-flagged elements, and those must exist before first paint
+     or the flagged nav row and the 提案中 ribbons flash in and out. -->
+<script src="feature-flags.js"></script>
+<!-- Collapsible sidebar. In <head> for the same reason as feature-flags.js:
+     the stored collapsed state must be on <html> before first paint, or the
+     sidebar renders full-width and then disappears on every navigation. -->
+<link rel="stylesheet" href="shell-chrome.css">
+<script src="shell-chrome.js"></script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+    <div class="logo-sub">教學工具平台 · POC v0.1</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+  </div>
+  <!-- Portal switcher. The teacher's screens do two different jobs — making
+       teaching material, and managing who her students are and what they may
+       use. The second has approvals, statuses and a coordinator in it; leaving
+       it inside the assistant made the assistant look like a governance
+       product. Two shells, one control, and neither nav lists the other's
+       pages. -->
+  <div class="portal-sw">
+    <button class="ps-btn" onclick="togglePortal()">
+      <span class="ps-ic">✨</span>
+      <span class="ps-txt"><small>目前身處</small><b>EdCity.ai</b></span>
+      <span class="ps-car">▾</span>
+    </button>
+    <div class="portal-menu" id="portalMenu">
+      <a href="chat.html" class="on"><span class="pm-ic">✨</span><span><b>EdCity.ai</b><small>科目助理、工具箱、批改、教材</small></span></a>
+      <a href="groups.html" class=""><span class="pm-ic">🏫</span><span><b>課堂與學生</b><small>分組、工具申請、試用邀請</small></span></a>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <h6>教學工具</h6>
+      <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
+      <a href="index.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>EdMarket 應用程式</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材檢視</a>
+    </div>
+  </nav>
+  <div class="user">
+    <div class="avatar">陳</div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
+  </div>
+</aside>
+
+<main class="main">
+  <a class="lp-back" href="index.html">← Back to 教學工具箱</a>
+
+  <h1 class="en-h1">Worksheet Generator</h1>
+  <p class="en-sub">Generate a worksheet from any topic or text.</p>
+
+  <div class="carry" id="carry" style="display:none">
+    <span class="ci">↩</span>
+    <div>
+      <b id="carryTxt"></b>
+      <small>Carried from the lesson plan. Change it here if this worksheet is for a different class.</small>
+    </div>
+    <button class="chg" onclick="unlock()">Change</button>
+  </div>
+
+  <section id="stForm">
+    <div class="en-card">
+      <div class="en-grid">
+        <div>
+          <div class="fld">
+            <label>Subject</label>
+            <div><span class="subj-pill">English</span></div>
+          </div>
+          <div class="fld">
+            <label for="fLv">Grade level<span class="req">required</span></label>
+            <select id="fLv">
+              <option>Primary 4</option><option>Primary 5</option><option>Primary 6</option>
+              <option>Secondary 1</option><option>Secondary 2</option><option>Secondary 3</option>
+              <option selected>Secondary 4</option><option>Secondary 5</option><option>Secondary 6</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div class="fld">
+            <label for="fTopic">Topic or text<span class="req">required</span></label>
+            <textarea id="fTopic" oninput="gate()" placeholder="Paste a text, or describe what the worksheet should cover"></textarea>
+          </div>
+          <div class="fld">
+            <label for="fExtra">Additional instructions</label>
+            <input type="text" id="fExtra" placeholder="e.g. 10 short-answer questions, include a graphic organiser">
+          </div>
+        </div>
+      </div>
+
+      <label class="tog">
+        <input type="checkbox" id="fImg" checked>
+        <span>
+          <b>Include images</b>
+          <small>Adds photographs from Unsplash, whose licence allows free use including in printed classroom material. The source is printed under each image. EdCity does not search the open web for images.</small>
+        </span>
+      </label>
+
+      <div class="go-row" style="margin-top:18px">
+        <button class="btn" id="goBtn" disabled onclick="generate()">Generate worksheet</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="stWork" style="display:none">
+    <div class="prog">
+      <div class="now">
+        <div class="spark">✦</div>
+        <div style="flex:1">
+          <span class="el" id="pEl">0s elapsed</span>
+          <b id="pTitle">Reading the material</b>
+          <p id="pDesc">Working out what can reasonably be asked at this level.</p>
+          <div class="bhead"><span id="pStep">Step 1 of 4</span><span id="pPct">25%</span></div>
+          <div class="bar"><div class="fill" id="pFill" style="width:25%"></div></div>
+        </div>
+      </div>
+      <div class="plist" id="pList"></div>
+      <div class="pfoot">
+        <span>The worksheet will be saved to 我的教材 when it is done. You can leave this page.</span>
+        <button class="btn ghost" onclick="location.href='my-materials.html'">Leave it running</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="stOut" style="display:none">
+    <div class="fold">
+      <span>Generation panel hidden to save space.</span>
+      <button class="btn ghost" onclick="showForm()">Show form</button>
+    </div>
+    <div class="sheet" id="sheet"></div>
+    <div class="exp">
+      <span class="lic" id="lic"></span>
+      <button class="btn ghost" onclick="notYet()">⬇ PDF</button>
+      <button class="btn ghost" onclick="notYet()">⬇ Word</button>
+      <button class="btn" onclick="save()">Save to 我的教材</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
+<script src="jobs.js"></script>
+<script src="tool-session.js"></script>
+<script src="demo-nav.js"></script>
+<script>
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+</script>
+<script src="unsplash.js"></script>
+<script>
+/* ── Worksheet Generator ────────────────────────────────────────────────
+ * Second link in the chain. Subject, level and topic arrive in the query
+ * string from the lesson plan and are SHOWN, not silently applied — in the
+ * product this was mocked from, the same carry-over was invisible, and the
+ * quiz tool quietly opened at Primary 4 from a Secondary 4 plan. Nobody
+ * noticed because nothing on screen said what had been inherited. */
+
+const TOOL = 'worksheet-generator';
+const P = new URLSearchParams(location.search);
+
+function gate(){
+  document.getElementById('goBtn').disabled =
+    document.getElementById('fTopic').value.trim().length === 0;
+}
+function stage(id){
+  ['stForm','stWork','stOut'].forEach(s =>
+    document.getElementById(s).style.display = (s === id ? '' : 'none'));
+  window.scrollTo(0,0);
+}
+function showForm(){ stage('stForm'); }
+function notYet(){ toast('Not available in this preview.'); }
+
+/* The inherited context is editable — a teacher may want the same worksheet for
+ * a different class — but changing it is a deliberate act, not a default. */
+function unlock(){
+  stage('stForm');
+  document.getElementById('carry').style.display = 'none';
+  toast('You can change the level or topic below.');
+}
+
+(function inherit(){
+  if(P.get('from') !== 'lesson-plan') return;
+  const lv = P.get('level'), tp = P.get('topic');
+  if(lv) document.getElementById('fLv').value = lv;
+  if(tp) document.getElementById('fTopic').value = tp;
+  document.getElementById('carryTxt').textContent =
+    'English · ' + (lv || '—') + ' · ' + (tp || '—');
+  document.getElementById('carry').style.display = 'flex';
+  gate();
+})();
+
+const STEPS = [
+  ['Reading the material',   'Working out what can reasonably be asked at this level.', 'Reading'],
+  ['Drafting the tasks',     'Writing warm-up, analysis and assessment sections.',      'Drafting'],
+  ['Choosing images',        'Selecting photographs cleared for classroom use.',        'Selecting'],
+  ['Writing the answer key', 'Adding teacher guidance and sample responses.',           'Writing']
+];
+
+function generate(){
+  stage('stWork');
+  let i = 0; const t0 = Date.now();
+  const withImg = document.getElementById('fImg').checked;
+  const steps = withImg ? STEPS : STEPS.filter(s => s[0] !== 'Choosing images');
+  const tick = setInterval(() => {
+    document.getElementById('pEl').textContent = Math.round((Date.now()-t0)/1000) + 's elapsed';
+  }, 500);
+  const paint = () => {
+    const p = Math.round((i+1)/steps.length*100);
+    document.getElementById('pTitle').textContent = steps[i][0];
+    document.getElementById('pDesc').textContent  = steps[i][1];
+    document.getElementById('pFill').style.width  = p + '%';
+    document.getElementById('pPct').textContent   = p + '%';
+    document.getElementById('pStep').textContent  = 'Step ' + (i+1) + ' of ' + steps.length;
+    document.getElementById('pList').innerHTML = steps.map((s,n) => {
+      const cls  = n < i ? 'done' : (n === i ? 'doing' : '');
+      const mark = n < i ? '✓' : (n === i ? '●' : '');
+      const stat = n < i ? 'Done' : (n === i ? s[2] + '…' : 'Waiting');
+      return '<div class="prow ' + cls + '"><span class="dot">' + mark + '</span>' +
+             '<div><b>' + s[0] + '</b><small>' + s[1] + '</small></div>' +
+             '<span class="stat">' + stat + '</span></div>';
+    }).join('');
+  };
+  paint();
+  const next = () => {
+    i++;
+    if(i >= steps.length){ clearInterval(tick); render(); return; }
+    paint(); setTimeout(next, 1500);
+  };
+  setTimeout(next, 1500);
+}
+
+function render(){
+  const lv = document.getElementById('fLv').value;
+  const tp = document.getElementById('fTopic').value.trim();
+  const withImg = document.getElementById('fImg').checked;
+  ToolSession.save(TOOL, {level:lv, topic:tp, img:withImg});
+
+  const pic = withImg ? Unsplash.pick(tp) : null;
+  document.getElementById('sheet').innerHTML = sheetHtml(lv, tp, pic);
+  document.getElementById('lic').textContent = pic
+    ? 'Image used under the Unsplash licence — free to use, including in printed classroom material.'
+    : '';
+  stage('stOut');
+}
+
+function sheetHtml(lv, tp, pic){
+  return `
+    <h2>${tp}</h2>
+    <div class="meta"><span>English · ${lv}</span><span>Name: ____________  Class / Date: __________</span></div>
+
+    <div class="obj">
+      <b>Learning objectives</b>
+      <ul>
+        <li>Identify setting, character, conflict and theme in a short story.</li>
+        <li>Analyse how descriptive language and narrative perspective shape meaning.</li>
+        <li>Express a personal response to the contexts the story depicts.</li>
+      </ul>
+    </div>
+
+    ${pic ? Unsplash.figure(pic, 'Use the photograph to picture the setting before you read.') : ''}
+
+    <h3>Part 1 · Warm-up: setting the scene</h3>
+    <p>Think about a book or film that took you somewhere unfamiliar. Answer below.</p>
+    <div class="q">1. What was the setting, and how did it make you feel?</div>
+    <div class="rule"></div><div class="rule"></div>
+    <div class="q">2. Why are short stories often described as "windows into other lives"?</div>
+    <div class="rule"></div><div class="rule"></div>
+
+    <h3>Part 2 · Literary elements</h3>
+    <p>As you read with your partner, complete the organiser below.</p>
+    <table>
+      <tr><th>Literary element</th><th>Textual evidence / description</th></tr>
+      <tr><td class="k">Setting &amp; mood</td><td></td></tr>
+      <tr><td class="k">Main conflict</td><td></td></tr>
+      <tr><td class="k">Turning point</td><td></td></tr>
+      <tr><td class="k">Resolution</td><td></td></tr>
+    </table>
+
+    <h3>Part 3 · Discussion</h3>
+    <div class="promptbox"><b>Prompt:</b> How does the writer's choice of setting change our understanding of the character's challenge?</div>
+    <div class="writebox">Group notes and key takeaways</div>
+
+    <h3>Part 4 · Exit ticket</h3>
+    <p>In 3–5 sentences, identify the central theme and one piece of evidence supporting it.</p>
+    <div class="writebox"></div>
+
+    <div class="answerkey">
+      <b class="t">Teacher answer key and facilitation guide</b>
+      <div class="n">For teacher reference and formative assessment</div>
+      <ul>
+        <li><b>Part 1:</b> look for sensory detail and a personal connection. Answers vary with reading history.</li>
+        <li><b>Part 2:</b> setting and mood — a place established through sensory adjectives; conflict — character against society or against self; turning point — the moment a choice becomes unavoidable; resolution — what has changed.</li>
+        <li><b>Part 3:</b> strong answers cite a specific constraint in the setting and link it to the character's options.</li>
+        <li><b>Part 4:</b> 2 marks — names a theme and quotes evidence, in 3–5 sentences. 1 mark — theme without evidence. 0 — off topic.</li>
+      </ul>
+    </div>`;
+}
+
+function save(){
+  const lv = document.getElementById('fLv').value;
+  const tp = document.getElementById('fTopic').value.trim();
+  Jobs.start(TOOL, 'Worksheet Generator', 'worksheet-generator.html',
+    [{title:'Worksheet: ' + tp, kind:'ws', text:tp, level:lv}]);
+  ToolSession.clear(TOOL);
+  location.href = 'my-materials.html';
+}
+
+/* ── resume ── */
+(function(){
+  const s = ToolSession.load(TOOL);
+  if(!s) return;
+  document.getElementById('fLv').value    = s.level;
+  document.getElementById('fTopic').value = s.topic;
+  document.getElementById('fImg').checked = !!s.img;
+  gate(); render();
+})();
+gate();
+</script>
+</body>
+</html>

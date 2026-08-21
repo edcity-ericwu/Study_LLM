@@ -521,7 +521,7 @@
 <script>
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
 
-const KIND = {ws:{icon:'📝',name:'學生工作紙'}, pt:{icon:'🖥',name:'課堂簡報'}, tn:{icon:'💡',name:'教師提示'}};
+const KIND = {ws:{icon:'📝',name:'學生工作紙'}, pt:{icon:'🖥',name:'課堂簡報'}, tn:{icon:'💡',name:'教師提示'}, qz:{icon:'✅',name:'測驗卷'}};
 let FILTER = 'all';
 
 /* Seeded so the library is never empty on a first visit — a teacher who has
@@ -536,7 +536,7 @@ const SEED = [
  * library row. Jobs.harvest empties as it hands over, so nothing accumulates
  * in two places — this library owns the material from that moment on. */
 function all(){
-  const done = Jobs.harvest('text-workshop');
+  const done = Jobs.harvest();   /* every tool, not just 課文工房 */
   if(done.length){
     const saved = DemoState.get('twMaterials', null) || SEED.slice();
     done.forEach(j => saved.unshift({
@@ -559,7 +559,7 @@ function render(){
   const box = document.getElementById('list');
 
   /* 製作中 rows lead, because they are what the teacher came back to see. */
-  const run = Jobs.running('text-workshop').filter(j => FILTER === 'all' || j.kind === FILTER);
+  const run = Jobs.running().filter(j => FILTER === 'all' || j.kind === FILTER);
   const runHtml = run.length ? ('<div class="mgroup"><h3>製作中</h3>' +
     '<div class="gs">可以離開這一頁，完成後會留在下方的教材列表。</div>' +
     run.map(j => '<div class="mcard making"><span class="mi">' + KIND[j.kind].icon + '</span>' +
@@ -593,7 +593,7 @@ function setF(k){ FILTER = k; render(); }
 
 /* Live while the page is open; on a fresh load the wall-clock in jobs.js has
  * already advanced the work, so returning later shows it further along. */
-setInterval(() => { if(Jobs.running('text-workshop').length || document.querySelector('.mcard.making')) render(); }, 1000);
+setInterval(() => { if(Jobs.running().length || document.querySelector('.mcard.making')) render(); }, 1000);
 function act(){ toast('示範版本未提供此操作。'); }
 
 const n = new URLSearchParams(location.search).get('new');

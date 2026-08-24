@@ -217,7 +217,7 @@
    * Rehoused from a standalone top-bar POC into the teacher shell. The POC's
    * own second-level nav (開始準備 / 我的教材) becomes a tab strip inside the
    * page, since the sidebar already carries first-level navigation. */
-  .tw-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:26px;}
+  .tw-tabs{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);margin-bottom:26px;}
   .tw-tab{border:none;background:none;padding:10px 2px;margin-right:22px;font-family:inherit;font-size:.86rem;
     font-weight:600;color:var(--ink-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
   .tw-tab:hover{color:var(--ink-2);}
@@ -431,6 +431,19 @@
   .tw-check.off{opacity:.45;}
   .tw-check.off input{cursor:not-allowed;}
   .tw-check.off b,.tw-check.off small{color:var(--ink-3);}
+
+  .tw-out{margin-left:auto;align-self:center;font-size:.82rem;font-weight:600;
+    color:var(--ec-blue-dark);text-decoration:none;padding:8px 2px;}
+  .tw-out:hover{text-decoration:underline;}
+
+  .save-strip{background:#effaf5;border:1px solid #bfe8d5;border-radius:14px;
+    padding:18px 22px;margin-top:20px;text-align:left;}
+  .ss-head{display:flex;gap:13px;align-items:flex-start;margin-bottom:14px;}
+  .ss-tick{width:24px;height:24px;border-radius:50%;background:#0c6b48;color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;}
+  .save-strip b{font-size:.95rem;display:block;color:#0c6b48;}
+  .save-strip small{font-size:.76rem;color:#3c6b55;display:block;margin-top:4px;line-height:1.7;}
+  .ss-acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -492,9 +505,11 @@
     <h1 id="pgTitle">課文工房</h1>
     <p class="sub" id="pgSub">把一篇課文變成可以直接用的教材。</p>
 
+    <!-- 我的教材 was a tab here, which implied the library belonged to this
+         tool. Four tools write into it, so it is a link out, not a tab. -->
     <div class="tw-tabs">
-      <button class="tw-tab on" id="tabPrep" onclick="location.href='text-workshop.html'">開始準備</button>
-      <button class="tw-tab" onclick="location.href='my-materials.html'">我的教材</button>
+      <button class="tw-tab on" id="tabPrep">開始準備</button>
+      <a class="tw-out" href="my-materials.html?subject=chi">我的教材 →</a>
     </div>
 
     <!-- ①  form ------------------------------------------------------- -->
@@ -642,7 +657,7 @@
       <div class="tw-prog" style="max-width:760px">
         <div class="orb">✏️</div>
         <h2>正在製作教材</h2>
-        <p class="lede">按你選的重點撰寫教材。完成後會存入「我的教材」，隨時可以再修改。</p>
+        <p class="lede">按你選的重點撰寫教材。完成後由你決定要不要存入「我的教材」。</p>
 
         <div class="pcard">
           <div class="now">
@@ -661,7 +676,7 @@
           </div>
           <div class="plist" id="mkList"></div>
           <div class="pfoot" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-            <span style="flex:1">教材會逐份完成並存入「我的教材」。你可以先離開，稍後回來查看。</span>
+            <span style="flex:1">可以先離開。教材完成後不會自動儲存，側欄會提示你回來決定。</span>
             <button class="btn ghost" onclick="leaveRunning()">先離開</button>
           </div>
         </div>
@@ -670,6 +685,24 @@
           <div class="eh"><div><small class="k">可先下載</small><b id="earlyTitle">2 個檔案已可先下載</b></div><span class="ei">⬇</span></div>
           <p class="en">這些檔案已經寫好，但尚未完成最終核對。先下載的是草稿版本，核對後如有修改，「我的教材」會保留最新版本。</p>
           <div id="earlyList"></div>
+        </div>
+
+        <!-- Explicit save (Eric, 2026-08-21). Materials used to be harvested
+             into 我的教材 the moment they finished, so they arrived without the
+             teacher ever choosing. The strip states what she has, what happens
+             if she saves, and what happens if she does not. -->
+        <div class="save-strip" id="saveStrip" style="display:none">
+          <div class="ss-head">
+            <span class="ss-tick">✓</span>
+            <div>
+              <b id="ssTitle"></b>
+              <small>教材已經做好，但還沒有存起來。儲存後會放進「我的教材」，日後可以再開啟修改；不儲存的話，離開這一頁就會消失。</small>
+            </div>
+          </div>
+          <div class="ss-acts">
+            <button class="btn ghost" onclick="discardAll()">不儲存</button>
+            <button class="btn" onclick="saveAll()">儲存到「我的教材」</button>
+          </div>
         </div>
 
         <div class="mset" style="text-align:left">
@@ -683,6 +716,7 @@
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
+<script src="materials.js"></script>
 <script src="jobs.js"></script>
 <script src="tool-session.js"></script>
 <script src="demo-nav.js"></script>
@@ -998,8 +1032,10 @@ function runMakeScreen(jobs){
     else document.getElementById('earlyCard').style.display = 'none';
     if(ready.length === jobs.length){
       clearInterval(mkTick);
-      ToolSession.clear(TOOL);          /* finished work is not paused work */
-      location.href = 'my-materials.html?new=' + jobs.length;
+      document.getElementById('earlyCard').style.display = 'none';
+      document.getElementById('ssTitle').textContent = jobs.length + ' 份教材已完成';
+      document.getElementById('saveStrip').style.display = 'block';
+      if(window.Jobs && Jobs.refresh) Jobs.refresh();
     }
   };
   paint();
@@ -1059,8 +1095,11 @@ function restore(){
 
   /* A run still on the clock resumes on the generating screen; anything else
    * resumes at the learning points, which is where the thinking was. */
-  const live = Jobs.running(TOOL);
-  if(st.stage === 'stMake' && live.length){ showIdentity(); resumeMake(live); return true; }
+  const live  = Jobs.running(TOOL);
+  const ready = Jobs.finished(TOOL);
+  if(st.stage === 'stMake' && (live.length || ready.length)){
+    showIdentity(); resumeMake(live.concat(ready)); return true;
+  }
 
   showIdentity();
   showPoints();
@@ -1084,6 +1123,30 @@ function banner(msg){
 function startOver(){
   ToolSession.clear(TOOL);
   location.href = 'text-workshop.html';
+}
+
+/* The two ways out of a finished run. Both claim the jobs, so the shell stops
+ * reporting drafts that no longer need a decision. */
+function saveAll(){
+  const d = DEMO_TEXTS[CUR];
+  const done = Jobs.finished(TOOL);
+  Materials.addMany(done.map(j => ({
+    tool:TOOL, toolName:'課文工房',
+    title:j.title, kind:j.kind, text:j.text || d.title, level:j.level || d.level
+  })));
+  Jobs.claim(done.map(j => j.id));
+  ToolSession.clear(TOOL);
+  location.href = 'my-materials.html?new=' + done.length + '&subject=chi';
+}
+
+function discardAll(){
+  const done = Jobs.finished(TOOL);
+  Jobs.claim(done.map(j => j.id));
+  ToolSession.clear(TOOL);
+  toast('已捨棄，沒有存入「我的教材」。');
+  document.getElementById('saveStrip').style.display = 'none';
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
+  setTimeout(() => location.href = 'text-workshop.html', 1200);
 }
 
 /* ── boot ── */

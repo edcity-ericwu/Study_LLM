@@ -357,6 +357,9 @@
   .portal-menu .pm-ic{font-size:.95rem;}
   .portal-menu b{display:block;font-size:.8rem;color:var(--ink);}
   .portal-menu small{display:block;font-size:.66rem;color:var(--ink-3);line-height:1.45;margin-top:1px;}
+
+  .type-tab[disabled]{opacity:.4;cursor:default;background:#f4f6f8;color:var(--ink-3);border-color:var(--line);}
+  .type-tab[disabled]:hover{border-color:var(--line);color:var(--ink-3);}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -621,7 +624,11 @@ function syncTypeTabs(){
   let selectionGone = false;
   document.querySelectorAll('.type-tab').forEach(t => {
     const ok = t.dataset.type === 'all' || available.has(t.dataset.type);
-    t.style.display = ok ? '' : 'none';
+    /* Disabled rather than hidden (standing rule, Eric 2026-08-21). Hiding
+     * removes the noise but reflows the row as options appear and vanish, and
+     * a teacher cannot learn that a filter exists at all. Greying keeps the
+     * row stable and the capability visible while making it unclickable. */
+    t.disabled = !ok;
     if(!ok && t.classList.contains('on')) selectionGone = true;
   });
   if(selectionGone){

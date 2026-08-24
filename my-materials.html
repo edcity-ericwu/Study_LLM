@@ -444,6 +444,15 @@
   .mcard .mprog .f{height:100%;border-radius:99px;background:var(--ec-blue);transition:width .5s linear;}
   .mk-tag{font-size:.7rem;font-weight:600;color:var(--ec-blue-dark);background:#eaf5fb;
     border-radius:99px;padding:4px 11px;white-space:nowrap;margin-left:auto;flex-shrink:0;}
+
+  .mm-filterset{margin-bottom:18px;}
+  .mm-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  .mm-lbl{font-size:.7rem;font-weight:700;color:var(--ink-2);min-width:2.4em;}
+  /* Standing rule (Eric, 2026-08-21): a filter that would return nothing is
+   * disabled, not clickable. Live options stay readable instead of competing
+   * with dead ones. */
+  .chip[disabled]{opacity:.4;cursor:default;background:#f4f6f8;color:var(--ink-3);border-color:var(--line);}
+  .chip[disabled]:hover{border-color:var(--line);}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -499,67 +508,87 @@
 </aside>
 
 <main class="main">
-  <a class="back" href="index.html?subject=chi">← 返回教學工具箱</a>
-  <h1>課文工房</h1>
-  <p class="sub">你用課文工房製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
-
-  <div class="tw-tabs">
-    <button class="tw-tab" onclick="location.href='text-workshop.html'">開始準備</button>
-    <button class="tw-tab on">我的教材</button>
-  </div>
+  <!-- Was presented as 課文工房's second tab, while four tools wrote into it —
+       so an English worksheet landed on a page titled 課文工房. The library is
+       the teacher's, not one tool's. Giving English its own copy would have
+       rebuilt the duplicate inbox ruled out on 2026-08-20, and would compound
+       with every subject added. -->
+  <a class="back" id="backLink" href="index.html?subject=chi">← 返回教學工具箱</a>
+  <h1>我的教材</h1>
+  <p class="sub">你用教學工具製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
 
   <div class="mm-new" id="newNote" style="display:none">✓ <span id="newTxt"></span></div>
 
-  <div class="mm-filters" id="filters"></div>
+  <div class="mm-filterset">
+    <div class="mm-row"><span class="mm-lbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
+    <div class="mm-row"><span class="mm-lbl">類型</span><div class="mm-filters" id="filters"></div></div>
+  </div>
   <div id="list"></div>
 </main>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
+<script src="materials.js"></script>
 <script src="jobs.js"></script>
 <script src="demo-nav.js"></script>
 <script>
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
 
-const KIND = {ws:{icon:'📝',name:'學生工作紙'}, pt:{icon:'🖥',name:'課堂簡報'}, tn:{icon:'💡',name:'教師提示'}, qz:{icon:'✅',name:'測驗卷'}, lp:{icon:'📋',name:'教案'}};
-let FILTER = 'all';
+const KIND = Materials.KIND;
+let TFILTER = 'all';   /* which tool made it */
+let KFILTER = 'all';   /* what kind of material it is */
 
-/* Seeded so the library is never empty on a first visit — a teacher who has
- * used the tool before would have earlier work sitting here. */
-const SEED = [
-  {title:'學生工作紙：比較第三段與第四段的景物描寫，說明情隨景遷', kind:'ws', text:'岳陽樓記', level:'中四', at:'2026-08-11'},
-  {title:'教師提示：比較第三段與第四段的景物描寫，說明情隨景遷',   kind:'tn', text:'岳陽樓記', level:'中四', at:'2026-08-11'},
-  {title:'課堂簡報：理解奏表中臣子陳說的語氣與分寸',               kind:'pt', text:'出師表',   level:'中五', at:'2026-06-24'}
-];
+/* SEED and the store both live in materials.js now. */
 
 /* Finished work is claimed from the shared record and becomes an ordinary
  * library row. Jobs.harvest empties as it hands over, so nothing accumulates
  * in two places — this library owns the material from that moment on. */
 function all(){
-  const done = Jobs.harvest();   /* every tool, not just 課文工房 */
-  if(done.length){
-    const saved = DemoState.get('twMaterials', null) || SEED.slice();
-    done.forEach(j => saved.unshift({
-      title:j.title, kind:j.kind, text:j.text, level:j.level,
-      at:new Date().toISOString().slice(0,10)
-    }));
-    DemoState.set('twMaterials', saved);
-  }
-  const saved = DemoState.get('twMaterials', null);
-  return saved && saved.length ? saved : SEED;
+  /* Finished work is claimed by the tool that made it, not by the library —
+   * saving is the teacher's decision (2026-08-21), so nothing arrives here
+   * without her having said so. */
+  return Materials.all();
 }
 
 function render(){
-  const items = all().filter(x => FILTER === 'all' || x.kind === FILTER);
+  const everything = all();
+  const running    = Jobs.running();
+
+  /* Counts drive which chips are live, so a filter can never lead to an empty
+   * shelf — the standing rule is that a dead option is noise, not an option. */
+  const count = (tool, kind) =>
+    everything.filter(x => (tool === 'all' || x.tool === tool) &&
+                           (kind === 'all' || x.kind === kind)).length +
+    running.filter(j  => (tool === 'all' || j.tool === tool) &&
+                           (kind === 'all' || j.kind === kind)).length;
+
+  const tools = Materials.tools();
+  running.forEach(j => { if(j.tool && !tools[j.tool]) tools[j.tool] = j.toolName || j.tool; });
+
+  document.getElementById('toolFilters').innerHTML =
+    [['all','全部工具']].concat(Object.keys(tools).map(t => [t, tools[t]]))
+      .map(([k,l]) => {
+        const n = count(k, KFILTER);
+        return '<button class="chip' + (TFILTER===k?' on':'') + '"' +
+               (n?'':' disabled') + ' onclick="setTool(\'' + k + '\')">' + l + '</button>';
+      }).join('');
 
   document.getElementById('filters').innerHTML =
     [['all','全部']].concat(Object.keys(KIND).map(k => [k, KIND[k].name]))
-      .map(([k,l]) => '<button class="chip' + (FILTER===k?' on':'') + '" onclick="setF(\'' + k + '\')">' + l + '</button>').join('');
+      .map(([k,l]) => {
+        const n = count(TFILTER, k);
+        return '<button class="chip' + (KFILTER===k?' on':'') + '"' +
+               (n?'':' disabled') + ' onclick="setF(\'' + k + '\')">' + l + '</button>';
+      }).join('');
+
+  const keep = x => (TFILTER === 'all' || x.tool === TFILTER) &&
+                    (KFILTER === 'all' || x.kind === KFILTER);
+  const items = everything.filter(keep);
+  const run   = running.filter(keep);
 
   const box = document.getElementById('list');
 
   /* 製作中 rows lead, because they are what the teacher came back to see. */
-  const run = Jobs.running().filter(j => FILTER === 'all' || j.kind === FILTER);
   const runHtml = run.length ? ('<div class="mgroup"><h3>製作中</h3>' +
     '<div class="gs">可以離開這一頁，完成後會留在下方的教材列表。</div>' +
     run.map(j => '<div class="mcard making"><span class="mi">' + KIND[j.kind].icon + '</span>' +
@@ -569,11 +598,12 @@ function render(){
       '<span class="mk-tag">製作中</span></div>').join('') + '</div>') : '';
 
   if(!items.length && !run.length){
-    box.innerHTML = '<div class="mm-empty"><span class="ei">📄</span><b>沒有這類教材</b>' +
-      '<p>換一個篩選，或回到「開始準備」製作新的教材。</p>' +
-      '<button class="btn" onclick="location.href=\'text-workshop.html\'">開始準備</button></div>';
+    box.innerHTML = '<div class="mm-empty"><span class="ei">📄</span><b>還沒有教材</b>' +
+      '<p>到教學工具箱挑一個工具，做好之後儲存，就會出現在這裏。</p>' +
+      '<button class="btn" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>';
     return;
   }
+
   const byText = {};
   items.forEach(x => { (byText[x.text] = byText[x.text] || []).push(x); });
 
@@ -582,21 +612,26 @@ function render(){
     return '<div class="mgroup"><h3>《' + t + '》</h3>' +
       '<div class="gs">' + g[0].level + '・' + g.length + ' 份教材・最近更新 ' + g[0].at + '</div>' +
       g.map(x => '<div class="mcard"><span class="mi">' + KIND[x.kind].icon + '</span>' +
-        '<div><b>' + x.title + '</b><small>' + KIND[x.kind].name + '・建立於 ' + x.at + '</small></div>' +
+        '<div><b>' + x.title + '</b><small>' + KIND[x.kind].name +
+        (x.toolName ? '・' + x.toolName : '') + '・建立於 ' + x.at + '</small></div>' +
         '<div class="acts"><button onclick="act()">預覽</button><button onclick="act()">下載</button>' +
         '<button onclick="act()">在課堂使用</button></div></div>').join('') +
       '</div>';
   }).join('');
   box.innerHTML = runHtml + box.innerHTML;
 }
-function setF(k){ FILTER = k; render(); }
+
+function setTool(k){ TFILTER = k; render(); }
+function setF(k){ KFILTER = k; render(); }
 
 /* Live while the page is open; on a fresh load the wall-clock in jobs.js has
  * already advanced the work, so returning later shows it further along. */
 setInterval(() => { if(Jobs.running().length || document.querySelector('.mcard.making')) render(); }, 1000);
 function act(){ toast('示範版本未提供此操作。'); }
 
-const n = new URLSearchParams(location.search).get('new');
+const Q = new URLSearchParams(location.search);
+if(Q.get('subject')) document.getElementById('backLink').href = 'index.html?subject=' + Q.get('subject');
+const n = Q.get('new');
 if(n){
   document.getElementById('newNote').style.display = 'flex';
   document.getElementById('newTxt').textContent = '已完成 ' + n + ' 份教材，存放在下方。';

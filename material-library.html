@@ -205,6 +205,11 @@
   .portal-menu .pm-ic{font-size:.95rem;}
   .portal-menu b{display:block;font-size:.8rem;color:var(--ink);}
   .portal-menu small{display:block;font-size:.66rem;color:var(--ink-3);line-height:1.45;margin-top:1px;}
+
+  /* A stat that reads 0 is not a filter — it is a fact. Disabled so it stops
+   * competing for the click (standing rule, Eric 2026-08-21). */
+  .stat[disabled]{opacity:.45;cursor:default;background:#f6f8fa;}
+  .stat[disabled]:hover{box-shadow:none;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -366,8 +371,8 @@ function render(){
     </tr>`).join('') : `<tr class="empty-row"><td colspan="5">沒有符合條件的教材</td></tr>`;
   document.getElementById('statRow').innerHTML = `
     <button class="stat${usageFilter==='all'?' on':''}" onclick="setUsageFilter('all')"><b>${scoped.length}</b>教材總數 · 顯示全部</button>
-    <button class="stat${usageFilter==='live'?' on':''}" onclick="setUsageFilter('live')"><b>${scoped.filter(i=>i.usageState==='live').length}</b>正在課室使用中</button>
-    <button class="stat${usageFilter==='pending'?' on':''}" onclick="setUsageFilter('pending')"><b>${scoped.filter(i=>i.usageState==='pending').length}</b>待審訂／待處理</button>
+    <button class="stat${usageFilter==='live'?' on':''}"${scoped.filter(i=>i.usageState==='live').length?'':' disabled'} onclick="setUsageFilter('live')"><b>${scoped.filter(i=>i.usageState==='live').length}</b>正在課室使用中</button>
+    <button class="stat${usageFilter==='pending'?' on':''}"${scoped.filter(i=>i.usageState==='pending').length?'':' disabled'} onclick="setUsageFilter('pending')"><b>${scoped.filter(i=>i.usageState==='pending').length}</b>待審訂／待處理</button>
   `;
 }
 /* ── Upload (mockup) ──────────────────────────────────────────────────────

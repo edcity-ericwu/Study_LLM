@@ -520,6 +520,7 @@
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
+<script src="materials.js"></script>
 <script src="jobs.js"></script>
 <script src="tool-session.js"></script>
 <script src="demo-nav.js"></script>
@@ -632,20 +633,15 @@ function showPlan(){
 }
 
 /* Saving is the teacher's decision, not something that happens to her. The
- * tool produces a draft; it reaches 我的教材 only when she says so. This is
- * why save() writes straight to the library rather than going through Jobs —
- * Jobs models work still running, and this work is finished. */
-function saveToLibrary(item){
-  const saved = DemoState.get('twMaterials', null) || [];
-  saved.unshift(Object.assign({at:new Date().toISOString().slice(0,10)}, item));
-  DemoState.set('twMaterials', saved);
-}
+ * tool produces a draft; it reaches 我的教材 only when she says so. Materials
+ * owns the store — four pages used to write it with their own code, which is
+ * how the seed defect got in. */
 
 function save(){
   const c = ctx();
-  saveToLibrary({title:'Lesson plan: ' + c.topic, kind:'lp', text:c.topic, level:c.level});
+  Materials.add({tool:'lesson-plan', toolName:'Lesson Plan', title:'Lesson plan: ' + c.topic, kind:'lp', text:c.topic, level:c.level});
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html?new=1';
+  location.href = 'my-materials.html?new=1&subject=eng';
 }
 
 function planHtml(c){

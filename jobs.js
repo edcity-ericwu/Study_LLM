@@ -69,16 +69,23 @@
       });
     },
 
-    /* Finished jobs are handed to the tool's library, which owns them from
-     * that point on, and dropped from here. Nothing accumulates. */
-    harvest: function(tool){
-      var now = Date.now(), keep = [], out = [];
-      read().forEach(function(j){
-        if(j.doneAt <= now && (!tool || j.tool === tool)) out.push(j); else keep.push(j);
+    /* Finished work is NOT handed anywhere. It waits, unclaimed, until the
+     * teacher decides to save it (Eric, 2026-08-21) — the library used to
+     * harvest it automatically, which meant material arrived without her ever
+     * choosing. Claiming happens when she saves, or when she discards. */
+    finished: function(tool){
+      var now = Date.now();
+      return read().filter(function(j){
+        return j.doneAt <= now && (!tool || j.tool === tool);
       });
-      if(out.length) write(keep);
-      return out;
     },
+
+    claim: function(ids){
+      var drop = {};
+      (ids || []).forEach(function(id){ drop[id] = true; });
+      write(read().filter(function(j){ return !drop[j.id]; }));
+    },
+
 
     /* Fraction complete, 0–1, for a 製作中 row. */
     progress: function(j){
@@ -107,16 +114,34 @@
   function render(){
     var host = document.getElementById('jbInd');
     var running = Jobs.running();
+    var ready   = Jobs.finished();
 
     var dot = document.querySelector('.sc-toggle .jb-dot');
     if(!dot){
       var tb = document.querySelector('.sc-toggle');
       if(tb){ dot = document.createElement('span'); dot.className = 'jb-dot'; tb.appendChild(dot); }
     }
-    if(dot) dot.classList.toggle('on', running.length > 0);
+    if(dot) dot.classList.toggle('on', running.length + ready.length > 0);
 
     if(!host) return;
-    if(!running.length){ host.classList.remove('on'); host.innerHTML = ''; return; }
+    if(!running.length && !ready.length){ host.classList.remove('on'); host.innerHTML = ''; return; }
+
+    host.classList.add('on');
+
+    /* Ready-but-unsaved leads: it is the one that needs a decision. */
+    if(ready.length){
+      var by = {};
+      ready.forEach(function(j){
+        by[j.tool] = by[j.tool] || {name: j.toolName, href: j.href, n: 0};
+        by[j.tool].n++;
+      });
+      var first = by[Object.keys(by)[0]];
+      host.innerHTML = '<a class="jb-btn ready" href="' + first.href + '">' +
+        '<span class="jb-tick">✓</span><span style="flex:1">' +
+        '<b>' + ready.length + ' 份教材已完成</b>' +
+        '<small>' + first.name + '・尚未儲存，回去決定要不要留起</small></span></a>';
+      return;
+    }
 
     var byTool = {};
     running.forEach(function(j){
@@ -130,7 +155,6 @@
       (tools.length === 1 ? byTool[tools[0]].name + '・可離開，完成後回來查看'
                           : tools.length + ' 個工具進行中') + '</small></span>';
 
-    host.classList.add('on');
     if(tools.length === 1){
       host.innerHTML = '<a class="jb-btn" href="' + byTool[tools[0]].href + '">' + head + '</a>';
     } else {

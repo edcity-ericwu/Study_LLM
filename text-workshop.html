@@ -940,11 +940,12 @@ function showIdentity(){
   const d = DEMO_TEXTS[CUR];
   const h = document.getElementById('pgTitle');
   h.textContent = '《' + d.title + '》';
+  /* 更換課文 removed 2026-08-24: it reloaded to the entry fork, which asks a
+   * question she has already answered. Swapping the text mid-run needs a
+   * real workflow, not a button that restarts the tool. */
   document.getElementById('pgSub').innerHTML =
-    '<span style="color:var(--ink-3)">' + d.level + '・' + d.genre + '</span>' +
-    ' <button class="swap" style="margin-left:14px" onclick="restart()">更換課文</button>';
+    '<span style="color:var(--ink-3)">' + d.level + '・' + d.genre + '</span>';
 }
-function restart(){ location.reload(); }
 
 /* ── reading ── */
 const READ_STEPS = [
@@ -1038,7 +1039,7 @@ function showPoints(){
             '<button class="mat" id="m-' + p.id + '-' + k + '" onclick="toggleMat(\'' + p.id + '\',\'' + k + '\')">' +
             '<span class="ring"></span>' + MAT_KINDS[k].icon + ' ' + MAT_KINDS[k].name + '</button>').join('') +
         '</div>' +
-        '<button class="lp-more" onclick="moreOpts()">更多選擇</button>' +
+        /* 更多選擇 removed 2026-08-24: its only outcome was an apology. */
       '</div>' +
     '</div>').join('');
 
@@ -1058,7 +1059,6 @@ function togglePoint(id){
   if(!wasOpen) el.classList.add('open');
 }
 function toggleEv(id){ document.getElementById('ev-' + id).classList.toggle('show'); }
-function moreOpts(){ toast('示範版本只提供以上三種教材。'); }
 function viewText(){ toast('示範版本未提供全文檢視。'); }
 
 function toggleMat(pid, kind){
@@ -1100,7 +1100,7 @@ function startMake(){
   const d = DEMO_TEXTS[CUR];
   const items = [];
   selectedPoints().forEach(p => SEL[p.id].forEach(k =>
-    items.push({title:MAT_KINDS[k].name + '：' + p.title, kind:k, text:d.title, level:d.level})));
+    items.push({title:MAT_KINDS[k].name + '：' + p.title, kind:k, pid:p.id, text:d.title, level:d.level})));
 
   /* href points back at the tool, not the library: the shell count is a way
    * back to the WORK; finished materials are what the library is for. */
@@ -1246,13 +1246,62 @@ function startOver(){
 
 /* The two ways out of a finished run. Both claim the jobs, so the shell stops
  * reporting drafts that no longer need a decision. */
+/* ── what a saved material actually contains ───────────────────────────
+ * Until 2026-08-24 課文工房 saved a title and nothing else, so every
+ * material it produced opened to 「這份教材沒有儲存內容」 — the library held
+ * filenames with no files (Eric). The content is written here, at save time,
+ * from the learning point the teacher chose, so a material is always about
+ * the thing she picked rather than about the text in general.
+ *
+ * Three kinds, three shapes, because they are read at three different
+ * moments: the worksheet by a student, the slides on a screen, the notes by
+ * the teacher while the class is working. */
+function bodyFor(point, kind, d){
+  const head = '<h2>' + MAT_KINDS[kind].name + '：' + point.title + '</h2>' +
+    '<p class="m-meta">《' + d.title + '》・' + d.level + '・' + point.tag + '</p>';
+
+  if(kind === 'ws') return head +
+    '<h3>學習重點</h3><p>' + point.learn + '</p>' +
+    '<h3>課堂練習</h3>' +
+    '<div class="q"><b>一、在課文中找出一處能說明這一點的文句，抄錄下來。</b>' +
+      '<div class="rule"></div><div class="rule"></div></div>' +
+    '<div class="q"><b>二、這處文句怎樣說明上述重點？用兩三句解釋。</b>' +
+      '<div class="rule"></div><div class="rule"></div><div class="rule"></div></div>' +
+    '<div class="q"><b>三、如果刪去這一處，讀者對全文的理解會有甚麼不同？</b>' +
+      '<div class="rule"></div><div class="rule"></div></div>';
+
+  if(kind === 'pt') return head +
+    '<h3>簡報大綱</h3>' +
+    '<div class="slide"><b>第 1 頁・今日重點</b><p>' + point.title + '</p></div>' +
+    '<div class="slide"><b>第 2 頁・課文在哪裏</b><p>' + point.desc + '</p></div>' +
+    '<div class="slide"><b>第 3 頁・一起看一段</b><p>投影課文相關段落，請學生指出關鍵詞句。</p></div>' +
+    '<div class="slide"><b>第 4 頁・你怎樣看</b><p>兩人一組互相講解，然後全班分享。</p></div>' +
+    '<div class="slide"><b>第 5 頁・小結</b><p>' + point.learn + '</p></div>';
+
+  return head +
+    '<h3>這一點為甚麼值得教</h3><p>' + point.desc + '</p>' +
+    '<h3>學生應該做到</h3><p>' + point.learn + '</p>' +
+    '<h3>課程文件出處</h3><p>' + point.src + '</p>' +
+    '<h3>提問階梯</h3><ol>' +
+      '<li>課文哪一處讓你留意到這一點？</li>' +
+      '<li>作者為甚麼要這樣寫，而不是直接說出來？</li>' +
+      '<li>換一種寫法，效果會有甚麼不同？</li></ol>' +
+    '<h3>常見誤解</h3><p>學生容易停在「找到了」而說不出「為甚麼」。追問第二層，不要接受只有出處的答案。</p>';
+}
+
 function saveAll(){
   const d = DEMO_TEXTS[CUR];
   const done = Jobs.finished(TOOL);
-  Materials.addMany(done.map(j => ({
-    tool:TOOL, toolName:'課文工房',
-    title:j.title, kind:j.kind, text:j.text || d.title, level:j.level || d.level
-  })));
+  const byId = {};
+  (POINTS[CUR] || []).forEach(p => { byId[p.id] = p; });
+  Materials.addMany(done.map(j => {
+    const p = byId[j.pid];
+    return {
+      tool:TOOL, toolName:'課文工房',
+      title:j.title, kind:j.kind, text:j.text || d.title, level:j.level || d.level,
+      body: p ? bodyFor(p, j.kind, d) : ''
+    };
+  }));
   Jobs.claim(done.map(j => j.id));
   ToolSession.clear(TOOL);
   closeTray();

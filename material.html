@@ -336,6 +336,23 @@
   .sheet .meta{font-size:.72rem;color:var(--ink-3);border-bottom:1px solid var(--line);
     padding-bottom:10px;margin-bottom:18px;display:flex;gap:18px;flex-wrap:wrap;}
   .sheet .meta span:last-child{margin-left:auto;}
+  /* Styles for the content tools actually write into `body`. Kept here rather
+   * than inside each tool, because the material is READ here — a worksheet
+   * should look the same however it was produced. */
+  .sheet .m-meta{font-size:.74rem;color:var(--ink-3);border-bottom:1px solid var(--line);
+    padding-bottom:12px;margin-bottom:22px;}
+  .sheet h3{font-size:.9rem;font-weight:800;margin:26px 0 10px;}
+  .sheet h3:first-of-type{margin-top:0;}
+  .sheet p{font-size:.84rem;line-height:1.9;color:var(--ink-2);margin-bottom:10px;}
+  .sheet ol,.sheet ul{margin:0 0 12px 1.4em;}
+  .sheet li{font-size:.84rem;line-height:1.9;color:var(--ink-2);margin-bottom:6px;}
+  .sheet .q{border:1px solid var(--line);border-radius:10px;padding:15px 18px;margin-bottom:11px;}
+  .sheet .q b{font-size:.84rem;display:block;margin-bottom:12px;font-weight:600;}
+  .sheet .q .rule{border-bottom:1px solid #c8d3dc;height:1.9em;}
+  .sheet .slide{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:9px;
+    background:#fafcfd;}
+  .sheet .slide b{font-size:.78rem;color:var(--ec-blue-dark);display:block;margin-bottom:4px;}
+  .sheet .slide p{margin-bottom:0;font-size:.82rem;}
   .sheet h3{font-size:.9rem;font-weight:800;color:var(--ec-blue-dark);margin:22px 0 8px;}
   .sheet p{font-size:.8rem;line-height:1.8;color:var(--ink-2);margin-bottom:10px;}
   .obj{background:#f2f8fb;border-left:3px solid var(--ec-blue);border-radius:0 8px 8px 0;
@@ -437,10 +454,24 @@
   </div>
 </aside>
 
+<!-- The bar and the content share one flex column; body is display:flex, so
+     as siblings they would become two columns beside the sidebar. -->
+<div class="tool-col">
+<div class="toolbar" id="toolbar" style="display:none">
+  <div class="tb-name"><span class="tb-sep">│</span><span id="tbName"></span></div>
+  <nav class="tb-tabs">
+    <a href="#" id="tbPrep"></a>
+    <a href="#" id="tbMats" class="on"></a>
+  </nav>
+  <button class="tb-exit" onclick="leaveTool()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    <span id="tbExit"></span>
+  </button>
+</div>
 <main class="main">
-  <a class="lp-back" id="backLink" href="my-materials.html">← 返回我的教材</a>
   <div id="view"></div>
 </main>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="demo-state.js"></script>
@@ -458,12 +489,44 @@ let tt;function toast(m){const t=document.getElementById('toast');t.textContent=
 const Q  = new URLSearchParams(location.search);
 const ID = Q.get('id');
 
-/* Back goes where you came from — the library by default, the tool if a tool
- * sent you. Convention, not a per-page patch. */
-if(Q.get('from')){
-  const from = Q.get('from');
-  document.getElementById('backLink').href = from;
-  document.getElementById('backLink').textContent = '← 返回' + (Q.get('fromName') || '上一頁');
+/* ── which tool am I inside? ──────────────────────────────────────────
+ * A material knows which tool made it, so the detail page can wear that
+ * tool's bar without being told. ?tool= overrides it for the case where a
+ * tool's own materials view opened something another tool produced.
+ *
+ * Opened from the platform library instead, there is no tool to be inside,
+ * so no bar appears and the page belongs to the library. */
+const TOOL_META = {
+  'text-workshop':       {name:'課文工房',            home:'text-workshop.html', lang:'zh', prep:'開始準備'},
+  'lesson-design':       {name:'中文科教案設計',       home:'lesson-design.html', lang:'zh', prep:'開始設計'},
+  'lesson-plan':         {name:'Lesson Plan',         home:'lesson-plan.html',   lang:'en', prep:'Generate'},
+  'worksheet-generator': {name:'Worksheet Generator', home:'worksheet-generator.html', lang:'en', prep:'Generate'},
+  'quiz-generator':      {name:'Quiz Generator',      home:'quiz-generator.html', lang:'en', prep:'Generate'}
+};
+const MAT_STR = {
+  zh:{mats:'我的教材', exit:'離開', back:'← 返回我的教材'},
+  en:{mats:'My materials', exit:'Leave ', back:'← Back to My materials'}
+};
+let TOOL_ID = Q.get('tool') || null;
+
+function wearToolBar(id){
+  const tl = TOOL_META[id];
+  if(!tl) return;
+  TOOL_ID = id;
+  const st = MAT_STR[tl.lang];
+  document.getElementById('tbName').textContent = tl.name;
+  document.getElementById('tbPrep').textContent = tl.prep;
+  document.getElementById('tbPrep').href = tl.home;
+  document.getElementById('tbMats').textContent = st.mats;
+  document.getElementById('tbMats').href = 'my-materials.html?tool=' + id;
+  document.getElementById('tbExit').textContent =
+    tl.lang === 'en' ? st.exit + tl.name : st.exit + tl.name;
+  document.getElementById('toolbar').style.display = '';
+  document.body.classList.add('has-toolbar');
+}
+function leaveTool(){
+  const tl = TOOL_META[TOOL_ID];
+  location.href = 'index.html?subject=' + (tl && tl.lang === 'en' ? 'eng' : 'chi');
 }
 
 function render(){
@@ -483,11 +546,18 @@ function render(){
       '<div><h1>' + m.title + '</h1>' +
         '<div class="md-meta">' + k.name + '・《' + m.text + '》・' + m.level +
         (m.toolName ? '・由' + m.toolName + '製作' : '') + '・建立於 ' + m.at + '</div></div>' +
+      /* Back to the list sits in the bar when there is a bar, and in the
+       * header when there is not — one route either way, never two. */
       '<div class="md-acts">' +
         '<button class="btn ghost" onclick="act()">⬇ 下載</button>' +
         '<button class="btn" onclick="act()">在課堂使用</button>' +
       '</div>' +
     '</div>' +
+    /* Opened from the platform library there is no bar, so the page needs
+     * its own way back. Inside a tool the bar's 我的教材 tab already is that
+     * route, and a second one would be two controls for one job. */
+    (TOOL_ID ? '' :
+      '<a class="lp-back" href="my-materials.html">← 返回我的教材</a>') +
     (m.body
       ? '<div class="sheet">' + m.body + '</div>'
       : '<div class="md-none"><b>這份教材沒有儲存內容</b>' +
@@ -495,6 +565,13 @@ function render(){
         '<button class="btn ghost" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>');
 }
 function act(){ toast('示範版本未提供此操作。'); }
+
+/* Decided before the first paint: the bar must not appear a frame late. */
+(function(){
+  const m = ID ? Materials.get(ID) : null;
+  const id = TOOL_ID || (m && m.tool);
+  if(id && TOOL_META[id]) wearToolBar(id);
+})();
 render();
 </script>
 </body>

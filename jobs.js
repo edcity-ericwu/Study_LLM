@@ -49,14 +49,18 @@
     start: function(tool, toolName, href, items){
       var now = Date.now();
       var list = read();
+      /* Everything the caller put on the item is carried through, not just the
+       * four fields this file happened to know about. 課文工房 needs the
+       * learning-point id to rebuild a material's CONTENT when the teacher
+       * saves, and the old explicit list silently dropped it — which is how
+       * the library ended up holding filenames with no files (2026-08-24). */
       var made = items.map(function(it, i){
-        return {
+        return Object.assign({}, it, {
           id: 't' + now + '-' + i,
           tool: tool, toolName: toolName, href: href,
-          title: it.title, kind: it.kind, text: it.text, level: it.level,
           startedAt: now,
           doneAt: now + LEAD_MS + (i + 1) * GAP_MS
-        };
+        });
       });
       write(list.concat(made));
       return made;

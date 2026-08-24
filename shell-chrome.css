@@ -343,10 +343,59 @@ main.main > .intro{
 }
 .btn.quiet:hover{ background:#f2f6f9; color:var(--ink,#1e2a35); }
 
-/* With three weights the row needs the quiet one held away from the pair that
- * actually act, or it just becomes the leftmost of three. */
-.md-box .md-acts.three{ justify-content:flex-end; }
+/* ── grouping a three-way decision ───────────────────────────────────────
+ * Three weights was better than two and still not the point (Eric,
+ * 2026-08-24). What a teacher needs to see at a glance is not "which button is
+ * emphasised" but WHICH OF THESE COSTS ME SOMETHING. The three outcomes are
+ * not three peers:
+ *
+ *   Stay here                  — costs nothing, changes nothing
+ *   Continue without saving    — the only one that destroys work
+ *   Save plan and continue     — does what she wants and loses nothing
+ *
+ * So the two that move forward are grouped together as alternatives to each
+ * other, the never-mind option is pushed away from them, and the destructive
+ * one is drawn in the destructive colour rather than as an ordinary secondary.
+ * Colour carries the risk, position carries the grouping, and fill carries the
+ * recommendation — three signals, none of them doing two jobs.
+ */
+.md-box .md-acts.three{
+  justify-content:flex-end; align-items:center; gap:10px;
+}
 .md-box .md-acts.three .btn.quiet{ margin-right:auto; }
+
+/* The pair that act, held together and separated from the way out. */
+.md-group{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding-left:16px; border-left:1px solid var(--line,#e6ebf0);
+}
+
+/* The lossy branch. Not a red FILL — that is reserved for a button you are
+ * being urged to press, and this is the one she should think twice about. */
+.btn.risk{
+  background:#fff; border:1px solid #f3c9cd; color:#b3202f; font-weight:600;
+}
+.btn.risk:hover{ background:#fdf3f4; border-color:var(--ec-red,#ED1A2E); }
+
+@media (max-width:520px){
+  .md-box .md-acts.three{ flex-direction:column; align-items:stretch; }
+  .md-box .md-acts.three .btn.quiet{ margin-right:0; order:2; }
+  .md-group{ padding-left:0; border-left:none; flex-direction:column; align-items:stretch; }
+}
+
+/* ── the carry-over panel ────────────────────────────────────────────────
+ * Context handed down a chain: which class this material is being made for.
+ *
+ * It opened with a bare class string, so the teacher had to read the small
+ * print underneath to work out what the panel governed (Eric, 2026-08-24:
+ * "when you need words, put words in; when you need sectioning, bring the
+ * sections"). A label above the value fixes that in four characters — she now
+ * reads top-to-bottom: what this is → what it says → what she can do.
+ */
+.c-lbl{
+  display:block; font-size:.64rem; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ec-blue-dark,#0072ab); margin-bottom:4px;
+}
 
 /* ── decision tray ───────────────────────────────────────────────────────
  * A docked bar holding the decision a screen is waiting on, so the decision

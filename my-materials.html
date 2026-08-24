@@ -447,6 +447,10 @@
 
   .mm-filterset{margin-bottom:18px;}
   .mm-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  /* The margin .mm-filters carries when it stands alone must not apply
+   * inside a centred row — it shifts the whole box down and leaves the
+   * label looking misaligned (Eric, 2026-08-24). */
+  .mm-row > .mm-filters{margin-bottom:0;}
   .mm-lbl{font-size:.7rem;font-weight:700;color:var(--ink-2);min-width:2.4em;}
   /* Standing rule (Eric, 2026-08-21): a filter that would return nothing is
    * disabled, not clickable. Live options stay readable instead of competing
@@ -599,13 +603,18 @@ function render(){
         }).join('');
   }
 
+  /* Only kinds that actually have something behind them are offered, and the
+   * whole row disappears when there is nothing to choose between — one kind
+   * plus 全部 is not a filter, it is two buttons that do the same thing. */
+  const kinds = Object.keys(KIND).filter(k => count(TOOL_VIEW || TFILTER, k) > 0);
+  const kindRow = document.getElementById('filters').closest('.mm-row');
+  if(kindRow) kindRow.style.display = kinds.length > 1 ? '' : 'none';
+  /* A filter that has just vanished must not leave the list filtered by it. */
+  if(KFILTER !== 'all' && kinds.indexOf(KFILTER) < 0) KFILTER = 'all';
   document.getElementById('filters').innerHTML =
-    [['all', t.all]].concat(Object.keys(KIND).map(k => [k, Materials.kindName(k, L() === T.en ? 'en' : 'zh')]))
-      .map(([k,l]) => {
-        const n = count(TOOL_VIEW || TFILTER, k);
-        return '<button class="chip' + (KFILTER===k?' on':'') + '"' + (n?'':' disabled') +
-               ' onclick="setF(\'' + k + '\')">' + l + '</button>';
-      }).join('');
+    [['all', t.all]].concat(kinds.map(k => [k, Materials.kindName(k, L() === T.en ? 'en' : 'zh')]))
+      .map(([k,l]) => '<button class="chip' + (KFILTER===k?' on':'') + '"' +
+               ' onclick="setF(\'' + k + '\')">' + l + '</button>').join('');
 
   const lang = (L() === T.en) ? 'en' : 'zh';
   const keep = x => (TOOL_VIEW || TFILTER === 'all' || x.tool === TFILTER) &&

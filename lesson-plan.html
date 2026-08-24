@@ -583,8 +583,14 @@
          cancel · the lossy choice · the safe choice. -->
     <div class="md-acts three">
       <button class="btn quiet" onclick="closeChain()">Stay here</button>
-      <button class="btn ghost" onclick="chainGo(false)">Continue without saving</button>
-      <button class="btn" onclick="chainGo(true)">Save plan and continue</button>
+      <!-- The two that move forward are alternatives to each other, so they are
+           grouped and the group is fenced off from the way out. Within it, the
+           lossy branch is drawn in the destructive colour and the safe one is
+           the filled default. -->
+      <div class="md-group">
+        <button class="btn risk" onclick="chainGo(false)">Continue without saving</button>
+        <button class="btn" onclick="chainGo(true)">Save plan and continue</button>
+      </div>
     </div>
   </div>
 </div>

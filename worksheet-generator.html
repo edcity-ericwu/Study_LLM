@@ -373,7 +373,7 @@
   .exp{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
   .exp .lic{margin-right:auto;font-size:.7rem;color:var(--ink-3);line-height:1.5;max-width:34em;}
 </style>
-<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+<!-- Loaded in <head>, not at the end of <body class="has-toolbar">: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
@@ -428,8 +428,20 @@
   </div>
 </aside>
 
+<!-- body is display:flex, so the bar and the content share one column. -->
+<div class="tool-col">
+<div class="toolbar">
+  <div class="tb-name"><span class="tb-sep">│</span>Worksheet Generator</div>
+  <nav class="tb-tabs">
+    <a href="worksheet-generator.html" class="on">Generate</a>
+    <a href="my-materials.html?tool=worksheet-generator">My materials</a>
+  </nav>
+  <button class="tb-exit" onclick="askExit()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    Leave Worksheet Generator
+  </button>
+</div>
 <main class="main">
-  <a class="lp-back" href="index.html?subject=eng">← Back to 教學工具箱</a>
 
   <h1 class="en-h1">Worksheet Generator</h1>
   <p class="en-sub">Generate a worksheet from any topic or text.</p>
@@ -442,6 +454,25 @@
     </div>
     <button class="chg" onclick="unlock()">Change</button>
   </div>
+
+  <!-- Unfinished work is a fork, not an annotation: continuing and starting
+       fresh are equally weighted and one discards context. -->
+  <section id="stEntry" style="display:none">
+    <div class="pick">
+      <a class="pick-card" href="#" onclick="doResume();return false;">
+        <span class="pi">↩</span>
+        <b>Continue where you left off</b>
+        <small id="pickMeta"></small>
+        <span class="pg">Continue →</span>
+      </a>
+      <a class="pick-card" href="#" onclick="startFresh();return false;">
+        <span class="pi">✦</span>
+        <b>Start something new</b>
+        <small>Begin a new one. The draft you have not saved will not be kept.</small>
+        <span class="pg">Start →</span>
+      </a>
+    </div>
+  </section>
 
   <section id="stForm">
     <div class="en-card">
@@ -512,14 +543,31 @@
       <button class="btn ghost" onclick="showForm()">Show form</button>
     </div>
     <div class="sheet" id="sheet"></div>
-    <div class="exp">
-      <span class="lic" id="lic"></span>
-      <button class="btn ghost" onclick="notYet()">⬇ PDF</button>
-      <button class="btn ghost" onclick="notYet()">⬇ Word</button>
-      <button class="btn" onclick="save()">Save to 我的教材</button>
-    </div>
   </section>
 </main>
+</div>
+
+<!-- Docked so the decision never competes with the material it is about. -->
+<div class="tray" id="tray">
+  <div class="tray-in">
+    <div class="tt"><b id="trayTitle"></b><small id="trayNote"></small></div>
+    <div class="ta">
+      <button class="btn ghost" onclick="discardDraft()">Don’t save</button>
+      <button class="btn" onclick="save()">Save to My materials</button>
+    </div>
+  </div>
+</div>
+
+<div class="md-back" id="exitDlg">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h3 id="exitTitle">Leave this tool?</h3>
+    <p id="exitBody"></p>
+    <div class="md-acts">
+      <button class="btn ghost" onclick="closeExit()">Stay here</button>
+      <button class="btn" onclick="doExit()">Leave without saving</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
@@ -539,6 +587,7 @@ let tt;function toast(m){const t=document.getElementById('toast');t.textContent=
  * quiz tool quietly opened at Primary 4 from a Secondary 4 plan. Nobody
  * noticed because nothing on screen said what had been inherited. */
 
+const TOOL_HOME = 'worksheet-generator.html';
 const TOOL = 'worksheet-generator';
 const P = new URLSearchParams(location.search);
 
@@ -549,6 +598,10 @@ function gate(){
 function stage(id){
   ['stForm','stWork','stOut'].forEach(s =>
     document.getElementById(s).style.display = (s === id ? '' : 'none'));
+  if(id === 'stOut'){
+    openTray('1 worksheet ready — not saved yet',
+      'Saving puts it in My materials, where you can open it again. Leave without saving and it is gone.');
+  } else { closeTray(); }
   window.scrollTo(0,0);
 }
 function showForm(){ stage('stForm'); }
@@ -621,9 +674,10 @@ function render(){
 
   const pic = withImg ? Unsplash.pick(tp) : null;
   document.getElementById('sheet').innerHTML = sheetHtml(lv, tp, pic);
-  document.getElementById('lic').textContent = pic
-    ? 'Image used under the Unsplash licence — free to use, including in printed classroom material.'
-    : '';
+  /* The licence line lived in the export row, which the tray replaced. It is
+   * not moved: Unsplash.figure() already prints "Photo by X on Unsplash · free
+   * to use under the Unsplash licence" under the image, where the claim
+   * belongs — beside the thing it is about. */
   stage('stOut');
 }
 
@@ -694,16 +748,79 @@ function save(){
   location.href = 'my-materials.html?new=1&subject=eng' + '&from=worksheet-generator.html&fromName=Worksheet Generator';
 }
 
-/* ── resume ── */
-(function(){
-  const s = ToolSession.load(TOOL);
-  if(!s) return;
+function applySaved(s){
   document.getElementById('fLv').value    = s.level;
   document.getElementById('fTopic').value = s.topic;
   document.getElementById('fImg').checked = !!s.img;
-  gate(); render();
+  gate();
+  render();
+}
+
+/* ── boot ────────────────────────────────────────────────────────────
+ * Generate shows Generate. A saved draft is offered, never imposed — a tab is
+ * a promise about what you will see (Eric, 2026-08-21). */
+function resumeSaved(){
+  const st = ToolSession.load(TOOL);
+  if(!st) return false;
+  applySaved(st);
+  return true;
+}
+(function(){
+  const saved = ToolSession.load(TOOL);
+  if(!saved){ stage('stForm'); return; }
+  if(new URLSearchParams(location.search).get('resume')){ resumeSaved(); return; }
+  stEntryShow('You were working on a worksheet. Pick up where you left off, or start again.');
 })();
 gate();
+
+/* ── tool chrome ────────────────────────────────────────────────────────
+ * Entry fork, exit, and the save tray — the same treatment 課文工房 has, so a
+ * teacher meets one set of behaviours across every tool (Eric, 2026-08-21). */
+
+function stEntryShow(meta){
+  document.getElementById('pickMeta').textContent = meta;
+  ['stForm','stWork','stOut'].forEach(x => document.getElementById(x).style.display = 'none');
+  document.getElementById('stEntry').style.display = '';
+}
+function doResume(){
+  document.getElementById('stEntry').style.display = 'none';
+  resumeSaved();
+}
+function startFresh(){
+  ToolSession.clear(TOOL);
+  document.getElementById('stEntry').style.display = 'none';
+  stage('stForm');
+}
+
+function openTray(title, note){
+  document.getElementById('trayTitle').textContent = title;
+  document.getElementById('trayNote').textContent  = note;
+  document.getElementById('tray').classList.add('on');
+  document.body.classList.add('tray-open');
+}
+function closeTray(){
+  document.getElementById('tray').classList.remove('on');
+  document.body.classList.remove('tray-open');
+}
+function discardDraft(){
+  ToolSession.clear(TOOL);
+  closeTray();
+  toast('Not saved.');
+  setTimeout(() => location.href = TOOL_HOME, 900);
+}
+
+/* Only an unsaved draft is actually lost by leaving — moving along the chain
+ * is a handoff, not an exit, and never prompts. */
+function askExit(){
+  if(!document.getElementById('tray').classList.contains('on')){ leaveTool(); return; }
+  document.getElementById('exitBody').textContent =
+    'This draft has not been saved. If you leave now it will be gone.';
+  document.getElementById('exitDlg').classList.add('on');
+}
+function closeExit(){ document.getElementById('exitDlg').classList.remove('on'); }
+function doExit(){ ToolSession.clear(TOOL); leaveTool(); }
+function leaveTool(){ location.href = 'index.html?subject=eng'; }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeExit(); });
 </script>
 </body>
 </html>

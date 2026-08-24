@@ -50,12 +50,22 @@
 
   var Materials = {
 
+    /* Both names on every kind. A tool's own view speaks the tool's language
+     * (Eric, 2026-08-21): if a tool is an application, its sections should not
+     * switch language mid-application. The platform library stays Chinese. */
     KIND: {
-      ws:{icon:'📝', name:'學生工作紙'},
-      pt:{icon:'🖥', name:'課堂簡報'},
-      tn:{icon:'💡', name:'教師提示'},
-      qz:{icon:'✅', name:'測驗卷'},
-      lp:{icon:'📋', name:'教案'}
+      ws:{icon:'📝', name:'學生工作紙', en:'Worksheet'},
+      pt:{icon:'🖥', name:'課堂簡報',   en:'Slides'},
+      tn:{icon:'💡', name:'教師提示',   en:'Teacher notes'},
+      qz:{icon:'✅', name:'測驗卷',     en:'Quiz'},
+      lp:{icon:'📋', name:'教案',       en:'Lesson plan'}
+    },
+
+    /* Resolve a kind's label in the caller's language. */
+    kindName: function(kind, lang){
+      var k = Materials.KIND[kind];
+      if(!k) return lang === 'en' ? 'Material' : '教材';
+      return lang === 'en' ? k.en : k.name;
     },
 
     all: function(){ return Materials.ensureIds(); },

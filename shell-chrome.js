@@ -144,6 +144,23 @@
     document.body.appendChild(tb);
   }
 
+  /* ── portal switcher ───────────────────────────────────────────────────
+   * Every shell page's markup calls togglePortal() from an onclick, but only
+   * the older pages define it — the six tool pages built on 2026-08-21/24 do
+   * not, so their portal switcher threw ReferenceError on click and the menu
+   * never opened. Found 2026-08-24 by counting calls against definitions.
+   *
+   * Defined here rather than pasted into six files: the same one-line function
+   * living in nine copies is exactly the drift this stylesheet exists to stop.
+   * Pages that already declare their own simply shadow this, since their
+   * <script> runs after ours. */
+  if(typeof window.togglePortal !== 'function'){
+    window.togglePortal = function(){
+      var m = document.getElementById('portalMenu');
+      if(m) m.classList.toggle('show');
+    };
+  }
+
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', build);
   } else {

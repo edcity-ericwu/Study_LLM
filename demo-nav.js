@@ -1,7 +1,7 @@
 /* EdCity prototype — floating demo navigator (for walking managers through all surfaces). */
 (function(){
 const CSS = `
-.dn-pill{position:fixed;bottom:22px;right:22px;z-index:90;background:#1e2a35;color:#fff;border:none;
+.dn-pill{position:fixed;bottom:22px;right:22px;transition:bottom .18s ease;z-index:90;background:#1e2a35;color:#fff;border:none;
   border-radius:99px;padding:11px 18px;font-size:.8rem;font-weight:600;cursor:pointer;
   font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;box-shadow:0 8px 24px rgba(20,30,40,.25);}
 .dn-panel{position:fixed;bottom:70px;right:22px;z-index:91;background:#fff;border:1px solid #e6ebf0;

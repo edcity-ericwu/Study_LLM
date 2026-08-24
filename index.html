@@ -517,8 +517,12 @@ const TOOLS = [
   /* 課文工房 — a built page, so `link` points straight at it. */
   {name:'課文工房', en:'Text Workshop', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'scroll', isNew:true, link:'text-workshop.html', recommended:true,
    desc:'放入一篇課文，整理出可教的閱讀理解和字詞理解重點，每項都附課程文件出處；揀選之後直接生成工作紙、課堂簡報和教師提示。'},
-  {name:'教案生成器', en:'Lesson Plan Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:false, recommended:true,
-   desc:'只需輸入課文或單元主題，即可生成包含學習目標、教學流程及分層活動的中文科教案。'},
+  /* 中文科教案設計 — POC 3, a built page. Named as the live EdCity tool is
+   * named rather than as a generic 教案生成器: the prototype is a redesign of
+   * that specific tool and the two should be recognisably the same thing when
+   * shown side by side. */
+  {name:'中文科教案設計', en:'Chinese Lesson Design', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, link:'lesson-design.html', recommended:true,
+   desc:'按課程的學習範疇和學習重點編排課節活動，並配一份對應的課堂工作紙。一次只看一個範疇，不必在四十多項重點之間翻找。'},
   {name:'工作紙生成器', en:'Worksheet Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'pen', isNew:false,
    desc:'按課文重點生成字詞、句式及理解練習的工作紙，可按需要調整程度深淺。'},
   {name:'簡報生成器', en:'Presentation Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'slides', isNew:false,
@@ -646,7 +650,8 @@ const RESUMABLE = {
   'text-workshop.html':        'text-workshop',
   'lesson-plan.html':          'lesson-plan',
   'worksheet-generator.html':  'worksheet-generator',
-  'quiz-generator.html':       'quiz-generator'
+  'quiz-generator.html':       'quiz-generator',
+  'lesson-design.html':        'lesson-design'
 };
 
 /* Unbuilt tools stay in the catalog so the shape of the platform is visible,

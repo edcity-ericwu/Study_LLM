@@ -272,3 +272,60 @@ main.main > .intro{
 .md-box h3{ font-size:1rem; font-weight:800; margin-bottom:8px; }
 .md-box p{ font-size:.82rem; color:var(--ink-2,#55636f); line-height:1.75; margin-bottom:20px; }
 .md-box .md-acts{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+
+/* ── toast ───────────────────────────────────────────────────────────────
+ * Defined here, not per page. index.html used a toast without ever defining
+ * one, so the element was created unstyled, appended to <body> — which is
+ * display:flex — and became a COLUMN of text beside the content (Eric,
+ * 2026-08-21). That is the third time today an unstyled child of body has
+ * turned into a flex column: the collapse toggle, the tool bar, and now this.
+ *
+ * position:fixed in the shared stylesheet means it cannot happen again on a
+ * page that forgets to define it. Pages that already carry their own
+ * definition keep it — identical values, so nothing changes there.
+ */
+.toast{
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--ink,#1e2a35); color:#fff; font-size:.78rem;
+  padding:9px 18px; border-radius:99px;
+  opacity:0; pointer-events:none; transition:opacity .25s; z-index:400;
+  max-width:min(90vw,34em); text-align:center;
+}
+.toast.show{ opacity:.94; }
+
+/* ── decision tray ───────────────────────────────────────────────────────
+ * A docked bar holding the decision a screen is waiting on, so the decision
+ * never has to compete with the thing being decided about.
+ *
+ * Built after the completion screen put the save controls in a large panel
+ * above a table row, which made the DECISION look more important than the
+ * MATERIAL she had just made (Eric, 2026-08-21). Same sticky-footer family as
+ * the learning-points bar, not a third idiom.
+ */
+.tray{
+  position:fixed; left:0; right:0; bottom:0; z-index:150;
+  background:#fff; border-top:1px solid var(--line,#e6ebf0);
+  box-shadow:0 -2px 14px rgba(20,30,40,.07);
+  display:none;
+}
+.tray.on{ display:block; }
+.tray-in{
+  max-width:860px; margin:0 auto; padding:14px 34px;
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+}
+.tray .tt{ flex:1; min-width:0; }
+.tray .tt b{ font-size:.86rem; display:block; }
+.tray .tt small{ font-size:.74rem; color:var(--ink-3,#8a97a3); display:block; margin-top:2px; line-height:1.6; }
+.tray .ta{ display:flex; gap:10px; flex-shrink:0; }
+
+/* The tray sits over the foot of the page, so the content needs room to clear
+ * it — otherwise the last material is permanently half-hidden. */
+.tray-open .main{ padding-bottom:112px; }
+
+/* The walkthrough pill lives bottom-right and would sit on the tray. It moves
+ * up while the tray is showing rather than the tray dodging it — the tray is
+ * product, the pill is demo scaffolding, so the scaffolding yields. */
+.tray-open .dn-pill{ bottom:96px; }
+
+/* Sidebar collapsed: the tray starts after the rail like everything else. */
+.nav-collapsed .tray{ left:52px; }

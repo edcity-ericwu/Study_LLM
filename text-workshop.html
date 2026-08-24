@@ -455,6 +455,15 @@
   .pick-card b{font-size:1rem;margin-bottom:6px;}
   .pick-card small{font-size:.78rem;color:var(--ink-3);line-height:1.7;flex:1;}
   .pick-card .pg{margin-top:16px;font-size:.8rem;font-weight:600;color:var(--ec-blue-dark);}
+
+  /* Wider than .tw-prog: this is the part of the screen she can act on. */
+  .tw-act{max-width:860px;margin:0 auto;text-align:left;}
+
+  /* Once done, a material is a thing she made — not a row with a status. */
+  .mrow.done{background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;margin-bottom:9px;border-bottom:1px solid var(--line);}
+  .mrow.done b{font-size:.86rem;}
+  .btn.sm{padding:7px 15px;font-size:.78rem;}
 </style>
 <!-- Loaded in <head>, not at the end of <body class="has-toolbar">: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -703,10 +712,15 @@
 
     <!-- ④  generating --------------------------------------------------- -->
     <section class="tw-stage" id="stMake">
-      <div class="tw-prog" style="max-width:760px">
+      <!-- Two columns of different width on purpose. The progress card is
+           STATUS — she cannot act on it. The download panel and the material
+           list are the only things on this screen she can act on, so they get
+           the wider measure. Width is one signal of three here; colour and the
+           icon do the rest, and width alone would be too weak to carry it. -->
+      <div class="tw-prog" style="max-width:660px">
         <div class="orb">✏️</div>
-        <h2>正在製作教材</h2>
-        <p class="lede">按你選的重點撰寫教材。完成後由你決定要不要存入「我的教材」。</p>
+        <h2 id="mkHeading">正在製作教材</h2>
+        <p class="lede" id="mkLede">按你選的重點撰寫教材。完成後由你決定要不要存入「我的教材」。</p>
 
         <div class="pcard">
           <div class="now">
@@ -730,32 +744,16 @@
           </div>
         </div>
 
+      </div>
+
+      <div class="tw-act">
         <div class="early" id="earlyCard" style="display:none">
           <div class="eh"><div><small class="k">可先下載</small><b id="earlyTitle">2 個檔案已可先下載</b></div><span class="ei">⬇</span></div>
           <p class="en">這些檔案已經寫好，但尚未完成最終核對。先下載的是草稿版本，核對後如有修改，「我的教材」會保留最新版本。</p>
           <div id="earlyList"></div>
         </div>
-
-        <!-- Explicit save (Eric, 2026-08-21). Materials used to be harvested
-             into 我的教材 the moment they finished, so they arrived without the
-             teacher ever choosing. The strip states what she has, what happens
-             if she saves, and what happens if she does not. -->
-        <div class="save-strip" id="saveStrip" style="display:none">
-          <div class="ss-head">
-            <span class="ss-tick">✓</span>
-            <div>
-              <b id="ssTitle"></b>
-              <small>教材已經做好，但還沒有存起來。儲存後會放進「我的教材」，日後可以再開啟修改；不儲存的話，離開這一頁就會消失。</small>
-            </div>
-          </div>
-          <div class="ss-acts">
-            <button class="btn ghost" onclick="discardAll()">不儲存</button>
-            <button class="btn" onclick="saveAll()">儲存到「我的教材」</button>
-          </div>
-        </div>
-
         <div class="mset" style="text-align:left">
-          <div class="mset-head"><span>教材</span><span>狀態</span></div>
+          <div class="mset-head"><span id="matHead">今次準備</span></div>
           <div id="matList"></div>
         </div>
       </div>
@@ -771,6 +769,21 @@
     <div class="md-acts">
       <button class="btn ghost" onclick="closeExit()">留在這裏</button>
       <button class="btn" id="exitGo" onclick="doExit()">離開</button>
+    </div>
+  </div>
+</div>
+
+<!-- Docked so the decision never competes with the material it is about.
+     Left states what is at stake, right carries the two choices. -->
+<div class="tray" id="tray">
+  <div class="tray-in">
+    <div class="tt">
+      <b id="trayTitle"></b>
+      <small id="trayNote"></small>
+    </div>
+    <div class="ta">
+      <button class="btn ghost" onclick="discardAll()">不儲存</button>
+      <button class="btn" onclick="saveAll()">儲存到「我的教材」</button>
     </div>
   </div>
 </div>
@@ -1106,23 +1119,22 @@ function startMake(){
 function runMakeScreen(jobs){
   const paint = () => {
     const now = Date.now();
+    const allDone = jobs.every(j => j.doneAt <= now);
+    document.getElementById('matHead').textContent = allDone ? '今次準備好的教材' : '今次準備';
     document.getElementById('matList').innerHTML = jobs.map(j => {
-      const st = j.doneAt <= now ? ['ready','已完成']
+      const done = j.doneAt <= now;
+      const st = done ? ['ready','已完成']
                : (Jobs.progress(j) > 0.15 ? ['busy','撰寫中'] : ['wait','待撰寫']);
-      return '<div class="mrow"><span class="mi">' + MAT_KINDS[j.kind].icon + '</span>' +
-        '<div><b>' + j.title + '</b><small>' + MAT_KINDS[j.kind].note + '</small></div>' +
-        '<span class="mstat ' + st[0] + '">' + st[1] + '</span></div>';
+      return '<div class="mrow' + (done ? ' done' : '') + '"><span class="mi">' + MAT_KINDS[j.kind].icon + '</span>' +
+        '<div style="flex:1;min-width:0"><b>' + j.title + '</b><small>' + MAT_KINDS[j.kind].note + '</small></div>' +
+        (done ? '<button class="btn ghost sm" onclick="dl()">下載</button>'
+              : '<span class="mstat ' + st[0] + '">' + st[1] + '</span>') +
+        '</div>';
     }).join('');
     const ready = jobs.filter(j => j.doneAt <= now);
     if(ready.length && ready.length < jobs.length) showEarly(ready);
     else document.getElementById('earlyCard').style.display = 'none';
-    if(ready.length === jobs.length){
-      clearInterval(mkTick);
-      document.getElementById('earlyCard').style.display = 'none';
-      document.getElementById('ssTitle').textContent = jobs.length + ' 份教材已完成';
-      document.getElementById('saveStrip').style.display = 'block';
-      if(window.Jobs && Jobs.refresh) Jobs.refresh();
-    }
+    if(ready.length === jobs.length){ clearInterval(mkTick); finished(jobs); }
   };
   paint();
   var mkTick = setInterval(paint, 500);
@@ -1137,6 +1149,32 @@ function runMakeScreen(jobs){
 
 /* The whole point of backgrounding: the teacher does not have to watch. */
 function leaveRunning(){ location.href = 'my-materials.html'; }
+
+/* Waiting is over, so the page stops describing waiting. The progress card
+ * goes, the materials become the content, and the decision moves to the tray. */
+function finished(jobs){
+  document.getElementById('earlyCard').style.display = 'none';
+  document.querySelector('#stMake .tw-prog').style.display = 'none';
+
+  document.getElementById('mkHeading').textContent = '教材已準備好';
+  document.getElementById('mkLede').textContent =
+    '看看內容合不合用。合用的話儲存起來，日後可以再開啟。';
+
+  openTray(jobs.length + ' 份教材已完成，尚未儲存',
+           '儲存後會放進「我的教材」，日後可以再開啟修改；不儲存的話，離開這一頁就會消失。');
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
+}
+
+function openTray(title, note){
+  document.getElementById('trayTitle').textContent = title;
+  document.getElementById('trayNote').textContent  = note;
+  document.getElementById('tray').classList.add('on');
+  document.body.classList.add('tray-open');
+}
+function closeTray(){
+  document.getElementById('tray').classList.remove('on');
+  document.body.classList.remove('tray-open');
+}
 
 function showEarly(ready){
   const c = document.getElementById('earlyCard');
@@ -1224,6 +1262,7 @@ function saveAll(){
   })));
   Jobs.claim(done.map(j => j.id));
   ToolSession.clear(TOOL);
+  closeTray();
   location.href = 'my-materials.html?new=' + done.length + '&subject=chi' + '&from=text-workshop.html&fromName=課文工房';
 }
 
@@ -1232,7 +1271,7 @@ function discardAll(){
   Jobs.claim(done.map(j => j.id));
   ToolSession.clear(TOOL);
   toast('已捨棄，沒有存入「我的教材」。');
-  document.getElementById('saveStrip').style.display = 'none';
+  closeTray();
   if(window.Jobs && Jobs.refresh) Jobs.refresh();
   setTimeout(() => location.href = 'text-workshop.html', 1200);
 }
@@ -1260,7 +1299,14 @@ countLines();
 })();
 
 function startFresh(){
+  /* She was told 「上次未完成的準備不會保留」, so the previous run's finished-but-
+   * unsaved drafts are discarded here too. Left behind, the shell kept
+   * advertising 「N 份教材已完成・尚未儲存，回去決定要不要留起」 and pointed at a
+   * tool that had moved on — a control that can no longer lead anywhere. */
+  const stale = window.Jobs ? Jobs.finished(TOOL) : [];
+  if(stale.length) Jobs.claim(stale.map(j => j.id));
   ToolSession.clear(TOOL);
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
   stage('stForm');
 }
 

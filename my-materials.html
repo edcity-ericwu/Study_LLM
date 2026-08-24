@@ -516,8 +516,8 @@
 <div class="toolbar" id="toolbar" style="display:none">
   <div class="tb-name"><span class="tb-sep">│</span><span id="tbName"></span></div>
   <nav class="tb-tabs">
-    <a id="tbPrep" href="#">開始準備</a>
-    <a class="on" id="tbMat" href="#">我的教材</a>
+    <a id="tbPrep" href="#"><span id="tbPrepLabel">開始準備</span></a>
+    <a class="on" id="tbMat" href="#"><span id="tbMatLabel">我的教材</span></a>
   </nav>
   <button class="tb-exit" onclick="location.href='index.html?subject=chi'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
@@ -546,7 +546,7 @@
          filter offers a choice that is already made, and it was listing other
          tools greyed out — noise pretending to be an option. -->
     <div class="mm-row" id="toolRow"><span class="mm-lbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
-    <div class="mm-row"><span class="mm-lbl">類型</span><div class="mm-filters" id="filters"></div></div>
+    <div class="mm-row"><span class="mm-lbl" id="kindLbl">類型</span><div class="mm-filters" id="filters"></div></div>
   </div>
   <div id="list"></div>
 </main>
@@ -577,73 +577,72 @@ function all(){
 }
 
 function render(){
+  const t = L();
   const everything = all();
-  const running    = Jobs.running();
+  const running    = Jobs.running(TOOL_VIEW || undefined);
 
-  /* Counts drive which chips are live, so a filter can never lead to an empty
-   * shelf — the standing rule is that a dead option is noise, not an option. */
   const count = (tool, kind) =>
     everything.filter(x => (tool === 'all' || x.tool === tool) &&
                            (kind === 'all' || x.kind === kind)).length +
     running.filter(j  => (tool === 'all' || j.tool === tool) &&
                            (kind === 'all' || j.kind === kind)).length;
 
-  const tools = Materials.tools();
-  running.forEach(j => { if(j.tool && !tools[j.tool]) tools[j.tool] = j.toolName || j.tool; });
-
-  document.getElementById('toolFilters').innerHTML =
-    [['all','全部工具']].concat(Object.keys(tools).map(t => [t, tools[t]]))
-      .map(([k,l]) => {
-        const n = count(k, KFILTER);
-        return '<button class="chip' + (TFILTER===k?' on':'') + '"' +
-               (n?'':' disabled') + ' onclick="setTool(\'' + k + '\')">' + l + '</button>';
-      }).join('');
+  if(!TOOL_VIEW){
+    const tools = Materials.tools();
+    running.forEach(j => { if(j.tool && !tools[j.tool]) tools[j.tool] = j.toolName || j.tool; });
+    document.getElementById('toolFilters').innerHTML =
+      [['all', t.allTools]].concat(Object.keys(tools).map(k => [k, tools[k]]))
+        .map(([k,l]) => {
+          const n = count(k, KFILTER);
+          return '<button class="chip' + (TFILTER===k?' on':'') + '"' + (n?'':' disabled') +
+                 ' onclick="setTool(\'' + k + '\')">' + l + '</button>';
+        }).join('');
+  }
 
   document.getElementById('filters').innerHTML =
-    [['all','全部']].concat(Object.keys(KIND).map(k => [k, KIND[k].name]))
+    [['all', t.all]].concat(Object.keys(KIND).map(k => [k, Materials.kindName(k, L() === T.en ? 'en' : 'zh')]))
       .map(([k,l]) => {
-        const n = count(TFILTER, k);
-        return '<button class="chip' + (KFILTER===k?' on':'') + '"' +
-               (n?'':' disabled') + ' onclick="setF(\'' + k + '\')">' + l + '</button>';
+        const n = count(TOOL_VIEW || TFILTER, k);
+        return '<button class="chip' + (KFILTER===k?' on':'') + '"' + (n?'':' disabled') +
+               ' onclick="setF(\'' + k + '\')">' + l + '</button>';
       }).join('');
 
-  /* In tool mode the scope is the tool itself; TFILTER would double-filter. */
+  const lang = (L() === T.en) ? 'en' : 'zh';
   const keep = x => (TOOL_VIEW || TFILTER === 'all' || x.tool === TFILTER) &&
                     (KFILTER === 'all' || x.kind === KFILTER);
   const items = everything.filter(keep);
   const run   = running.filter(keep);
+  const box   = document.getElementById('list');
 
-  const box = document.getElementById('list');
-
-  /* 製作中 rows lead, because they are what the teacher came back to see. */
-  const runHtml = run.length ? ('<div class="mgroup"><h3>製作中</h3>' +
-    '<div class="gs">可以離開這一頁，完成後會留在下方的教材列表。</div>' +
+  const runHtml = run.length ? ('<div class="mgroup"><h3>' + t.making + '</h3>' +
+    '<div class="gs">' + t.makingNote + '</div>' +
     run.map(j => '<div class="mcard making"><span class="mi">' + KIND[j.kind].icon + '</span>' +
       '<div style="flex:1;min-width:0"><b>' + j.title + '</b>' +
       '<small>《' + j.text + '》・' + Jobs.remainingLabel(j) + '</small>' +
       '<div class="mprog"><div class="f" style="width:' + Math.round(Jobs.progress(j)*100) + '%"></div></div></div>' +
-      '<span class="mk-tag">製作中</span></div>').join('') + '</div>') : '';
+      '<span class="mk-tag">' + t.making + '</span></div>').join('') + '</div>') : '';
 
   if(!items.length && !run.length){
-    box.innerHTML = '<div class="mm-empty"><span class="ei">📄</span><b>還沒有教材</b>' +
-      '<p>到教學工具箱挑一個工具，做好之後儲存，就會出現在這裏。</p>' +
-      '<button class="btn" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>';
+    box.innerHTML = '<div class="mm-empty"><span class="ei">📄</span><b>' + t.emptyT + '</b>' +
+      '<p>' + t.emptyP + '</p>' +
+      '<button class="btn" onclick="location.href=\'index.html\'">' + t.emptyBtn + '</button></div>';
     return;
   }
 
   const byText = {};
   items.forEach(x => { (byText[x.text] = byText[x.text] || []).push(x); });
 
-  box.innerHTML = Object.keys(byText).map(t => {
-    const g = byText[t];
-    return '<div class="mgroup"><h3>《' + t + '》</h3>' +
-      '<div class="gs">' + g[0].level + '・' + g.length + ' 份教材・最近更新 ' + g[0].at + '</div>' +
+  box.innerHTML = Object.keys(byText).map(k => {
+    const g = byText[k];
+    const head = lang === 'en' ? k : '《' + k + '》';
+    return '<div class="mgroup"><h3>' + head + '</h3>' +
+      '<div class="gs">' + g[0].level + '・' + g.length + ' ' + t.made + '・' + t.updated + ' ' + g[0].at + '</div>' +
       g.map(x => '<div class="mcard"><span class="mi">' + KIND[x.kind].icon + '</span>' +
-        '<div><b>' + x.title + '</b><small>' + KIND[x.kind].name +
-        (x.toolName ? '・' + x.toolName : '') + '・建立於 ' + x.at + '</small></div>' +
-        '<div class="acts"><button onclick="open_(\'' + x.id + '\')">預覽</button>' +
-        '<button onclick="act()">下載</button>' +
-        '<button onclick="act()">在課堂使用</button></div></div>').join('') +
+        '<div><b>' + x.title + '</b><small>' + Materials.kindName(x.kind, lang) +
+        (x.toolName && !TOOL_VIEW ? '・' + x.toolName : '') + '・' + t.created + ' ' + x.at + '</small></div>' +
+        '<div class="acts"><button onclick="open_(\'' + x.id + '\')">' + t.preview + '</button>' +
+        '<button onclick="act()">' + t.download + '</button>' +
+        '<button onclick="act()">' + t.use + '</button></div></div>').join('') +
       '</div>';
   }).join('');
   box.innerHTML = runHtml + box.innerHTML;
@@ -673,11 +672,33 @@ const Q = new URLSearchParams(location.search);
  * so she never falls out of the tool she was working in. */
 const TOOL_VIEW = Q.get('tool');
 const TOOL_META = {
-  'text-workshop':        {name:'課文工房',            home:'text-workshop.html'},
-  'lesson-plan':          {name:'Lesson Plan',         home:'lesson-plan.html'},
-  'worksheet-generator':  {name:'Worksheet Generator', home:'worksheet-generator.html'},
-  'quiz-generator':       {name:'Quiz Generator',      home:'quiz-generator.html'}
+  'text-workshop':        {name:'課文工房',            home:'text-workshop.html', lang:'zh', prep:'開始準備'},
+  'lesson-plan':          {name:'Lesson Plan',         home:'lesson-plan.html',   lang:'en', prep:'Generate'},
+  'worksheet-generator':  {name:'Worksheet Generator', home:'worksheet-generator.html', lang:'en', prep:'Generate'},
+  'quiz-generator':       {name:'Quiz Generator',      home:'quiz-generator.html', lang:'en', prep:'Generate'},
+  'lesson-design':        {name:'中文科教案設計',       home:'lesson-design.html', lang:'zh', prep:'設計新教案'}
 };
+
+/* This page has two modes and now two languages. A tool's own view speaks the
+ * tool's language; the platform library stays Chinese. Strings are gathered
+ * here rather than sprinkled through render() so the two sets cannot drift. */
+const T = {
+  zh: {mine:'我的教材', sub:'已完成的教材會保留在這裏，最近完成的排在最前。',
+       kindLbl:'類型', all:'全部', allTools:'全部工具', neu:'準備新教材',
+       back:'← 返回', exit:'離開', making:'製作中',
+       makingNote:'可以離開這一頁，完成後會留在下方的教材列表。',
+       emptyT:'還沒有教材', emptyP:'到教學工具箱挑一個工具，做好之後儲存，就會出現在這裏。',
+       emptyBtn:'前往教學工具箱', made:'份教材', updated:'最近更新', created:'建立於',
+       preview:'預覽', download:'下載', use:'在課堂使用', tab:'我的教材'},
+  en: {mine:'My materials', sub:'Finished materials stay here, most recent first.',
+       kindLbl:'Type', all:'All', allTools:'All tools', neu:'Generate new',
+       back:'← Back to ', exit:'Leave ', making:'In progress',
+       makingNote:'You can leave this page — finished materials appear in the list below.',
+       emptyT:'Nothing here yet', emptyP:'Generate something and save it, and it will appear here.',
+       emptyBtn:'Back to 教學工具箱', made:'materials', updated:'last updated', created:'created',
+       preview:'Preview', download:'Download', use:'Use in class', tab:'My materials'}
+};
+const L = () => T[(TOOL_VIEW && TOOL_META[TOOL_VIEW]) ? TOOL_META[TOOL_VIEW].lang : 'zh'];
 /* Convention, not a per-page patch: any page reached from another accepts
  * ?from= and ?fromName= and offers a route back to it. We had patched this
  * twice with different mechanisms before making it a rule. */
@@ -696,25 +717,31 @@ if(n){
 /* In tool mode the page becomes that tool's section: its bar, its name, its
  * scope. In platform mode none of this shows and it is the library. */
 if(TOOL_VIEW && TOOL_META[TOOL_VIEW]){
-  const t = TOOL_META[TOOL_VIEW];
+  const tl = TOOL_META[TOOL_VIEW];
   document.body.classList.add('has-toolbar');
   document.getElementById('toolbar').style.display = '';
-  document.getElementById('tbName').textContent = t.name;
-  document.getElementById('tbPrep').href = t.home;
+  document.getElementById('tbName').textContent = tl.name;
+  document.getElementById('tbPrep').href = tl.home;
   document.getElementById('tbMat').href  = 'my-materials.html?tool=' + TOOL_VIEW;
   document.getElementById('pgTitle').textContent = '我的教材';
   /* The bar already says which tool this is, so the subtitle can describe the
    * shelf rather than explain the scoping. */
-  document.getElementById('pgSub').textContent = '已完成的教材會保留在這裏，最近完成的排在最前。';
+  const t = T[tl.lang];
+  document.getElementById('pgTitle').textContent = t.mine;
+  document.getElementById('pgSub').textContent   = t.sub;
+  document.getElementById('kindLbl').textContent = t.kindLbl;
+  document.getElementById('newBtn').textContent  = t.neu;
+  document.getElementById('tbPrepLabel').textContent = tl.prep;
+  document.getElementById('tbMatLabel').textContent  = t.tab;
   document.getElementById('toolRow').style.display = 'none';
   const nb = document.getElementById('newBtn');
   nb.style.display = '';
-  nb.href = t.home;          /* the tool's own entry decides new vs continue */
+  nb.href = tl.home;          /* the tool's own entry decides new vs continue */
   const b = document.getElementById('backLink');
-  b.href = t.home;
-  b.textContent = '← 返回' + t.name;
+  b.href = tl.home;
+  b.textContent = T[tl.lang].back + tl.name;
   /* Nothing is unsaved on a library page, so leaving needs no confirmation. */
-  document.getElementById('tbExitLabel').textContent = '離開' + t.name;
+  document.getElementById('tbExitLabel').textContent = T[tl.lang].exit + tl.name;
   b.style.display = 'none';   /* the bar carries the exit; one route, not two */
 }
 

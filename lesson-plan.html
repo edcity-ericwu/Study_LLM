@@ -331,7 +331,7 @@
     display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
   .pfoot span{flex:1;}
 </style>
-<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+<!-- Loaded in <head>, not at the end of <body class="has-toolbar">: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
@@ -386,13 +386,44 @@
   </div>
 </aside>
 
+<!-- body is display:flex, so the bar and the content share one column. -->
+<div class="tool-col">
+<div class="toolbar">
+  <div class="tb-name"><span class="tb-sep">│</span>Lesson Plan</div>
+  <nav class="tb-tabs">
+    <a href="lesson-plan.html" class="on">Generate</a>
+    <a href="my-materials.html?tool=lesson-plan">My materials</a>
+  </nav>
+  <button class="tb-exit" onclick="askExit()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    Leave Lesson Plan
+  </button>
+</div>
 <main class="main">
-  <a class="lp-back" href="index.html?subject=eng">← Back to 教學工具箱</a>
 
   <h1 class="en-h1">Lesson Plan</h1>
   <p class="en-sub">Create and share lesson plans with your students. Once a plan is ready you can generate matching materials from it, and they carry this plan’s subject, level and topic across.</p>
 
   <!-- ① form ------------------------------------------------------------ -->
+  <!-- Unfinished work is a fork, not an annotation: continuing and starting
+       fresh are equally weighted and one discards context. -->
+  <section id="stEntry" style="display:none">
+    <div class="pick">
+      <a class="pick-card" href="#" onclick="doResume();return false;">
+        <span class="pi">↩</span>
+        <b>Continue where you left off</b>
+        <small id="pickMeta"></small>
+        <span class="pg">Continue →</span>
+      </a>
+      <a class="pick-card" href="#" onclick="startFresh();return false;">
+        <span class="pi">✦</span>
+        <b>Start something new</b>
+        <small>Begin a new one. The draft you have not saved will not be kept.</small>
+        <span class="pg">Start →</span>
+      </a>
+    </div>
+  </section>
+
   <section id="stForm">
     <div class="tpl-row">
       <span class="lbl">Quick template</span>
@@ -501,22 +532,67 @@
       <div class="out-body" id="planBody"></div>
     </div>
 
-    <div class="exp" style="margin-bottom:20px">
-      <span class="lic">This plan is a draft until you save it. Saving puts it in 我的教材, where you can come back to it.</span>
-      <button class="btn" id="saveBtn" onclick="save()">Save to 我的教材</button>
-    </div>
-
+    <!-- The chain. Moving to one of these is a HANDOFF, not an exit (Eric,
+         2026-08-21): she is continuing the same piece of work, so no LEAVE
+         confirmation fires and the context travels in the link.
+         A handoff is still not a save, though. The plan she is walking away
+         from is a draft, and following the chain silently discarded it — she
+         arrived at Worksheet Generator having lost the plan without ever being
+         told. So the chain now asks about the PLAN (Eric, 2026-08-24). The
+         question is "keep this plan?", not "are you sure you want to leave?" —
+         it never blocks the handoff, it only refuses to throw work away
+         quietly. -->
     <div class="match">
       <div class="mh">Create matching materials</div>
       <div class="match-row">
-        <a class="mbtn" id="mWs" href="#">📝 Worksheet</a>
-        <a class="mbtn" id="mQz" href="#">✅ Quiz</a>
+        <a class="mbtn" id="mWs" href="#" onclick="return chainTo(this)">📝 Worksheet</a>
+        <a class="mbtn" id="mQz" href="#" onclick="return chainTo(this)">✅ Quiz</a>
         <button class="mbtn" disabled>🖥 Slides <span class="soon">Coming soon</span></button>
         <button class="mbtn" disabled>🗂 Flashcards <span class="soon">Coming soon</span></button>
       </div>
     </div>
   </section>
 </main>
+</div>
+
+<!-- Docked so the decision never competes with the material it is about. -->
+<div class="tray" id="tray">
+  <div class="tray-in">
+    <div class="tt"><b id="trayTitle"></b><small id="trayNote"></small></div>
+    <div class="ta">
+      <button class="btn ghost" onclick="discardDraft()">Don’t save</button>
+      <button class="btn" onclick="save()">Save to My materials</button>
+    </div>
+  </div>
+</div>
+
+<!-- Three buttons, because there are genuinely three outcomes and collapsing
+     them would hide one. Saving is first and primary: it is what she almost
+     always wants, and it is the only branch that loses nothing. -->
+<div class="md-back" id="chainDlg">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="chainTitle">
+    <h3 id="chainTitle">Save this lesson plan first?</h3>
+    <p>This plan hasn’t been saved yet. You’re about to build a worksheet from
+       it — the worksheet will carry the subject, level and topic across either
+       way, but the plan itself will be gone unless you save it.</p>
+    <div class="md-acts">
+      <button class="btn ghost" onclick="closeChain()">Stay here</button>
+      <button class="btn ghost" onclick="chainGo(false)">Continue without saving</button>
+      <button class="btn" onclick="chainGo(true)">Save plan and continue</button>
+    </div>
+  </div>
+</div>
+
+<div class="md-back" id="exitDlg">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h3 id="exitTitle">Leave this tool?</h3>
+    <p id="exitBody"></p>
+    <div class="md-acts">
+      <button class="btn ghost" onclick="closeExit()">Stay here</button>
+      <button class="btn" onclick="doExit()">Leave without saving</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
@@ -535,6 +611,7 @@ let tt;function toast(m){const t=document.getElementById('toast');t.textContent=
  * at Primary 4 from a Secondary 4 plan. Here the context is written into the
  * link and shown on arrival, so it is checkable rather than assumed. */
 
+const TOOL_HOME = 'lesson-plan.html';
 const TOOL = 'lesson-plan';
 
 const TEMPLATES = {
@@ -570,6 +647,10 @@ function ctx(){
 function stage(id){
   ['stForm','stWork','stOut'].forEach(s =>
     document.getElementById(s).style.display = (s === id ? '' : 'none'));
+  if(id === 'stOut'){
+    openTray('1 lesson plan ready — not saved yet',
+      'Saving puts it in My materials, where you can open it again. Leave without saving and it is gone.');
+  } else { closeTray(); }
   window.scrollTo(0,0);
 }
 function showForm(){ stage('stForm'); }
@@ -637,12 +718,42 @@ function showPlan(){
  * owns the store — four pages used to write it with their own code, which is
  * how the seed defect got in. */
 
-function save(){
+/* Split so the chain can save WITHOUT being sent to the library — following
+ * the chain and reviewing what you saved are two different intentions, and the
+ * original save() hard-coded the second. */
+function writePlan(){
   const c = ctx();
   Materials.add({tool:'lesson-plan', toolName:'Lesson Plan', title:'Lesson plan: ' + c.topic, kind:'lp', text:c.topic, level:c.level,
     body: document.getElementById('planBody').innerHTML});
   ToolSession.clear(TOOL);
+}
+
+function save(){
+  writePlan();
   location.href = 'my-materials.html?new=1&subject=eng' + '&from=lesson-plan.html&fromName=Lesson Plan';
+}
+
+/* ── the chain prompt ──────────────────────────────────────────────────
+ * Asked once per handoff, and only while the plan is still a draft. Once it
+ * has been saved the tray is closed, there is nothing to lose, and the link
+ * behaves as a plain link again — a confirmation with no consequence to state
+ * is friction, and being stopped should always mean something. */
+let chainHref = null;
+function chainTo(a){
+  if(!document.getElementById('tray').classList.contains('on')) return true;
+  chainHref = a.getAttribute('href');
+  /* The dialog names the destination, so she is not asked an abstract question
+   * about "matching materials" when she clicked one specific thing. */
+  document.getElementById('chainTitle').textContent = 'Save this lesson plan first?';
+  document.getElementById('chainDlg').classList.add('on');
+  return false;
+}
+function closeChain(){ document.getElementById('chainDlg').classList.remove('on'); }
+function chainGo(andSave){
+  if(andSave) writePlan();
+  closeChain();
+  closeTray();
+  location.href = chainHref;
 }
 
 function planHtml(c){
@@ -691,17 +802,81 @@ function planHtml(c){
     </ul>`;
 }
 
-/* ── resume ── */
-(function(){
-  const s = ToolSession.load(TOOL);
-  if(!s) return;
+function applySaved(s){
   document.getElementById('fFw').value    = s.fw;
   document.getElementById('fLv').value    = s.level;
   document.getElementById('fTopic').value = s.topic;
   gate();
   showPlan();
+}
+
+/* ── boot ────────────────────────────────────────────────────────────
+ * Generate shows Generate. A saved draft is offered, never imposed — a tab is
+ * a promise about what you will see (Eric, 2026-08-21). */
+function resumeSaved(){
+  const st = ToolSession.load(TOOL);
+  if(!st) return false;
+  applySaved(st);
+  return true;
+}
+(function(){
+  const saved = ToolSession.load(TOOL);
+  if(!saved){ stage('stForm'); return; }
+  if(new URLSearchParams(location.search).get('resume')){ resumeSaved(); return; }
+  stEntryShow('You were working on a lesson plan. Pick up where you left off, or start again.');
 })();
 gate();
+
+/* ── tool chrome ────────────────────────────────────────────────────────
+ * Entry fork, exit, and the save tray — the same treatment 課文工房 has, so a
+ * teacher meets one set of behaviours across every tool (Eric, 2026-08-21). */
+
+function stEntryShow(meta){
+  document.getElementById('pickMeta').textContent = meta;
+  ['stForm','stWork','stOut'].forEach(x => document.getElementById(x).style.display = 'none');
+  document.getElementById('stEntry').style.display = '';
+}
+function doResume(){
+  document.getElementById('stEntry').style.display = 'none';
+  resumeSaved();
+}
+function startFresh(){
+  ToolSession.clear(TOOL);
+  document.getElementById('stEntry').style.display = 'none';
+  stage('stForm');
+}
+
+function openTray(title, note){
+  document.getElementById('trayTitle').textContent = title;
+  document.getElementById('trayNote').textContent  = note;
+  document.getElementById('tray').classList.add('on');
+  document.body.classList.add('tray-open');
+}
+function closeTray(){
+  document.getElementById('tray').classList.remove('on');
+  document.body.classList.remove('tray-open');
+}
+function discardDraft(){
+  ToolSession.clear(TOOL);
+  closeTray();
+  toast('Not saved.');
+  setTimeout(() => location.href = TOOL_HOME, 900);
+}
+
+/* Only an unsaved draft is actually lost by leaving — moving along the chain
+ * is a handoff, not an exit, and never prompts. */
+function askExit(){
+  if(!document.getElementById('tray').classList.contains('on')){ leaveTool(); return; }
+  document.getElementById('exitBody').textContent =
+    'This draft has not been saved. If you leave now it will be gone.';
+  document.getElementById('exitDlg').classList.add('on');
+}
+function closeExit(){ document.getElementById('exitDlg').classList.remove('on'); }
+function doExit(){ ToolSession.clear(TOOL); leaveTool(); }
+function leaveTool(){ location.href = 'index.html?subject=eng'; }
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ closeExit(); closeChain(); }
+});
 </script>
 </body>
 </html>

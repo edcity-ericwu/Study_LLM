@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdCity 中文科教案設計</title>
+<!-- Typeface served from Google Fonts (Eric, 2026-08-21) rather than a local
+     subset: a subset built from the characters the prototype happened to
+     contain cannot be right for a tool whose input is arbitrary 課文 and
+     arbitrary 課題. display=block, not swap — Chiron's metrics differ from the
+     fallback, so swap changed every row height mid-load. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=block">
+<style>
+  :root{
+    --ec-blue:#008BD1;--ec-blue-dark:#0072ab;--ec-red:#ED1A2E;--ec-green:#00AC6C;
+    --ec-maroon:#7B2539;--ec-amber:#F5A623;--ec-purple:#7C5CDB;
+    --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
+
+  /* ── shell ── */
+  .sidebar{width:248px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .sidebar .logo-wrap{padding:20px 16px 20px;border-bottom:1px solid var(--line);}
+  .sidebar .logo-wrap img{width:100%;height:auto;display:block;}
+  .sidebar .logo-sub{font-size:.8rem;font-weight:700;color:var(--ink-2);margin-top:16px;}
+  .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;border-radius:99px;padding:4px 10px;margin-top:14px;}
+  .nav{padding:14px 10px;flex:1;overflow-y:auto;}
+  .nav-group{margin-bottom:18px;}
+  .nav-group h6{font-size:.66rem;font-weight:600;color:var(--ec-blue);padding:0 10px 8px;text-transform:uppercase;}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-size:.85rem;margin-bottom:2px;white-space:nowrap;}
+  .nav a:hover{background:#f2f6f9;}
+  .nav a.active{background:#e6f4fb;color:var(--ec-blue-dark);font-weight:600;}
+  .nav a .ic{width:17px;height:17px;flex-shrink:0;}
+  .nav-group.ideas{background:#fbf7ef;border:1px solid #f0e4cf;border-radius:12px;padding:10px 4px 8px;margin-top:14px;}
+  .nav-group.ideas a:hover{background:#f4e9d6;}
+  .nav-group.ideas h6{display:flex;align-items:center;gap:6px;color:#8a5a09;}
+  .lab-ic{width:1.05em;height:1.05em;flex-shrink:0;}
+  .sidebar .user{border-top:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .sidebar .user .avatar{width:34px;height:34px;border-radius:50%;background:var(--ec-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;}
+  .sidebar .user .meta b{font-size:.8rem;display:block;}
+  .sidebar .user .meta span{font-size:.68rem;color:var(--ink-3);}
+  .portal-sw{position:relative;padding:12px 12px 0;}
+  .ps-btn{width:100%;display:flex;align-items:center;gap:9px;background:#f7fafc;border:1px solid var(--line);border-radius:11px;padding:9px 12px;cursor:pointer;font-family:inherit;text-align:left;}
+  .ps-btn:hover{border-color:var(--ec-blue);}
+  .ps-ic{font-size:1rem;flex-shrink:0;}
+  .ps-txt{flex:1;min-width:0;}
+  .ps-txt small{display:block;font-size:.6rem;color:var(--ink-3);}
+  .ps-txt b{display:block;font-size:.82rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ps-car{font-size:.62rem;color:var(--ink-3);flex-shrink:0;}
+  .portal-menu{position:absolute;top:calc(100% + 4px);left:12px;right:12px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(20,30,40,.16);padding:6px;display:none;z-index:60;}
+  .portal-menu.show{display:block;}
+  .portal-menu a{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border-radius:9px;text-decoration:none;color:var(--ink-2);}
+  .portal-menu a:hover{background:#f2f6f9;}
+  .portal-menu a.on{background:#e6f4fb;}
+  .portal-menu .pm-ic{font-size:.95rem;}
+  .portal-menu b{display:block;font-size:.8rem;color:var(--ink);}
+  .portal-menu small{display:block;font-size:.66rem;color:var(--ink-3);line-height:1.45;margin-top:1px;}
+
+  .main{flex:1;min-width:0;padding:44px 34px 80px;}
+  h1{font-size:1.8rem;font-weight:800;color:var(--ec-blue);margin-bottom:16px;}
+  .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;max-width:52em;line-height:1.6;}
+  .eyebrow{font-size:.74rem;font-weight:700;color:var(--ec-green);margin-bottom:6px;}
+  .ribbon{display:inline-flex;align-items:flex-start;gap:7px;font-size:.72rem;font-weight:600;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:12px;padding:9px 15px;margin-bottom:20px;max-width:52em;line-height:1.65;}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;background:var(--ec-blue);color:#fff;border:none;
+    border-radius:10px;padding:10px 20px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;
+    transition:background .15s ease;white-space:nowrap;}
+  .btn:hover{background:var(--ec-blue-dark);}
+  .btn.ghost{background:#fff;color:var(--ec-blue-dark);border:1px solid var(--line);font-weight:600;}
+  .btn.ghost:hover{background:#f2f8fb;border-color:var(--ec-blue);}
+  .btn.sm{padding:7px 15px;font-size:.78rem;}
+  .btn[disabled]{opacity:.45;cursor:default;}
+  .btn[disabled]:hover{background:var(--ec-blue);}
+
+  .ld-stage{display:none;}
+  .ld-stage.on{display:block;}
+
+  /* ── entry fork ──
+   * Continuing and starting fresh are equally weighted and one of them
+   * discards context, so it gets a screen rather than a banner (Eric,
+   * 2026-08-21). Same component as 課文工房's, deliberately. */
+  .pick{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:8px auto 0;}
+  @media (max-width:760px){.pick{grid-template-columns:1fr;}}
+  .pick-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
+    border-radius:16px;padding:24px 26px 20px;text-decoration:none;color:inherit;}
+  .pick-card:hover{border-color:var(--ec-blue);box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .pick-card .pi{font-size:1.3rem;line-height:1;margin-bottom:12px;color:var(--ec-blue-dark);}
+  .pick-card b{font-size:1rem;margin-bottom:6px;}
+  .pick-card small{font-size:.78rem;color:var(--ink-3);line-height:1.7;flex:1;}
+  .pick-card .pg{margin-top:16px;font-size:.8rem;font-weight:600;color:var(--ec-blue-dark);}
+
+  /* ── the working layout: her steps on the left, the work on the right ── */
+  .ld-grid{display:grid;grid-template-columns:250px 1fr;gap:26px;align-items:start;}
+  @media (max-width:1040px){.ld-grid{grid-template-columns:1fr;}}
+  .ld-rail{background:#f2f8fb;border:1px solid #d8ecf6;border-radius:14px;padding:18px 20px;position:sticky;top:26px;}
+  .ld-rail h3{font-size:.86rem;font-weight:800;margin-bottom:14px;}
+  .ld-step{display:flex;gap:11px;margin-bottom:15px;}
+  .ld-step:last-child{margin-bottom:0;}
+  .ld-step .n{width:22px;height:22px;border-radius:50%;background:#cfe3ef;color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;}
+  .ld-step.on .n{background:var(--ec-blue);}
+  .ld-step.done .n{background:var(--ec-green);}
+  .ld-step b{font-size:.8rem;display:block;}
+  .ld-step small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.55;}
+
+  .ld-q{font-size:1rem;font-weight:800;margin-bottom:3px;}
+  .ld-qs{font-size:.76rem;color:var(--ink-3);margin-bottom:14px;line-height:1.6;}
+  .ld-block{margin-bottom:30px;}
+
+  /* ── 學習階段 ── */
+  .stage-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .stage-btn{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 17px;
+    font-family:inherit;cursor:pointer;text-align:left;font-size:.82rem;color:var(--ink);}
+  .stage-btn:hover{border-color:var(--ec-blue);}
+  .stage-btn.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);font-weight:700;}
+  .stage-btn small{display:block;font-size:.7rem;color:var(--ink-3);font-weight:400;margin-top:2px;}
+
+  /* ── 範疇 cards ──
+   * Nine of them, three live. The six unpopulated ones are shown greyed on
+   * Eric's instruction (2026-08-24) so the card grid tells the truth about the
+   * curriculum's shape. See cdc-curriculum.js for why this is an exception to
+   * the standing rule against disabled controls. */
+  .dm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+  @media (max-width:900px){.dm-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.dm-grid{grid-template-columns:1fr;}}
+  .dm{display:flex;gap:11px;align-items:flex-start;text-align:left;background:#fff;
+    border:1px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:inherit;}
+  .dm:hover{border-color:var(--ec-blue);}
+  .dm.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);}
+  .dm[disabled]{cursor:default;background:#fafbfc;opacity:.5;}
+  .dm[disabled]:hover{border-color:var(--line);}
+  .dm .di{font-size:1.05rem;line-height:1.2;flex-shrink:0;}
+  .dm b{font-size:.86rem;display:block;}
+  .dm small{font-size:.7rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
+  .dm .n-pts{display:inline-block;font-size:.64rem;font-weight:700;color:var(--ec-blue-dark);
+    background:#e6f4fb;border-radius:99px;padding:2px 8px;margin-top:6px;}
+  .dm.on .n-pts{background:#d5ecf7;}
+  .dm .soon{display:inline-block;font-size:.64rem;font-weight:700;color:var(--ink-3);
+    background:#eef2f6;border-radius:99px;padding:2px 9px;margin-top:6px;}
+
+  /* ── 學習重點 groups ──
+   * Collapsed by default and opened one at a time. The path (閱讀範疇 · 閱讀
+   * 能力) sits on the group header ONCE, so the leaves carry only what
+   * distinguishes them — the live tool repeats it on all 49 chips. */
+  .grp{border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:9px;overflow:hidden;}
+  .grp.open{border-color:#bcdff2;background:#f7fbfd;}
+  .grp-head{display:flex;gap:13px;align-items:flex-start;padding:14px 17px;cursor:pointer;
+    font-family:inherit;width:100%;background:none;border:none;text-align:left;}
+  .grp-code{font-size:.7rem;font-weight:700;color:var(--ec-blue-dark);background:#e6f4fb;border-radius:6px;
+    padding:3px 8px;flex-shrink:0;min-width:34px;text-align:center;}
+  .grp-main b{font-size:.88rem;display:block;}
+  .grp-main small{font-size:.7rem;color:var(--ink-3);display:block;margin-top:3px;}
+  .grp-n{margin-left:auto;font-size:.72rem;color:var(--ink-3);flex-shrink:0;padding-left:12px;white-space:nowrap;}
+  .grp-n .picked{color:var(--ec-blue-dark);font-weight:700;}
+  .grp-body{border-top:1px solid #e2eef5;padding:6px 17px 14px;display:none;}
+  .grp.open .grp-body{display:block;}
+
+  .pt{display:flex;gap:11px;align-items:flex-start;padding:11px 2px;border-bottom:1px solid #eef3f7;
+    cursor:pointer;font-family:inherit;width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left;}
+  .pt:last-child{border-bottom:none;}
+  .pt .box{width:17px;height:17px;border-radius:5px;border:1.5px solid #c8d3dc;flex-shrink:0;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#fff;}
+  .pt.on .box{background:var(--ec-blue);border-color:var(--ec-blue);}
+  .pt b{font-size:.84rem;display:block;font-weight:600;}
+  .pt small{font-size:.74rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.6;}
+
+  /* 中華文化 is a matrix, so it renders as one. Nine cells in a grid read in
+   * two glances; nine chips in a column do not read at all. */
+  .mx{width:100%;border-collapse:separate;border-spacing:7px;margin-top:4px;}
+  .mx th{font-size:.72rem;font-weight:700;color:var(--ink-2);text-align:left;padding:0 4px 2px;}
+  .mx th.corner{color:var(--ink-3);font-weight:600;font-size:.68rem;}
+  .mx td{padding:0;}
+  .cell{width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+    cursor:pointer;font-family:inherit;text-align:left;}
+  .cell:hover{border-color:var(--ec-blue);}
+  .cell.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);}
+  .cell b{font-size:.82rem;display:block;font-weight:600;}
+  .cell small{font-size:.68rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
+
+  /* ── the running summary ──
+   * Selections made three screens up have to stay visible, or she is choosing
+   * blind by the time she reaches 課堂設定. */
+  .chosen{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 17px;margin-top:18px;}
+  .chosen h4{font-size:.78rem;font-weight:700;margin-bottom:9px;}
+  .chosen .none{font-size:.76rem;color:var(--ink-3);}
+  .ctag{display:inline-flex;align-items:center;gap:7px;background:#f2f8fb;border:1px solid #d8ecf6;
+    border-radius:99px;padding:5px 8px 5px 12px;font-size:.76rem;margin:0 6px 6px 0;}
+  .ctag .x{border:none;background:none;font-family:inherit;color:var(--ink-3);cursor:pointer;
+    font-size:.8rem;line-height:1;padding:2px 4px;}
+  .ctag .x:hover{color:var(--ec-red);}
+  .ctag .dm-of{font-size:.66rem;color:var(--ink-3);}
+
+  /* ── 課堂設定 ── */
+  .ld-field{margin-bottom:16px;}
+  .ld-field label{display:block;font-size:.78rem;font-weight:600;margin-bottom:6px;}
+  .ld-field input[type=text],.ld-field select,.ld-field textarea{width:100%;border:1px solid var(--line);
+    border-radius:10px;padding:10px 13px;font-size:.82rem;font-family:inherit;background:#fff;color:var(--ink);}
+  .ld-field textarea{resize:vertical;min-height:110px;line-height:1.8;}
+  .ld-row{display:grid;grid-template-columns:1fr 130px 130px;gap:14px;}
+  @media (max-width:700px){.ld-row{grid-template-columns:1fr;}}
+
+  .ld-bar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);margin-top:24px;
+    padding:15px 22px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+  .ld-bar .hint{font-size:.74rem;color:var(--ink-3);line-height:1.6;}
+  .ld-bar .btn{margin-left:auto;}
+
+  /* ── progress ── */
+  .ld-prog{max-width:660px;margin:0 auto;text-align:center;}
+  .ld-prog .orb{width:62px;height:62px;border-radius:50%;background:#e6f4fb;display:inline-flex;
+    align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;}
+  .ld-prog h2{font-size:1.6rem;font-weight:800;margin-bottom:8px;}
+  .ld-prog .lede{font-size:.84rem;color:var(--ink-2);line-height:1.7;margin-bottom:26px;}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;text-align:left;}
+  .pcard .now{background:#f2f8fb;padding:20px 22px;display:flex;gap:14px;}
+  .pcard .spark{width:38px;height:38px;border-radius:50%;background:var(--ec-blue);color:#fff;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:1rem;}
+  .pcard .elapsed{font-size:.7rem;color:var(--ec-blue-dark);font-weight:700;}
+  .pcard .now b{display:block;font-size:.98rem;margin:2px 0 4px;}
+  .pcard .now p{font-size:.78rem;color:var(--ink-2);line-height:1.6;margin-bottom:14px;}
+  .bar-head{display:flex;font-size:.72rem;color:var(--ink-3);margin-bottom:6px;}
+  .bar-head span:last-child{margin-left:auto;}
+  .bar{height:7px;border-radius:99px;background:#dbe9f2;position:relative;}
+  .bar .fill{height:100%;border-radius:99px;background:var(--ec-blue);transition:width .5s ease;}
+  .plist{padding:6px 22px 4px;}
+  .prow{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid #f2f5f8;}
+  .prow:last-child{border-bottom:none;}
+  .prow .dot{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;}
+  .prow.done .dot{background:#e6f4fb;border-color:#bcdff2;color:var(--ec-blue-dark);}
+  .prow.doing .dot{background:var(--ec-blue);border-color:var(--ec-blue);}
+  .prow b{font-size:.84rem;font-weight:600;}
+  .prow.doing b{color:var(--ec-blue-dark);}
+  .prow small{display:block;font-size:.72rem;color:var(--ink-3);margin-top:2px;line-height:1.5;}
+  .pfoot{border-top:1px solid var(--line);padding:13px 22px;font-size:.74rem;color:var(--ink-3);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+
+  /* ── the 教案 itself ──
+   * A document, so it is set as one: a measure, real headings, real tables.
+   * The live tool renders it inside a chat bubble, which is why it reads as a
+   * transcript of a machine rather than as something a teacher made. */
+  .doc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:34px 40px 38px;max-width:62em;}
+  @media (max-width:700px){.doc{padding:22px 20px 26px;}}
+  .doc h2{font-size:1.35rem;font-weight:800;margin-bottom:6px;line-height:1.45;}
+  .doc .dmeta{font-size:.78rem;color:var(--ink-3);margin-bottom:26px;}
+  .doc h3{font-size:.95rem;font-weight:800;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  .doc h3:first-of-type{margin-top:0;}
+  .doc h4{font-size:.86rem;font-weight:700;margin:20px 0 9px;color:var(--ec-blue-dark);}
+  .doc p{font-size:.84rem;line-height:1.85;color:var(--ink-2);margin-bottom:12px;}
+  .doc table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+  .doc th,.doc td{border:1px solid var(--line);padding:10px 13px;font-size:.8rem;
+    text-align:left;vertical-align:top;line-height:1.7;}
+  .doc th{background:#f7fafc;font-weight:700;color:var(--ink-2);width:8.5em;}
+  .doc td b{font-weight:700;}
+  .doc .act-tbl th{width:auto;}
+  .doc .act-tbl th:last-child{width:17em;}
+  .doc ul,.doc ol{margin:0 0 12px 1.3em;}
+  .doc li{font-size:.84rem;line-height:1.85;color:var(--ink-2);margin-bottom:5px;}
+  .doc .ws-q{border:1px solid var(--line);border-radius:10px;padding:14px 17px;margin-bottom:11px;}
+  .doc .ws-q b{font-size:.82rem;display:block;margin-bottom:7px;}
+  .doc .ws-q .opt{font-size:.8rem;color:var(--ink-2);line-height:2;}
+  .doc .rule{border-bottom:1px solid #c8d3dc;display:inline-block;min-width:8em;}
+  .doc .lp-ref{font-size:.72rem;color:var(--ec-blue-dark);background:#e6f4fb;border-radius:99px;
+    padding:2px 9px;display:inline-block;margin:2px 4px 2px 0;}
+
+  /* Two outputs, two documents. Tabs rather than one long scroll: they are
+     read at different moments — the plan before the lesson, the worksheet in
+     it (Eric's standing preference for tabs over stacked sections). */
+  .doc-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+  .doc-tab{border:none;background:none;padding:10px 2px;margin-right:24px;font-family:inherit;
+    font-size:.86rem;font-weight:600;color:var(--ink-3);cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .doc-tab:hover{color:var(--ink-2);}
+  .doc-tab.on{color:var(--ec-blue-dark);border-bottom-color:var(--ec-blue);}
+  .doc-pane{display:none;}
+  .doc-pane.on{display:block;}
+
+  /* ── the save tray's own contents ──
+   * Two items, each with its own keep/discard, resolved by ONE confirm
+   * (Eric, 2026-08-24). Two decisions, not two dialogs. */
+  .tray-items{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+  .ti{display:flex;gap:9px;align-items:flex-start;font-size:.78rem;cursor:pointer;}
+  .ti input{margin-top:3px;width:15px;height:15px;accent-color:var(--ec-blue);flex-shrink:0;}
+  .ti span{line-height:1.5;}
+  .ti small{color:var(--ink-3);font-size:.72rem;}
+  .ti.off span{color:var(--ink-3);text-decoration:line-through;}
+  .ti.off small{text-decoration:none;}
+
+  footer.note{margin-top:40px;font-size:.68rem;color:var(--ink-3);text-align:center;}
+  @media (max-width:900px){.sidebar{display:none;}.main{padding:18px;}}
+</style>
+<script src="feature-flags.js"></script>
+<link rel="stylesheet" href="shell-chrome.css">
+<script src="shell-chrome.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <img src="edcity_logo.svg" alt="香港教育城 EdCity">
+    <div class="logo-sub">教學工具平台 · POC v0.1</div>
+    <div class="viewer-chip">🧑‍🏫 課堂層級 · 教師視圖</div>
+  </div>
+  <div class="portal-sw">
+    <button class="ps-btn" onclick="togglePortal()">
+      <span class="ps-ic">✨</span>
+      <span class="ps-txt"><small>目前身處</small><b>EdCity.ai</b></span>
+      <span class="ps-car">▾</span>
+    </button>
+    <div class="portal-menu" id="portalMenu">
+      <a href="chat.html" class="on"><span class="pm-ic">✨</span><span><b>EdCity.ai</b><small>科目助理、工具箱、批改、教材</small></span></a>
+      <a href="groups.html"><span class="pm-ic">🏫</span><span><b>課堂與學生</b><small>分組、工具申請、試用邀請</small></span></a>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <h6>教學工具</h6>
+      <a href="chat.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-9 8.36 8.5 8.5 0 01-3.4-.7L3 21l1.84-5.6A8.38 8.38 0 013.5 11.5a8.5 8.5 0 018.5-8.5 8.38 8.38 0 019 8.5z"/></svg>EdCity.ai</a>
+      <a href="index.html" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>教學工具箱</a>
+      <a href="agents.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>EdMarket 應用程式</a>
+      <a href="material-library.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 002 2h12a2 2 0 002-2V8M10 12h4"/></svg>校本教材庫</a>
+    </div>
+    <div class="nav-group ideas">
+      <h6><svg class="lab-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.2 14h9.6"/></svg>Ideas Lab</h6>
+      <a href="materials.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>教材檢視</a>
+    </div>
+  </nav>
+  <div class="user">
+    <div class="avatar">陳</div>
+    <div class="meta"><b>陳凱怡老師</b><span>中文科</span></div>
+  </div>
+</aside>
+
+<!-- body is display:flex, so the bar and the content must share one flex
+     column, or the bar becomes a third column beside the sidebar. -->
+<div class="tool-col">
+<div class="toolbar">
+  <div class="tb-name"><span class="tb-sep">│</span>中文科教案設計</div>
+  <nav class="tb-tabs">
+    <a href="lesson-design.html" class="on">開始設計</a>
+    <a href="my-materials.html?tool=lesson-design">我的教材</a>
+  </nav>
+  <button class="tb-exit" onclick="askExit()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    離開中文科教案設計
+  </button>
+</div>
+
+<main class="main">
+  <div id="pgHead">
+    <div class="eyebrow" id="pgEyebrow">設計新教案</div>
+    <h1 id="pgTitle">先選學習階段和範疇</h1>
+    <p class="sub" id="pgSub">選定之後才挑學習重點，一次只看一個範疇，不必在四十多項之間找。</p>
+  </div>
+
+  <!-- ⓪ entry fork -->
+  <section class="ld-stage" id="stEntry">
+    <div class="pick">
+      <a class="pick-card" href="#" onclick="doResume();return false;">
+        <span class="pi">↩</span>
+        <b>繼續上次的設計</b>
+        <small id="pickResumeMeta"></small>
+        <span class="pg">繼續 →</span>
+      </a>
+      <a class="pick-card" href="#" onclick="startFresh();return false;">
+        <span class="pi">✦</span>
+        <b>設計新教案</b>
+        <small>重新選擇學習範圍和課題。上次未完成的設計不會保留。</small>
+        <span class="pg">開始 →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ① 學習範圍 -->
+  <section class="ld-stage" id="stScope">
+    <div class="ld-grid">
+      <aside class="ld-rail">
+        <h3>只需三步</h3>
+        <div class="ld-step on" id="rs1"><span class="n">1</span><div><b>選學習範圍</b><small>先定學習階段，再逐個範疇挑重點。</small></div></div>
+        <div class="ld-step" id="rs2"><span class="n">2</span><div><b>設定課堂</b><small>課題、課節數，以及你想怎樣教。</small></div></div>
+        <div class="ld-step" id="rs3"><span class="n">3</span><div><b>檢視教案</b><small>看過內容再決定要不要儲存。</small></div></div>
+      </aside>
+
+      <div>
+        <div class="ribbon">
+          <span>ℹ️</span>
+          <span>示範版本載入了 <b>閱讀</b>、<b>中華文化</b>、<b>品德情意</b> 三個範疇的學習重點。其餘六個範疇是課程的一部分，但未載入本示範，內容亦未經課程文件核對。</span>
+        </div>
+
+        <div class="ld-block">
+          <div class="ld-q">學習階段</div>
+          <div class="ld-qs">教案的深淺和用語會按階段調整。</div>
+          <div class="stage-row" id="stageRow"></div>
+        </div>
+
+        <div class="ld-block">
+          <div class="ld-q">學習範疇</div>
+          <div class="ld-qs">選一個範疇，下面就只顯示那個範疇的學習重點。可以逐個範疇選，已選的重點不會因為轉範疇而清走。</div>
+          <div class="dm-grid" id="dmGrid"></div>
+        </div>
+
+        <div class="ld-block" id="ptsBlock" style="display:none">
+          <div class="ld-q" id="ptsQ">學習重點</div>
+          <div class="ld-qs" id="ptsQs"></div>
+          <div id="ptsBox"></div>
+        </div>
+
+        <div class="chosen" id="chosenBox">
+          <h4>已選學習重點</h4>
+          <div id="chosenList"><span class="none">尚未選擇。選定之後會在這裏列出，設定課堂時仍然看得見。</span></div>
+        </div>
+
+        <div class="ld-bar">
+          <div class="hint">建議每份教案不多於 6 項重點。<br>重點太多，兩節課教不完，活動也會變得零碎。</div>
+          <button class="btn" id="scopeGo" disabled onclick="toSetup()">先選擇學習階段</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 課堂設定 -->
+  <section class="ld-stage" id="stSetup">
+    <div class="ld-grid">
+      <aside class="ld-rail">
+        <h3>只需三步</h3>
+        <div class="ld-step done"><span class="n">✓</span><div><b>選學習範圍</b><small id="rsDone">已選重點</small></div></div>
+        <div class="ld-step on"><span class="n">2</span><div><b>設定課堂</b><small>課題、課節數，以及你想怎樣教。</small></div></div>
+        <div class="ld-step"><span class="n">3</span><div><b>檢視教案</b><small>看過內容再決定要不要儲存。</small></div></div>
+      </aside>
+
+      <div>
+        <div class="ld-q">這次要教甚麼課</div>
+        <div class="ld-qs">教案會按下面的課題和課節數編排活動。</div>
+
+        <div class="ld-row">
+          <div class="ld-field"><label for="fTopic">課堂主題</label>
+            <input type="text" id="fTopic" placeholder="例如：平雅公辨" oninput="gateSetup()"></div>
+          <div class="ld-field"><label for="fUnits">課題數</label>
+            <select id="fUnits"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+          <div class="ld-field"><label for="fPeriods">課節數</label>
+            <select id="fPeriods" onchange="gateSetup()">
+              <option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+        </div>
+
+        <div class="ld-field">
+          <label for="fDesign">請提供學習設計<span style="font-weight:400;color:var(--ink-3)">（可留空）</span></label>
+          <textarea id="fDesign" placeholder="例如：想以小組討論為主，先讓學生自己讀一遍；班上程度差異較大，需要分層活動。"></textarea>
+        </div>
+
+        <div class="chosen">
+          <h4>這份教案會涵蓋</h4>
+          <div id="chosenList2"></div>
+        </div>
+
+        <div class="ld-bar">
+          <button class="btn ghost" onclick="backToScope()">← 改學習範圍</button>
+          <button class="btn" id="setupGo" disabled onclick="startMake()">請先填寫課堂主題</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ generating -->
+  <section class="ld-stage" id="stMake">
+    <div class="ld-prog">
+      <div class="orb">📋</div>
+      <h2>正在編寫教案</h2>
+      <p class="lede">按你選的學習重點編排課節活動，並配一份課堂工作紙。<br>完成後由你決定要不要存入「我的教材」。</p>
+
+      <div class="pcard">
+        <div class="now">
+          <div class="spark">✦</div>
+          <div style="flex:1">
+            <span class="elapsed" id="mkElapsed">已用 0 秒</span>
+            <b id="mkNowTitle">核對學習重點</b>
+            <p id="mkNowDesc">檢查所選重點是否配合學習階段。</p>
+            <div class="bar-head"><span id="mkStepLabel">第 1 步，共 5 步</span><span id="mkPct">20%</span></div>
+            <div class="bar"><div class="fill" id="mkFill" style="width:20%"></div></div>
+          </div>
+        </div>
+        <div class="plist" id="mkList"></div>
+        <div class="pfoot">
+          <span style="flex:1">可以先離開。教案完成後不會自動儲存，側欄會提示你回來決定。</span>
+          <button class="btn ghost sm" onclick="leaveRunning()">先離開</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ the 教案 -->
+  <section class="ld-stage" id="stOut">
+    <div class="doc-tabs">
+      <button class="doc-tab on" id="tabPlan" onclick="showPane('plan')">教案</button>
+      <button class="doc-tab" id="tabWs" onclick="showPane('ws')">課堂工作紙</button>
+    </div>
+    <div class="doc-pane on" id="panePlan"><div class="doc" id="docPlan"></div></div>
+    <div class="doc-pane" id="paneWs"><div class="doc" id="docWs"></div></div>
+  </section>
+
+</main>
+</div>
+
+<div class="md-back" id="exitDlg">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h3 id="exitTitle">離開中文科教案設計？</h3>
+    <p id="exitBody"></p>
+    <div class="md-acts">
+      <button class="btn ghost" onclick="closeExit()">留在這裏</button>
+      <button class="btn" id="exitGo" onclick="doExit()">離開</button>
+    </div>
+  </div>
+</div>
+
+<!-- Two outputs, each with its own keep/discard, resolved by one confirm. -->
+<div class="tray" id="tray">
+  <div class="tray-in">
+    <div class="tt">
+      <b id="trayTitle">教案已完成，尚未儲存</b>
+      <div class="tray-items">
+        <label class="ti" id="tiPlanWrap">
+          <input type="checkbox" id="tiPlan" checked onchange="gateTray()">
+          <span id="tiPlanTxt">教案<br><small>儲存後可在「我的教材」再開啟。</small></span>
+        </label>
+        <label class="ti" id="tiWsWrap">
+          <input type="checkbox" id="tiWs" checked onchange="gateTray()">
+          <span id="tiWsTxt">學生工作紙<br><small>可獨立列印派發，不必連教案一起開。</small></span>
+        </label>
+      </div>
+    </div>
+    <div class="ta">
+      <button class="btn ghost" onclick="discardAll()">全部不儲存</button>
+      <button class="btn" id="saveBtn" onclick="saveChosen()">儲存 2 份</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="demo-state.js"></script>
+<script src="materials.js"></script>
+<script src="jobs.js"></script>
+<script src="tool-session.js"></script>
+<script src="cdc-curriculum.js"></script>
+<script src="demo-nav.js"></script>
+<script>let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}</script>
+
+<script>
+/* ── 中文科教案設計 ────────────────────────────────────────────────────
+ * POC 3. A redesign of the live EdCity tool, not a reproduction (Eric,
+ * 2026-08-24). Three things changed and each is a decision, not a tidy-up:
+ *
+ *  1. The 49-chip flat picker became 階段 → 範疇 → group → 重點. The live tool
+ *     shows every point at once with its full path repeated on each chip, so
+ *     the only part that differs is buried at the end of a long shared string.
+ *  2. The chat transcript is gone. The live tool posts the teacher's entire
+ *     selection back as a message bubble taller than the viewport — that is a
+ *     payload, not a message, and no teacher can read it back.
+ *  3. The output is a document, not a chat reply, and saving is an explicit
+ *     decision per item rather than an automatic write.
+ *
+ * Timings are compressed to about ten seconds. In the product each step is
+ * considerably longer.
+ */
+
+const TOOL = 'lesson-design';
+const TOOL_NAME = '中文科教案設計';
+
+/* togglePortal() comes from shell-chrome.js. Six tool pages called it without
+ * defining it — see the note there. */
+
+let stageId = 'ks2';          /* 學習階段 */
+let openDomain = null;        /* which 範疇 is expanded */
+let picked = [];              /* 學習重點 ids, in the order she chose them */
+let openGroup = null;
+let OUT = null;               /* the generated 教案 + 工作紙 */
+
+function stage(id){
+  document.querySelectorAll('.ld-stage').forEach(s => s.classList.toggle('on', s.id === id));
+  const head = document.getElementById('pgHead');
+  /* The page head introduces the CURRENT job. On the output screen the
+   * document is the head, so the intro would be a second title above it. */
+  head.style.display = (id === 'stMake' || id === 'stOut') ? 'none' : '';
+  if(id === 'stSetup'){
+    document.getElementById('pgEyebrow').textContent = '設計新教案';
+    document.getElementById('pgTitle').textContent = '設定這次的課堂';
+    document.getElementById('pgSub').textContent = '課題和課節數會決定教案怎樣分節。';
+  }
+  if(id === 'stEntry'){
+    document.getElementById('pgEyebrow').textContent = '中文科教案設計';
+    document.getElementById('pgTitle').textContent = '有一份未完成的設計';
+    document.getElementById('pgSub').textContent = '你可以接着上次做，或者重新開始。';
+  }
+  window.scrollTo && window.scrollTo(0,0);
+}
+
+/* ── ① 學習階段 ── */
+function paintStages(){
+  document.getElementById('stageRow').innerHTML = CDC.STAGES.map(s =>
+    '<button type="button" class="stage-btn' + (s.id === stageId ? ' on' : '') + '" ' +
+    'data-stage="' + s.id + '" onclick="pickStage(\'' + s.id + '\')">' +
+    s.name + '<small>' + s.years + '</small></button>').join('');
+}
+function pickStage(id){ stageId = id; paintStages(); gateScope(); snapshot(); }
+
+/* ── ② 範疇 cards ──
+ * Six of the nine are shown disabled on Eric's instruction (2026-08-24): the
+ * team walking through the POC will not click them, and a three-card grid
+ * would tell them the curriculum has three 範疇. */
+function paintDomains(){
+  document.getElementById('dmGrid').innerHTML = CDC.DOMAINS.map(dm => {
+    if(!dm.ready){
+      return '<button type="button" class="dm" disabled>' +
+        '<span class="di">' + dm.icon + '</span>' +
+        '<span><b>' + dm.name + '</b><span class="soon">' + dm.why + '</span></span></button>';
+    }
+    const n = CDC.count(dm);
+    const mine = picked.filter(id => (CDC.get(id) || {}).domain === dm.name).length;
+    return '<button type="button" class="dm' + (openDomain === dm.id ? ' on' : '') + '" ' +
+      'onclick="openDm(\'' + dm.id + '\')">' +
+      '<span class="di">' + dm.icon + '</span>' +
+      '<span><b>' + dm.name + '</b><small>' + dm.desc + '</small>' +
+      '<span class="n-pts">' + (mine ? '已選 ' + mine + ' / ' + n + ' 項' : n + ' 項重點') + '</span>' +
+      '</span></button>';
+  }).join('');
+}
+
+function openDm(id){
+  openDomain = (openDomain === id) ? null : id;
+  openGroup = null;
+  paintDomains();
+  paintPoints();
+  snapshot();
+}
+
+/* ── ③ 學習重點 ──
+ * Two renderers, because the data has two shapes. 中華文化 is a 3×3 matrix of
+ * 取向 × 面向 — flattening it into nine chips is what makes those nine look
+ * like duplicates in the live tool. */
+function paintPoints(){
+  const block = document.getElementById('ptsBlock');
+  if(!openDomain){ block.style.display = 'none'; return; }
+  const dm = CDC.domain(openDomain);
+  block.style.display = '';
+  document.getElementById('ptsQ').textContent = dm.name + '・學習重點';
+
+  if(dm.kind === 'matrix'){
+    document.getElementById('ptsQs').textContent =
+      '三種學習取向，配三個文化面向。揀選格子即可，不必逐項讀完九項相近的描述。';
+    document.getElementById('ptsBox').innerHTML = matrixHTML(dm);
+    return;
+  }
+
+  document.getElementById('ptsQs').textContent =
+    '按課程文件的分類收起，逐組打開。組別上方標示了出處，重點本身不再重複。';
+  document.getElementById('ptsBox').innerHTML = dm.groups.map(g => {
+    const mine = g.items.filter(it => picked.indexOf(it.id) >= 0).length;
+    return '<div class="grp' + (openGroup === g.code ? ' open' : '') + '" id="grp-' + g.code + '">' +
+      '<button type="button" class="grp-head" onclick="toggleGroup(\'' + g.code + '\')">' +
+        '<span class="grp-code">' + g.code + '</span>' +
+        '<span class="grp-main"><b>' + g.name + '</b><small>' + g.path + '</small></span>' +
+        '<span class="grp-n">' + (mine ? '<span class="picked">已選 ' + mine + '</span> / ' + g.items.length + ' 項'
+                                       : g.items.length + ' 項') + '</span>' +
+      '</button>' +
+      '<div class="grp-body">' + g.items.map(it =>
+        '<button type="button" class="pt' + (picked.indexOf(it.id) >= 0 ? ' on' : '') + '" ' +
+        'onclick="togglePoint(\'' + it.id + '\')">' +
+          '<span class="box">✓</span>' +
+          '<span><b>' + it.t + '</b><small>' + it.d + '</small></span>' +
+        '</button>').join('') +
+      '</div></div>';
+  }).join('');
+}
+
+function matrixHTML(dm){
+  let h = '<table class="mx"><tr><th class="corner">取向 ＼ 面向</th>' +
+    dm.facets.map(f => '<th>' + f.t + '<br><span style="font-weight:400;color:var(--ink-3);font-size:.66rem">' + f.d + '</span></th>').join('') +
+    '</tr>';
+  dm.modes.forEach(m => {
+    h += '<tr><th>' + m.t + '</th>' + dm.facets.map(f => {
+      const id = 'c-' + m.id + '-' + f.id;
+      return '<td><button type="button" class="cell' + (picked.indexOf(id) >= 0 ? ' on' : '') + '" ' +
+        'onclick="togglePoint(\'' + id + '\')"><b>' + m.t + f.t + '</b>' +
+        '<small>' + m.d + '</small></button></td>';
+    }).join('') + '</tr>';
+  });
+  return h + '</table>';
+}
+
+function toggleGroup(code){
+  openGroup = (openGroup === code) ? null : code;
+  paintPoints();
+}
+
+function togglePoint(id){
+  const i = picked.indexOf(id);
+  if(i >= 0) picked.splice(i,1); else picked.push(id);
+  paintPoints();
+  paintDomains();
+  paintChosen();
+  gateScope();
+  snapshot();
+}
+function dropPoint(id){ togglePoint(id); }
+
+/* The running summary. Selections made in a 範疇 she has since closed must
+ * stay visible, or she is choosing blind by the time she reaches 課堂設定. */
+function paintChosen(){
+  const box = document.getElementById('chosenList');
+  const box2 = document.getElementById('chosenList2');
+  if(!picked.length){
+    box.innerHTML = '<span class="none">尚未選擇。選定之後會在這裏列出，設定課堂時仍然看得見。</span>';
+    if(box2) box2.innerHTML = '<span class="none">未選任何學習重點。</span>';
+    return;
+  }
+  box.innerHTML = picked.map(id => {
+    const p = CDC.get(id);
+    return '<span class="ctag"><span>' + p.title + ' <span class="dm-of">· ' + p.domain + '</span></span>' +
+      '<button class="x" onclick="dropPoint(\'' + id + '\')" aria-label="移除 ' + p.title + '">×</button></span>';
+  }).join('');
+  if(box2) box2.innerHTML = picked.map(id => {
+    const p = CDC.get(id);
+    return '<span class="ctag"><span>' + p.title + ' <span class="dm-of">· ' + p.domain + '</span></span></span>';
+  }).join('');
+}
+
+/* The CTA names what is missing, so it is never a dead button with no reason
+ * given (the rule set on 課文工房, 2026-08-21). */
+function gateScope(){
+  const btn = document.getElementById('scopeGo');
+  let label, ok = false;
+  if(!stageId)            label = '先選擇學習階段';
+  else if(!picked.length) label = '選擇至少一項學習重點';
+  else { label = '設定課堂 →'; ok = true; }
+  btn.textContent = label;
+  btn.disabled = !ok;
+}
+
+function toSetup(){
+  const s = CDC.STAGES.filter(x => x.id === stageId)[0];
+  document.getElementById('rsDone').textContent = s.name + '・已選 ' + picked.length + ' 項重點';
+  paintChosen();
+  stage('stSetup');
+  gateSetup();
+  snapshot();
+}
+function backToScope(){ stage('stScope'); snapshot(); }
+
+function gateSetup(){
+  const btn = document.getElementById('setupGo');
+  const topic = document.getElementById('fTopic').value.trim();
+  if(!topic){ btn.textContent = '請先填寫課堂主題'; btn.disabled = true; }
+  else { btn.textContent = '生成教案'; btn.disabled = false; }
+  snapshot();
+}
+
+/* ── ④ generating ── */
+const MAKE_STEPS = [
+  ['核對學習重點','檢查所選重點是否配合學習階段。'],
+  ['編排課節','按課節數把重點分配到每一節。'],
+  ['撰寫教學活動','為每個重點寫出活動、提問和分層安排。'],
+  ['配對評估','按重點擬定課堂工作紙的題目。'],
+  ['整理格式','排版成可直接列印的教案和工作紙。']
+];
+
+let mkTimer = null;
+function startMake(){
+  stage('stMake');
+  const items = [
+    {title:'教案：' + topicVal(), kind:'lp'},
+    {title:'學生工作紙：' + topicVal(), kind:'ws'}
+  ];
+  /* Registered with Jobs at the START, not at the end. That is what makes
+   * 「先離開」 honest: the work is already on the clock, so leaving does not
+   * cancel it and coming back shows it further along. */
+  const jobs = Jobs.start(TOOL, TOOL_NAME, 'lesson-design.html', items);
+  snapshot();
+  runMakeScreen(jobs);
+}
+
+function resumeMake(jobs){ stage('stMake'); runMakeScreen(jobs); }
+
+function runMakeScreen(jobs){
+  const t0 = Date.now();
+  const last = jobs[jobs.length - 1].doneAt;
+  const per = Math.max(700, Math.round((last - t0) / MAKE_STEPS.length));
+
+  const paint = () => {
+    const el = Math.floor((Date.now() - t0) / 1000);
+    document.getElementById('mkElapsed').textContent = '已用 ' + el + ' 秒';
+    let i = Math.min(MAKE_STEPS.length - 1, Math.floor((Date.now() - t0) / per));
+    document.getElementById('mkNowTitle').textContent = MAKE_STEPS[i][0];
+    document.getElementById('mkNowDesc').textContent  = MAKE_STEPS[i][1];
+    document.getElementById('mkStepLabel').textContent = '第 ' + (i+1) + ' 步，共 ' + MAKE_STEPS.length + ' 步';
+    const pct = Math.round(Math.min(1, (Date.now() - t0) / (per * MAKE_STEPS.length)) * 100);
+    document.getElementById('mkPct').textContent = pct + '%';
+    document.getElementById('mkFill').style.width = pct + '%';
+    document.getElementById('mkList').innerHTML = MAKE_STEPS.map((s,n) =>
+      '<div class="prow ' + (n < i ? 'done' : n === i ? 'doing' : '') + '">' +
+      '<span class="dot">' + (n < i ? '✓' : '') + '</span>' +
+      '<div><b>' + s[0] + '</b><small>' + s[1] + '</small></div></div>').join('');
+
+    if(jobs.every(j => j.doneAt <= Date.now())){ clearInterval(mkTimer); finished(jobs); }
+  };
+  paint();
+  mkTimer = setInterval(paint, 400);
+}
+
+function leaveRunning(){ location.href = 'my-materials.html?tool=' + TOOL; }
+
+function finished(jobs){
+  OUT = buildDoc();
+  document.getElementById('docPlan').innerHTML = OUT.planHTML;
+  document.getElementById('docWs').innerHTML   = OUT.wsHTML;
+  stage('stOut');
+  gateTray();
+  document.getElementById('tray').classList.add('on');
+  document.body.classList.add('tray-open');
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
+  snapshot();
+}
+
+function showPane(which){
+  document.getElementById('tabPlan').classList.toggle('on', which === 'plan');
+  document.getElementById('tabWs').classList.toggle('on', which === 'ws');
+  document.getElementById('panePlan').classList.toggle('on', which === 'plan');
+  document.getElementById('paneWs').classList.toggle('on', which === 'ws');
+}
+
+/* ── the document ──────────────────────────────────────────────────────
+ * Written FROM the selections, so it changes when they change. A fixed sample
+ * would demo identically no matter what she picked, which is exactly the
+ * thing a POC of a generator must not do. */
+function topicVal(){ return (document.getElementById('fTopic').value.trim()) || '未命名課題'; }
+
+function buildDoc(){
+  const topic   = topicVal();
+  const periods = parseInt(document.getElementById('fPeriods').value, 10) || 2;
+  const units   = document.getElementById('fUnits').value;
+  const design  = document.getElementById('fDesign').value.trim();
+  const s       = CDC.STAGES.filter(x => x.id === stageId)[0];
+  const pts     = picked.map(id => CDC.get(id)).filter(Boolean);
+
+  /* Points are dealt round-robin across the periods, so every 節 has something
+   * from the teacher's own selection rather than the first N going to 第一節. */
+  const byPeriod = [];
+  for(let i = 0; i < periods; i++) byPeriod.push([]);
+  pts.forEach((p, i) => byPeriod[i % periods].push(p));
+
+  const ref = p => '<span class="lp-ref">' + p.domain + '·' + p.title + '</span>';
+
+  let plan =
+    '<h2>' + s.name + '中文科教案：' + topic + '</h2>' +
+    '<div class="dmeta">' + s.years + '　·　' + units + ' 個課題　·　' + periods + ' 節　·　共 ' + pts.length + ' 項學習重點</div>' +
+
+    '<h3>一、課程基本資料</h3>' +
+    '<table>' +
+      '<tr><th>學習階段</th><td>' + s.name + '（' + s.years + '）</td></tr>' +
+      '<tr><th>課堂主題</th><td>' + topic + '</td></tr>' +
+      '<tr><th>課節安排</th><td>' + periods + ' 節，每節 40 分鐘</td></tr>' +
+      '<tr><th>學習重點</th><td>' + pts.map(p =>
+          '<b>' + p.domain + '　' + (p.code ? p.code + '　' : '') + p.title + '</b><br>' +
+          '<span style="color:var(--ink-3)">' + p.desc + '</span>').join('<br><br>') + '</td></tr>' +
+      (design ? '<tr><th>教師備註</th><td>' + esc(design) + '</td></tr>' : '') +
+    '</table>' +
+
+    '<h3>二、學習經驗設計</h3>';
+
+  byPeriod.forEach((group, i) => {
+    plan += '<h4>第' + cn(i+1) + '節　（40 分鐘）</h4>' +
+      '<table class="act-tbl"><tr><th>教學活動</th><th>對應學習重點</th></tr>' +
+      '<tr><td><b>引入（5 分鐘）</b><br>以「' + topic + '」開場，請學生說出已知的一兩點，教師板書。</td>' +
+      '<td>建立學習情境，未對應個別重點。</td></tr>' +
+      (group.length ? group.map((p, n) =>
+        '<tr><td><b>活動' + cn(n+1) + '（' + Math.max(8, Math.floor(28 / group.length)) + ' 分鐘）</b><br>' +
+        actFor(p, topic) + '</td><td>' + ref(p) + '<br><span style="color:var(--ink-3);font-size:.74rem">' + p.desc + '</span></td></tr>'
+      ).join('')
+      : '<tr><td colspan="2" style="color:var(--ink-3)">這一節未分配學習重點，可作鞏固或延伸之用。</td></tr>') +
+      '<tr><td><b>總結（5 分鐘）</b><br>請兩三位學生用一句話說出這一節學到甚麼，教師補充並預告下一節。</td>' +
+      '<td>回顧本節重點。</td></tr>' +
+      '</table>';
+  });
+
+  plan += '<h3>三、評估安排</h3>' +
+    '<p>課堂工作紙於第' + cn(periods) + '節後派發，題目按上述學習重點設計，可作課堂完成或家課之用。教師可按班上程度選用其中部分題目。</p>' +
+    (design ? '<p><b>已按教師備註調整：</b>' + esc(design) + '</p>' : '');
+
+  /* ── the worksheet ── */
+  let ws =
+    '<h2>' + topic + '　課堂工作紙</h2>' +
+    '<div class="dmeta">' + s.name + '　·　姓名：<span class="rule">　　　　　</span>　班別：<span class="rule" style="min-width:5em">　　　</span></div>';
+
+  pts.forEach((p, i) => {
+    ws += '<h4>' + cn(i+1) + '、' + p.title + '　<span style="font-weight:400;color:var(--ink-3);font-size:.76rem">（' + p.domain + '）</span></h4>' +
+      wsFor(p, topic, i);
+  });
+  if(!pts.length) ws += '<p>未選學習重點，未能擬定題目。</p>';
+
+  return {
+    planHTML: plan, wsHTML: ws,
+    planTitle: '教案：' + topic, wsTitle: '學生工作紙：' + topic,
+    topic: topic, level: s.name
+  };
+}
+
+/* Activity text keyed off the 範疇, so a 品德情意 point does not read like a
+ * 閱讀 point. Three families is enough for a POC and honest about being a
+ * template — the real tool writes these. */
+function actFor(p, topic){
+  if(p.domain === '閱讀')
+    return '學生默讀「' + topic + '」相關段落，圈出關鍵詞句，然後兩人一組互相講解「' + p.title + '」在文中的例子。教師巡視並抽兩組匯報。';
+  if(p.domain === '中華文化')
+    return '教師展示與「' + topic + '」相關的文化材料（圖片或短片），請學生分組討論：這反映了甚麼？今天還看得見嗎？各組派代表分享，教師歸納。';
+  return '教師以「' + topic + '」中的一個處境提問，請學生先寫下自己的做法，再小組交流不同選擇及理由。教師不作對錯判斷，引導學生說出考慮。';
+}
+
+function wsFor(p, topic, i){
+  if(p.domain === '閱讀')
+    return '<div class="ws-q"><b>1. 在文中找出一個能說明「' + p.title + '」的例子，抄錄下來。</b>' +
+      '<div class="opt"><span class="rule" style="min-width:100%">　</span><br><span class="rule" style="min-width:100%">　</span></div></div>' +
+      '<div class="ws-q"><b>2. 你為甚麼認為這是例子？用一兩句說明。</b>' +
+      '<div class="opt"><span class="rule" style="min-width:100%">　</span><br><span class="rule" style="min-width:100%">　</span></div></div>';
+  if(p.domain === '中華文化')
+    return '<div class="ws-q"><b>1. 「' + topic + '」反映了哪一種文化面向？</b>' +
+      '<div class="opt">（A）物質文化　　（B）制度文化　　（C）精神文化</div></div>' +
+      '<div class="ws-q"><b>2. 這一點在今天的生活裏還看得見嗎？舉一個例子。</b>' +
+      '<div class="opt"><span class="rule" style="min-width:100%">　</span><br><span class="rule" style="min-width:100%">　</span></div></div>';
+  return '<div class="ws-q"><b>1. 如果你遇上課文中的處境，你會怎樣做？</b>' +
+    '<div class="opt"><span class="rule" style="min-width:100%">　</span><br><span class="rule" style="min-width:100%">　</span></div></div>' +
+    '<div class="ws-q"><b>2. 你這樣做，主要考慮了甚麼？（沒有標準答案）</b>' +
+    '<div class="opt"><span class="rule" style="min-width:100%">　</span><br><span class="rule" style="min-width:100%">　</span></div></div>';
+}
+
+function cn(n){ return ['','一','二','三','四','五','六','七','八'][n] || String(n); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── the save decision ─────────────────────────────────────────────────
+ * Two items, each with its own keep/discard, resolved by ONE confirm (Eric,
+ * 2026-08-24). Two decisions, not two dialogs — and the button counts what
+ * will actually be written, so it can never claim more than it saves. */
+function gateTray(){
+  const a = document.getElementById('tiPlan').checked;
+  const b = document.getElementById('tiWs').checked;
+  document.getElementById('tiPlanWrap').classList.toggle('off', !a);
+  document.getElementById('tiWsWrap').classList.toggle('off', !b);
+  const n = (a?1:0) + (b?1:0);
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = n ? '儲存 ' + n + ' 份' : '兩份都不儲存';
+  document.getElementById('trayTitle').textContent =
+    n === 2 ? '兩份教材已完成，尚未儲存'
+    : n === 1 ? '一份會儲存，一份會捨棄'
+    : '兩份都會捨棄';
+}
+
+function saveChosen(){
+  if(!OUT){ toast('未有可儲存的教材。'); return; }
+  const a = document.getElementById('tiPlan').checked;
+  const b = document.getElementById('tiWs').checked;
+  if(!a && !b){ discardAll(); return; }
+
+  const recs = [];
+  if(a) recs.push({tool:TOOL, toolName:TOOL_NAME, kind:'lp',
+                   title:OUT.planTitle, text:OUT.topic, level:OUT.level, body:OUT.planHTML});
+  if(b) recs.push({tool:TOOL, toolName:TOOL_NAME, kind:'ws',
+                   title:OUT.wsTitle, text:OUT.topic, level:OUT.level, body:OUT.wsHTML});
+  Materials.addMany(recs);
+
+  const done = Jobs.finished(TOOL);
+  Jobs.claim(done.map(j => j.id));
+  ToolSession.clear(TOOL);
+  closeTray();
+  location.href = 'my-materials.html?tool=' + TOOL + '&new=' + recs.length +
+                  '&from=lesson-design.html&fromName=' + encodeURIComponent(TOOL_NAME);
+}
+
+function discardAll(){
+  const done = Jobs.finished(TOOL);
+  Jobs.claim(done.map(j => j.id));
+  ToolSession.clear(TOOL);
+  closeTray();
+  toast('已捨棄，沒有存入「我的教材」。');
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
+  setTimeout(() => location.href = 'lesson-design.html', 1200);
+}
+
+function closeTray(){
+  document.getElementById('tray').classList.remove('on');
+  document.body.classList.remove('tray-open');
+}
+
+/* ── session ───────────────────────────────────────────────────────────
+ * Only what she chose by hand. The 教案 is re-derived from those choices on
+ * restore, so this never becomes a second copy of the tool's model. */
+function snapshot(){
+  const on = document.querySelector('.ld-stage.on');
+  if(!on) return;
+  ToolSession.save(TOOL, {
+    stage: on.id, stageId: stageId, picked: picked, openDomain: openDomain,
+    topic: document.getElementById('fTopic').value,
+    units: document.getElementById('fUnits').value,
+    periods: document.getElementById('fPeriods').value,
+    design: document.getElementById('fDesign').value
+  });
+}
+
+function restore(){
+  const st = ToolSession.load(TOOL);
+  if(!st) return false;
+  stageId    = st.stageId || 'ks2';
+  picked     = st.picked || [];
+  openDomain = st.openDomain || null;
+  document.getElementById('fTopic').value   = st.topic || '';
+  document.getElementById('fUnits').value   = st.units || '2';
+  document.getElementById('fPeriods').value = st.periods || '2';
+  document.getElementById('fDesign').value  = st.design || '';
+
+  paintStages(); paintDomains(); paintPoints(); paintChosen();
+  gateScope(); gateSetup();
+
+  const live  = Jobs.running(TOOL);
+  const ready = Jobs.finished(TOOL);
+  if(st.stage === 'stMake' || st.stage === 'stOut'){
+    if(live.length || ready.length){ resumeMake(live.concat(ready)); return true; }
+  }
+  if(st.stage === 'stSetup' && picked.length){ toSetup(); return true; }
+  stage('stScope');
+  return true;
+}
+
+/* ── leaving ───────────────────────────────────────────────────────────
+ * The dialog appears only when there is something to lose, and names it.
+ * An unfinished session survives — resume restores it — so stopping her for
+ * that would be reassurance dressed as a decision. */
+function unsaved(){
+  const ready = (window.Jobs ? Jobs.finished(TOOL) : []).length;
+  return {ready: ready};
+}
+function askExit(){
+  const u = unsaved();
+  if(!u.ready){ leave(); return; }
+  document.getElementById('exitBody').textContent =
+    u.ready + ' 份教材已完成但尚未儲存，離開後會消失。你也可以留下先儲存。';
+  document.getElementById('exitGo').textContent = '離開，不儲存';
+  document.getElementById('exitDlg').classList.add('on');
+}
+function closeExit(){ document.getElementById('exitDlg').classList.remove('on'); }
+function doExit(){
+  const u = unsaved();
+  if(u.ready) Jobs.claim(Jobs.finished(TOOL).map(j => j.id));
+  leave();
+}
+function leave(){ location.href = 'index.html?subject=chi'; }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeExit(); });
+
+function startFresh(){
+  /* She was told 「上次未完成的設計不會保留」, so the previous run's finished-
+   * but-unsaved drafts go too. Left behind, the shell would keep advertising a
+   * decision about work this tool has moved on from. */
+  const stale = window.Jobs ? Jobs.finished(TOOL) : [];
+  if(stale.length) Jobs.claim(stale.map(j => j.id));
+  ToolSession.clear(TOOL);
+  if(window.Jobs && Jobs.refresh) Jobs.refresh();
+  stageId = 'ks2'; picked = []; openDomain = null;
+  document.getElementById('fTopic').value = '';
+  document.getElementById('fDesign').value = '';
+  paintStages(); paintDomains(); paintPoints(); paintChosen(); gateScope();
+  stage('stScope');
+}
+function doResume(){ restore(); }
+
+/* ── boot ──
+ * ?resume=1 from the toolbox card is an explicit intent, so it skips the fork. */
+paintStages(); paintDomains(); paintChosen(); gateScope();
+(function(){
+  const wants = new URLSearchParams(location.search).get('resume');
+  const saved = ToolSession.load(TOOL);
+  if(!saved){ stage('stScope'); return; }
+  if(wants){ restore(); return; }
+
+  const where = saved.stage === 'stOut'   ? '教案已完成，等你決定要不要儲存'
+              : saved.stage === 'stMake'  ? '正在編寫教案'
+              : saved.stage === 'stSetup' ? '已選好學習重點，正在設定課堂'
+              : '正在選學習範圍';
+  const n = (saved.picked || []).length;
+  document.getElementById('pickResumeMeta').textContent =
+    (saved.topic ? '「' + saved.topic + '」・' : '') + '已選 ' + n + ' 項重點・' + where + '。';
+  stage('stEntry');
+})();
+</script>
+</body>
+</html>

@@ -443,8 +443,6 @@
     <button class="chg" onclick="unlock()">Change</button>
   </div>
 
-  <div id="mstrip"></div>
-
   <section id="stForm">
     <div class="en-card">
       <div class="en-grid">
@@ -544,21 +542,9 @@ let tt;function toast(m){const t=document.getElementById('toast');t.textContent=
 const TOOL = 'worksheet-generator';
 const P = new URLSearchParams(location.search);
 
-/* Answered in place, on the form, where it can still prevent duplicate work —
- * after generating it would only compete with the fresh result. */
-function refreshStrip(){
-  document.getElementById('mstrip').innerHTML = Materials.strip({
-    topic: document.getElementById('fTopic').value,
-    from: 'worksheet-generator.html',
-    fromName: 'Worksheet Generator',
-    title: 'You have already made these for this topic'
-  });
-}
-
 function gate(){
   document.getElementById('goBtn').disabled =
     document.getElementById('fTopic').value.trim().length === 0;
-  refreshStrip();
 }
 function stage(id){
   ['stForm','stWork','stOut'].forEach(s =>

@@ -194,19 +194,54 @@ main.main > .intro{
   max-width:52em;
 }
 
-/* ── in-tool material strip ──────────────────────────────────────────────
- * Rendered by Materials.strip() on a tool form, answering "have I already made
- * something for this?" without moving the teacher anywhere. Styled here rather
- * than per tool so the four tools cannot diverge. */
-.mstrip{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:22px; }
-.mstrip-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
-.mstrip-head b{ font-size:.82rem; }
-.mstrip-head a{ margin-left:auto; font-size:.74rem; color:var(--ec-blue-dark); text-decoration:none; font-weight:600; }
-.mstrip-head a:hover{ text-decoration:underline; }
-.mstrip-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid #f2f5f8; text-decoration:none; color:inherit; }
-.mstrip-row:hover .sg{ color:var(--ec-blue-dark); }
-.mstrip-row .si{ font-size:1rem; flex-shrink:0; }
-.mstrip-row .st{ flex:1; min-width:0; }
-.mstrip-row b{ font-size:.8rem; display:block; font-weight:600; }
-.mstrip-row small{ font-size:.7rem; color:var(--ink-3); display:block; margin-top:1px; }
-.mstrip-row .sg{ font-size:.74rem; color:var(--ink-3); flex-shrink:0; }
+
+/* ── tool bar ────────────────────────────────────────────────────────────
+ * Tool-scoped navigation, sitting above the tool's own content and beside the
+ * global sidebar rather than replacing it. The two do different jobs:
+ *   sidebar  — where am I on the platform (portal, tools, library)
+ *   tool bar — where am I inside THIS tool (its sections)
+ * The collapse control is the teacher's own choice to narrow the first one
+ * when she wants to concentrate on the second.
+ *
+ * Written into each tool's markup rather than injected, because layout must
+ * not depend on a script having run — the rule set after the sidebar
+ * regression on 2026-08-21. The styling lives here so four tools cannot
+ * drift apart.
+ */
+.tool-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.tool-col > .main{ flex:1; }
+
+.toolbar{
+  display:flex; align-items:center; gap:26px;
+  padding:0 34px; height:56px;
+  background:#fff; border-bottom:1px solid var(--line,#e6ebf0);
+  position:sticky; top:0; z-index:60;
+}
+.tb-name{ font-size:.94rem; font-weight:800; color:var(--ink,#1e2a35); white-space:nowrap; }
+.tb-name .tb-sep{ color:var(--line,#e6ebf0); margin-right:14px; font-weight:400; }
+
+.tb-tabs{ display:flex; gap:24px; align-self:stretch; }
+.tb-tabs a{
+  display:flex; align-items:center; text-decoration:none;
+  font-size:.84rem; font-weight:600; color:var(--ink-3,#8a97a3);
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+}
+.tb-tabs a:hover{ color:var(--ink-2,#55636f); }
+.tb-tabs a.on{ color:var(--ec-blue-dark,#0072ab); border-bottom-color:var(--ec-blue,#008BD1); }
+
+.tb-user{ margin-left:auto; display:flex; align-items:center; gap:9px; white-space:nowrap; }
+.tb-user .av{
+  width:28px; height:28px; border-radius:50%; background:var(--ec-blue,#008BD1); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:600;
+}
+.tb-user b{ font-size:.8rem; font-weight:600; }
+.tb-user small{ font-size:.7rem; color:var(--ink-3,#8a97a3); }
+
+/* The bar spans the content column, so the page's own padding starts below it. */
+.has-toolbar .main{ padding-top:26px; }
+.nav-collapsed .toolbar{ padding-left:52px; }
+
+@media (max-width:900px){
+  .toolbar{ padding:0 18px; gap:16px; }
+  .tb-user small{ display:none; }
+}

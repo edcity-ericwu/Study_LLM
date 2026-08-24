@@ -507,6 +507,16 @@
   </div>
 </aside>
 
+<!-- body is display:flex: the bar and the content share one column. -->
+<div class="tool-col">
+<div class="toolbar" id="toolbar" style="display:none">
+  <div class="tb-name"><span class="tb-sep">│</span><span id="tbName"></span></div>
+  <nav class="tb-tabs">
+    <a id="tbPrep" href="#">開始準備</a>
+    <a class="on" id="tbMat" href="#">我的教材</a>
+  </nav>
+  <div class="tb-user"><span class="av">陳</span><span><b>陳老師</b> <small>中文科</small></span></div>
+</div>
 <main class="main">
   <!-- Was presented as 課文工房's second tab, while four tools wrote into it —
        so an English worksheet landed on a page titled 課文工房. The library is
@@ -514,8 +524,8 @@
        rebuilt the duplicate inbox ruled out on 2026-08-20, and would compound
        with every subject added. -->
   <a class="back" id="backLink" href="index.html?subject=chi">← 返回教學工具箱</a>
-  <h1>我的教材</h1>
-  <p class="sub">你用教學工具製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
+  <h1 id="pgTitle">我的教材</h1>
+  <p class="sub" id="pgSub">你用教學工具製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
 
   <div class="mm-new" id="newNote" style="display:none">✓ <span id="newTxt"></span></div>
 
@@ -525,6 +535,7 @@
   </div>
   <div id="list"></div>
 </main>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
@@ -544,9 +555,9 @@ let KFILTER = 'all';   /* what kind of material it is */
  * library row. Jobs.harvest empties as it hands over, so nothing accumulates
  * in two places — this library owns the material from that moment on. */
 function all(){
-  /* Finished work is claimed by the tool that made it, not by the library —
-   * saving is the teacher's decision (2026-08-21), so nothing arrives here
-   * without her having said so. */
+  /* The tool view shows only that tool's materials — a tab labelled 我的教材
+   * inside a tool promises that tool's work. The platform view shows all. */
+  if(TOOL_VIEW) return Materials.forTool(TOOL_VIEW);
   return Materials.all();
 }
 
@@ -638,6 +649,19 @@ function open_(id){
 }
 
 const Q = new URLSearchParams(location.search);
+
+/* Two modes, one page and one store.
+ *   no ?tool=  → the platform view: everything she has made
+ *   ?tool=x    → that tool's own view, showing ONLY its materials
+ * The tool view is what a tool's 我的教材 tab opens; it wears the tool's bar
+ * so she never falls out of the tool she was working in. */
+const TOOL_VIEW = Q.get('tool');
+const TOOL_META = {
+  'text-workshop':        {name:'課文工房',            home:'text-workshop.html'},
+  'lesson-plan':          {name:'Lesson Plan',         home:'lesson-plan.html'},
+  'worksheet-generator':  {name:'Worksheet Generator', home:'worksheet-generator.html'},
+  'quiz-generator':       {name:'Quiz Generator',      home:'quiz-generator.html'}
+};
 /* Convention, not a per-page patch: any page reached from another accepts
  * ?from= and ?fromName= and offers a route back to it. We had patched this
  * twice with different mechanisms before making it a rule. */
@@ -653,6 +677,22 @@ if(n){
   document.getElementById('newNote').style.display = 'flex';
   document.getElementById('newTxt').textContent = '已完成 ' + n + ' 份教材，存放在下方。';
 }
+/* In tool mode the page becomes that tool's section: its bar, its name, its
+ * scope. In platform mode none of this shows and it is the library. */
+if(TOOL_VIEW && TOOL_META[TOOL_VIEW]){
+  const t = TOOL_META[TOOL_VIEW];
+  document.body.classList.add('has-toolbar');
+  document.getElementById('toolbar').style.display = '';
+  document.getElementById('tbName').textContent = t.name;
+  document.getElementById('tbPrep').href = t.home;
+  document.getElementById('tbMat').href  = 'my-materials.html?tool=' + TOOL_VIEW;
+  document.getElementById('pgTitle').textContent = '我的教材';
+  document.getElementById('pgSub').textContent = '你用「' + t.name + '」製作的教材。其他工具的教材在教學工具箱的「我的教材」。';
+  const b = document.getElementById('backLink');
+  b.href = t.home;
+  b.textContent = '← 返回' + t.name;
+}
+
 render();
 </script>
 </body>

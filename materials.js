@@ -84,19 +84,14 @@
     },
 
     /* ── views ────────────────────────────────────────────────────────────
-     * forTopic is the one a tool should use. The teacher's question mid-task
-     * is "did I already make something for this text?", not "what has this
-     * tool produced" — she may have made the lesson plan in one tool and the
-     * quiz in another, and a per-tool view would hide exactly that. */
-    forTopic: function(text){
-      var t = (text || '').trim().toLowerCase();
-      if(!t) return [];
-      return read().filter(function(x){
-        var xt = (x.text || '').trim().toLowerCase();
-        return xt === t || xt.indexOf(t) !== -1 || t.indexOf(xt) !== -1;
-      });
-    },
-
+     * A tool's own tab shows ONLY that tool's materials (Eric, 2026-08-21). A
+     * tab labelled 我的教材 inside 課文工房 promises 課文工房's work; mixing in
+     * another tool's output would be a different kind of lie from the one we
+     * just removed. The platform-wide view lives in the library.
+     *
+     * forTopic — cross-tool matching on the topic string — was built, argued
+     * for, and then overruled. Removed rather than left in the file: an unused
+     * view is an invitation to use it in the wrong place. */
     forTool: function(tool){
       return read().filter(function(x){ return x.tool === tool; });
     },
@@ -118,46 +113,6 @@
       list.forEach(function(x){ if(!x.id){ x.id = newId(); changed = true; } });
       if(changed) write(list);
       return list;
-    },
-
-    /* ── the in-tool view ────────────────────────────────────────────────
-     * One renderer, used by every tool. Four hand-built copies would drift
-     * inside a fortnight — the monospace stack, the seed and the class filter
-     * each drifted that way this week.
-     *
-     * Rules it enforces, so no caller has to remember them:
-     *   · nothing relevant → renders NOTHING. An empty component is noise,
-     *     the same reason a dead filter is disabled rather than shown.
-     *   · capped at three, then a link to the library. Uncapped, it becomes
-     *     the second library the boundary above exists to prevent.
-     *   · open only. No rename, no delete — those live in the library.
-     */
-    strip: function(opts){
-      opts = opts || {};
-      var items = Materials.forTopic(opts.topic).slice(0, opts.max || 3);
-      if(!items.length) return '';
-
-      var from     = encodeURIComponent(opts.from || location.pathname.split('/').pop());
-      var fromName = encodeURIComponent(opts.fromName || '上一頁');
-      var total    = Materials.forTopic(opts.topic).length;
-
-      return '<div class="mstrip">' +
-        '<div class="mstrip-head">' +
-          '<b>' + (opts.title || '你已經為這個課題做過的教材') + '</b>' +
-          (total > items.length
-            ? '<a href="my-materials.html">查看全部 ' + total + ' 份 →</a>'
-            : '<a href="my-materials.html">查看全部 →</a>') +
-        '</div>' +
-        items.map(function(x){
-          var k = Materials.KIND[x.kind] || {icon:'📄', name:'教材'};
-          return '<a class="mstrip-row" href="material.html?id=' + encodeURIComponent(x.id) +
-            '&from=' + from + '&fromName=' + fromName + '">' +
-            '<span class="si">' + k.icon + '</span>' +
-            '<span class="st"><b>' + x.title + '</b>' +
-            '<small>' + k.name + '・' + (x.toolName || '') + '・' + x.at + '</small></span>' +
-            '<span class="sg">開啟 →</span></a>';
-        }).join('') +
-      '</div>';
     },
 
     clear: function(){ write([]); }

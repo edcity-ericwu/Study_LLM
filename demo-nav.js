@@ -41,7 +41,6 @@ const PAGES = [
   {group:'① ✨ 教師 · EdCity.ai（製作）', items:[
     ['chat.html','科目助理',''],
     ['index.html','教學工具箱',''],
-    ['tool-form.html','　└ 工具內頁（示意）',''],
     ['text-workshop.html','　└ 課文工房',''],
     ['my-materials.html','　　└ 我的教材',''],
     ['lesson-plan.html','　└ Lesson Plan（英文）',''],

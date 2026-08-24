@@ -507,14 +507,13 @@ const TOOLS = [
   {name:'OQB 網上試題學習平台', en:'Online Question Bank', cat:'assessment', level:'secondary', color:'var(--ec-red)', icon:'bank', isNew:true, recommended:true,
    link:'https://teacher.edcity.hk/zh-hant/oqb/introduction/', target:'_blank',
    desc:'超過 10,000 條公開試題（涵蓋各科 DSE），供學校靈活組卷作練習，並提供作答數據分析。以全校、全科目模式訂購。'},
-  /* Unlike the rest of this catalog (which drill into the tool-form.html
-   * concept preview), AI 批改 is a real, already-built page — link straight
-   * to it via `link`, no query-string placeholder. See applyFilters()'s
-   * onclick for the branch that checks this field. */
+  /* `link` marks a tool as built. Entries without one stay in the catalog so
+   * the shape of the platform is visible, but they sort last and say so when
+   * clicked — the tool-form.html placeholder they used to open was out of
+   * place (Eric, 2026-08-21). */
   {name:'AI 批改', en:'AI Marking Assistant', cat:'assessment', level:'both', color:'var(--ec-red)', icon:'pen', isNew:false, link:'marking.html', recommended:true,
    desc:'協助批改學生作答，自動標示能力標籤並生成回饋重點，與學習紀錄庫共用同一套分類。'},
-  /* 課文工房 — like AI 批改, a built page rather than a tool-form.html concept
-   * preview, so `link` points straight at it. */
+  /* 課文工房 — a built page, so `link` points straight at it. */
   {name:'課文工房', en:'Text Workshop', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'scroll', isNew:true, link:'text-workshop.html', recommended:true,
    desc:'放入一篇課文，整理出可教的閱讀理解和字詞理解重點，每項都附課程文件出處；揀選之後直接生成工作紙、課堂簡報和教師提示。'},
   {name:'教案生成器', en:'Lesson Plan Generator', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:false, recommended:true,
@@ -549,7 +548,7 @@ const TOOLS = [
   /* ── 英文科 ──
    * Three tools that form a chain: the lesson plan spawns matching materials
    * and passes its subject, level and topic to them. Built pages, so `link`
-   * goes straight to them rather than to the tool-form.html concept preview.
+   * goes straight to them.
    * English UI throughout — the subject is English and the teacher works in it. */
   {name:'Lesson Plan', en:'Lesson Plan', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'eng', link:'lesson-plan.html', recommended:true,
    desc:'Build a lesson plan from a topic and level, then generate a matching worksheet or quiz that carries the same context across.'},
@@ -565,7 +564,7 @@ const TOOLS = [
    * Its home screen exposes eight tools: 教學進度安排／教案設計／科學知識樹／
    * 課業或評估設計／評量表設計／紙筆評估設計／課堂提問模擬器／課程銜接工具,
    * with primary and secondary levels selectable. No public URL captured, so
-   * this stays on the tool-form.html concept preview like the rest. */
+   * this has no built page yet, like most of the catalog. */
   {name:'SciAi 科學教育 AI 教學助理', en:'EDB Science Department AI', cat:'planning', level:'both', color:'var(--ec-blue)', icon:'doc', isNew:true, subject:'sci',
    desc:'由教育局科學教育組開發的教學助理工具，涵蓋教學進度安排、教案設計、科學知識樹、課業及評估設計、評量表、紙筆評估、課堂提問模擬以及課程銜接。小學及中學均適用。'}
 ];
@@ -639,7 +638,7 @@ function levelBadge(t){
  * Cards here still also appear in their normal category down in the main
  * grid; this is a shortcut to a few tools worth trying first, not a
  * separate/exclusive list. Uses the same onclick branch (real `link` vs
- * tool-form.html placeholder) as the main grid. */
+ * unbuilt) as the main grid. */
 /* Which catalog entries are resumable tools. Keyed off `link` so a tool is
  * never listed here twice under two names. */
 const RESUMABLE = {
@@ -648,6 +647,12 @@ const RESUMABLE = {
   'worksheet-generator.html':  'worksheet-generator',
   'quiz-generator.html':       'quiz-generator'
 };
+
+/* Unbuilt tools stay in the catalog so the shape of the platform is visible,
+ * but they say so when clicked rather than opening a placeholder screen. */
+function notBuilt(name){
+  toast(name + '：這個工具還在準備中，暫時未能使用。');
+}
 
 function resumeTag(t){
   const id = RESUMABLE[t.link];
@@ -697,9 +702,13 @@ function applyFilters(){
    * the original catalog order is preserved. No separate list, no
    * duplication; just a "推薦" tag (see .rec-tag) so it reads as a label,
    * not a different set of tools. */
-  shown.sort((a,b) => (b.recommended?1:0) - (a.recommended?1:0));
+  /* Built tools lead; the rest sink to the end (Eric, 2026-08-21). A catalog
+   * that mixes what you can use with what you cannot makes the teacher do the
+   * sorting. Stable sort, so within each band the catalog order holds. */
+  shown.sort((a,b) => (b.link?1:0) - (a.link?1:0));
+  shown.sort((a,b) => ((b.link && b.recommended)?1:0) - ((a.link && a.recommended)?1:0));
   grid.innerHTML = shown.map(t => `
-    <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? (t.target==='_blank' ? `window.open('${t.link}','_blank')` : `location.href='${t.link}'`) : `location.href='tool-form.html?n='+encodeURIComponent('${t.name}')+'&d='+encodeURIComponent('${t.desc}')+'&subject='+subject`}">
+    <div class="card" style="--accent:${t.color}" tabindex="0" role="button" aria-label="${t.name}" onclick="${t.link ? (t.target==='_blank' ? `window.open('${t.link}','_blank')` : `location.href='${t.link}'`) : `notBuilt('${t.name.replace(/'/g,"\\'")}')`}">
       <div class="top">
         <div class="tile">${IC[t.icon]}</div>
         <div class="ttl">
@@ -736,6 +745,8 @@ function togglePortal(){ document.getElementById('portalMenu').classList.toggle(
 document.addEventListener('click', e=>{
   if(!e.target.closest('.portal-sw')) document.getElementById('portalMenu')?.classList.remove('show');
 });
+
+let tt;function toast(m){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.className='toast';t.id='toast';document.body.appendChild(t);}t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);}
 </script>
 </body>
 </html>

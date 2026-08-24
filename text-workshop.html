@@ -445,7 +445,7 @@
   .save-strip small{font-size:.76rem;color:#3c6b55;display:block;margin-top:4px;line-height:1.7;}
   .ss-acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
 </style>
-<!-- Loaded in <head>, not at the end of <body>: it injects the rules that
+<!-- Loaded in <head>, not at the end of <body class="has-toolbar">: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
@@ -498,6 +498,19 @@
   </div>
 </aside>
 
+<!-- body is display:flex, so the bar and the content must share one flex
+     column. Left as siblings they become a third column beside the sidebar —
+     the same trap the collapse toggle fell into this morning. -->
+<div class="tool-col">
+<div class="toolbar">
+  <div class="tb-name"><span class="tb-sep">│</span>課文工房</div>
+  <nav class="tb-tabs">
+    <a href="text-workshop.html" class="on">開始準備</a>
+    <a href="my-materials.html?tool=text-workshop">我的教材</a>
+  </nav>
+  <div class="tb-user"><span class="av">陳</span><span><b>陳老師</b> <small>中文科</small></span></div>
+</div>
+
 <main class="main">
   <a class="back" href="index.html?subject=chi">← 返回教學工具箱</a>
   <div class="rs-bar" id="rsBar" style="display:none"></div>
@@ -507,11 +520,6 @@
 
     <!-- 我的教材 was a tab here, which implied the library belonged to this
          tool. Four tools write into it, so it is a link out, not a tab. -->
-    <!-- The link out used to sit in the tab strip, which promises a lateral,
-         reversible switch and delivered a page departure with no way back to
-         the tool. A tab strip with one tab is not a tab strip, so it is gone;
-         the library is reached from the strip below, or the sidebar. -->
-    <div id="mstrip"></div>
 
     <!-- ①  form ------------------------------------------------------- -->
     <section class="tw-stage on" id="stForm">
@@ -714,6 +722,7 @@
     </section>
 
 </main>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
@@ -819,7 +828,6 @@ function fillDemo(k){
   countLines(); gate();
 }
 function countLines(){
-  if(window.Materials) refreshStrip();
   const t = document.getElementById('fText').value.trim();
   const n = t ? t.split('\n').filter(x => x.trim()).length : 0;
   document.getElementById('lineCount').textContent = n + ' 行課文・最多 64 行';
@@ -1064,18 +1072,6 @@ function showEarly(ready){
     '<button class="dl" onclick="dl()">下載草稿</button></div>').join('');
 }
 function dl(){ toast('示範版本未提供實際檔案下載。'); }
-
-/* What she already has for this 課文, answered without moving her. */
-function refreshStrip(){
-  const el = document.getElementById('mstrip');
-  if(!el) return;
-  el.innerHTML = Materials.strip({
-    topic: (CUR && DEMO_TEXTS[CUR]) ? DEMO_TEXTS[CUR].title
-                                    : document.getElementById('fTitle').value,
-    from: 'text-workshop.html',
-    fromName: '課文工房'
-  });
-}
 
 /* ── session ────────────────────────────────────────────────────────────
  * Only what the teacher chose by hand is stored. Learning points and the

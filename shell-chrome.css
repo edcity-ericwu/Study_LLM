@@ -293,6 +293,61 @@ main.main > .intro{
 }
 .toast.show{ opacity:.94; }
 
+/* ── entry fork ──────────────────────────────────────────────────────────
+ * The two-card screen a tool shows when there is unfinished work: continue, or
+ * start again. Continuing and starting fresh are equally weighted and one of
+ * them discards context, so it gets a screen rather than a banner above the
+ * form (Eric, 2026-08-21).
+ *
+ * Moved here from text-workshop.html's private <style> on 2026-08-24. Three
+ * other tools had copied the MARKUP and not the CSS, so on lesson-plan,
+ * worksheet-generator and quiz-generator the fork rendered as two underlined
+ * blue links running together in a paragraph (Eric's screenshot). Anchors
+ * degrade to anchors, which is why this failure looked so bad rather than
+ * merely plain.
+ *
+ * Same rule as the toolbar and the toast before it: shared chrome belongs in
+ * the shared stylesheet, because copied markup will outrun copied CSS.
+ */
+.pick{
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  max-width:760px; margin:8px auto 0;
+}
+@media (max-width:760px){ .pick{ grid-template-columns:1fr; } }
+
+.pick-card{
+  display:flex; flex-direction:column;
+  background:#fff; border:1px solid var(--line,#e6ebf0); border-radius:16px;
+  padding:24px 26px 20px; text-decoration:none; color:inherit;
+}
+.pick-card:hover{ border-color:var(--ec-blue,#008BD1); box-shadow:0 2px 10px rgba(0,0,0,.05); }
+.pick-card .pi{ font-size:1.3rem; line-height:1; margin-bottom:12px; color:var(--ec-blue-dark,#0072ab); }
+.pick-card b{ font-size:1rem; margin-bottom:6px; }
+.pick-card small{ font-size:.78rem; color:var(--ink-3,#8a97a3); line-height:1.7; flex:1; }
+.pick-card .pg{ margin-top:16px; font-size:.8rem; font-weight:600; color:var(--ec-blue-dark,#0072ab); }
+
+/* ── a third button weight ───────────────────────────────────────────────
+ * Some decisions have three outcomes, and two of them are not equals. The
+ * chain dialog offered Stay here / Continue without saving / Save plan and
+ * continue with the first two as identical ghost buttons, so the one that
+ * throws work away looked exactly like the one that does nothing at all
+ * (Eric, 2026-08-24).
+ *
+ * .quiet is the weight below ghost: no border, no fill — for the outcome that
+ * is simply "never mind". It reads as a way out of the dialog rather than as a
+ * third thing to weigh up.
+ */
+.btn.quiet{
+  background:none; border:1px solid transparent; box-shadow:none;
+  color:var(--ink-2,#55636f); font-weight:600;
+}
+.btn.quiet:hover{ background:#f2f6f9; color:var(--ink,#1e2a35); }
+
+/* With three weights the row needs the quiet one held away from the pair that
+ * actually act, or it just becomes the leftmost of three. */
+.md-box .md-acts.three{ justify-content:flex-end; }
+.md-box .md-acts.three .btn.quiet{ margin-right:auto; }
+
 /* ── decision tray ───────────────────────────────────────────────────────
  * A docked bar holding the decision a screen is waiting on, so the decision
  * never has to compete with the thing being decided about.

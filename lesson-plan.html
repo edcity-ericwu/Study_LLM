@@ -575,8 +575,14 @@
     <p>This plan hasn’t been saved yet. You’re about to build a worksheet from
        it — the worksheet will carry the subject, level and topic across either
        way, but the plan itself will be gone unless you save it.</p>
-    <div class="md-acts">
-      <button class="btn ghost" onclick="closeChain()">Stay here</button>
+    <!-- Three outcomes, three weights (Eric, 2026-08-24). As two identical
+         ghost buttons, "Stay here" and "Continue without saving" read as a
+         pair of equals — but one of them does nothing and the other throws the
+         plan away. .quiet holds the never-mind option away from the two that
+         actually act, so the row reads left-to-right as
+         cancel · the lossy choice · the safe choice. -->
+    <div class="md-acts three">
+      <button class="btn quiet" onclick="closeChain()">Stay here</button>
       <button class="btn ghost" onclick="chainGo(false)">Continue without saving</button>
       <button class="btn" onclick="chainGo(true)">Save plan and continue</button>
     </div>
@@ -730,7 +736,7 @@ function writePlan(){
 
 function save(){
   writePlan();
-  location.href = 'my-materials.html?new=1&subject=eng' + '&from=lesson-plan.html&fromName=Lesson Plan';
+  location.href = 'my-materials.html?tool=lesson-plan&new=1&from=lesson-plan.html&fromName=Lesson Plan';
 }
 
 /* ── the chain prompt ──────────────────────────────────────────────────

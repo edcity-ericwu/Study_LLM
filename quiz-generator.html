@@ -228,7 +228,10 @@
   .carry .ci{font-size:1rem;line-height:1.3;}
   .carry b{font-size:.8rem;display:block;}
   .carry small{font-size:.74rem;color:var(--ink-3);display:block;margin-top:2px;line-height:1.55;}
-  .carry .chg{margin-left:auto;background:none;border:none;font-family:inherit;font-size:.76rem;
+  /* Bordered, because as bare blue text it did not read as a button at
+   * all (Eric, 2026-08-24) — and it is the only control on this strip. */
+  .carry .chg{margin-left:auto;background:#fff;border:1px solid #c4e5f5;border-radius:9px;
+    padding:6px 13px;font-family:inherit;font-size:.76rem;
     color:var(--ec-blue-dark);font-weight:600;cursor:pointer;white-space:nowrap;}
 
   .en-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px;}
@@ -477,12 +480,14 @@
   <p class="en-sub">Generate a mixed-format quiz — multiple choice, true/false, short and long answers — with a marking scheme.</p>
 
   <div class="carry" id="carry" style="display:none">
-    <span class="ci">↩</span>
+    <!-- ↩ removed 2026-08-24: it read as "return to the previous page",
+         and nothing here goes back. -->
+    <span class="ci" aria-hidden="true">🎯</span>
     <div>
       <b id="carryTxt"></b>
-      <small>Carried from the lesson plan. Change it here if this quiz is for a different class.</small>
+      <small>Set up from your lesson plan. Change it if this quiz is for a different class.</small>
     </div>
-    <button class="chg" onclick="unlock()">Change</button>
+    <button class="chg" onclick="unlock()">Change class</button>
   </div>
 
   <!-- Unfinished work is a fork, not an annotation: continuing and starting
@@ -570,9 +575,10 @@
   </section>
 
   <section id="stOut" style="display:none">
+    <!-- States the consequence, not the state of the layout. -->
     <div class="fold">
-      <span>Generation panel hidden to save space.</span>
-      <button class="btn ghost" onclick="showForm()">Show form</button>
+      <span>This quiz is ready. Starting again replaces it with a new one.</span>
+      <button class="btn ghost" onclick="showForm()">＋ New quiz</button>
     </div>
     <div class="sheet quiz" id="sheet"></div>
     <div class="exp">
@@ -818,7 +824,7 @@ function save(){
   Materials.add({tool:'quiz-generator', toolName:'Quiz Generator', title:'Quiz: ' + tp, kind:'qz', text:tp, level:lv,
     body: document.getElementById('sheet').innerHTML});
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html?new=1&subject=eng' + '&from=quiz-generator.html&fromName=Quiz Generator';
+  location.href = 'my-materials.html?tool=quiz-generator&new=1&from=quiz-generator.html&fromName=Quiz Generator';
 }
 
 function applySaved(s){

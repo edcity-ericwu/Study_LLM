@@ -446,15 +446,8 @@
   .ss-acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
   .eyebrow{font-size:.74rem;font-weight:700;color:var(--ec-green);letter-spacing:.02em;margin-bottom:6px;}
 
-  .pick{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:8px auto 0;}
-  @media (max-width:760px){.pick{grid-template-columns:1fr;}}
-  .pick-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
-    border-radius:16px;padding:24px 26px 20px;text-decoration:none;color:inherit;}
-  .pick-card:hover{border-color:var(--ec-blue);box-shadow:0 2px 10px rgba(0,0,0,.05);}
-  .pick-card .pi{font-size:1.3rem;line-height:1;margin-bottom:12px;color:var(--ec-blue-dark);}
-  .pick-card b{font-size:1rem;margin-bottom:6px;}
-  .pick-card small{font-size:.78rem;color:var(--ink-3);line-height:1.7;flex:1;}
-  .pick-card .pg{margin-top:16px;font-size:.8rem;font-weight:600;color:var(--ec-blue-dark);}
+    /* .pick / .pick-card now live in shell-chrome.css — one definition,
+     because three other tools copied this markup without this CSS. */
 
   /* Wider than .tw-prog: this is the part of the screen she can act on. */
   .tw-act{max-width:860px;margin:0 auto;text-align:left;}
@@ -1263,7 +1256,7 @@ function saveAll(){
   Jobs.claim(done.map(j => j.id));
   ToolSession.clear(TOOL);
   closeTray();
-  location.href = 'my-materials.html?new=' + done.length + '&subject=chi' + '&from=text-workshop.html&fromName=課文工房';
+  location.href = 'my-materials.html?tool=text-workshop&new=' + done.length + '&from=text-workshop.html&fromName=課文工房';
 }
 
 function discardAll(){

@@ -614,7 +614,8 @@ function render(){
       g.map(x => '<div class="mcard"><span class="mi">' + KIND[x.kind].icon + '</span>' +
         '<div><b>' + x.title + '</b><small>' + KIND[x.kind].name +
         (x.toolName ? '・' + x.toolName : '') + '・建立於 ' + x.at + '</small></div>' +
-        '<div class="acts"><button onclick="act()">預覽</button><button onclick="act()">下載</button>' +
+        '<div class="acts"><button onclick="open_(\'' + x.id + '\')">預覽</button>' +
+        '<button onclick="act()">下載</button>' +
         '<button onclick="act()">在課堂使用</button></div></div>').join('') +
       '</div>';
   }).join('');
@@ -629,8 +630,24 @@ function setF(k){ KFILTER = k; render(); }
 setInterval(() => { if(Jobs.running().length || document.querySelector('.mcard.making')) render(); }, 1000);
 function act(){ toast('示範版本未提供此操作。'); }
 
+/* Opening a material is the one action that now genuinely does something. */
+function open_(id){
+  location.href = 'material.html?id=' + encodeURIComponent(id) +
+                  '&from=' + encodeURIComponent('my-materials.html') +
+                  '&fromName=' + encodeURIComponent('我的教材');
+}
+
 const Q = new URLSearchParams(location.search);
-if(Q.get('subject')) document.getElementById('backLink').href = 'index.html?subject=' + Q.get('subject');
+/* Convention, not a per-page patch: any page reached from another accepts
+ * ?from= and ?fromName= and offers a route back to it. We had patched this
+ * twice with different mechanisms before making it a rule. */
+if(Q.get('from')){
+  const b = document.getElementById('backLink');
+  b.href = Q.get('from');
+  b.textContent = '← 返回' + (Q.get('fromName') || '上一頁');
+} else if(Q.get('subject')){
+  document.getElementById('backLink').href = 'index.html?subject=' + Q.get('subject');
+}
 const n = Q.get('new');
 if(n){
   document.getElementById('newNote').style.display = 'flex';

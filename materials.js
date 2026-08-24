@@ -44,6 +44,10 @@
 
   function today(){ return new Date().toISOString().slice(0,10); }
 
+  /* Stable enough for a prototype and stable across reloads, which is what a
+   * detail view needs to address a material at all. */
+  function newId(){ return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
   var Materials = {
 
     KIND: {
@@ -54,14 +58,25 @@
       lp:{icon:'📋', name:'教案'}
     },
 
-    all: read,
+    all: function(){ return Materials.ensureIds(); },
 
     /* Newest first, so a teacher sees what she just made. */
+    /* `body` carries the rendered material. Without it a saved material is a
+     * filename with no file — nothing to open, nothing to preview, nothing to
+     * take into a classroom. Tools that render real output store it here; the
+     * detail view refuses politely for anything that has none. */
     add: function(item){
       var list = read();
-      list.unshift(Object.assign({at: today()}, item));
+      var rec = Object.assign({id: newId(), at: today()}, item);
+      list.unshift(rec);
       write(list);
-      return item;
+      return rec;
+    },
+
+    get: function(id){
+      var found = null;
+      read().forEach(function(x){ if(x.id === id) found = x; });
+      return found;
     },
     addMany: function(items){
       (items || []).forEach(Materials.add);
@@ -94,6 +109,55 @@
       var out = {};
       read().forEach(function(x){ if(x.tool) out[x.tool] = x.toolName || x.tool; });
       return out;
+    },
+
+    /* Old records predate ids; give them one on read so a detail view can
+     * address them rather than silently failing on the seeded material. */
+    ensureIds: function(){
+      var list = read(), changed = false;
+      list.forEach(function(x){ if(!x.id){ x.id = newId(); changed = true; } });
+      if(changed) write(list);
+      return list;
+    },
+
+    /* ── the in-tool view ────────────────────────────────────────────────
+     * One renderer, used by every tool. Four hand-built copies would drift
+     * inside a fortnight — the monospace stack, the seed and the class filter
+     * each drifted that way this week.
+     *
+     * Rules it enforces, so no caller has to remember them:
+     *   · nothing relevant → renders NOTHING. An empty component is noise,
+     *     the same reason a dead filter is disabled rather than shown.
+     *   · capped at three, then a link to the library. Uncapped, it becomes
+     *     the second library the boundary above exists to prevent.
+     *   · open only. No rename, no delete — those live in the library.
+     */
+    strip: function(opts){
+      opts = opts || {};
+      var items = Materials.forTopic(opts.topic).slice(0, opts.max || 3);
+      if(!items.length) return '';
+
+      var from     = encodeURIComponent(opts.from || location.pathname.split('/').pop());
+      var fromName = encodeURIComponent(opts.fromName || '上一頁');
+      var total    = Materials.forTopic(opts.topic).length;
+
+      return '<div class="mstrip">' +
+        '<div class="mstrip-head">' +
+          '<b>' + (opts.title || '你已經為這個課題做過的教材') + '</b>' +
+          (total > items.length
+            ? '<a href="my-materials.html">查看全部 ' + total + ' 份 →</a>'
+            : '<a href="my-materials.html">查看全部 →</a>') +
+        '</div>' +
+        items.map(function(x){
+          var k = Materials.KIND[x.kind] || {icon:'📄', name:'教材'};
+          return '<a class="mstrip-row" href="material.html?id=' + encodeURIComponent(x.id) +
+            '&from=' + from + '&fromName=' + fromName + '">' +
+            '<span class="si">' + k.icon + '</span>' +
+            '<span class="st"><b>' + x.title + '</b>' +
+            '<small>' + k.name + '・' + (x.toolName || '') + '・' + x.at + '</small></span>' +
+            '<span class="sg">開啟 →</span></a>';
+        }).join('') +
+      '</div>';
     },
 
     clear: function(){ write([]); }

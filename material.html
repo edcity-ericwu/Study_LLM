@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EdCity Worksheet Generator</title>
+<title>EdCity 教材</title>
 <!-- Site-wide typeface: Chiron GoRound TC, a rounded Traditional Chinese sans
      built on Source Han Sans/Chiron Hei HK.
 
@@ -372,6 +372,16 @@
 
   .exp{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
   .exp .lic{margin-right:auto;font-size:.7rem;color:var(--ink-3);line-height:1.5;max-width:34em;}
+
+  .md-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+  .md-head .mi{width:44px;height:44px;border-radius:11px;background:#eaf5fb;color:var(--ec-blue-dark);
+    display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+  .md-head h1{font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:4px;}
+  .md-meta{font-size:.76rem;color:var(--ink-3);}
+  .md-acts{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap;}
+  .md-none{background:#fff;border:1px solid var(--line);border-radius:14px;padding:40px 30px;text-align:center;}
+  .md-none b{display:block;font-size:.95rem;margin-bottom:6px;}
+  .md-none p{font-size:.8rem;color:var(--ink-3);line-height:1.7;max-width:34em;margin:0 auto 18px;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -381,7 +391,6 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
-<link rel="stylesheet" href="aspekta.css">
 <script src="shell-chrome.js"></script>
 </head>
 <body>
@@ -429,295 +438,64 @@
 </aside>
 
 <main class="main">
-  <a class="lp-back" href="index.html?subject=eng">← Back to 教學工具箱</a>
-
-  <h1 class="en-h1">Worksheet Generator</h1>
-  <p class="en-sub">Generate a worksheet from any topic or text.</p>
-
-  <div class="carry" id="carry" style="display:none">
-    <span class="ci">↩</span>
-    <div>
-      <b id="carryTxt"></b>
-      <small>Carried from the lesson plan. Change it here if this worksheet is for a different class.</small>
-    </div>
-    <button class="chg" onclick="unlock()">Change</button>
-  </div>
-
-  <div id="mstrip"></div>
-
-  <section id="stForm">
-    <div class="en-card">
-      <div class="en-grid">
-        <div>
-          <div class="fld">
-            <label>Subject</label>
-            <div><span class="subj-pill">English</span></div>
-          </div>
-          <div class="fld">
-            <label for="fLv">Grade level<span class="req">required</span></label>
-            <select id="fLv">
-              <option>Primary 4</option><option>Primary 5</option><option>Primary 6</option>
-              <option>Secondary 1</option><option>Secondary 2</option><option>Secondary 3</option>
-              <option selected>Secondary 4</option><option>Secondary 5</option><option>Secondary 6</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <div class="fld">
-            <label for="fTopic">Topic or text<span class="req">required</span></label>
-            <textarea id="fTopic" oninput="gate()" placeholder="Paste a text, or describe what the worksheet should cover"></textarea>
-          </div>
-          <div class="fld">
-            <label for="fExtra">Additional instructions</label>
-            <input type="text" id="fExtra" placeholder="e.g. 10 short-answer questions, include a graphic organiser">
-          </div>
-        </div>
-      </div>
-
-      <label class="tog">
-        <input type="checkbox" id="fImg" checked>
-        <span>
-          <b>Include images</b>
-          <small>Adds photographs from Unsplash, whose licence allows free use including in printed classroom material. The source is printed under each image. EdCity does not search the open web for images.</small>
-        </span>
-      </label>
-
-      <div class="go-row" style="margin-top:18px">
-        <button class="btn" id="goBtn" disabled onclick="generate()">Generate worksheet</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="stWork" style="display:none">
-    <div class="prog">
-      <div class="now">
-        <div class="spark">✦</div>
-        <div style="flex:1">
-          <span class="el" id="pEl">0s elapsed</span>
-          <b id="pTitle">Reading the material</b>
-          <p id="pDesc">Working out what can reasonably be asked at this level.</p>
-          <div class="bhead"><span id="pStep">Step 1 of 4</span><span id="pPct">25%</span></div>
-          <div class="bar"><div class="fill" id="pFill" style="width:25%"></div></div>
-        </div>
-      </div>
-      <div class="plist" id="pList"></div>
-      <div class="pfoot">
-        <span>You can leave this page — the draft will be waiting when you come back. Nothing is saved to 我的教材 until you choose to save it.</span>
-        <button class="btn ghost" onclick="location.href='my-materials.html'">Leave it running</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="stOut" style="display:none">
-    <div class="fold">
-      <span>Generation panel hidden to save space.</span>
-      <button class="btn ghost" onclick="showForm()">Show form</button>
-    </div>
-    <div class="sheet" id="sheet"></div>
-    <div class="exp">
-      <span class="lic" id="lic"></span>
-      <button class="btn ghost" onclick="notYet()">⬇ PDF</button>
-      <button class="btn ghost" onclick="notYet()">⬇ Word</button>
-      <button class="btn" onclick="save()">Save to 我的教材</button>
-    </div>
-  </section>
+  <a class="lp-back" id="backLink" href="my-materials.html">← 返回我的教材</a>
+  <div id="view"></div>
 </main>
-
 <div class="toast" id="toast"></div>
+
 <script src="demo-state.js"></script>
 <script src="materials.js"></script>
 <script src="jobs.js"></script>
-<script src="tool-session.js"></script>
 <script src="demo-nav.js"></script>
 <script>
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
-</script>
-<script src="unsplash.js"></script>
-<script>
-/* ── Worksheet Generator ────────────────────────────────────────────────
- * Second link in the chain. Subject, level and topic arrive in the query
- * string from the lesson plan and are SHOWN, not silently applied — in the
- * product this was mocked from, the same carry-over was invisible, and the
- * quiz tool quietly opened at Primary 4 from a Secondary 4 plan. Nobody
- * noticed because nothing on screen said what had been inherited. */
 
-const TOOL = 'worksheet-generator';
-const P = new URLSearchParams(location.search);
+/* ── material detail ────────────────────────────────────────────────────
+ * The thing that makes a saved material openable. Before this the library
+ * held filenames with no files: nothing to preview, nothing to carry into a
+ * classroom. `body` is stored by the tool that rendered it; anything without
+ * one says so plainly rather than opening an empty page. */
+const Q  = new URLSearchParams(location.search);
+const ID = Q.get('id');
 
-/* Answered in place, on the form, where it can still prevent duplicate work —
- * after generating it would only compete with the fresh result. */
-function refreshStrip(){
-  document.getElementById('mstrip').innerHTML = Materials.strip({
-    topic: document.getElementById('fTopic').value,
-    from: 'worksheet-generator.html',
-    fromName: 'Worksheet Generator',
-    title: 'You have already made these for this topic'
-  });
-}
-
-function gate(){
-  document.getElementById('goBtn').disabled =
-    document.getElementById('fTopic').value.trim().length === 0;
-  refreshStrip();
-}
-function stage(id){
-  ['stForm','stWork','stOut'].forEach(s =>
-    document.getElementById(s).style.display = (s === id ? '' : 'none'));
-  window.scrollTo(0,0);
-}
-function showForm(){ stage('stForm'); }
-function notYet(){ toast('Not available in this preview.'); }
-
-/* The inherited context is editable — a teacher may want the same worksheet for
- * a different class — but changing it is a deliberate act, not a default. */
-function unlock(){
-  stage('stForm');
-  document.getElementById('carry').style.display = 'none';
-  toast('You can change the level or topic below.');
-}
-
-(function inherit(){
-  if(P.get('from') !== 'lesson-plan') return;
-  const lv = P.get('level'), tp = P.get('topic');
-  if(lv) document.getElementById('fLv').value = lv;
-  if(tp) document.getElementById('fTopic').value = tp;
-  document.getElementById('carryTxt').textContent =
-    'English · ' + (lv || '—') + ' · ' + (tp || '—');
-  document.getElementById('carry').style.display = 'flex';
-  gate();
-})();
-
-const STEPS = [
-  ['Reading the material',   'Working out what can reasonably be asked at this level.', 'Reading'],
-  ['Drafting the tasks',     'Writing warm-up, analysis and assessment sections.',      'Drafting'],
-  ['Choosing images',        'Selecting photographs cleared for classroom use.',        'Selecting'],
-  ['Writing the answer key', 'Adding teacher guidance and sample responses.',           'Writing']
-];
-
-function generate(){
-  stage('stWork');
-  let i = 0; const t0 = Date.now();
-  const withImg = document.getElementById('fImg').checked;
-  const steps = withImg ? STEPS : STEPS.filter(s => s[0] !== 'Choosing images');
-  const tick = setInterval(() => {
-    document.getElementById('pEl').textContent = Math.round((Date.now()-t0)/1000) + 's elapsed';
-  }, 500);
-  const paint = () => {
-    const p = Math.round((i+1)/steps.length*100);
-    document.getElementById('pTitle').textContent = steps[i][0];
-    document.getElementById('pDesc').textContent  = steps[i][1];
-    document.getElementById('pFill').style.width  = p + '%';
-    document.getElementById('pPct').textContent   = p + '%';
-    document.getElementById('pStep').textContent  = 'Step ' + (i+1) + ' of ' + steps.length;
-    document.getElementById('pList').innerHTML = steps.map((s,n) => {
-      const cls  = n < i ? 'done' : (n === i ? 'doing' : '');
-      const mark = n < i ? '✓' : (n === i ? '●' : '');
-      const stat = n < i ? 'Done' : (n === i ? s[2] + '…' : 'Waiting');
-      return '<div class="prow ' + cls + '"><span class="dot">' + mark + '</span>' +
-             '<div><b>' + s[0] + '</b><small>' + s[1] + '</small></div>' +
-             '<span class="stat">' + stat + '</span></div>';
-    }).join('');
-  };
-  paint();
-  const next = () => {
-    i++;
-    if(i >= steps.length){ clearInterval(tick); render(); return; }
-    paint(); setTimeout(next, 1500);
-  };
-  setTimeout(next, 1500);
+/* Back goes where you came from — the library by default, the tool if a tool
+ * sent you. Convention, not a per-page patch. */
+if(Q.get('from')){
+  const from = Q.get('from');
+  document.getElementById('backLink').href = from;
+  document.getElementById('backLink').textContent = '← 返回' + (Q.get('fromName') || '上一頁');
 }
 
 function render(){
-  const lv = document.getElementById('fLv').value;
-  const tp = document.getElementById('fTopic').value.trim();
-  const withImg = document.getElementById('fImg').checked;
-  ToolSession.save(TOOL, {level:lv, topic:tp, img:withImg});
+  const m = ID ? Materials.get(ID) : null;
+  const box = document.getElementById('view');
 
-  const pic = withImg ? Unsplash.pick(tp) : null;
-  document.getElementById('sheet').innerHTML = sheetHtml(lv, tp, pic);
-  document.getElementById('lic').textContent = pic
-    ? 'Image used under the Unsplash licence — free to use, including in printed classroom material.'
-    : '';
-  stage('stOut');
+  if(!m){
+    box.innerHTML = '<div class="md-none"><b>找不到這份教材</b>' +
+      '<p>它可能已被刪除，或這個連結已經過期。</p>' +
+      '<button class="btn" onclick="location.href=\'my-materials.html\'">回到我的教材</button></div>';
+    return;
+  }
+
+  const k = Materials.KIND[m.kind] || {icon:'📄', name:'教材'};
+  box.innerHTML =
+    '<div class="md-head"><span class="mi">' + k.icon + '</span>' +
+      '<div><h1>' + m.title + '</h1>' +
+        '<div class="md-meta">' + k.name + '・《' + m.text + '》・' + m.level +
+        (m.toolName ? '・由' + m.toolName + '製作' : '') + '・建立於 ' + m.at + '</div></div>' +
+      '<div class="md-acts">' +
+        '<button class="btn ghost" onclick="act()">⬇ 下載</button>' +
+        '<button class="btn" onclick="act()">在課堂使用</button>' +
+      '</div>' +
+    '</div>' +
+    (m.body
+      ? '<div class="sheet">' + m.body + '</div>'
+      : '<div class="md-none"><b>這份教材沒有儲存內容</b>' +
+        '<p>它是在工具開始保存內容之前建立的，所以只剩下名稱和分類。重新製作一次就會有完整內容。</p>' +
+        '<button class="btn ghost" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>');
 }
-
-function sheetHtml(lv, tp, pic){
-  return `
-    <h2>${tp}</h2>
-    <div class="meta"><span>English · ${lv}</span><span>Name: ____________  Class / Date: __________</span></div>
-
-    <div class="obj">
-      <b>Learning objectives</b>
-      <ul>
-        <li>Identify setting, character, conflict and theme in a short story.</li>
-        <li>Analyse how descriptive language and narrative perspective shape meaning.</li>
-        <li>Express a personal response to the contexts the story depicts.</li>
-      </ul>
-    </div>
-
-    ${pic ? Unsplash.figure(pic, 'Use the photograph to picture the setting before you read.') : ''}
-
-    <h3>Part 1 · Warm-up: setting the scene</h3>
-    <p>Think about a book or film that took you somewhere unfamiliar. Answer below.</p>
-    <div class="q">1. What was the setting, and how did it make you feel?</div>
-    <div class="rule"></div><div class="rule"></div>
-    <div class="q">2. Why are short stories often described as “windows into other lives”?</div>
-    <div class="rule"></div><div class="rule"></div>
-
-    <h3>Part 2 · Literary elements</h3>
-    <p>As you read with your partner, complete the organiser below.</p>
-    <table>
-      <tr><th>Literary element</th><th>Textual evidence / description</th></tr>
-      <tr><td class="k">Setting &amp; mood</td><td></td></tr>
-      <tr><td class="k">Main conflict</td><td></td></tr>
-      <tr><td class="k">Turning point</td><td></td></tr>
-      <tr><td class="k">Resolution</td><td></td></tr>
-    </table>
-
-    <h3>Part 3 · Discussion</h3>
-    <div class="promptbox"><b>Prompt:</b> How does the writer’s choice of setting change our understanding of the character’s challenge?</div>
-    <div class="writebox">Group notes and key takeaways</div>
-
-    <h3>Part 4 · Exit ticket</h3>
-    <p>In 3–5 sentences, identify the central theme and one piece of evidence supporting it.</p>
-    <div class="writebox"></div>
-
-    <div class="answerkey">
-      <b class="t">Teacher answer key and facilitation guide</b>
-      <div class="n">For teacher reference and formative assessment</div>
-      <ul>
-        <li><b>Part 1:</b> look for sensory detail and a personal connection. Answers vary with reading history.</li>
-        <li><b>Part 2:</b> setting and mood — a place established through sensory adjectives; conflict — character against society or against self; turning point — the moment a choice becomes unavoidable; resolution — what has changed.</li>
-        <li><b>Part 3:</b> strong answers cite a specific constraint in the setting and link it to the character’s options.</li>
-        <li><b>Part 4:</b> 2 marks — names a theme and quotes evidence, in 3–5 sentences. 1 mark — theme without evidence. 0 — off topic.</li>
-      </ul>
-    </div>`;
-}
-
-/* Saving is the teacher's decision, not something that happens to her. The
- * tool produces a draft; it reaches 我的教材 only when she says so. Materials
- * owns the store — four pages used to write it with their own code, which is
- * how the seed defect got in. */
-
-function save(){
-  const lv = document.getElementById('fLv').value;
-  const tp = document.getElementById('fTopic').value.trim();
-  Materials.add({tool:'worksheet-generator', toolName:'Worksheet Generator', title:'Worksheet: ' + tp, kind:'ws', text:tp, level:lv,
-    body: document.getElementById('sheet').innerHTML});
-  ToolSession.clear(TOOL);
-  location.href = 'my-materials.html?new=1&subject=eng' + '&from=worksheet-generator.html&fromName=Worksheet Generator';
-}
-
-/* ── resume ── */
-(function(){
-  const s = ToolSession.load(TOOL);
-  if(!s) return;
-  document.getElementById('fLv').value    = s.level;
-  document.getElementById('fTopic').value = s.topic;
-  document.getElementById('fImg').checked = !!s.img;
-  gate(); render();
-})();
-gate();
+function act(){ toast('示範版本未提供此操作。'); }
+render();
 </script>
 </body>
 </html>

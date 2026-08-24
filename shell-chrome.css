@@ -193,3 +193,20 @@ main.main > .lede,
 main.main > .intro{
   max-width:52em;
 }
+
+/* ── in-tool material strip ──────────────────────────────────────────────
+ * Rendered by Materials.strip() on a tool form, answering "have I already made
+ * something for this?" without moving the teacher anywhere. Styled here rather
+ * than per tool so the four tools cannot diverge. */
+.mstrip{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:22px; }
+.mstrip-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+.mstrip-head b{ font-size:.82rem; }
+.mstrip-head a{ margin-left:auto; font-size:.74rem; color:var(--ec-blue-dark); text-decoration:none; font-weight:600; }
+.mstrip-head a:hover{ text-decoration:underline; }
+.mstrip-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid #f2f5f8; text-decoration:none; color:inherit; }
+.mstrip-row:hover .sg{ color:var(--ec-blue-dark); }
+.mstrip-row .si{ font-size:1rem; flex-shrink:0; }
+.mstrip-row .st{ flex:1; min-width:0; }
+.mstrip-row b{ font-size:.8rem; display:block; font-weight:600; }
+.mstrip-row small{ font-size:.7rem; color:var(--ink-3); display:block; margin-top:1px; }
+.mstrip-row .sg{ font-size:.74rem; color:var(--ink-3); flex-shrink:0; }

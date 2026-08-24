@@ -507,10 +507,11 @@
 
     <!-- 我的教材 was a tab here, which implied the library belonged to this
          tool. Four tools write into it, so it is a link out, not a tab. -->
-    <div class="tw-tabs">
-      <button class="tw-tab on" id="tabPrep">開始準備</button>
-      <a class="tw-out" href="my-materials.html?subject=chi">我的教材 →</a>
-    </div>
+    <!-- The link out used to sit in the tab strip, which promises a lateral,
+         reversible switch and delivered a page departure with no way back to
+         the tool. A tab strip with one tab is not a tab strip, so it is gone;
+         the library is reached from the strip below, or the sidebar. -->
+    <div id="mstrip"></div>
 
     <!-- ①  form ------------------------------------------------------- -->
     <section class="tw-stage on" id="stForm">
@@ -818,6 +819,7 @@ function fillDemo(k){
   countLines(); gate();
 }
 function countLines(){
+  if(window.Materials) refreshStrip();
   const t = document.getElementById('fText').value.trim();
   const n = t ? t.split('\n').filter(x => x.trim()).length : 0;
   document.getElementById('lineCount').textContent = n + ' 行課文・最多 64 行';
@@ -1063,6 +1065,18 @@ function showEarly(ready){
 }
 function dl(){ toast('示範版本未提供實際檔案下載。'); }
 
+/* What she already has for this 課文, answered without moving her. */
+function refreshStrip(){
+  const el = document.getElementById('mstrip');
+  if(!el) return;
+  el.innerHTML = Materials.strip({
+    topic: (CUR && DEMO_TEXTS[CUR]) ? DEMO_TEXTS[CUR].title
+                                    : document.getElementById('fTitle').value,
+    from: 'text-workshop.html',
+    fromName: '課文工房'
+  });
+}
+
 /* ── session ────────────────────────────────────────────────────────────
  * Only what the teacher chose by hand is stored. Learning points and the
  * 課文簡介 are re-derived from CUR on restore, so this never becomes a second
@@ -1136,7 +1150,7 @@ function saveAll(){
   })));
   Jobs.claim(done.map(j => j.id));
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html?new=' + done.length + '&subject=chi';
+  location.href = 'my-materials.html?new=' + done.length + '&subject=chi' + '&from=text-workshop.html&fromName=課文工房';
 }
 
 function discardAll(){

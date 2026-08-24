@@ -756,9 +756,10 @@ function render(){
 function save(){
   const lv = document.getElementById('fLv').value;
   const tp = document.getElementById('fTopic').value.trim();
-  Materials.add({tool:'quiz-generator', toolName:'Quiz Generator', title:'Quiz: ' + tp, kind:'qz', text:tp, level:lv});
+  Materials.add({tool:'quiz-generator', toolName:'Quiz Generator', title:'Quiz: ' + tp, kind:'qz', text:tp, level:lv,
+    body: document.getElementById('sheet').innerHTML});
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html?new=1&subject=eng';
+  location.href = 'my-materials.html?new=1&subject=eng' + '&from=quiz-generator.html&fromName=Quiz Generator';
 }
 
 (function(){

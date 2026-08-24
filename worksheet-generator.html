@@ -381,6 +381,7 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
+<link rel="stylesheet" href="aspekta.css">
 <script src="shell-chrome.js"></script>
 </head>
 <body>
@@ -499,7 +500,7 @@
       </div>
       <div class="plist" id="pList"></div>
       <div class="pfoot">
-        <span>The worksheet will be saved to 我的教材 when it is done. You can leave this page.</span>
+        <span>You can leave this page — the draft will be waiting when you come back. Nothing is saved to 我的教材 until you choose to save it.</span>
         <button class="btn ghost" onclick="location.href='my-materials.html'">Leave it running</button>
       </div>
     </div>
@@ -645,7 +646,7 @@ function sheetHtml(lv, tp, pic){
     <p>Think about a book or film that took you somewhere unfamiliar. Answer below.</p>
     <div class="q">1. What was the setting, and how did it make you feel?</div>
     <div class="rule"></div><div class="rule"></div>
-    <div class="q">2. Why are short stories often described as "windows into other lives"?</div>
+    <div class="q">2. Why are short stories often described as “windows into other lives”?</div>
     <div class="rule"></div><div class="rule"></div>
 
     <h3>Part 2 · Literary elements</h3>
@@ -659,7 +660,7 @@ function sheetHtml(lv, tp, pic){
     </table>
 
     <h3>Part 3 · Discussion</h3>
-    <div class="promptbox"><b>Prompt:</b> How does the writer's choice of setting change our understanding of the character's challenge?</div>
+    <div class="promptbox"><b>Prompt:</b> How does the writer’s choice of setting change our understanding of the character’s challenge?</div>
     <div class="writebox">Group notes and key takeaways</div>
 
     <h3>Part 4 · Exit ticket</h3>
@@ -672,19 +673,28 @@ function sheetHtml(lv, tp, pic){
       <ul>
         <li><b>Part 1:</b> look for sensory detail and a personal connection. Answers vary with reading history.</li>
         <li><b>Part 2:</b> setting and mood — a place established through sensory adjectives; conflict — character against society or against self; turning point — the moment a choice becomes unavoidable; resolution — what has changed.</li>
-        <li><b>Part 3:</b> strong answers cite a specific constraint in the setting and link it to the character's options.</li>
+        <li><b>Part 3:</b> strong answers cite a specific constraint in the setting and link it to the character’s options.</li>
         <li><b>Part 4:</b> 2 marks — names a theme and quotes evidence, in 3–5 sentences. 1 mark — theme without evidence. 0 — off topic.</li>
       </ul>
     </div>`;
 }
 
+/* Saving is the teacher's decision, not something that happens to her. The
+ * tool produces a draft; it reaches 我的教材 only when she says so. This is
+ * why save() writes straight to the library rather than going through Jobs —
+ * Jobs models work still running, and this work is finished. */
+function saveToLibrary(item){
+  const saved = DemoState.get('twMaterials', null) || [];
+  saved.unshift(Object.assign({at:new Date().toISOString().slice(0,10)}, item));
+  DemoState.set('twMaterials', saved);
+}
+
 function save(){
   const lv = document.getElementById('fLv').value;
   const tp = document.getElementById('fTopic').value.trim();
-  Jobs.start(TOOL, 'Worksheet Generator', 'worksheet-generator.html',
-    [{title:'Worksheet: ' + tp, kind:'ws', text:tp, level:lv}]);
+  saveToLibrary({title:'Worksheet: ' + tp, kind:'ws', text:tp, level:lv});
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html';
+  location.href = 'my-materials.html?new=1';
 }
 
 /* ── resume ── */

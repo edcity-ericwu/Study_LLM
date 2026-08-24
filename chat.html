@@ -25,18 +25,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=block">
 <style>
-  /* Headline typeface, matching digitaleducation.hk's headline font — used
-   * only for the "EdCity.ai" wordmark below, not site-wide. Static weight
-   * files (not the variable font) since only one weight is needed here. */
-  @font-face{
-    font-family:'Aspekta';
-    /* Copied into this folder 2026-08-21 rather than reached via ../fonts:
-     * the prototype has to be publishable on its own, and a path that climbs
-     * out of the published root 404s the moment the folder is the site root. */
-    src:url('fonts/Aspekta-800.woff2') format('woff2'),
-        url('fonts/Aspekta-800.ttf') format('truetype');
-    font-weight:800;font-style:normal;font-display:swap;
-  }
+  /* The Aspekta @font-face moved to aspekta.css so there is one definition of
+   * this family rather than two drifting copies — the same problem that put
+   * three different monospace stacks in three files. */
   :root{
     --ec-blue:#008BD1;
     --ec-blue-dark:#0072ab;
@@ -581,6 +572,7 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
+<link rel="stylesheet" href="aspekta.css">
 <script src="shell-chrome.js"></script>
 </head>
 <body>

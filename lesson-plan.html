@@ -271,7 +271,9 @@
   .out-head{display:flex;align-items:center;gap:12px;padding:16px 26px;border-bottom:1px solid var(--line);}
   .out-head b{font-size:.86rem;flex:1;}
   .out-head button{background:none;border:none;font-family:inherit;font-size:.78rem;
-    color:var(--ink-3);cursor:pointer;padding:4px 8px;border-radius:7px;}
+    color:var(--ink-3);cursor:pointer;padding:5px 10px;border-radius:7px;
+    display:inline-flex;align-items:center;gap:6px;}
+  .out-head button svg{width:14px;height:14px;flex-shrink:0;}
   .out-head button:hover{background:#f2f6f9;color:var(--ink-2);}
   .out-body{padding:22px 26px 0;}
   .out-body h2{font-size:1.15rem;font-weight:800;margin:0 0 16px;}
@@ -337,6 +339,7 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
+<link rel="stylesheet" href="aspekta.css">
 <script src="shell-chrome.js"></script>
 </head>
 <body>
@@ -387,7 +390,7 @@
   <a class="lp-back" href="index.html?subject=eng">← Back to 教學工具箱</a>
 
   <h1 class="en-h1">Lesson Plan</h1>
-  <p class="en-sub">Create and share lesson plans with your students. Once a plan is ready you can generate matching materials from it, and they carry this plan's subject, level and topic across.</p>
+  <p class="en-sub">Create and share lesson plans with your students. Once a plan is ready you can generate matching materials from it, and they carry this plan’s subject, level and topic across.</p>
 
   <!-- ① form ------------------------------------------------------------ -->
   <section id="stForm">
@@ -472,7 +475,7 @@
       </div>
       <div class="plist" id="pList"></div>
       <div class="pfoot">
-        <span>The plan will be saved to 我的教材 when it is done. You can leave this page.</span>
+        <span>You can leave this page — the draft will be waiting when you come back. Nothing is saved to 我的教材 until you choose to save it.</span>
         <button class="btn ghost" onclick="location.href='my-materials.html'">Leave it running</button>
       </div>
     </div>
@@ -480,18 +483,27 @@
 
   <!-- ③ result ----------------------------------------------------------- -->
   <section id="stOut" style="display:none">
+    <!-- The old copy explained the layout ("hidden to save space") rather than
+         the consequence. The form is not a panel you re-open: filling it again
+         produces a different plan and replaces this one, so the control says so. -->
     <div class="fold">
-      <span>Generation panel hidden to save space.</span>
-      <button class="btn ghost" onclick="showForm()">Show form</button>
+      <span>This plan is ready. Starting again replaces it with a new one.</span>
+      <button class="btn ghost" onclick="showForm()">＋ New lesson plan</button>
     </div>
 
     <div class="out">
       <div class="out-head">
         <b>Generated lesson plan</b>
-        <button onclick="notYet()">Preview</button>
-        <button onclick="notYet()">Edit</button>
+        <!-- Preview removed: the plan is already on screen, so there is nothing
+             to preview and the label promised something it could not mean. -->
+        <button onclick="notYet()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>Edit</button>
       </div>
       <div class="out-body" id="planBody"></div>
+    </div>
+
+    <div class="exp" style="margin-bottom:20px">
+      <span class="lic">This plan is a draft until you save it. Saving puts it in 我的教材, where you can come back to it.</span>
+      <button class="btn" id="saveBtn" onclick="save()">Save to 我的教材</button>
     </div>
 
     <div class="match">
@@ -619,6 +631,23 @@ function showPlan(){
   stage('stOut');
 }
 
+/* Saving is the teacher's decision, not something that happens to her. The
+ * tool produces a draft; it reaches 我的教材 only when she says so. This is
+ * why save() writes straight to the library rather than going through Jobs —
+ * Jobs models work still running, and this work is finished. */
+function saveToLibrary(item){
+  const saved = DemoState.get('twMaterials', null) || [];
+  saved.unshift(Object.assign({at:new Date().toISOString().slice(0,10)}, item));
+  DemoState.set('twMaterials', saved);
+}
+
+function save(){
+  const c = ctx();
+  saveToLibrary({title:'Lesson plan: ' + c.topic, kind:'lp', text:c.topic, level:c.level});
+  ToolSession.clear(TOOL);
+  location.href = 'my-materials.html?new=1';
+}
+
 function planHtml(c){
   return `
     <h2>Lesson Plan: ${c.topic}</h2>
@@ -640,7 +669,7 @@ function planHtml(c){
     <h3>Activities</h3>
     <h4>1. Warm-up (15 minutes)</h4>
     <ul>
-      <li>Ask students where they have recently "travelled" through a book or film.</li>
+      <li>Ask students where they have recently “travelled” through a book or film.</li>
       <li>Introduce short stories as windows into other cultures and experiences.</li>
     </ul>
     <h4>2. Guided reading and text analysis (30 minutes)</h4>
@@ -650,7 +679,7 @@ function planHtml(c){
     </ul>
     <h4>3. Collaborative discussion (20 minutes)</h4>
     <ul>
-      <li>Prompt: <i>How does the writer's choice of setting change our understanding of the character's challenge?</i></li>
+      <li>Prompt: <i>How does the writer’s choice of setting change our understanding of the character’s challenge?</i></li>
       <li>Groups use textual evidence to support their claims, then share with the class.</li>
     </ul>
     <h4>4. Assessment for learning (15 minutes)</h4>

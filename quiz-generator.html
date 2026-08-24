@@ -411,6 +411,7 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
+<link rel="stylesheet" href="aspekta.css">
 <script src="shell-chrome.js"></script>
 </head>
 <body>
@@ -531,7 +532,7 @@
       </div>
       <div class="plist" id="pList"></div>
       <div class="pfoot">
-        <span>The quiz will be saved to 我的教材 when it is done. You can leave this page.</span>
+        <span>You can leave this page — the draft will be waiting when you come back. Nothing is saved to 我的教材 until you choose to save it.</span>
         <button class="btn ghost" onclick="location.href='my-materials.html'">Leave it running</button>
       </div>
     </div>
@@ -679,14 +680,14 @@ const BANK = {
     ['In the paired task, what do students complete?',
      ['An essay','A graphic organiser tracking conflict, turning point and resolution','A book report','A translation'], 'B'],
     ['What does the exit ticket ask students to identify?',
-     ['The author\'s biography','The central theme and one supporting piece of evidence','The number of characters','The publication date'], 'B']
+     ['The author’s biography','The central theme and one supporting piece of evidence','The number of characters','The publication date'], 'B']
   ],
   tf: [
     ['Narrative perspective and descriptive language both shape the meaning of a story.', 'True'],
-    ['Students are asked to ignore how a character\'s background influences their choices.', 'False']
+    ['Students are asked to ignore how a character’s background influences their choices.', 'False']
   ],
   short: [
-    ['In your own words, explain what "setting" means in a short story.',
+    ['In your own words, explain what “setting” means in a short story.',
      'Where and when the story takes place, which helps create mood and background for the characters.',
      ['2 — defines both where and when','1 — partial, e.g. place only','0 — incorrect or no response']],
     ['Why do writers use sensory detail near the opening of a story? Give one reason.',
@@ -746,13 +747,22 @@ function render(){
   stage('stOut');
 }
 
+/* Saving is the teacher's decision, not something that happens to her. The
+ * tool produces a draft; it reaches 我的教材 only when she says so. This is
+ * why save() writes straight to the library rather than going through Jobs —
+ * Jobs models work still running, and this work is finished. */
+function saveToLibrary(item){
+  const saved = DemoState.get('twMaterials', null) || [];
+  saved.unshift(Object.assign({at:new Date().toISOString().slice(0,10)}, item));
+  DemoState.set('twMaterials', saved);
+}
+
 function save(){
   const lv = document.getElementById('fLv').value;
   const tp = document.getElementById('fTopic').value.trim();
-  Jobs.start(TOOL, 'Quiz Generator', 'quiz-generator.html',
-    [{title:'Quiz: ' + tp, kind:'qz', text:tp, level:lv}]);
+  saveToLibrary({title:'Quiz: ' + tp, kind:'qz', text:tp, level:lv});
   ToolSession.clear(TOOL);
-  location.href = 'my-materials.html';
+  location.href = 'my-materials.html?new=1';
 }
 
 (function(){

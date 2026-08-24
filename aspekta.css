@@ -1,0 +1,36 @@
+/* ── aspekta.css ─────────────────────────────────────────────────────────
+ * Aspekta on the English tool pages.
+ *
+ * Eric, 2026-08-21: the English family should read as EdCity's own rather than
+ * as the Chinese suite with English words in it. Aspekta is already the face of
+ * the EdCity.ai wordmark, so using it here ties the English tools to the brand
+ * instead of introducing a third typeface.
+ *
+ * Self-hosted, unlike Chiron. Aspekta is Latin-only — five weights come to
+ * ~110 KB, so there is nothing to gain from a CDN and one less third party in
+ * the page. Licensed under the SIL Open Font License 1.1, which permits
+ * bundling and redistribution; the licence travels with the files in
+ * fonts/Aspekta-OFL.txt as that licence requires.
+ *
+ * Aspekta carries no CJK, so Chinese falls through to Chiron GoRound TC on its
+ * own. That is the whole mechanism: Latin renders in Aspekta, 中文 in Chiron,
+ * with no per-element rules and nothing to keep in sync.
+ *
+ * font-display:block for the same reason as Chiron — swap paints a fallback
+ * first, and differing metrics make the layout jump.
+ */
+@font-face{font-family:'Aspekta';font-style:normal;font-weight:400;font-display:block;src:url(fonts/Aspekta-400.woff2) format('woff2');}
+@font-face{font-family:'Aspekta';font-style:normal;font-weight:500;font-display:block;src:url(fonts/Aspekta-500.woff2) format('woff2');}
+@font-face{font-family:'Aspekta';font-style:normal;font-weight:600;font-display:block;src:url(fonts/Aspekta-600.woff2) format('woff2');}
+@font-face{font-family:'Aspekta';font-style:normal;font-weight:700;font-display:block;src:url(fonts/Aspekta-700.woff2) format('woff2');}
+@font-face{font-family:'Aspekta';font-style:normal;font-weight:800;font-display:block;src:url(fonts/Aspekta-800.woff2) format('woff2');}
+
+/* Linked only from the English tool pages, so this can safely target body. */
+body{
+  font-family:'Aspekta',"Chiron GoRound TC","PingFang TC","Microsoft JhengHei",
+    "Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+}
+
+/* Aspekta runs a little narrower than Chiron at the same size; the worksheet is
+ * meant to read as a printed page, so it gets a touch more line height back. */
+.sheet p,.sheet li,.out-body p,.out-body li{ line-height:1.85; }

@@ -200,6 +200,19 @@
   }
   .cont-tag .when{font-weight:400;color:var(--ink-3);margin-left:auto;}
 
+
+  /* Filters that would return nothing are disabled rather than clickable.
+   * Letting a teacher click into an empty shelf spends a click to learn what
+   * the pill could have told her without one. The subject pills keep their
+   * 即將推出 label — that says WHY it is unavailable, which greying alone
+   * does not. */
+  .pill[disabled],.pill-sm[disabled]{
+    opacity:.42;cursor:default;background:#f4f6f8;border-color:var(--line);color:var(--ink-3);
+  }
+  .pill[disabled]:hover,.pill-sm[disabled]:hover{
+    border-color:var(--line);color:var(--ink-3);box-shadow:none;
+  }
+
   /* ─── Subject row (inside hero) ─── */
   /* Primary filter row — the page's top-level axis (科目 here, 來源 on agents).
    * margin-top is 0 on purpose: the description above sits inside .page-head,
@@ -409,8 +422,8 @@
       <span class="row-label">科目</span>
       <button class="pill" data-subj="sci" onclick="setSubject(this)">科學</button>
       <button class="pill on" data-subj="chi" onclick="setSubject(this)">中文</button>
-      <button class="pill" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
       <button class="pill" data-subj="eng" onclick="setSubject(this)">英文</button>
+      <button class="pill" data-subj="maths" onclick="setSubject(this)">數學<span class="soon">即將推出</span></button>
     </div>
 
   </section>
@@ -570,6 +583,33 @@ function setSubject(btn){
  * from an English tool was landing back on 中文 — the catalog reset to its
  * default and quietly discarded where she had been. Tools pass ?subject= on
  * the way back so the shelf she came from is the shelf she returns to. */
+/* Both filter rows are derived from TOOLS rather than hand-maintained, so a
+ * subject or category that gains its first tool becomes clickable on its own —
+ * which is exactly how 英文 came alive when the three English tools landed. */
+function toolsFor(subj, category){
+  return TOOLS.filter(t =>
+    (t.subject || 'chi') === subj &&
+    (t.level === 'both' || t.level === level) &&
+    (!category || category === 'all' || t.cat === category));
+}
+
+function refreshFilterAvailability(){
+  document.querySelectorAll('.pill[data-subj]').forEach(b => {
+    b.disabled = toolsFor(b.dataset.subj, 'all').length === 0;
+  });
+  document.querySelectorAll('.pill-sm[data-cat]').forEach(b => {
+    const empty = toolsFor(subject, b.dataset.cat).length === 0;
+    b.disabled = empty;
+    /* If the selected category just emptied — switching from 中文 to 英文, say —
+     * fall back rather than showing a filtered-to-nothing grid. */
+    if(empty && b.dataset.cat === cat){
+      cat = 'all';
+      document.querySelectorAll('.pill-sm').forEach(x => x.classList.remove('on'));
+      document.querySelector('.pill-sm[data-cat="all"]').classList.add('on');
+    }
+  });
+}
+
 function applySubject(key){
   if(!SUBJ_NAME[key]) return;
   subject = key;
@@ -625,6 +665,7 @@ function applyFilters(){
    * rather than a hardcoded `subject !== 'chi'`. That check predated 科學
    * having a live tool and would have kept the 即將推出 panel up even once
    * one existed. Subjects with an empty catalog still fall through to it. */
+  refreshFilterAvailability();
   const forSubject = TOOLS.filter(t => (t.subject || 'chi') === subject);
   if(forSubject.length === 0){
     grid.innerHTML = '';

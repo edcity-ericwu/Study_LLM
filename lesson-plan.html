@@ -424,7 +424,9 @@
     </div>
   </section>
 
-  <section id="stForm">
+  <!-- Hidden until boot chooses a stage. Left visible, it painted first
+       and the entry fork then appeared on top of it (Eric, 2026-08-24). -->
+  <section id="stForm" style="display:none">
     <div class="tpl-row">
       <span class="lbl">Quick template</span>
       <button class="tpl" onclick="useTpl(this,'dse')">HKDSE Modules</button>

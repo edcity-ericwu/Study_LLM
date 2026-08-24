@@ -458,6 +458,11 @@
      as siblings they would become two columns beside the sidebar. -->
 <div class="tool-col">
 <div class="toolbar" id="toolbar" style="display:none">
+  <!-- Outside the name/tabs group on purpose: this navigates OUT of the
+       detail view, everything to its right navigates within the tool. -->
+  <a class="tb-back" id="tbBack" href="#" aria-label="返回教材列表" title="返回教材列表">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
   <div class="tb-name"><span class="tb-sep">│</span><span id="tbName"></span></div>
   <nav class="tb-tabs">
     <a href="#" id="tbPrep"></a>
@@ -519,6 +524,10 @@ function wearToolBar(id){
   document.getElementById('tbPrep').href = tl.home;
   document.getElementById('tbMats').textContent = st.mats;
   document.getElementById('tbMats').href = 'my-materials.html?tool=' + id;
+  const back = document.getElementById('tbBack');
+  back.href = 'my-materials.html?tool=' + id;
+  back.setAttribute('aria-label', tl.lang === 'en' ? 'Back to My materials' : '返回我的教材');
+  back.setAttribute('title', back.getAttribute('aria-label'));
   document.getElementById('tbExit').textContent =
     tl.lang === 'en' ? st.exit + tl.name : st.exit + tl.name;
   document.getElementById('toolbar').style.display = '';
@@ -559,11 +568,26 @@ function render(){
     (TOOL_ID ? '' :
       '<a class="lp-back" href="my-materials.html">← 返回我的教材</a>') +
     (m.body
-      ? '<div class="sheet">' + m.body + '</div>'
+      ? '<div class="sheet">' + stripTitle(m.body, m.title) + '</div>'
       : '<div class="md-none"><b>這份教材沒有儲存內容</b>' +
         '<p>它是在工具開始保存內容之前建立的，所以只剩下名稱和分類。重新製作一次就會有完整內容。</p>' +
         '<button class="btn ghost" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>');
 }
+/* The header above already carries the title and the meta line, so the copy
+ * the tool wrote into the body is removed here — and only when it genuinely
+ * duplicates, so a body with a different heading keeps it. */
+function stripTitle(html, title){
+  const box = document.createElement('div');
+  box.innerHTML = html;
+  const h = box.querySelector('h2');
+  if(h && h.textContent.trim() === (title || '').trim()){
+    const meta = h.nextElementSibling;
+    if(meta && meta.classList.contains('m-meta')) meta.remove();
+    h.remove();
+  }
+  return box.innerHTML;
+}
+
 function act(){ toast('示範版本未提供此操作。'); }
 
 /* Decided before the first paint: the bar must not appear a frame late. */

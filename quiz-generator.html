@@ -510,7 +510,9 @@
     </div>
   </section>
 
-  <section id="stForm">
+  <!-- Hidden until boot chooses a stage. Left visible, it painted first
+       and the entry fork then appeared on top of it (Eric, 2026-08-24). -->
+  <section id="stForm" style="display:none">
     <div class="en-card">
       <div class="en-grid">
         <div>
@@ -860,6 +862,9 @@ function resumeSaved(){
 function stEntryShow(meta){
   document.getElementById('pickMeta').textContent = meta;
   ['stForm','stWork','stOut'].forEach(x => document.getElementById(x).style.display = 'none');
+  /* The carry-over strip describes the FORM, so it goes with the form.
+   * Left up, it explained a screen she could not see. */
+  document.getElementById('carry').style.display = 'none';
   document.getElementById('stEntry').style.display = '';
 }
 function doResume(){
@@ -870,6 +875,7 @@ function startFresh(){
   ToolSession.clear(TOOL);
   document.getElementById('stEntry').style.display = 'none';
   stage('stForm');
+  if(P.get('from') === 'lesson-plan') document.getElementById('carry').style.display = 'flex';
 }
 
 function openTray(title, note){

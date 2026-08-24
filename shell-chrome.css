@@ -406,15 +406,21 @@ main.main > .intro{
  * MATERIAL she had just made (Eric, 2026-08-21). Same sticky-footer family as
  * the learning-points bar, not a third idiom.
  */
+/* The tray spans the CONTENT, not the window (Eric, 2026-08-24). It began at
+ * left:0, so it ran underneath the 248px sidebar, and its contents were capped
+ * at 860px and centred on the viewport — which put the save decision in a
+ * narrow column lining up with nothing on the page above it. It now starts
+ * where the content starts and uses the same 34px measure as .main, so the
+ * decision sits directly under the material it is about. */
 .tray{
-  position:fixed; left:0; right:0; bottom:0; z-index:150;
+  position:fixed; left:248px; right:0; bottom:0; z-index:150;
   background:#fff; border-top:1px solid var(--line,#e6ebf0);
   box-shadow:0 -2px 14px rgba(20,30,40,.07);
   display:none;
 }
 .tray.on{ display:block; }
 .tray-in{
-  max-width:860px; margin:0 auto; padding:14px 34px;
+  max-width:none; margin:0; padding:14px 34px;
   display:flex; align-items:center; gap:18px; flex-wrap:wrap;
 }
 .tray .tt{ flex:1; min-width:0; }
@@ -433,3 +439,27 @@ main.main > .intro{
 
 /* Sidebar collapsed: the tray starts after the rail like everything else. */
 .nav-collapsed .tray{ left:52px; }
+
+/* Below 900px each page hides its own sidebar, so the tray reclaims the edge. */
+@media (max-width:900px){
+  .tray, .nav-collapsed .tray{ left:0; }
+  .tray-in{ padding:14px 18px; }
+}
+
+/* ── back one step ───────────────────────────────────────────────────────
+ * A detail view reached from a list needs a visible way back to that list.
+ * I had claimed the bar's 我的教材 tab was that route; it is not — the tab is
+ * rendered .on, so it reads "you are here", not "go back" (Eric, 2026-08-24).
+ *
+ * A chevron to the LEFT of the separator, where the eye already starts. It is
+ * outside the name/tabs group on purpose: it navigates out of this view, while
+ * everything to its right navigates within the tool.
+ */
+.tb-back{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; margin-right:2px; flex-shrink:0;
+  background:none; border:1px solid transparent; border-radius:8px;
+  color:var(--ink-2,#55636f); cursor:pointer; font-family:inherit; text-decoration:none;
+}
+.tb-back:hover{ background:#f2f6f9; color:var(--ec-blue-dark,#0072ab); }
+.tb-back svg{ width:19px; height:19px; display:block; }

@@ -632,9 +632,11 @@ function render(){
       '<span class="mk-tag">' + t.making + '</span></div>').join('') + '</div>') : '';
 
   if(!items.length && !run.length){
+    const tl = TOOL_VIEW && TOOL_META[TOOL_VIEW];
     box.innerHTML = '<div class="mm-empty"><span class="ei">📄</span><b>' + t.emptyT + '</b>' +
-      '<p>' + t.emptyP + '</p>' +
-      '<button class="btn" onclick="location.href=\'index.html\'">' + t.emptyBtn + '</button></div>';
+      '<p>' + (tl ? t.emptyPTool : t.emptyP) + '</p>' +
+      '<a class="btn" href="' + (tl ? tl.home : 'index.html') + '">' +
+      (tl ? tl.prep : t.emptyBtn) + '</a></div>';
     return;
   }
 
@@ -697,6 +699,7 @@ const T = {
        back:'← 返回', exit:'離開', making:'製作中',
        makingNote:'可以離開這一頁，完成後會留在下方的教材列表。',
        emptyT:'還沒有教材', emptyP:'到教學工具箱挑一個工具，做好之後儲存，就會出現在這裏。',
+       emptyPTool:'用這個工具做好教材並儲存，就會出現在這裏。',
        emptyBtn:'前往教學工具箱', made:'份教材', updated:'最近更新', created:'建立於',
        preview:'預覽', download:'下載', use:'在課堂使用', tab:'我的教材'},
   en: {mine:'My materials', sub:'Finished materials stay here, most recent first.',
@@ -704,7 +707,8 @@ const T = {
        back:'← Back to ', exit:'Leave ', making:'In progress',
        makingNote:'You can leave this page — finished materials appear in the list below.',
        emptyT:'Nothing here yet', emptyP:'Generate something and save it, and it will appear here.',
-       emptyBtn:'Back to 教學工具箱', made:'materials', updated:'last updated', created:'created',
+       emptyPTool:'Generate something with this tool and save it, and it will appear here.',
+       emptyBtn:'Back to the toolbox', made:'materials', updated:'last updated', created:'created',
        preview:'Preview', download:'Download', use:'Use in class', tab:'My materials'}
 };
 const L = () => T[(TOOL_VIEW && TOOL_META[TOOL_VIEW]) ? TOOL_META[TOOL_VIEW].lang : 'zh'];

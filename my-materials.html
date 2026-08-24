@@ -453,6 +453,10 @@
    * with dead ones. */
   .chip[disabled]{opacity:.4;cursor:default;background:#f4f6f8;color:var(--ink-3);border-color:var(--line);}
   .chip[disabled]:hover{border-color:var(--line);}
+
+  .mm-head{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+  .mm-head > div{flex:1;min-width:0;}
+  .mm-head .btn{flex-shrink:0;text-decoration:none;margin-top:4px;}
 </style>
 <!-- Loaded in <head>, not at the end of <body>: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -515,7 +519,10 @@
     <a id="tbPrep" href="#">開始準備</a>
     <a class="on" id="tbMat" href="#">我的教材</a>
   </nav>
-  <div class="tb-user"><span class="av">陳</span><span><b>陳老師</b> <small>中文科</small></span></div>
+  <button class="tb-exit" onclick="location.href='index.html?subject=chi'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    <span id="tbExitLabel">離開</span>
+  </button>
 </div>
 <main class="main">
   <!-- Was presented as 課文工房's second tab, while four tools wrote into it —
@@ -524,13 +531,21 @@
        rebuilt the duplicate inbox ruled out on 2026-08-20, and would compound
        with every subject added. -->
   <a class="back" id="backLink" href="index.html?subject=chi">← 返回教學工具箱</a>
-  <h1 id="pgTitle">我的教材</h1>
-  <p class="sub" id="pgSub">你用教學工具製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
+  <div class="mm-head">
+    <div>
+      <h1 id="pgTitle">我的教材</h1>
+      <p class="sub" id="pgSub">你用教學工具製作的教材都存放在這裏，可以下載修改，或直接在課堂使用。</p>
+    </div>
+    <a class="btn" id="newBtn" href="#" style="display:none">準備新教材</a>
+  </div>
 
   <div class="mm-new" id="newNote" style="display:none">✓ <span id="newTxt"></span></div>
 
   <div class="mm-filterset">
-    <div class="mm-row"><span class="mm-lbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
+    <!-- The 工具 row is hidden inside a tool: there is only one tool, so the
+         filter offers a choice that is already made, and it was listing other
+         tools greyed out — noise pretending to be an option. -->
+    <div class="mm-row" id="toolRow"><span class="mm-lbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
     <div class="mm-row"><span class="mm-lbl">類型</span><div class="mm-filters" id="filters"></div></div>
   </div>
   <div id="list"></div>
@@ -592,7 +607,8 @@ function render(){
                (n?'':' disabled') + ' onclick="setF(\'' + k + '\')">' + l + '</button>';
       }).join('');
 
-  const keep = x => (TFILTER === 'all' || x.tool === TFILTER) &&
+  /* In tool mode the scope is the tool itself; TFILTER would double-filter. */
+  const keep = x => (TOOL_VIEW || TFILTER === 'all' || x.tool === TFILTER) &&
                     (KFILTER === 'all' || x.kind === KFILTER);
   const items = everything.filter(keep);
   const run   = running.filter(keep);
@@ -687,10 +703,19 @@ if(TOOL_VIEW && TOOL_META[TOOL_VIEW]){
   document.getElementById('tbPrep').href = t.home;
   document.getElementById('tbMat').href  = 'my-materials.html?tool=' + TOOL_VIEW;
   document.getElementById('pgTitle').textContent = '我的教材';
-  document.getElementById('pgSub').textContent = '你用「' + t.name + '」製作的教材。其他工具的教材在教學工具箱的「我的教材」。';
+  /* The bar already says which tool this is, so the subtitle can describe the
+   * shelf rather than explain the scoping. */
+  document.getElementById('pgSub').textContent = '已完成的教材會保留在這裏，最近完成的排在最前。';
+  document.getElementById('toolRow').style.display = 'none';
+  const nb = document.getElementById('newBtn');
+  nb.style.display = '';
+  nb.href = t.home;          /* the tool's own entry decides new vs continue */
   const b = document.getElementById('backLink');
   b.href = t.home;
   b.textContent = '← 返回' + t.name;
+  /* Nothing is unsaved on a library page, so leaving needs no confirmation. */
+  document.getElementById('tbExitLabel').textContent = '離開' + t.name;
+  b.style.display = 'none';   /* the bar carries the exit; one route, not two */
 }
 
 render();

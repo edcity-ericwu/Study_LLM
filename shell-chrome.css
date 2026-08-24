@@ -245,3 +245,30 @@ main.main > .intro{
   .toolbar{ padding:0 18px; gap:16px; }
   .tb-user small{ display:none; }
 }
+
+/* ── exit control + confirm ──────────────────────────────────────────────
+ * A tool is an application inside an application, so the meaningful control
+ * in that corner is LEAVING, not identity (Eric, 2026-08-21). The user chip
+ * that sat here said nothing the sidebar was not already saying.
+ *
+ * The dialog appears only when there is something to lose. A confirmation
+ * with no consequence to state is friction, and being stopped should always
+ * mean something.
+ */
+.tb-exit{
+  margin-left:auto; display:inline-flex; align-items:center; gap:8px;
+  background:none; border:1px solid var(--line,#e6ebf0); border-radius:9px;
+  padding:7px 14px; font-family:inherit; font-size:.78rem; font-weight:600;
+  color:var(--ink-2,#55636f); cursor:pointer; white-space:nowrap;
+}
+.tb-exit:hover{ border-color:var(--ec-blue,#008BD1); color:var(--ec-blue-dark,#0072ab); }
+.tb-exit svg{ width:15px; height:15px; }
+
+.md-back{ position:fixed; inset:0; background:rgba(20,30,40,.42); z-index:300;
+  display:none; align-items:center; justify-content:center; padding:24px; }
+.md-back.on{ display:flex; }
+.md-box{ background:#fff; border-radius:16px; max-width:26em; width:100%;
+  padding:26px 28px; box-shadow:0 12px 40px rgba(0,0,0,.18); }
+.md-box h3{ font-size:1rem; font-weight:800; margin-bottom:8px; }
+.md-box p{ font-size:.82rem; color:var(--ink-2,#55636f); line-height:1.75; margin-bottom:20px; }
+.md-box .md-acts{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }

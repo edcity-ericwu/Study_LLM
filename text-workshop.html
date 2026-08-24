@@ -444,6 +444,17 @@
   .save-strip b{font-size:.95rem;display:block;color:#0c6b48;}
   .save-strip small{font-size:.76rem;color:#3c6b55;display:block;margin-top:4px;line-height:1.7;}
   .ss-acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+  .eyebrow{font-size:.74rem;font-weight:700;color:var(--ec-green);letter-spacing:.02em;margin-bottom:6px;}
+
+  .pick{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:8px auto 0;}
+  @media (max-width:760px){.pick{grid-template-columns:1fr;}}
+  .pick-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
+    border-radius:16px;padding:24px 26px 20px;text-decoration:none;color:inherit;}
+  .pick-card:hover{border-color:var(--ec-blue);box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .pick-card .pi{font-size:1.3rem;line-height:1;margin-bottom:12px;color:var(--ec-blue-dark);}
+  .pick-card b{font-size:1rem;margin-bottom:6px;}
+  .pick-card small{font-size:.78rem;color:var(--ink-3);line-height:1.7;flex:1;}
+  .pick-card .pg{margin-top:16px;font-size:.8rem;font-weight:600;color:var(--ec-blue-dark);}
 </style>
 <!-- Loaded in <head>, not at the end of <body class="has-toolbar">: it injects the rules that
      hide feature-flagged elements, and those must exist before first paint
@@ -508,37 +519,66 @@
     <a href="text-workshop.html" class="on">開始準備</a>
     <a href="my-materials.html?tool=text-workshop">我的教材</a>
   </nav>
-  <div class="tb-user"><span class="av">陳</span><span><b>陳老師</b> <small>中文科</small></span></div>
+  <button class="tb-exit" onclick="askExit()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+    離開課文工房
+  </button>
 </div>
 
 <main class="main">
-  <a class="back" href="index.html?subject=chi">← 返回教學工具箱</a>
-  <div class="rs-bar" id="rsBar" style="display:none"></div>
+    <!-- The tool bar already says 課文工房, so the page says what to DO next.
+         The title and tagline that sat here introduced the tool to someone who
+         had just clicked its name — a product description standing where an
+         instruction belongs (Eric, 2026-08-21). -->
+    <div id="pgHead">
+      <div class="eyebrow" id="pgEyebrow">準備新教材</div>
+      <h1 id="pgTitle">先選學習範圍</h1>
+      <p class="sub" id="pgSub">選擇一項或多項，再上載或貼上課文。我們只會整理你選的重點。</p>
+    </div>
 
-    <h1 id="pgTitle">課文工房</h1>
-    <p class="sub" id="pgSub">把一篇課文變成可以直接用的教材。</p>
-
-    <!-- 我的教材 was a tab here, which implied the library belonged to this
-         tool. Four tools write into it, so it is a link out, not a tab. -->
+    <!-- ⓪  entry ------------------------------------------------------
+         Shown only when there is unfinished work. Continuing and starting
+         fresh are equally weighted choices and one of them discards context,
+         so it gets a screen rather than a banner above the form — a banner
+         made the decision look insignificant (Eric, 2026-08-21). -->
+    <section class="tw-stage" id="stEntry">
+      <div class="pick">
+        <a class="pick-card" href="#" onclick="doResume();return false;">
+          <span class="pi">↩</span>
+          <b>繼續上次的準備</b>
+          <small id="pickResumeMeta"></small>
+          <span class="pg">繼續 →</span>
+        </a>
+        <a class="pick-card" href="#" onclick="startFresh();return false;">
+          <span class="pi">✦</span>
+          <b>準備新教材</b>
+          <small>選一篇新的課文重新開始。上次未完成的準備不會保留。</small>
+          <span class="pg">開始 →</span>
+        </a>
+      </div>
+    </section>
 
     <!-- ①  form ------------------------------------------------------- -->
     <section class="tw-stage on" id="stForm">
       <div class="tw-grid">
+        <!-- Three steps, all hers. The old list had four and two of them were
+             the machine's work (細讀並整理重點), which padded her process with
+             waiting and made it look longer than it is. Waiting is not a step
+             she takes (Eric, 2026-08-21). -->
         <aside class="tw-rail">
-          <h3>怎樣運作</h3>
-          <div class="tw-step"><span class="n">1</span><div><b>放入課文</b><small>上載檔案或直接貼上課文。</small></div></div>
-          <div class="tw-step"><span class="n">2</span><div><b>細讀並整理重點</b><small>按你選的學習範圍，列出這篇課文可教的重點。</small></div></div>
-          <div class="tw-step"><span class="n">3</span><div><b>你挑重點</b><small>每項重點都附有課程文件出處，供你核對。</small></div></div>
-          <div class="tw-step" style="margin-bottom:0"><span class="n">4</span><div><b>製作教材</b><small>工作紙、課堂簡報或教師提示，可下載修改。</small></div></div>
+          <h3>只需三步</h3>
+          <div class="tw-step"><span class="n">1</span><div><b>選學習範圍</b><small>可按需要選擇一項或多項。</small></div></div>
+          <div class="tw-step"><span class="n">2</span><div><b>加入課文</b><small>從電腦選取文字檔，或直接貼上篇章。</small></div></div>
+          <div class="tw-step" style="margin-bottom:0"><span class="n">3</span><div><b>選教材</b><small>只準備你需要的工作紙、簡報或提示。</small></div></div>
         </aside>
 
         <div>
           <div class="tw-q">你想教這篇課文的哪些方面？</div>
           <div class="tw-qs">可選多於一項。已選的範圍會決定整理出來的學習重點。</div>
           <div class="scope-grid">
-            <button type="button" class="scope on" data-scope="reading" onclick="toggleScope(this)">
+            <button type="button" class="scope" data-scope="reading" onclick="toggleScope(this)">
               <span class="si">📖</span><span><b>閱讀理解</b><small>文意、結構、寫作手法與作者情意。</small></span></button>
-            <button type="button" class="scope on" data-scope="vocab" onclick="toggleScope(this)">
+            <button type="button" class="scope" data-scope="vocab" onclick="toggleScope(this)">
               <span class="si">🔤</span><span><b>字詞理解</b><small>文言字詞、詞義推敲與句式。</small></span></button>
             <button type="button" class="scope" disabled>
               <span class="si">✍️</span><span><b>語文運用</b><small>由課文延伸的寫作與說話練習。</small><span class="soon">稍後推出</span></span></button>
@@ -596,7 +636,7 @@
           </label>
 
           <div class="tw-go">
-            <button class="btn" id="goBtn" disabled onclick="startRead()">開始細讀課文</button>
+            <button class="btn" id="goBtn" disabled onclick="startRead()">先選擇學習範圍</button>
           </div>
         </div>
       </div>
@@ -724,6 +764,17 @@
 </main>
 </div>
 
+<div class="md-back" id="exitDlg">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h3 id="exitTitle">離開課文工房？</h3>
+    <p id="exitBody"></p>
+    <div class="md-acts">
+      <button class="btn ghost" onclick="closeExit()">留在這裏</button>
+      <button class="btn" id="exitGo" onclick="doExit()">離開</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
 <script src="materials.js"></script>
@@ -816,7 +867,7 @@ let SEL = {};            // pointId -> [kind,...]
 let OPEN = null;
 
 /* ── form ── */
-function toggleScope(b){ b.classList.toggle('on'); }
+function toggleScope(b){ b.classList.toggle('on'); gate(); }
 function pickFile(){ toast('示範版本未開放上載，請在下方選用示範課文或直接貼上課文。'); }
 
 function fillDemo(k){
@@ -833,23 +884,48 @@ function countLines(){
   document.getElementById('lineCount').textContent = n + ' 行課文・最多 64 行';
   gate();
 }
+/* A disabled button that sits silent makes the teacher hunt for what is
+ * missing. It names the next step instead — the reference does this and it is
+ * the cheapest guidance on the page. */
 function gate(){
+  const scopes   = document.querySelectorAll('.scope.on').length;
   const hasText  = document.getElementById('fText').value.trim().length > 0;
   const hasTitle = document.getElementById('fTitle').value.trim().length > 0;
-  const ready    = hasText && hasTitle;
   const box      = document.getElementById('fOk');
+  const ready    = hasText && hasTitle;
 
-  /* Nothing to confirm yet, so the confirmation is not offered. */
   box.disabled = !ready;
   if(!ready) box.checked = false;
   document.getElementById('okWrap').classList.toggle('off', !ready);
 
-  document.getElementById('goBtn').disabled = !(ready && box.checked);
+  const btn = document.getElementById('goBtn');
+  let label, ok = false;
+  if(!scopes)            label = '先選擇學習範圍';
+  else if(!ready)        label = '加入課文';
+  else if(!box.checked)  label = '請先核對課文內容';
+  else { label = '開始細讀課文'; ok = true; }
+
+  btn.disabled = !ok;
+  btn.innerHTML = label + (ok ? ' →' : '');
 }
 
 function stage(id){
   document.querySelectorAll('.tw-stage').forEach(s => s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
+  /* The header speaks for the stage: the entry fork and the form state the job;
+   * once a 課文 is loaded the header becomes the text's identity. */
+  const head = document.getElementById('pgHead');
+  if(id === 'stEntry'){
+    document.getElementById('pgEyebrow').textContent = '課文工房';
+    document.getElementById('pgTitle').textContent   = '接著上次，還是重新開始？';
+    document.getElementById('pgSub').textContent     = '你有一份未完成的準備。選一個繼續。';
+    head.style.display = '';
+  } else if(id === 'stForm'){
+    document.getElementById('pgEyebrow').textContent = '準備新教材';
+    document.getElementById('pgTitle').textContent   = '先選學習範圍';
+    document.getElementById('pgSub').textContent     = '選擇一項或多項，再上載或貼上課文。我們只會整理你選的重點。';
+    head.style.display = '';
+  }
   window.scrollTo(0,0);
 }
 
@@ -1118,16 +1194,18 @@ function restore(){
     if(b) b.classList.add('on');
   }));
   refreshSel();
-  banner(st.stage === 'stMake' ? '上次的教材已完成，可在「我的教材」查看。'
-                               : '已回到你上次選擇學習重點的地方。');
+  note(st.stage === 'stMake' ? '上次的教材已完成，可在「我的教材」查看。'
+                            : '已回到你上次選擇學習重點的地方。');
   return true;
 }
 
-function banner(msg){
-  const el = document.getElementById('rsBar');
-  el.style.display = 'flex';
-  el.innerHTML = '<span>↩</span><div><b>繼續上次的工作</b><small>' + msg + '</small></div>' +
-    '<button class="btn ghost" onclick="startOver()">重新開始</button>';
+/* The resume banner was replaced by the entry fork — a decision that discards
+ * context deserves a screen, not a strip above the form (Eric, 2026-08-21).
+ * What remains is the one case the fork cannot cover: arriving to find the
+ * previous run already finished and saved. */
+function note(msg){
+  const el = document.getElementById('pgSub');
+  if(el) el.textContent = msg;
 }
 
 function startOver(){
@@ -1159,9 +1237,65 @@ function discardAll(){
   setTimeout(() => location.href = 'text-workshop.html', 1200);
 }
 
-/* ── boot ── */
+/* ── boot ─────────────────────────────────────────────────────────────
+ * Unfinished work is a fork, not an annotation: continuing and starting fresh
+ * are equally weighted and one discards context. It gets its own screen.
+ * Arriving via the 繼續 row on the toolbox card carries ?resume=1, which is an
+ * explicit intent, so that path skips the fork. */
 countLines();
-if(!restore()) document.getElementById('rsBar').style.display = 'none';
+(function(){
+  const wants = new URLSearchParams(location.search).get('resume');
+  const saved = ToolSession.load(TOOL);
+
+  if(!saved){ stage('stForm'); return; }
+  if(wants){ restore(); return; }
+
+  const d = DEMO_TEXTS[saved.cur];
+  const where = saved.stage === 'stMake' ? '正在製作教材'
+              : saved.stage === 'stPoints' ? '已整理好學習重點，等你挑選'
+              : '已放入課文';
+  document.getElementById('pickResumeMeta').textContent =
+    '《' + (d ? d.title : saved.cur) + '》・' + where + '。';
+  stage('stEntry');
+})();
+
+function startFresh(){
+  ToolSession.clear(TOOL);
+  stage('stForm');
+}
+
+function doResume(){ restore(); }
+
+/* ── leaving the tool ────────────────────────────────────────────────────
+ * The dialog appears only when there is something to lose, and names it. */
+function unsaved(){
+  const ready = (window.Jobs ? Jobs.finished(TOOL) : []).length;
+  const inProgress = !!ToolSession.load(TOOL);
+  return {ready, inProgress};
+}
+
+function askExit(){
+  /* Only finished-but-unsaved work is actually lost by leaving. An unfinished
+   * session survives — resume restores it — so stopping her for that would be
+   * reassurance dressed as a decision, which is the friction this rule exists
+   * to avoid. */
+  const u = unsaved();
+  if(!u.ready){ leave(); return; }
+
+  document.getElementById('exitBody').textContent =
+    u.ready + ' 份教材已完成但尚未儲存，離開後會消失。你也可以留下先儲存。';
+  document.getElementById('exitGo').textContent = '離開，不儲存';
+  document.getElementById('exitDlg').classList.add('on');
+}
+function closeExit(){ document.getElementById('exitDlg').classList.remove('on'); }
+function doExit(){
+  const u = unsaved();
+  if(u.ready) Jobs.claim(Jobs.finished(TOOL).map(j => j.id));
+  leave();
+}
+function leave(){ location.href = 'index.html?subject=chi'; }
+
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeExit(); });
 </script>
 </body>
 </html>

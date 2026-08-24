@@ -195,6 +195,7 @@
    * ruled out on 2026-08-20. */
   .cont-tag{
     display:flex;align-items:center;gap:7px;margin-top:12px;padding-top:11px;
+    text-decoration:none;
     border-top:1px solid var(--line);font-size:.72rem;font-weight:600;
     color:var(--ec-blue-dark);
   }
@@ -658,8 +659,11 @@ function resumeTag(t){
   const id = RESUMABLE[t.link];
   if(!id || !window.ToolSession || !ToolSession.has(id)) return '';
   const age = ToolSession.ageLabel(id);
-  return '<div class="cont-tag"><span>↩ 繼續上次的工作</span>' +
-         (age ? '<span class="when">' + age + '</span>' : '') + '</div>';
+  /* Clicking 繼續 IS the intent to resume, so it goes straight in; arriving at
+   * the tool any other way shows 開始準備 and offers the choice. */
+  return '<a class="cont-tag" href="' + t.link + '?resume=1" onclick="event.stopPropagation()">' +
+         '<span>↩ 繼續上次的工作</span>' +
+         (age ? '<span class="when">' + age + '</span>' : '') + '</a>';
 }
 
 function applyFilters(){

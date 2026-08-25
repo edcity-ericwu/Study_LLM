@@ -532,6 +532,9 @@ function wearToolBar(id){
     tl.lang === 'en' ? st.exit + tl.name : st.exit + tl.name;
   document.getElementById('toolbar').style.display = '';
   document.body.classList.add('has-toolbar');
+  /* Every route back to the catalogue now lands on this tool's shelf —
+   * the sidebar row and demo-nav's links included (Eric, 2026-08-24). */
+  if(window.ShellChrome) ShellChrome.setSubject(tl.lang === 'en' ? 'eng' : 'chi');
 }
 function leaveTool(){
   const tl = TOOL_META[TOOL_ID];
@@ -571,7 +574,7 @@ function render(){
       ? '<div class="sheet">' + stripTitle(m.body, m.title) + '</div>'
       : '<div class="md-none"><b>這份教材沒有儲存內容</b>' +
         '<p>它是在工具開始保存內容之前建立的，所以只剩下名稱和分類。重新製作一次就會有完整內容。</p>' +
-        '<button class="btn ghost" onclick="location.href=\'index.html\'">前往教學工具箱</button></div>');
+        '<a class="btn ghost" href="index.html?subject=' + (TOOL_ID && TOOL_META[TOOL_ID] && TOOL_META[TOOL_ID].lang === 'en' ? 'eng' : 'chi') + '">前往教學工具箱</a></div>');
 }
 /* The header above already carries the title and the meta line, so the copy
  * the tool wrote into the body is removed here — and only when it genuinely

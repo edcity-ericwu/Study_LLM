@@ -161,9 +161,80 @@
     };
   }
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', build);
-  } else {
+  /* ── back to the right shelf ────────────────────────────────────────────
+   * Eric, 2026-08-24: "eng tool details page should return to tool list
+   * filtered for english, chi tool the same — whenever there is a button back."
+   *
+   * The exit button already carried ?subject=. Two other routes did not: the
+   * sidebar's 教學工具箱 row, and the walkthrough links demo-nav.js injects. So
+   * two of the three ways out of an English tool dropped the teacher on the
+   * Chinese shelf, where none of the tools she had just been using appear.
+   *
+   * Done centrally, for three reasons:
+   *   · seven pages carry an identical sidebar row, and seven copies of a fix
+   *     is how the last four defects started;
+   *   · demo-nav.js builds its links after this file runs, so a one-time sweep
+   *     of the DOM would miss them;
+   *   · pages whose subject is only known at runtime (material.html,
+   *     my-materials.html — it depends on which tool's material is open) can
+   *     just set the attribute and be covered by the same code.
+   *
+   * A page declares its shelf with <body data-subject="eng"> or by calling
+   * ShellChrome.setSubject(). Anything without one is genuinely subject-less —
+   * the platform library spans every subject — and is left alone.
+   */
+  function shelf(){
+    return (document.body && document.body.getAttribute('data-subject')) || '';
+  }
+
+  function isCatalogue(href){
+    return /(^|\/)index\.html(\?|#|$)/.test(href || '');
+  }
+
+  /* Rewrites what the link SAYS, so the status bar and a copied link are also
+   * right — not just what happens on click. */
+  function subjectify(){
+    var s = shelf();
+    if(!s) return;
+    var links = document.querySelectorAll('a[href]');
+    for(var i = 0; i < links.length; i++){
+      var h = links[i].getAttribute('href');
+      if(!isCatalogue(h) || h.indexOf('subject=') >= 0) continue;
+      links[i].setAttribute('href', h.split('#')[0].split('?')[0] + '?subject=' + s);
+    }
+  }
+
+  /* The guarantee. A sweep can always be outrun by something injected later;
+   * a capture-phase listener cannot. */
+  document.addEventListener('click', function(e){
+    var s = shelf();
+    if(!s || !e.target || !e.target.closest) return;
+    var a = e.target.closest('a[href]');
+    if(!a) return;
+    var h = a.getAttribute('href');
+    if(!isCatalogue(h) || h.indexOf('subject=') >= 0) return;
+    a.setAttribute('href', h.split('#')[0].split('?')[0] + '?subject=' + s);
+  }, true);
+
+  window.ShellChrome = window.ShellChrome || {};
+  window.ShellChrome.setSubject = function(s){
+    if(!s) return;
+    document.body.setAttribute('data-subject', s);
+    subjectify();
+  };
+  window.ShellChrome.subjectify = subjectify;
+
+  function boot(){
     build();
+    subjectify();
+    /* demo-nav.js and jobs.js add links of their own on DOMContentLoaded, and
+     * ordering between listeners is not something to rely on. */
+    setTimeout(subjectify, 0);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
 })();

@@ -755,6 +755,7 @@ if(TOOL_VIEW && TOOL_META[TOOL_VIEW]){
   b.textContent = T[tl.lang].back + tl.name;
   /* Nothing is unsaved on a library page, so leaving needs no confirmation. */
   document.getElementById('tbExitLabel').textContent = T[tl.lang].exit + tl.name;
+  if(window.ShellChrome) ShellChrome.setSubject(tl.lang === 'en' ? 'eng' : 'chi');
   b.style.display = 'none';   /* the bar carries the exit; one route, not two */
 }
 

@@ -733,9 +733,9 @@ function generate(){
   const next = () => {
     i++;
     if(i >= STEPS.length){ clearInterval(tick); render(); return; }
-    paint(); setTimeout(next, 1500);
+    paint(); setTimeout(next, 1000);
   };
-  setTimeout(next, 1500);
+  setTimeout(next, 1000);
 }
 
 const BANK = {

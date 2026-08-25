@@ -205,6 +205,62 @@
      the stored collapsed state must be on <html> before first paint, or the
      sidebar renders full-width and then disappears on every navigation. -->
 <link rel="stylesheet" href="shell-chrome.css">
+<style>
+  /* 工具派發 */
+  .lic-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:22px;}
+  .lic-eyebrow{display:block;font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ec-blue-dark);margin-bottom:4px;}
+  .lic-head b{font-size:.98rem;display:block;}
+  .lic-head small{font-size:.76rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.6;}
+  .lic-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  /* Monospace, uppercase, wide tracking: this string is read off an email and
+     typed back, and JetBrains Mono has a slashed zero and distinct 1/l/I. */
+  .lic-row input{flex:1;min-width:220px;border:1px solid var(--line);border-radius:10px;
+    padding:11px 14px;font-family:var(--font-mono);font-size:.9rem;letter-spacing:.08em;
+    text-transform:uppercase;background:#fff;color:var(--ink);outline:none;}
+  .lic-row input:focus{border-color:var(--ec-blue);}
+  .lic-msg{font-size:.78rem;margin-top:10px;line-height:1.6;display:none;}
+  .lic-msg.on{display:block;}
+  .lic-msg.bad{color:#b3202f;}
+  .lic-msg.good{color:#0c6b48;}
+  .lic-note{font-size:.72rem;color:var(--ink-3);margin-top:12px;line-height:1.6;
+    border-top:1px solid var(--line);padding-top:11px;}
+
+  .ent{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:14px;}
+  /* An unassigned licence is money spent for no effect, and nothing else on
+     the platform would ever mention it. It gets a warm border, not a red one:
+     it is a thing to finish, not a failure. */
+  .ent.idle{border-color:#f0dfa0;background:#fffdf6;}
+  .ent-head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+  .ent-head b{font-size:.95rem;display:block;}
+  .ent-meta{font-size:.74rem;color:var(--ink-3);margin-top:3px;line-height:1.6;}
+  .ent-src{font-size:.64rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap;}
+  .ent-src.key{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
+  .ent-src.procured{color:var(--ink-2);background:#f2f5f8;border:1px solid var(--line);}
+  .ent-seats{margin-left:auto;text-align:right;white-space:nowrap;}
+  .ent-seats b{font-size:1.05rem;}
+  .ent-seats small{display:block;font-size:.7rem;color:var(--ink-3);}
+  .ent-idle-note{font-size:.78rem;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;
+    border-radius:10px;padding:10px 14px;margin-top:14px;line-height:1.6;}
+
+  .seat-tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:16px 0 0;}
+  .seat-tab{border:none;background:none;padding:9px 0;font-family:inherit;font-size:.8rem;font-weight:600;
+    color:var(--ink-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .seat-tab.on{color:var(--ec-blue-dark);border-bottom-color:var(--ec-blue);}
+  .seat-body{padding-top:14px;}
+  .seat-grp{font-size:.72rem;font-weight:700;color:var(--ink-2);margin:12px 0 7px;}
+  .seat-grp:first-child{margin-top:0;}
+  .seat{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f2f5f8;
+    font-size:.82rem;cursor:pointer;}
+  .seat:last-child{border-bottom:none;}
+  .seat input{width:16px;height:16px;accent-color:var(--ec-blue);flex-shrink:0;}
+  .seat .sn{font-weight:600;}
+  .seat .se{color:var(--ink-3);font-size:.74rem;margin-left:auto;}
+  /* Students are honestly not built. Saying so beats a tab that looks live and
+     does nothing, and beats hiding a scope the requirement explicitly names. */
+  .seat-soon{font-size:.8rem;color:var(--ink-2);background:#fafbfc;border:1px dashed var(--line);
+    border-radius:10px;padding:16px 18px;line-height:1.75;}
+</style>
 <script src="shell-chrome.js"></script>
 </head>
 <body>
@@ -249,6 +305,10 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="budget" onclick="showTab('budget')">待預算<span class="tab-count" id="budgetCount" style="display:none;"></span></button>
+    <!-- 工具派發 sits second, right after the queue with a deadline: once a
+         licence is in hand, giving it to somebody is the next thing that has
+         to happen, and an unassigned licence is money already spent. -->
+    <button class="tab-btn" data-tab="provision" onclick="showTab('provision')">工具派發<span class="tab-count" id="provCount" style="display:none;"></span></button>
     <button class="tab-btn" data-tab="plans" onclick="showTab('plans')">供應商方案名額</button>
     <button class="tab-btn" data-tab="agreements" onclick="showTab('agreements')">供應商協議</button>
     <button class="tab-btn" data-tab="existing" onclick="showTab('existing')">現有訂閱</button>
@@ -280,6 +340,38 @@
     <div class="queue-link" id="queueLink"></div>
     <div class="sect-sub" style="margin:0 0 14px;">試用期已完結、學校尚未決定採購的項目。範圍已凍結，不會自動續期，亦不會自行擴大；到期日一律為學年完結（8 月 31 日）。教師端會顯示「已納入下年度預算建議」。</div>
     <div id="budgetList"></div>
+  </section>
+
+  <!-- ── 工具派發 ────────────────────────────────────────────────────────
+       Two jobs, in the order 馮 Sir does them: register what the school owns,
+       then give it to named people. Both write the same entitlement record —
+       a licence key is a second door into 訂閱管理, not a parallel system
+       (Eric, 2026-08-25). -->
+  <section class="tab-pane" data-pane="provision">
+    <div class="sect-sub" style="margin:0 0 16px;">學校在教育城以外購買的工具，在這裏輸入授權碼登記，然後派發給指定教師。<b>登記不等於派發</b>——未派發的授權沒有人用得到。</div>
+
+    <div class="lic-box">
+      <div class="lic-head">
+        <div>
+          <span class="lic-eyebrow">已在校外購買</span>
+          <b>輸入授權碼</b>
+          <small>供應商在合約確認後會提供授權碼，格式為 XXXX-XXXX-XXXX。</small>
+        </div>
+      </div>
+      <div class="lic-row">
+        <input type="text" id="licKey" placeholder="MYAN-TECH-2578" autocomplete="off"
+               oninput="licGate()" onkeydown="if(event.key==='Enter')redeemKey()">
+        <button class="btn" id="licBtn" onclick="redeemKey()" disabled>登記授權</button>
+      </div>
+      <div class="lic-msg" id="licMsg"></div>
+      <!-- Stated plainly rather than implied. A prototype cannot verify a key
+           against anything, and a console that looks like it checked when it
+           did not is the kind of detail that undermines everything else on the
+           page once someone notices. -->
+      <div class="lic-note">示範版本不會向供應商核實授權碼，只檢查格式。正式版本會即時核實並顯示方案內容。</div>
+    </div>
+
+    <div id="provList"></div>
   </section>
 
   <section class="tab-pane" data-pane="plans">
@@ -334,6 +426,7 @@
 <div class="toast" id="toast"></div>
 <script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>
+<script src="entitlements.js"></script>
 <script>
 /* unlimited/full-school plans aren't seat-capped, so they live outside vendor-data.js's
  * VENDOR_PLANS — they never need a capacity check, only a display entry here. */
@@ -380,7 +473,7 @@ function jumpTo(d){
   setToday(d);
   const lapsed = applyExpiries();
   if(typeof publishRequests === 'function') publishRequests();   // lapses are state, not a view
-  renderClock(); renderQueueLink(); renderCapacityAlerts(); renderPlanGrid(); renderBudgetPending(); renderCase();
+  renderClock(); renderQueueLink(); renderCapacityAlerts(); renderPlanGrid(); renderBudgetPending(); renderCase(); renderProvision();
   toast(lapsed.length
     ? `日期已設為 ${d}：${lapsed.length} 項已到期並失效（${lapsed.map(l=>l.label).join('、')}）`
     : `日期已設為 ${d}，沒有項目到期`);
@@ -642,6 +735,151 @@ function showTab(name){
  * flagged as confusing. Approvals now happen in one place, on the
  * access-approval console, against real request data. */
 
+/* ── 工具派發 ──────────────────────────────────────────────────────────
+ * Register what the school owns, then give it to named people. Both halves
+ * write the same entitlement record; see entitlements.js for why a licence key
+ * is a second door into this page rather than a system of its own.
+ */
+let SEAT_TOOL = null;      /* which entitlement's seat list is open */
+let SEAT_SCOPE = 'staff';  /* staff | students */
+
+function licGate(){
+  const v = document.getElementById('licKey').value.trim();
+  document.getElementById('licBtn').disabled = v.length < 8;
+}
+
+function licSay(kind, msg){
+  const el = document.getElementById('licMsg');
+  el.className = 'lic-msg on ' + kind;
+  el.textContent = msg;
+}
+
+function redeemKey(){
+  const input = document.getElementById('licKey');
+  const r = Entitlements.redeem(input.value);
+  if(!r.ok){
+    /* Three failures, three next actions. Collapsing them into 「授權碼無效」
+     * would leave him retyping a key that is fine but already used. */
+    licSay('bad',
+      r.reason === 'malformed' ? '格式不符。授權碼是三組四個字元，例如 MYAN-TECH-2578。'
+      : r.reason === 'duplicate' ? '這個授權碼已經登記過，可在下方直接派發名額。'
+      : '找不到這個授權碼。請向供應商核對，或確認是否適用於教育城平台。');
+    return;
+  }
+  input.value = '';
+  licGate();
+  licSay('good', '已登記《' + r.entitlement.name + '》，共 ' + r.entitlement.seats +
+                 ' 個教師名額。下一步：派發給教師。');
+  /* Open its seat list straight away — the whole point of the warning below is
+   * that registering is not finishing. Set before rendering, not after, so the
+   * page paints once in its final state. */
+  SEAT_TOOL = r.entitlement.tool;
+  SEAT_SCOPE = 'staff';
+  renderProvision();
+}
+
+function openSeats(tool){
+  SEAT_TOOL = (SEAT_TOOL === tool) ? null : tool;
+  SEAT_SCOPE = 'staff';
+  renderProvision();
+}
+function seatScope(sc){ SEAT_SCOPE = sc; renderProvision(); }
+
+function toggleSeat(tool, tid, on){
+  const r = on ? Entitlements.assign(tool, [tid]) : {added:0};
+  if(!on) Entitlements.unassign(tool, [tid]);
+  if(on && r.added === 0 && r.refused > 0){
+    toast('名額已滿，未能加入。可先移除其他教師，或向供應商增購。');
+  }
+  renderProvision();
+}
+
+function renderProvision(){
+  const box = document.getElementById('provList');
+  if(!box) return;
+  const list = Entitlements.all();
+
+  /* The count on the tab is the number of licences nobody can use yet. */
+  const idle = Entitlements.unassigned().length;
+  const c = document.getElementById('provCount');
+  if(c){ c.textContent = idle; c.style.display = idle ? '' : 'none'; }
+
+  if(!list.length){
+    box.innerHTML = '<div class="seat-soon">尚未登記任何工具。在上方輸入授權碼，或透過預算流程訂閱。</div>';
+    return;
+  }
+
+  box.innerHTML = list.map(e => {
+    const seats = Entitlements.seatsFor(e.tool);
+    const left  = Entitlements.remaining(e.tool);
+    const open  = SEAT_TOOL === e.tool;
+    const idleOne = e.assigned.length === 0;
+
+    return '<div class="ent' + (idleOne ? ' idle' : '') + '">' +
+      '<div class="ent-head">' +
+        '<div style="flex:1;min-width:200px">' +
+          '<b>' + e.name + '</b>' +
+          '<div class="ent-meta">' + e.vendor + '　·　' +
+            (e.source === 'key' ? '授權碼 ' + e.key : '經預算流程訂閱') +
+            '　·　有效至 ' + e.expires + '</div>' +
+        '</div>' +
+        '<span class="ent-src ' + e.source + '">' +
+          (e.source === 'key' ? '校外採購' : '教育城訂閱') + '</span>' +
+        '<div class="ent-seats"><b>' + e.assigned.length + ' / ' + seats + '</b>' +
+          '<small>已派發名額</small></div>' +
+      '</div>' +
+      (idleOne
+        ? '<div class="ent-idle-note">學校已擁有這個工具，但還沒有人可以使用。派發名額之後，教師在 EdCity.ai 就會看到它。</div>'
+        : '') +
+      '<div style="margin-top:14px">' +
+        '<button class="btn ghost" onclick="openSeats(\'' + e.tool + '\')">' +
+          (open ? '收起名額' : (idleOne ? '派發名額' : '管理名額（尚餘 ' + left + '）')) +
+        '</button>' +
+      '</div>' +
+      (open ? seatPanel(e, left) : '') +
+    '</div>';
+  }).join('');
+}
+
+function seatPanel(e, left){
+  let h = '<div class="seat-tabs">' +
+    '<button class="seat-tab' + (SEAT_SCOPE==='staff'?' on':'') + '" onclick="seatScope(\'staff\')">教師</button>' +
+    '<button class="seat-tab' + (SEAT_SCOPE==='students'?' on':'') + '" onclick="seatScope(\'students\')">學生</button>' +
+    '</div><div class="seat-body">';
+
+  if(SEAT_SCOPE === 'students'){
+    /* Present and honestly unbuilt. The requirement names students, so hiding
+     * the scope would misrepresent it; faking it would rest the demo on roster
+     * data that does not exist yet — the annual official-record source is
+     * still unconfirmed (2026-07-22). */
+    return h + '<div class="seat-soon"><b>學生名額派發尚未建立。</b><br>' +
+      '學生名額需要一份權威的學生名冊作依據。目前只有學年中途的個別異動經校務處流程處理，' +
+      '每年正式編班的資料來源尚未確定，所以這裏暫時不提供派發。</div></div>';
+  }
+
+  /* Grouped by subject panel, because that is how an IT coordinator is told
+   * who needs a tool — 「中文科要用」, not a list of 55 names. */
+  const teachers = (typeof activeTeachers === 'function') ? activeTeachers() : [];
+  const SUBJ = {chi:'中文科', eng:'英文科', maths:'數學科', sci:'科學科', ls:'其他科目'};
+  const by = {};
+  teachers.forEach(t => { const k = SUBJ[t.subjectId] || '其他科目'; (by[k] = by[k] || []).push(t); });
+
+  Object.keys(by).forEach(grp => {
+    h += '<div class="seat-grp">' + grp + '</div>';
+    by[grp].forEach(t => {
+      const on = e.assigned.indexOf(t.id) >= 0;
+      /* Never disabled when the cap is reached — a greyed row gives no reason
+       * (standing rule). It stays clickable and says why it could not. */
+      h += '<label class="seat">' +
+        '<input type="checkbox"' + (on ? ' checked' : '') +
+        ' onchange="toggleSeat(\'' + e.tool + '\',\'' + t.id + '\',this.checked)">' +
+        '<span class="sn">' + t.name + '</span>' +
+        '<span class="se">' + (t.contact || '—') + '</span></label>';
+    });
+  });
+  return h + '</div>';
+}
+
 let tt;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
 renderClock();
@@ -651,6 +889,7 @@ renderCapacityAlerts();
 renderPlanGrid();
 renderBudgetPending();
 renderCase();
+renderProvision();
 
 /* Reconcile the one pre-existing "現有訂閱" row that overlaps with vendor-data.js,
  * instead of leaving a hand-typed teacher count that can drift from the real grants. */

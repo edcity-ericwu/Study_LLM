@@ -26,8 +26,18 @@
   /* Demo timings. Real generation takes minutes; compressed here so a job can
    * actually be seen finishing during a walkthrough, while still being long
    * enough that leaving the page is the natural thing to do. */
-  var LEAD_MS = 6000;   // before the first material lands
-  var GAP_MS  = 5000;   // between materials
+  /* Eric, 2026-08-25: nobody in a demo should wait more than about six seconds.
+   *
+   * The old fixed LEAD 6000 + GAP 5000 made the wait a function of how much the
+   * teacher asked for — 課文工房 can produce a dozen materials, which came to
+   * over a minute. So the run is now budgeted as a WHOLE and the gap is derived
+   * from it: the wait is bounded by the audience's patience, not by the item
+   * count. Materials still land one at a time, which is what makes the partial
+   * results and the 「先離開」 claim honest; they just land closer together. */
+  var LEAD_MS   = 1600;   // before the first material lands
+  var TOTAL_MS  = 5200;   // the whole run, however many items
+  var MIN_GAP   = 220;    // below this they stop reading as separate arrivals
+  var GAP_MS    = 1800;   // default for a single item / external callers
 
   function read(){
     try { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
@@ -54,12 +64,14 @@
        * learning-point id to rebuild a material's CONTENT when the teacher
        * saves, and the old explicit list silently dropped it — which is how
        * the library ended up holding filenames with no files (2026-08-24). */
+      var n = Math.max(1, items.length);
+      var gap = Math.max(MIN_GAP, Math.round((TOTAL_MS - LEAD_MS) / n));
       var made = items.map(function(it, i){
         return Object.assign({}, it, {
           id: 't' + now + '-' + i,
           tool: tool, toolName: toolName, href: href,
           startedAt: now,
-          doneAt: now + LEAD_MS + (i + 1) * GAP_MS
+          doneAt: now + LEAD_MS + (i + 1) * gap
         });
       });
       write(list.concat(made));

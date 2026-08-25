@@ -919,6 +919,7 @@
 </div>
 
 <script src="demo-state.js"></script>
+<script src="entitlements.js"></script>
 <script src="vendor-data.js"></script>
 <script>
 let mode = null;           // null | 'ask' | 'plan'
@@ -1109,6 +1110,35 @@ function sendMsg(){
  * page (not a fetch from agents.html) since this is a same-page popup, not a
  * navigation. Mirrors the fields agents.html's own modal uses (face/name/vendor/
  * tag/lic/desc/caps), plus the fit-evidence chips shown in the chat reply. */
+/* ── who is signed in ────────────────────────────────────────────────────
+ * The teacher this shell belongs to. Hardcoded because the prototype has one
+ * teacher; named as a constant so the entitlement lookups below read as a
+ * question about a person rather than a magic string. */
+const ME = 'T1001';   /* 陳凱怡 */
+
+/* Which entitlement each catalogue entry corresponds to. Without this the two
+ * sides cannot be joined — the catalogue is keyed by a short demo name and
+ * entitlements are keyed by tool id. */
+const TOOL_ENTITLEMENT = {
+  zhixie: 'writing-analytics',
+  other:  'diandu-reading'
+};
+
+/* ── may I open this? ────────────────────────────────────────────────────
+ * Replaces the hardcoded `lic:'school'` that used to decide this. The label was
+ * a property of the CATALOGUE, so it said the same thing to every teacher in
+ * every school — which made the whole provisioning workflow invisible here
+ * (2026-08-25). Now the answer comes from what 馮 Sir actually gave her, and
+ * two teachers at the same school can legitimately see different things.
+ *
+ * Falls back to the old field if entitlements.js is absent, so this page still
+ * works standalone. */
+function licFor(key, item){
+  const toolId = TOOL_ENTITLEMENT[key];
+  if(!toolId || !window.Entitlements) return item.lic;
+  return Entitlements.hasAccess(toolId, ME) ? 'school' : 'sub';
+}
+
 const TOOL_DETAILS = {
   zhixie: {
     face:'🖋️', color:'var(--ec-blue)', name:'AI 中文作文批改', vendor:'墨言科技',
@@ -1131,12 +1161,13 @@ function openToolModal(key){
   document.getElementById('toolModal').style.setProperty('--accent', i.color);
   document.getElementById('tmFace').textContent = i.face;
   document.getElementById('tmName').textContent = i.name;
-  document.getElementById('tmSub').textContent = `${i.tag} · 由 ${i.vendor} 提供 · ${i.lic==='school'?'校方已採購':'需另行訂閱'}`;
+    const lic = licFor(key, i);
+  document.getElementById('tmSub').textContent = `${i.tag} · 由 ${i.vendor} 提供 · ${lic==='school'?'學校已為你開通':'尚未為你開通'}`;
   document.getElementById('tmDesc').textContent = i.desc;
   document.getElementById('tmFit').innerHTML = i.fit.map(([mark,label])=>`<span class="fitchip"><i>${mark}</i>${label}</span>`).join('');
   document.getElementById('tmCaps').innerHTML = i.caps.map(c=>`<span class="tm-cap">${c}</span>`).join('');
   const use = document.getElementById('tmUse');
-  if (i.lic==='school'){
+  if (lic==='school'){
     use.textContent = '↗ 前往使用';
     use.onclick = () => toast('於 '+i.vendor+' 平台開啟（單一登入）');
   } else {
@@ -1209,7 +1240,7 @@ function askToolFit(){
         <div class="tc-face">📝</div>
         <div class="tc-body">
           <div class="tc-name">另一款已認證工具<span style="font-weight:400;color:var(--ink-3);"> · 供應商暫未具名</span></div>
-          <div class="tc-meta">需透過學校申請訂閱方可使用。</div>
+          <div class="tc-meta" id="tcOtherLic">需透過學校申請訂閱方可使用。</div>
           <div style="margin-top:6px;"><span class="fitchip"><i><svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg></i>弱勢學生適用性的相關證據：已獲核實</span><span class="fitchip"><i>—</i>分層回饋做法：供應商暫未提交相關證據</span></div>
         </div>
         <button class="tc-go" onclick="openToolModal('other')">查看詳情 →</button>

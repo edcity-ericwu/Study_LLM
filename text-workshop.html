@@ -669,7 +669,7 @@
                 <span class="pip" style="left:25%"></span><span class="pip" style="left:50%"></span>
                 <span class="pip" style="left:75%"></span><span class="pip" style="left:100%"></span></div>
               <div class="bar-done" id="rdDone">未完成任何步驟</div>
-              <div class="eta"><span>⏱</span><div><small>預計時間</small><b>約 1 分鐘</b></div></div>
+              
             </div>
           </div>
           <div class="plist" id="rdList"></div>
@@ -1018,7 +1018,7 @@ function startRead(){
   stage('stRead');
   runSteps({steps:READ_STEPS, box:'rdList', title:'rdNowTitle', desc:'rdNowDesc',
     fill:'rdFill', pct:'rdPct', label:'rdStepLabel', done:'rdDone', elapsed:'rdElapsed',
-    per:1400, onEnd:showPoints});
+    per:1000, onEnd:showPoints});
 }
 
 /* ── learning points ── */

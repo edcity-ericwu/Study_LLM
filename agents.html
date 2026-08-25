@@ -226,15 +226,36 @@
     height:150px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 14%,white),color-mix(in srgb,var(--accent) 4%,white));
   }
+  /* ── poster covers ────────────────────────────────────────────────────
+   * The six eLAFP projects have real 1920×1080 banners on their EdCity
+   * project pages. Hot-linked from EdCity's own CDN rather than copied in:
+   * no build step, nothing to keep in sync, and it is EdCity's image on
+   * EdCity's storage — the same reasoning as the Unsplash decision.
+   *
+   * If the image fails, `onerror` drops .has-poster and the card falls back
+   * to the gradient + emoji every other card uses. A poster that does not
+   * load must not leave a hole where the cover was. */
+  .acard .cover.has-poster{background:#eef1f5;}
+  .acard .cover .poster{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;}
+  /* The face is the fallback, so it only shows when there is no poster. */
+  .acard .cover.has-poster .face{display:none;}
+  /* The scrim that used to protect the overlaid badges is gone with them —
+   * the poster is now shown whole, which is the point of having one. */
+
   .acard .cover .face{
     width:76px;height:76px;border-radius:50%;background:#fff;border:2px solid color-mix(in srgb,var(--accent) 30%,white);
     display:flex;align-items:center;justify-content:center;font-size:2.1rem;
     margin-top:10px;
   }
+  /* In flow, in the foot's tag row — they used to be absolutely positioned
+   * over the cover, which was fine on a gradient and destructive on a real
+   * poster (Eric, 2026-08-25). */
+  .acard .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
   .acard .type-badge{
-    position:absolute;top:12px;left:12px;background:#fff;border:1px solid var(--line);
-    font-size:.6rem;font-weight:700;letter-spacing:normal;color:var(--ink-2);
-    border-radius:99px;padding:4px 10px;display:flex;align-items:center;gap:5px;
+    background:#f4f7fa;border:1px solid var(--line);
+    font-size:.6rem;font-weight:700;color:var(--ink-2);
+    border-radius:99px;padding:4px 10px;display:inline-flex;align-items:center;gap:5px;
   }
   .acard .type-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
   /* min-height:0 so the column can shrink below its content box and the auto
@@ -251,6 +272,7 @@
    * relying on CJK's min-content behaviour. */
   .acard .t-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
   .acard h3{font-size:.92rem;font-weight:700;min-width:0;line-height:1.45;}
+  /* Same slot and same size as the licence pill — see .status-foot. */
   .acard .vis{
     font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;
   }
@@ -258,9 +280,11 @@
   .acard .vis.school{color:var(--ec-blue-dark);background:#e6f4fb;border:1px solid #c4e5f5;}
   /* eLAFP scheme marker — deliberately quiet: a funding-scheme provenance note,
    * not a quality badge, so it must not out-shout 校方已採購／需另行訂閱. */
-  .acard .scheme{position:absolute;left:12px;bottom:10px;font-size:.58rem;font-weight:700;
-    color:var(--ink-2);background:rgba(255,255,255,.86);border:1px solid var(--line);
-    border-radius:6px;padding:2px 7px;letter-spacing:.02em;backdrop-filter:blur(2px);}
+  /* Still deliberately quieter than the status pill: a funding-scheme
+   * provenance note, not a quality badge. */
+  .acard .scheme{display:inline-flex;align-items:center;font-size:.6rem;font-weight:700;
+    color:var(--ink-3);background:#fff;border:1px dashed var(--line);
+    border-radius:99px;padding:4px 10px;letter-spacing:.02em;}
   .acard .vis.public{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   /* Everything below the organisation line travels together and sits on the
    * bottom edge. ONE auto margin, on the LAST child — see the note in the
@@ -310,7 +334,7 @@
   .acard .org{display:flex;align-items:flex-start;gap:6px;margin-top:6px;
     font-size:.72rem;color:var(--ink-2);line-height:1.55;}
   .acard .org .vlogo{flex-shrink:0;margin-top:1px;}
-  .acard .lic-foot{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
+  .acard .status-foot{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
   .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:4px 10px;
     display:inline-flex;align-items:center;gap:5px;}
   .acard .lic-school{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
@@ -650,36 +674,42 @@ const VENDOR_ITEMS = [
    vendor:'香港中文大學何鴻燊海量數據決策分析研究中心 / 聲希科技有限公司', vinitial:'中', face:'🗣️', color:'var(--ec-blue)',
    lic:'sub', tag:'中小學 · 英文', type:'app', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20211097/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/03/20211097-19201080.png',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]},
   {name:'演算法及人工智能技術促進數學教與學 (Lambda Math)',
    vendor:'香港中文大學數學系', vinitial:'中', face:'📐', color:'var(--ec-purple)',
    lic:'sub', tag:'中小學 · 數學', type:'app', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20210742/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/04/20210742_projectbanner_01-1.png',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]},
   {name:'應用人工智能培訓準老師在實習中教學實務及課堂管理技巧（教室智助+）',
    vendor:'香港教育大學整全成長發展中心', vinitial:'教', face:'🎓', color:'var(--ec-green)',
    lic:'sub', tag:'師資培訓 · 課堂管理', type:'app', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20211038/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/04/Project-Banner-for-Website.png',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]},
   {name:'數碼運動智能培育平台（肌智樂園）',
    vendor:'香港理工大學康復治療科學系', vinitial:'理', face:'🤸', color:'var(--ec-amber)',
    lic:'sub', tag:'中小學 · 體育', type:'app', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20211041/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/05/QEF-Web-banner_v2-3-V2.png',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]},
   {name:'「元宇宙英語學習世界」會話機械人和虛擬世界學英語平台 (My AI Buddy)',
    vendor:'香港中華基督教青年會', vinitial:'青', face:'🌐', color:'var(--ec-blue)',
    lic:'sub', tag:'中小學 · 英文', type:'agent', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20211047/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/04/1920x1080_banner_website.png',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]},
   {name:'運用創新科技將評估練習文件互動化，自動化收集學習數據及產生分析 (QDCS)',
    vendor:'香港普通話研習社', vinitial:'普', face:'📊', color:'var(--ec-red)',
    lic:'sub', tag:'中小學 · 跨學科', type:'app', scheme:'eLAFP', real:true,
    href:'https://web.edcity.hk/zh-hant/elafp/project/20211069/',
+   poster:'https://campaignprodstor.blob.core.windows.net/uploads/2025/03/ts.jpeg',
    desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
    caps:[]}
 ];
@@ -762,13 +792,11 @@ function renderHub(q){
   grid.innerHTML = shown.map((i,idx) => `
     <div class="acard" style="--accent:${i.color}" onclick="openModal(${ITEMS.indexOf(i)})" tabindex="0" role="button" aria-label="${i.name}">
       <div class="cover">
-        <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
         <div class="face">${i.face}</div>
       </div>
       <div class="body">
         <div class="t-row">
           <h3>${i.name}</h3>
-          <span class="vis ${i.vis}">${({private:'🔒 私人',school:'🏫 校本',public:'🌐 公開'})[i.vis]}</span>
         </div>
         <div class="card-foot">
           <div class="meta">
@@ -778,6 +806,14 @@ function renderHub(q){
             <span>♡ ${i.likes}</span>
             <span>👥 ${i.follows}</span>
             <span>${i.age}</span>
+          </div>
+          <div class="tag-row">
+            <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
+          </div>
+          <!-- Same slot as EdMarket's licence pill: both are status, and one
+               place for it is what makes the two grids read as one product. -->
+          <div class="status-foot">
+            <span class="vis ${i.vis}">${({private:'🔒 私人',school:'🏫 校本',public:'🌐 公開'})[i.vis]}</span>
           </div>
         </div>
       </div>
@@ -795,13 +831,23 @@ function renderVendors(q){
   const vShown = VENDOR_ITEMS.filter(i =>
     (type==='all' || i.type===type) &&
     (!q || i.name.toLowerCase().includes(q) || i.vendor.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q) || i.caps.join('').toLowerCase().includes(q))
-  );
+  )
+  /* Tools with a real poster lead (Eric, 2026-08-25). A stable sort, so the
+   * array order still decides within each group — the six eLAFP projects keep
+   * the sequence they were listed in, and the invented tools keep theirs. */
+  .sort((a,b) => (b.poster ? 1 : 0) - (a.poster ? 1 : 0));
   document.getElementById('vendorEmpty').style.display = vShown.length ? 'none' : 'block';
   document.getElementById('vendorGrid').innerHTML = vShown.map(i => `
     <div class="acard" style="--accent:${i.color}" onclick="openVendorModal(${VENDOR_ITEMS.indexOf(i)})" tabindex="0" role="button" aria-label="${i.name}">
-      <div class="cover">
-        <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
-        ${i.scheme ? `<span class="scheme">${i.scheme}</span>` : ''}
+      <!-- Nothing sits on the cover. With real posters the overlaid badges
+           covered the part of the artwork carrying the message (Eric,
+           2026-08-25). They moved to a tag row in the foot, and the same
+           anatomy now applies to both grids. -->
+      <div class="cover${i.poster ? ' has-poster' : ''}">
+        ${i.poster
+          ? `<img class="poster" src="${i.poster}" alt="" loading="lazy"
+                 onerror="this.closest('.cover').classList.remove('has-poster');this.remove()">`
+          : ''}
         <div class="face">${i.face}</div>
       </div>
       <div class="body">
@@ -817,7 +863,11 @@ function renderVendors(q){
                   onclick="event.stopPropagation()">↗ 查看計劃詳情</a>`
             : (i.ext === false ? '' : '<span class="ext">↗ 於供應商平台開啟</span>')}
         </div>
-        <div class="lic-foot">
+        <div class="tag-row">
+          <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
+          ${i.scheme ? `<span class="scheme">${i.scheme}</span>` : ''}
+        </div>
+        <div class="status-foot">
           <span class="lic lic-${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
         </div>
         </div>

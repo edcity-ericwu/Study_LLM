@@ -57,7 +57,8 @@
   .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--ink-2);}
   .topbar .who .avatar{width:32px;height:32px;border-radius:50%;background:var(--ec-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;}
 
-  .wrap{padding:26px 20px 90px;}
+  /* 44px top, like every other page — this was 26px (Eric, 2026-08-25). */
+  .wrap{padding:44px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   h1{font-size:1.8rem;font-weight:800;margin-bottom:16px;}
   .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;line-height:1.6;max-width:52em;}
@@ -200,7 +201,11 @@
   .snap .s-ic{font-size:1.15rem;display:block;margin-bottom:6px;}
   .snap b{font-size:.82rem;display:block;color:var(--ink);}
   .snap small{font-size:.68rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
-  .q-actions{display:flex;flex-direction:column;gap:7px;flex-shrink:0;align-self:center;}
+  /* The text takes the slack so the actions land on the container's right
+   * edge and line up across rows, instead of trailing each sentence. */
+  .parent-panel .q > span:not(.n):not(.q-actions){flex:1;min-width:0;}
+  .q-actions{display:flex;flex-direction:column;align-items:stretch;gap:7px;
+    flex-shrink:0;align-self:center;margin-left:auto;}
   .q-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font-size:.76rem;color:var(--ink-2);font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
   .q-btn:hover{border-color:var(--ec-green);color:#0c6b48;}
   /* 試過了 is the button a parent actually wants to reach for — give it real
@@ -432,8 +437,15 @@ function skillSparkSVG(values, color){
   const path = pts.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
   const last = pts[pts.length-1];
   return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
-    + '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-    + '<circle cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="2.6" fill="'+color+'"/>'
+    + '<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2" '
+      + 'stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
+    /* Zero-length line + round cap + non-scaling-stroke = a true circle in
+     * screen space. A <circle> here inherits the viewBox's non-uniform
+     * stretch and renders as an ellipse. */
+    + '<line x1="'+last[0].toFixed(1)+'" y1="'+last[1].toFixed(1)+'" '
+      + 'x2="'+last[0].toFixed(1)+'" y2="'+last[1].toFixed(1)+'" '
+      + 'stroke="'+color+'" stroke-width="5.2" stroke-linecap="round" '
+      + 'vector-effect="non-scaling-stroke"/>'
     + '</svg>';
 }
 function renderSkillProgress(){

@@ -549,7 +549,7 @@
     <!-- The 工具 row is hidden inside a tool: there is only one tool, so the
          filter offers a choice that is already made, and it was listing other
          tools greyed out — noise pretending to be an option. -->
-    <div class="mm-row" id="toolRow"><span class="mm-lbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
+    <div class="mm-row" id="toolRow"><span class="mm-lbl" id="toolLbl">工具</span><div class="mm-filters" id="toolFilters"></div></div>
     <div class="mm-row"><span class="mm-lbl" id="kindLbl">類型</span><div class="mm-filters" id="filters"></div></div>
   </div>
   <div id="list"></div>
@@ -695,7 +695,7 @@ const TOOL_META = {
  * here rather than sprinkled through render() so the two sets cannot drift. */
 const T = {
   zh: {mine:'我的教材', sub:'已完成的教材會保留在這裏，最近完成的排在最前。',
-       kindLbl:'類型', all:'全部', allTools:'全部工具', neu:'準備新教材',
+       kindLbl:'類型', toolLbl:'工具', all:'全部', allTools:'全部工具', neu:'準備新教材',
        back:'← 返回', exit:'離開', making:'製作中',
        makingNote:'可以離開這一頁，完成後會留在下方的教材列表。',
        emptyT:'還沒有教材', emptyP:'到教學工具箱挑一個工具，做好之後儲存，就會出現在這裏。',
@@ -703,7 +703,7 @@ const T = {
        emptyBtn:'前往教學工具箱', made:'份教材', updated:'最近更新', created:'建立於',
        preview:'預覽', download:'下載', use:'在課堂使用', tab:'我的教材'},
   en: {mine:'My materials', sub:'Finished materials stay here, most recent first.',
-       kindLbl:'Type', all:'All', allTools:'All tools', neu:'Generate new',
+       kindLbl:'Type', toolLbl:'Tool', all:'All', allTools:'All tools', neu:'Generate new',
        back:'← Back to ', exit:'Leave ', making:'In progress',
        makingNote:'You can leave this page — finished materials appear in the list below.',
        emptyT:'Nothing here yet', emptyP:'Generate something and save it, and it will appear here.',
@@ -743,6 +743,10 @@ if(TOOL_VIEW && TOOL_META[TOOL_VIEW]){
   document.getElementById('pgTitle').textContent = t.mine;
   document.getElementById('pgSub').textContent   = t.sub;
   document.getElementById('kindLbl').textContent = t.kindLbl;
+  /* The 工具 label was the last hardcoded Chinese string on this page, so an
+   * English tool's own materials view still had one Chinese word in it. */
+  const tlb = document.getElementById('toolLbl');
+  if(tlb) tlb.textContent = t.toolLbl;
   document.getElementById('newBtn').textContent  = t.neu;
   document.getElementById('tbPrepLabel').textContent = tl.prep;
   document.getElementById('tbMatLabel').textContent  = t.tab;

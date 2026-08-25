@@ -202,7 +202,12 @@
   .ld-bar .btn{margin-left:auto;}
 
   /* ── progress ── */
-  .ld-prog{max-width:660px;margin:0 auto;text-align:center;}
+  /* Left-aligned like the English tools (Eric, 2026-08-25) — waiting is not
+   * the hero of the page. */
+  .ld-prog{max-width:none;margin:0;text-align:left;}
+  .ld-prog .prog-h{font-size:1.05rem;font-weight:800;margin-bottom:6px;}
+  .ld-prog .lede{font-size:.84rem;color:var(--ink-2);line-height:1.7;margin-bottom:18px;max-width:52em;}
+  .ld-prog .orb{display:none;}
   .ld-prog .orb{width:62px;height:62px;border-radius:50%;background:#e6f4fb;display:inline-flex;
     align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;}
   .ld-prog h2{font-size:1.6rem;font-weight:800;margin-bottom:8px;}
@@ -458,8 +463,7 @@
   <!-- ③ generating -->
   <section class="ld-stage" id="stMake">
     <div class="ld-prog">
-      <div class="orb">📋</div>
-      <h2>正在編寫教案</h2>
+      <h2 class="prog-h">正在編寫教案</h2>
       <p class="lede">按你選的學習重點編排課節活動，並配一份課堂工作紙。<br>完成後由你決定要不要存入「我的教材」。</p>
 
       <div class="pcard">

@@ -286,7 +286,13 @@
     cursor:pointer;font-family:inherit;font-weight:600;}
 
   /* progress */
-  .tw-prog{max-width:660px;margin:0 auto;text-align:center;}
+  /* Left-aligned, full measure. Was max-width:660px + margin:0 auto +
+   * text-align:center, which made the machine's waiting the visual hero of
+   * the page (Eric, 2026-08-25). */
+  .tw-prog{max-width:none;margin:0;text-align:left;}
+  .tw-prog .prog-h{font-size:1.05rem;font-weight:800;margin-bottom:6px;}
+  .tw-prog .lede{font-size:.84rem;color:var(--ink-2);line-height:1.7;margin-bottom:18px;max-width:52em;}
+  .tw-prog .orb{display:none;}
   .tw-prog .orb{width:62px;height:62px;border-radius:50%;background:#e6f4fb;display:inline-flex;
     align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;position:relative;}
   .tw-prog .orb::after{content:"";position:absolute;top:2px;right:2px;width:11px;height:11px;
@@ -647,9 +653,9 @@
     <!-- ②  reading progress -------------------------------------------- -->
     <section class="tw-stage" id="stRead">
       <div class="tw-prog">
-        <div class="orb">📖</div>
-        <h2>正在細讀這篇課文</h2>
-        <p class="lede">先把課文讀一遍，再按你選的學習範圍整理重點。<br>整理好之後，你可以逐項核對再決定要教甚麼。</p>
+        <!-- No orb, no display heading: the page head already names the text
+             she is working on, and this card is status, not the subject. -->
+        <p class="lede">先把課文讀一遍，再按你選的學習範圍整理重點。整理好之後，你可以逐項核對再決定要教甚麼。</p>
 
         <div class="pcard">
           <div class="now">
@@ -710,9 +716,8 @@
            list are the only things on this screen she can act on, so they get
            the wider measure. Width is one signal of three here; colour and the
            icon do the rest, and width alone would be too weak to carry it. -->
-      <div class="tw-prog" style="max-width:660px">
-        <div class="orb">✏️</div>
-        <h2 id="mkHeading">正在製作教材</h2>
+      <div class="tw-prog">
+        <h2 id="mkHeading" class="prog-h">正在製作教材</h2>
         <p class="lede" id="mkLede">按你選的重點撰寫教材。完成後由你決定要不要存入「我的教材」。</p>
 
         <div class="pcard">

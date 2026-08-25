@@ -546,9 +546,16 @@ function render(){
   const box = document.getElementById('view');
 
   if(!m){
-    box.innerHTML = '<div class="md-none"><b>找不到這份教材</b>' +
-      '<p>它可能已被刪除，或這個連結已經過期。</p>' +
-      '<button class="btn" onclick="location.href=\'my-materials.html\'">回到我的教材</button></div>';
+    /* Reachable from an English tool via a stale or deleted link, so it
+     * speaks the tool's language like every other string here. */
+    const en = TOOL_ID && TOOL_META[TOOL_ID] && TOOL_META[TOOL_ID].lang === 'en';
+    const home = 'my-materials.html' + (TOOL_ID ? '?tool=' + TOOL_ID : '');
+    box.innerHTML = '<div class="md-none"><b>' +
+      (en ? 'Material not found' : '找不到這份教材') + '</b>' +
+      '<p>' + (en ? 'It may have been deleted, or this link has expired.'
+                  : '它可能已被刪除，或這個連結已經過期。') + '</p>' +
+      '<a class="btn" href="' + home + '">' +
+      (en ? 'Back to My materials' : '回到我的教材') + '</a></div>';
     return;
   }
 

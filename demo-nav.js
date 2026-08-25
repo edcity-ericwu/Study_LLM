@@ -42,7 +42,11 @@ const PAGES = [
     ['chat.html','科目助理',''],
     ['index.html','教學工具箱',''],
     ['text-workshop.html','　└ 課文工房',''],
-    ['my-materials.html','　　└ 我的教材',''],
+    /* 我的教材 removed 2026-08-25: it is not a page of its own in this
+     * walkthrough. It is a SECTION INSIDE whichever tool you are in, and it
+     * renders in that tool's language wearing that tool's bar — so listing it
+     * once, nested under 課文工房, showed it in a context it does not have
+     * (Eric). The route to it is the tool's own tab. */
     ['lesson-plan.html','　└ Lesson Plan（英文）',''],
     ['worksheet-generator.html','　　└ Worksheet Generator',''],
     ['quiz-generator.html','　　└ Quiz Generator',''],
@@ -103,6 +107,26 @@ function init(){
   const pill=document.createElement('button');pill.className='dn-pill';pill.textContent='🧭 示範導覽';
   const panel=document.createElement('div');panel.className='dn-panel';
   const here=location.pathname.split('/').pop()||'index.html';
+  const hereQ=new URLSearchParams(location.search);
+
+  /* Which entry is 「you are here」.
+   *
+   * This compared the whole entry string against the FILENAME, so any entry
+   * carrying a query never matched — 分組內頁（支援組） is
+   * group-detail.html?c=2b&g=support, and it was the only such entry, which
+   * is why it alone never highlighted and never scrolled into view (Eric,
+   * 2026-08-25).
+   *
+   * Matching on filename alone would be wrong the moment a second variant of
+   * the same page is listed, so the entry's own params must also match. Extra
+   * params on the URL are ignored: arriving with ?from=… is still the same
+   * screen. */
+  function isHere(entry){
+    const [file, qs] = entry.split('?');
+    if(file !== here) return false;
+    if(!qs) return true;
+    return [...new URLSearchParams(qs)].every(([k,v]) => hereQ.get(k) === v);
+  }
   // Filter by feature flag (typeof-guarded: pages that don't load feature-flags.js
   // for some reason just show everything, rather than throwing).
   const flagOn = k => (typeof featureOn === 'function') ? featureOn(k) : true;
@@ -115,7 +139,7 @@ function init(){
    * not rendered here. Page-level ribbons still carry it when protoAnnotations
    * is on. */
   panel.innerHTML = visiblePages.map(g=>'<h6>'+g.group+'</h6>'+g.items.map(([f,n])=>
-    '<a href="'+f+'"'+(f===here?' class="here"':'')+'>'+n+'</a>'
+    '<a href="'+f+'"'+(isHere(f)?' class="here"':'')+'>'+n+'</a>'
   ).join('')).join('')
   + '<div class="legend">正式產品不會顯示此導覽。</div>';
   // Scroll the current page's entry into view on every open, so the panel

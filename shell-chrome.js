@@ -224,9 +224,46 @@
   };
   window.ShellChrome.subjectify = subjectify;
 
+  /* ── optical alignment for leading CJK punctuation ─────────────────────
+   * A heading opening with a full-width mark — 「元宇宙英語學習世界」…,
+   * 《出師表》 — starts half a character further right than its neighbours and
+   * reads as a stray indent (Eric, 2026-08-25). See the note in
+   * shell-chrome.css for why the correction is what it is.
+   *
+   * Done in JS because CSS cannot select on first character: :first-letter
+   * has no such test, and `:has()` cannot match text. Tagging a class is the
+   * cheapest honest way, and it means a heading with no leading punctuation is
+   * never dragged out of line.
+   *
+   * Exposed so pages that build headings after load can re-run it over just
+   * the part they rendered.
+   */
+  var WIDE  = /^[「『（《〈【〔〖｛［]/;      /* full-width: needs ~half an em */
+  var NARROW = /^[(\[{"'“‘]/;                 /* proportional: needs much less */
+
+  function hangPunct(root){
+    var scope = root || document;
+    var els = scope.querySelectorAll('h1,h2,h3,h4,.tb-name,.acard h3,.mcard b,.md-head h1');
+    for(var i = 0; i < els.length; i++){
+      var el = els[i];
+      var t = (el.textContent || '').trim();
+      el.classList.remove('opt-punct', 'opt-punct-sm');
+      if(WIDE.test(t))        el.classList.add('opt-punct');
+      else if(NARROW.test(t)) el.classList.add('opt-punct-sm');
+    }
+  }
+  window.ShellChrome = window.ShellChrome || {};
+  window.ShellChrome.hangPunct = hangPunct;
+
   function boot(){
     build();
     subjectify();
+    hangPunct();
+    /* Grids and lists are rendered by their own page scripts, which run after
+     * this. One deferred pass catches them without every page having to call
+     * it; pages that re-render on interaction call ShellChrome.hangPunct()
+     * themselves. */
+    setTimeout(hangPunct, 0);
     /* demo-nav.js and jobs.js add links of their own on DOMContentLoaded, and
      * ordering between listeners is not something to rely on. */
     setTimeout(subjectify, 0);

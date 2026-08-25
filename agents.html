@@ -260,6 +260,9 @@
     border-radius:6px;padding:2px 7px;letter-spacing:.02em;backdrop-filter:blur(2px);}
   .acard .vis.public{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);margin-top:auto;padding-top:9px;flex-wrap:wrap;}
+  /* Long eLAFP titles would otherwise push every card to a different height. */
+  .acard .t-row h3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+    overflow:hidden;line-height:1.45;}
   .acard .meta .who{display:flex;align-items:center;gap:5px;}
   .acard .meta .who i{
     width:17px;height:17px;border-radius:50%;background:var(--ec-blue);color:#fff;font-style:normal;
@@ -285,14 +288,31 @@
     font-size:.62rem;font-weight:700;color:var(--ink-2);border-radius:99px;padding:4px 10px;
     display:flex;align-items:center;gap:6px;
   }
-  .acard .vendor-chip .vlogo{
+  .acard .vendor-chip .vlogo,
+  .acard .org .vlogo{
     width:14px;height:14px;border-radius:4px;background:var(--accent);color:#fff;
     display:inline-flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:800;font-style:normal;
   }
-  .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:3px 9px;flex-shrink:0;margin-top:1px;}
+  /* The licence pill is the last thing in the card (Eric, 2026-08-25).
+   * Beside the title it competed with it for one row, and eLAFP tool names
+   * run to forty characters — the title wrapped around a pill instead of
+   * using the width it had. */
+  /* Who made this, under the headline rather than in a chip on the cover.
+   * Real eLAFP organisation names run past forty characters and simply do
+   * not fit a pill (Eric, 2026-08-25). */
+  .acard .org{display:flex;align-items:flex-start;gap:6px;margin-top:6px;
+    font-size:.72rem;color:var(--ink-2);line-height:1.55;}
+  .acard .org .vlogo{flex-shrink:0;margin-top:1px;}
+  .acard .lic-foot{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
+  .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:4px 10px;
+    display:inline-flex;align-items:center;gap:5px;}
   .acard .lic.school{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
   .acard .lic.sub{color:var(--ec-amber);background:#fdf6ec;border:1px solid #f3e3c3;}
   .acard .ext{font-size:.66rem;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px;}
+  /* When it is a real destination it looks like one — same size, but coloured
+   * and underlined on hover, so it is distinguishable from the inert version. */
+  a.ext{color:var(--ec-blue-dark);text-decoration:none;font-weight:600;}
+  a.ext:hover{text-decoration:underline;}
 
   /* ─── Modal ─── */
   .overlay{
@@ -597,6 +617,61 @@ const VENDOR_ITEMS = [
    lic:'school', tag:'中小學 · 跨學科', type:'app',
    desc:'學生以手機或平板即時作答，教師即時看到全班答題分布，適合課堂前測及即時檢查。',
    caps:['即時作答','答題分布','匿名模式']}
+,
+
+  /* ── real eLAFP solutions ─────────────────────────────────────────────
+   * Six 電子學習配套計劃 projects, supplied by Eric on 2026-08-25 with their
+   * project pages on web.edcity.hk. Everything ABOVE this line is invented for
+   * the walkthrough; these six are not — the title and the organisation are
+   * verbatim, which is why the titles read like grant project names rather
+   * than product names. That is what they are.
+   *
+   * Thin on purpose: headline and organisation only. No description,
+   * capability chips or licence story has been invented around a real named
+   * body. `href` points at the project page on EdCity — the one external
+   * destination we can actually stand behind — rather than a vendor platform
+   * we have not verified.
+   *
+   * All 需另行訂閱: eLAFP funds the development, it does not make a tool free
+   * to every school, and 校方已採購 would be a claim about a real organisation
+   * that we cannot make.
+   */
+  {name:'基於人工智能的英語教與學系統 (LingoTask)',
+   vendor:'香港中文大學何鴻燊海量數據決策分析研究中心 / 聲希科技有限公司', vinitial:'中', face:'🗣️', color:'var(--ec-blue)',
+   lic:'sub', tag:'中小學 · 英文', type:'app', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20211097/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]},
+  {name:'演算法及人工智能技術促進數學教與學 (Lambda Math)',
+   vendor:'香港中文大學數學系', vinitial:'中', face:'📐', color:'var(--ec-purple)',
+   lic:'sub', tag:'中小學 · 數學', type:'app', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20210742/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]},
+  {name:'應用人工智能培訓準老師在實習中教學實務及課堂管理技巧（教室智助+）',
+   vendor:'香港教育大學整全成長發展中心', vinitial:'教', face:'🎓', color:'var(--ec-green)',
+   lic:'sub', tag:'師資培訓 · 課堂管理', type:'app', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20211038/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]},
+  {name:'數碼運動智能培育平台（肌智樂園）',
+   vendor:'香港理工大學康復治療科學系', vinitial:'理', face:'🤸', color:'var(--ec-amber)',
+   lic:'sub', tag:'中小學 · 體育', type:'app', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20211041/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]},
+  {name:'「元宇宙英語學習世界」會話機械人和虛擬世界學英語平台 (My AI Buddy)',
+   vendor:'香港中華基督教青年會', vinitial:'青', face:'🌐', color:'var(--ec-blue)',
+   lic:'sub', tag:'中小學 · 英文', type:'agent', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20211047/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]},
+  {name:'運用創新科技將評估練習文件互動化，自動化收集學習數據及產生分析 (QDCS)',
+   vendor:'香港普通話研習社', vinitial:'普', face:'📊', color:'var(--ec-red)',
+   lic:'sub', tag:'中小學 · 跨學科', type:'app', scheme:'eLAFP', real:true,
+   href:'https://web.edcity.hk/zh-hant/elafp/project/20211069/',
+   desc:'電子學習配套計劃項目。本示範只載入計劃名稱與參與機構，未載入功能詳情。',
+   caps:[]}
 ];
 
 let type='all', vis='school', source='edmarket', currentItem=null;
@@ -714,21 +789,28 @@ function renderVendors(q){
     <div class="acard" style="--accent:${i.color}" onclick="openVendorModal(${VENDOR_ITEMS.indexOf(i)})" tabindex="0" role="button" aria-label="${i.name}">
       <div class="cover">
         <span class="type-badge"><span class="dot"></span>${TYPE_LABEL[i.type]}</span>
-        <span class="vendor-chip"><i class="vlogo">${i.vinitial}</i>${i.vendor}</span>
         ${i.scheme ? `<span class="scheme">${i.scheme}</span>` : ''}
         <div class="face">${i.face}</div>
       </div>
       <div class="body">
         <div class="t-row">
           <h3>${i.name}</h3>
-          <span class="lic ${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
         </div>
+        <div class="org"><i class="vlogo">${i.vinitial}</i><span>${i.vendor}</span></div>
         <div class="meta">
           <span>${i.tag}</span>
-          <span class="ext">↗ 於供應商平台開啟</span>
+          ${i.href
+            ? `<a class="ext" href="${i.href}" target="_blank" rel="noopener"
+                  onclick="event.stopPropagation()">↗ 查看計劃詳情</a>`
+            : (i.ext === false ? '' : '<span class="ext">↗ 於供應商平台開啟</span>')}
+        </div>
+        <div class="lic-foot">
+          <span class="lic ${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
         </div>
       </div>
     </div>`).join('');
+  /* Re-tag: the grid is rebuilt on every filter change and classes go with it. */
+  if(window.ShellChrome) ShellChrome.hangPunct(document.getElementById('vendorGrid'));
 }
 /* Mirrors chat.html: a tool the school does not hold becomes a real pending
  * request rather than a toast claiming one was sent.

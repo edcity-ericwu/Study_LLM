@@ -446,6 +446,30 @@ main.main > .intro{
   .tray-in{ padding:14px 18px; }
 }
 
+/* ── optical alignment for leading CJK punctuation ───────────────────────
+ * 「 『 （ 《 〈 【 〔 are FULL-WIDTH: each occupies a whole em box with the ink
+ * sitting in the right half. So a heading that opens with one — 「元宇宙英語學習
+ * 世界」…, 《出師表》 — starts about half a character further right than every
+ * heading around it, and reads as a stray indent rather than as punctuation
+ * (Eric, 2026-08-25).
+ *
+ * Pulling the whole heading left by roughly that half-em puts the first
+ * *visible* stroke back on the margin, which is what the eye actually aligns
+ * to. This is the same reason print sets quotation marks hanging.
+ *
+ * -0.42em rather than a clean -0.5em: Chiron GoRound's 「 carries a little ink
+ * left of centre, so a full half-em overshoots and the heading hangs.
+ *
+ * Applied by class, never blanket, so a heading with no leading punctuation is
+ * never dragged out of alignment. See ShellChrome.hangPunct().
+ */
+.opt-punct{ margin-left:-0.42em; }
+
+/* Round brackets and the CJK comma are narrower in most faces, so they need
+ * less. Kept as a separate class rather than one averaged value, because a
+ * correction that is wrong in both directions is worse than none. */
+.opt-punct-sm{ margin-left:-0.24em; }
+
 /* ── back one step ───────────────────────────────────────────────────────
  * A detail view reached from a list needs a visible way back to that list.
  * I had claimed the bar's 我的教材 tab was that route; it is not — the tab is

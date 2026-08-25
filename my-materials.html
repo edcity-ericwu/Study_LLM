@@ -725,7 +725,11 @@ if(Q.get('from')){
 const n = Q.get('new');
 if(n){
   document.getElementById('newNote').style.display = 'flex';
-  document.getElementById('newTxt').textContent = '已完成 ' + n + ' 份教材，存放在下方。';
+  const tt = L();
+  document.getElementById('newTxt').textContent =
+    tt === T.en ? (n === '1' ? '1 material saved — it is in the list below.'
+                             : n + ' materials saved — they are in the list below.')
+                : '已完成 ' + n + ' 份教材，存放在下方。';
 }
 /* In tool mode the page becomes that tool's section: its bar, its name, its
  * scope. In platform mode none of this shows and it is the library. */

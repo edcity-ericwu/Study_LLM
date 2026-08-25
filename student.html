@@ -31,16 +31,33 @@
     --ink:#1e2a35;--ink-2:#55636f;--ink-3:#8a97a3;--line:#e6ebf0;--bg:#f1f2f8;font-size:18px;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  body{font-family:"Chiron GoRound TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;}
 
-  /* Simpler shell: top bar, no teacher sidebar */
+  /* Role shell, same construction as the other portals (何主任, 馮 Sir,
+   * vendor, 方小姐, EdData). This page previously had a top bar and NO
+   * navigation at all — you could reach it and not leave it. */
+  .sys-sidebar{width:248px;flex-shrink:0;background:#123a2c;color:#dfe8ef;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-top:4px solid var(--ec-green);}
+  .sys-sidebar .sh-label{padding:20px 16px 12px;font-size:.66rem;font-weight:700;color:#9fd9bd;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar .viewer-chip{display:inline-flex;align-items:center;gap:6px;font-size:.62rem;font-weight:700;border-radius:99px;padding:4px 10px;margin:10px 16px 0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#dfe8ef;white-space:nowrap;}
+  .sys-nav{padding:10px 8px;flex:1;}
+  .sys-nav a{display:block;padding:9px 12px;border-radius:8px;color:#c3d0da;text-decoration:none;font-size:.8rem;margin-bottom:2px;}
+  .sys-nav a:hover{background:rgba(255,255,255,.06);}
+  .sys-nav a.active{background:rgba(255,255,255,.12);color:#fff;font-weight:700;}
+  .sys-sidebar-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);}
+  .sys-sidebar-foot a{font-size:.74rem;color:#93a4b1;text-decoration:none;}
+  .sys-sidebar-foot a:hover{color:#fff;}
+  .sys-main{flex:1;min-width:0;}
+
+  /* Top bar kept — eight other role pages use one. Accent moved from purple
+   * to green so the chrome agrees with the page's own colour coding. */
   .topbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 26px;display:flex;align-items:center;gap:16px;}
   .topbar img{height:34px;width:auto;}
-  .topbar .tag{font-size:.66rem;font-weight:700;color:var(--ec-purple);background:#f1edfb;border:1px solid #ddd3f5;border-radius:99px;padding:3px 10px;}
+  .topbar{border-bottom:3px solid var(--ec-green);}
+  .topbar .tag{font-size:.66rem;font-weight:700;color:#0c6b48;background:#effaf5;border:1px solid #bfe8d7;border-radius:99px;padding:3px 10px;}
   .topbar .who{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--ink-2);}
-  .topbar .who .avatar{width:32px;height:32px;border-radius:50%;background:var(--ec-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;}
+  .topbar .who .avatar{width:32px;height:32px;border-radius:50%;background:var(--ec-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;}
 
-  .wrap{max-width:760px;margin:0 auto;padding:26px 20px 90px;}
+  .wrap{padding:26px 20px 90px;}
   .ribbon{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;color:#8a6d00;background:#fdf1c7;border:1px solid #f0dfa0;border-radius:99px;padding:5px 14px;margin-bottom:16px;}
   h1{font-size:1.8rem;font-weight:800;margin-bottom:16px;}
   .sub{font-size:.9rem;color:var(--ink-2);margin:6px 0 32px;line-height:1.6;max-width:52em;}
@@ -229,9 +246,26 @@
      hide feature-flagged elements, and those must exist before first paint
      or the flagged nav row and the 提案中 ribbons flash in and out. -->
 <script src="feature-flags.js"></script>
+<link rel="stylesheet" href="shell-chrome.css">
+<script src="shell-chrome.js"></script>
 </head>
 <body>
 
+<aside class="sys-sidebar">
+  <div class="sh-label">學生／家長入口</div>
+  <div class="viewer-chip">🎒 Karen · 中二</div>
+  <nav class="sys-nav">
+    <a href="student.html" class="active">🎒 我的學習</a>
+  </nav>
+  <!-- Every other role portal offers this. A student would not literally
+       navigate to the teacher's EdCity.ai, but it is the demo's established
+       way out of a role view and this page had none at all. -->
+  <div class="sys-sidebar-foot">
+    <a href="index.html">← 返回 EdCity.ai</a>
+  </div>
+</aside>
+
+<div class="sys-main">
 <div class="role-banner">學生 ／ 家長層級 — 個人視圖</div>
 <div class="topbar">
   <img src="edcity_logo.svg" alt="香港教育城 EdCity">
@@ -362,6 +396,8 @@
     </div>
   </div>
 </div>
+
+</div><!-- /sys-main -->
 
 <script src="demo-state.js"></script>
 <script src="vendor-data.js"></script>

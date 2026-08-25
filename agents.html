@@ -237,7 +237,10 @@
     border-radius:99px;padding:4px 10px;display:flex;align-items:center;gap:5px;
   }
   .acard .type-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
-  .acard .body{padding:14px 16px 15px;flex:1;display:flex;flex-direction:column;}
+  /* min-height:0 so the column can shrink below its content box and the auto
+   * margin has real slack to consume; without it a flex item's implicit
+   * min-content floor can eat the free space instead. */
+  .acard .body{padding:14px 16px 15px;flex:1;min-height:0;display:flex;flex-direction:column;}
   /* Top-aligned, not centre-aligned. CJK has a min-content width of one
    * character, so a long title shrinks and wraps rather than overflowing —
    * and with align-items:center the licence badge then floated to the vertical
@@ -259,7 +262,11 @@
     color:var(--ink-2);background:rgba(255,255,255,.86);border:1px solid var(--line);
     border-radius:6px;padding:2px 7px;letter-spacing:.02em;backdrop-filter:blur(2px);}
   .acard .vis.public{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
-  .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);margin-top:auto;padding-top:9px;flex-wrap:wrap;}
+  /* Everything below the organisation line travels together and sits on the
+   * bottom edge. ONE auto margin, on the LAST child — see the note in the
+   * card template for why the previous arrangement rendered inconsistently. */
+  .acard .card-foot{margin-top:auto;}
+  .acard .meta{display:flex;align-items:center;gap:9px;font-size:.7rem;color:var(--ink-3);padding-top:9px;flex-wrap:wrap;}
   /* Long eLAFP titles would otherwise push every card to a different height. */
   .acard .t-row h3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
     overflow:hidden;line-height:1.45;}
@@ -760,13 +767,15 @@ function renderHub(q){
           <h3>${i.name}</h3>
           <span class="vis ${i.vis}">${({private:'🔒 私人',school:'🏫 校本',public:'🌐 公開'})[i.vis]}</span>
         </div>
-        <div class="meta">
-          <span class="who"><i>${i.who[0]}</i>${i.who}</span>
-          <span>${i.tag}</span>
-          <span>👁 ${i.views}</span>
-          <span>♡ ${i.likes}</span>
-          <span>👥 ${i.follows}</span>
-          <span>${i.age}</span>
+        <div class="card-foot">
+          <div class="meta">
+            <span class="who"><i>${i.who[0]}</i>${i.who}</span>
+            <span>${i.tag}</span>
+            <span>👁 ${i.views}</span>
+            <span>♡ ${i.likes}</span>
+            <span>👥 ${i.follows}</span>
+            <span>${i.age}</span>
+          </div>
         </div>
       </div>
     </div>`).join('')
@@ -797,6 +806,7 @@ function renderVendors(q){
           <h3>${i.name}</h3>
         </div>
         <div class="org"><i class="vlogo">${i.vinitial}</i><span>${i.vendor}</span></div>
+        <div class="card-foot">
         <div class="meta">
           <span>${i.tag}</span>
           ${i.href
@@ -806,6 +816,7 @@ function renderVendors(q){
         </div>
         <div class="lic-foot">
           <span class="lic ${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
+        </div>
         </div>
       </div>
     </div>`).join('');

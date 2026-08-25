@@ -313,8 +313,11 @@
   .acard .lic-foot{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
   .acard .lic{font-size:.62rem;font-weight:600;border-radius:99px;padding:4px 10px;
     display:inline-flex;align-items:center;gap:5px;}
-  .acard .lic.school{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
-  .acard .lic.sub{color:var(--ec-amber);background:#fdf6ec;border:1px solid #f3e3c3;}
+  .acard .lic-school{color:var(--ec-green);background:#effaf5;border:1px solid #bfe8d7;}
+  .acard .lic-sub{color:var(--ec-amber);background:#fdf6ec;border:1px solid #f3e3c3;}
+  /* Belt and braces: whatever else a pill's classes match, it owns its own
+   * box. This is the declaration that would have made the collision harmless. */
+  .acard .lic{margin:0;}
   .acard .ext{font-size:.66rem;color:var(--ink-3);display:inline-flex;align-items:center;gap:4px;}
   /* When it is a real destination it looks like one — same size, but coloured
    * and underlined on hover, so it is distinguishable from the inert version. */
@@ -815,7 +818,7 @@ function renderVendors(q){
             : (i.ext === false ? '' : '<span class="ext">↗ 於供應商平台開啟</span>')}
         </div>
         <div class="lic-foot">
-          <span class="lic ${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
+          <span class="lic lic-${i.lic}">${i.lic==='school'?'<svg class="ck" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.4 10.8 12 3.2"/></svg> 校方已採購':'需另行訂閱'}</span>
         </div>
         </div>
       </div>

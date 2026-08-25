@@ -317,7 +317,7 @@
 const ITEMS = [
   {n:'支援組工作紙 v2 · 分層提問版', d:'把關充實後的增潤版本，來自《背影》單元教案', t:'p1', type:'sheet', typeLabel:'工作紙',
    usage:'中二乙班 · 支援組（6 人）在用', usageState:'live', date:'2026-05-28', open:'materials.html?p=p1'},
-  {n:'《背影》單元教案 v3 · 驗證報告', d:'課程對應／事實核對／年期提示的檢查結果', t:'p1', type:'report', typeLabel:'驗證報告',
+  {n:'《背影》單元教案 v3 · 分析報告', d:'課程對應／事實核對／年期提示的檢查結果', t:'p1', type:'report', typeLabel:'分析報告',
    usage:'未連結課室', usageState:'none', date:'2026-05-12', open:'materials.html?p=p1'},
   {n:'散文閱讀理解工作紙（組合版）', d:'混合教育局／教育城／校本課本三類來源', t:'p2', type:'sheet', typeLabel:'工作紙',
    usage:'中二乙班 · 全班（35 人）在用', usageState:'live', date:'2026-06-02', open:'materials.html?p=p2'},
@@ -500,7 +500,7 @@ function insertJustSaved(){
     d: '剛從「教材檢視」儲存',
     t: params.get('t') || 'p1',
     type,
-    typeLabel: {report:'驗證報告', sheet:'工作紙', xs:'跨學科教材'}[type] || '工作紙',
+    typeLabel: {report:'分析報告', sheet:'工作紙', xs:'跨學科教材'}[type] || '工作紙',
     usage: params.get('usage') || '未連結課室',
     usageState: params.get('state') || 'none',
     date: new Date().toISOString().slice(0,10),

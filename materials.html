@@ -320,7 +320,7 @@
   <div class="uc-tabs">
     <button class="uc-tab on" data-p="p1" style="--uc:var(--ec-blue)" onclick="showUC(this)">
       <span class="tab-head"><span class="tile">🛡️</span><span><span class="num">案例 1 · 評估及增潤</span><b>評估、驗證並充實現有教材。</b></span></span>
-      <div class="flow"><span>📄 你已有的教材</span><span class="arr">→</span><span class="out">✅ 驗證報告＋增潤版</span></div>
+      <div class="flow"><span>📄 你已有的教材</span><span class="arr">→</span><span class="out">✅ 分析報告＋增潤版</span></div>
       <small>由<b>一份現有教材</b>開始，平台會按官方課程框架逐項檢查，並提出增潤建議。</small>
     </button>
     <button class="uc-tab" data-p="p2" style="--uc:var(--ec-green)" onclick="showUC(this)">
@@ -329,7 +329,7 @@
       <small>由<b>零</b>開始，在可信的知識庫中挑選材料，組合成一份新教材。</small>
     </button>
     <button class="uc-tab" data-p="p3" style="--uc:var(--ec-purple)" onclick="showUC(this)">
-      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">案例 3 · 跨學科</span><b>跨學科教材創作。</b></span></span>
+      <span class="tab-head"><span class="tile">🔗</span><span><span class="num">案例 3 · 跨學科</span><b>跨學科設計教材。</b></span></span>
       <div class="flow"><span>中文科＋科學科</span><span class="arr">→</span><span class="out">📘 一份共同教材</span></div>
       <small>由<b>一個主題</b>開始，兩科教師分工編寫，各自審訂所屬部分。</small>
     </button>
@@ -371,7 +371,7 @@
     </span></div>
     <div style="margin-top:14px;display:flex;gap:9px;">
       <button class="btn" onclick="saveUC1('enrich')">套用增潤（另存新版）</button>
-      <button class="btn" style="background:#fff;border:1px solid var(--line);color:var(--ink-2);" onclick="saveUC1('report')">只要驗證報告</button>
+      <button class="btn" style="background:#fff;border:1px solid var(--line);color:var(--ink-2);" onclick="saveUC1('report')">只要分析報告</button>
     </div>
     <div class="save-flow" id="saveFlowP1"></div>
     </div><!-- /reportStep -->
@@ -404,7 +404,7 @@
 
   <!-- UC3 -->
   <div class="panel" id="p3" style="--uc:var(--ec-purple)">
-    <h2><span class="p-tile">🔗</span>跨學科教材創作</h2>
+    <h2><span class="p-tile">🔗</span>跨學科設計教材</h2>
     <div class="sect-sub">兩科圍繞同一主題共同製作一份教材。每個環節都會標明所屬科目，由該科教師自行審訂。</div>
 
     <div class="f-label" style="font-size:.82rem;font-weight:700;margin-bottom:10px;">第一步 · 選擇合作科目</div>
@@ -558,7 +558,7 @@ function renderBasket(){
  * with a real link into material-library.html carrying the new item's
  * details in the query string (name/type/tag/usage state), since this suite
  * has no cross-page persistence to actually push the row there directly. */
-const SAVE_TYPE_LABEL = {report:'驗證報告', sheet:'工作紙', xs:'跨學科教材'};
+const SAVE_TYPE_LABEL = {report:'分析報告', sheet:'工作紙', xs:'跨學科教材'};
 function runSaveFlow(elId, item){
   const el = document.getElementById(elId);
   el.classList.add('show');
@@ -585,7 +585,7 @@ function saveUC1(kind){
   if(kind==='enrich'){
     runSaveFlow('saveFlowP1', {name:baseName+'（增潤版）', type:'sheet', t:'p1', usage:'未連結課室', state:'none'});
   } else {
-    runSaveFlow('saveFlowP1', {name:baseName+' · 驗證報告', type:'report', t:'p1', usage:'未連結課室', state:'none'});
+    runSaveFlow('saveFlowP1', {name:baseName+' · 分析報告', type:'report', t:'p1', usage:'未連結課室', state:'none'});
   }
 }
 function saveUC2(){

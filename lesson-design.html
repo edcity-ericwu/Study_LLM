@@ -124,10 +124,8 @@
     border:1px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:inherit;}
   .dm:hover{border-color:var(--ec-blue);}
   .dm.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);}
-  /* Identical at rest to a live card; it simply does not respond
-   * (Eric, 2026-08-25 — reverses the greyed treatment set on 08-24). */
-  .dm[disabled]{cursor:default;}
-  .dm[disabled]:hover{border-color:var(--line);box-shadow:none;}
+  /* Identical at rest to a live card; it simply does not respond. */
+  .dm[aria-disabled]{cursor:default;pointer-events:none;}
   .dm .di{font-size:1.05rem;line-height:1.2;flex-shrink:0;}
   .dm b{font-size:.86rem;display:block;}
   .dm small{font-size:.7rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
@@ -414,7 +412,7 @@
 
         <div class="ld-bar">
           <div class="hint">建議每份教案不多於 6 項重點。<br>重點太多，兩節課教不完，活動也會變得零碎。</div>
-          <button class="btn" id="scopeGo" disabled onclick="toSetup()">先選擇學習階段</button>
+          <button class="btn" id="scopeGo" aria-disabled="true" tabindex="-1" onclick="toSetup()">先選擇學習階段</button>
         </div>
       </div>
     </div>
@@ -456,7 +454,7 @@
 
         <div class="ld-bar">
           <button class="btn ghost" onclick="backToScope()">← 改學習範圍</button>
-          <button class="btn" id="setupGo" disabled onclick="startMake()">請先填寫課堂主題</button>
+          <button class="btn" id="setupGo" aria-disabled="true" tabindex="-1" onclick="startMake()">請先填寫課堂主題</button>
         </div>
       </div>
     </div>
@@ -609,7 +607,7 @@ function pickStage(id){ stageId = id; paintStages(); gateScope(); snapshot(); }
 function paintDomains(){
   document.getElementById('dmGrid').innerHTML = CDC.DOMAINS.map(dm => {
     if(!dm.ready){
-      return '<button type="button" class="dm" disabled>' +
+      return '<button type="button" class="dm" aria-disabled="true" tabindex="-1">' +
         '<span class="di">' + dm.icon + '</span>' +
         '<span><b>' + dm.name + '</b></span></button>';
     }

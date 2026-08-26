@@ -124,8 +124,10 @@
     border:1px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:inherit;}
   .dm:hover{border-color:var(--ec-blue);}
   .dm.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);}
-  .dm[disabled]{cursor:default;background:#fafbfc;opacity:.5;}
-  .dm[disabled]:hover{border-color:var(--line);}
+  /* Identical at rest to a live card; it simply does not respond
+   * (Eric, 2026-08-25 — reverses the greyed treatment set on 08-24). */
+  .dm[disabled]{cursor:default;}
+  .dm[disabled]:hover{border-color:var(--line);box-shadow:none;}
   .dm .di{font-size:1.05rem;line-height:1.2;flex-shrink:0;}
   .dm b{font-size:.86rem;display:block;}
   .dm small{font-size:.7rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
@@ -609,7 +611,7 @@ function paintDomains(){
     if(!dm.ready){
       return '<button type="button" class="dm" disabled>' +
         '<span class="di">' + dm.icon + '</span>' +
-        '<span><b>' + dm.name + '</b><span class="soon">' + dm.why + '</span></span></button>';
+        '<span><b>' + dm.name + '</b></span></button>';
     }
     const n = CDC.count(dm);
     const mine = picked.filter(id => (CDC.get(id) || {}).domain === dm.name).length;

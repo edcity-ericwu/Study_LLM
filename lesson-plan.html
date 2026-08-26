@@ -298,7 +298,8 @@
     border-radius:11px;padding:11px 17px;font-size:.8rem;font-family:inherit;color:var(--ink);
     cursor:pointer;text-decoration:none;}
   .mbtn:hover{border-color:var(--ec-blue);color:var(--ec-blue-dark);}
-  .mbtn[disabled]{opacity:.5;cursor:default;background:#fafbfc;}
+  /* Identical at rest to a live button; it simply does not respond. */
+  .mbtn[disabled]{cursor:default;}
   .mbtn[disabled]:hover{border-color:var(--line);color:var(--ink);}
   .mbtn .soon{font-size:.64rem;font-weight:700;color:var(--ink-3);background:#eef2f6;
     border-radius:99px;padding:2px 8px;}
@@ -549,8 +550,8 @@
       <div class="match-row">
         <a class="mbtn" id="mWs" href="#" onclick="return chainTo(this)">📝 Worksheet</a>
         <a class="mbtn" id="mQz" href="#" onclick="return chainTo(this)">✅ Quiz</a>
-        <button class="mbtn" disabled>🖥 Slides <span class="soon">Coming soon</span></button>
-        <button class="mbtn" disabled>🗂 Flashcards <span class="soon">Coming soon</span></button>
+        <button class="mbtn" disabled>🖥 Slides</button>
+        <button class="mbtn" disabled>🗂 Flashcards</button>
       </div>
     </div>
   </section>

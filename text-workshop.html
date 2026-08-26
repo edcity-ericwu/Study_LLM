@@ -245,8 +245,9 @@
     border-radius:12px;padding:14px 16px;cursor:pointer;font-family:inherit;}
   .scope:hover{border-color:var(--ec-blue);}
   .scope.on{border-color:var(--ec-blue);background:#f2f8fb;box-shadow:0 0 0 1px var(--ec-blue);}
-  .scope[disabled]{cursor:default;opacity:.55;background:#fafbfc;}
-  .scope[disabled]:hover{border-color:var(--line);}
+  /* Identical at rest to a live card; it simply does not respond. */
+  .scope[disabled]{cursor:default;}
+  .scope[disabled]:hover{border-color:var(--line);box-shadow:none;}
   .scope .si{font-size:1.1rem;line-height:1.2;flex-shrink:0;}
   .scope b{font-size:.86rem;display:block;}
   .scope small{font-size:.72rem;color:var(--ink-3);display:block;margin-top:3px;line-height:1.5;}
@@ -589,11 +590,11 @@
             <button type="button" class="scope" data-scope="vocab" onclick="toggleScope(this)">
               <span class="si">🔤</span><span><b>字詞理解</b><small>文言字詞、詞義推敲與句式。</small></span></button>
             <button type="button" class="scope" disabled>
-              <span class="si">✍️</span><span><b>語文運用</b><small>由課文延伸的寫作與說話練習。</small><span class="soon">稍後推出</span></span></button>
+              <span class="si">✍️</span><span><b>語文運用</b><small>由課文延伸的寫作與說話練習。</small></span></button>
             <button type="button" class="scope" disabled>
-              <span class="si">🏮</span><span><b>中華文化</b><small>課文所反映的文化背景與價值觀。</small><span class="soon">稍後推出</span></span></button>
+              <span class="si">🏮</span><span><b>中華文化</b><small>課文所反映的文化背景與價值觀。</small></span></button>
             <button type="button" class="scope" disabled>
-              <span class="si">🔊</span><span><b>朗讀與聲韻</b><small>朗讀指導、節奏與韻律。</small><span class="soon">稍後推出</span></span></button>
+              <span class="si">🔊</span><span><b>朗讀與聲韻</b><small>朗讀指導、節奏與韻律。</small></span></button>
           </div>
 
           <div class="tw-q">課文</div>
